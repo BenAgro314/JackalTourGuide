@@ -586,6 +586,9 @@ void ActorPlugin::NetForceUpdate(){
 
 
 	auto actor = this->ActorAvoidance();
+	if (actor.Length() > 1e-6){
+		this->SelectRandomTarget();
+	}
 	//auto boundary = this->WithinBounds();
 	auto target = this->TargetForce();
 	//std::printf("actor (%f, %f, %f) \n", actor.X(), actor.Y(), actor.Z());

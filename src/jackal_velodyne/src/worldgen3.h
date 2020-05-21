@@ -348,7 +348,7 @@ struct Section{
 			ignition::math::Vector2d point;
 			if (random_point(polygon,table_points, point)){
 				// currently: libboids_plugin.so or librandomwalk_plugin.so
-				people.push_back(Person(point, polygon, ignition::math::Rand::DblNormal(0.9,0.15), "libboids_plugin.so"));
+				people.push_back(Person(point, polygon, ignition::math::Rand::DblNormal(0.9,0.15), "librandomwalk_plugin.so"));
 			}
 		}
 	}
@@ -375,7 +375,7 @@ void write_point(double x, double y, double angle, ofstream& out, bool target = 
 void write_randomwalk_plugin(Person person, ofstream& out){
 	 // write the bounds and starting point 
     
-    out << "\t\n<plugin name=\"trajectory\" filename=\"libactor_plugin.so\">\n";
+    out << "\t\n<plugin name=\"trajectory\" filename=\"librandomwalk_plugin.so\">\n";
     
     
     for (int i =0; i < (int) person.polygon.size(); i++){
