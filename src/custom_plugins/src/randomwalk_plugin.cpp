@@ -41,7 +41,7 @@ class servicesim::ActorPluginPrivate
   /// \brief Velocity of the actor
   public: double max_speed{2};
   
-  public: ignition::math::Vector3d velocity = ignition::math::Vector3d(1,0,0);
+  public: ignition::math::Vector3d velocity = ignition::math::Vector3d(0,0,0);
 
   /// \brief List of connections such as WorldUpdateBegin
   public: std::vector<event::ConnectionPtr> connections;
@@ -98,10 +98,11 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   if (_sdf->HasElement("update_frequency"))
     this->dataPtr->updateFreq = _sdf->Get<double>("update_frequency");
 
+
   // Read in the velocity
   if (_sdf->HasElement("max_speed"))
     this->dataPtr->max_speed= _sdf->Get<double>("max_speed");
-   
+
 
  
 	auto pointElem = _sdf->GetElement("point");
@@ -114,19 +115,22 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 	   ignition::math::Pose3d holder;
 	   if (_sdf->HasElement("pose")){
 		    holder = _sdf->GetElement("pose")->Get<ignition::math::Pose3d>();
+			this->dataPtr->actor->SetWorldPose(holder, false, false);
+			this->dataPtr->curr_target = holder.Pos();
+			this->dataPtr->curr_target.Z() = 0;
+			this->dataPtr->prev_target = this->dataPtr->curr_target;
 	   } 
-		this->dataPtr->curr_target = holder.Pos();
-		this->dataPtr->prev_target = holder.Pos();
+		
   if (_sdf->HasElement("follower")){
 	  this->dataPtr->follower = _sdf->Get<bool>("follower");
   } else{
 	  this->dataPtr->follower = false;
   }
-  
+  /*
 	if (_sdf->HasElement("velocity")){
 		this->dataPtr->velocity = _sdf->GetElement("velocity")->Get<ignition::math::Vector3d>();
 	} 
-  
+  */
 
   // Read in the target mradius
   if (_sdf->HasElement("target_radius"))
@@ -205,6 +209,53 @@ ignition::math::Vector3d ActorPlugin::WithinBounds(){
 	
 }
 
+
+ignition::math::Vector3d ActorPlugin::ActorAvoidance(){
+	ignition::math::Pose3d actorPose = this->dataPtr->actor->WorldPose();
+	ignition::math::Vector3d steer = ignition::math::Vector3d(0,0,0);
+	auto world = this->dataPtr->actor->GetWorld();
+	int count = 0;
+	
+	for (unsigned int i = 0; i < world->ModelCount(); ++i) {
+		// iterate over all models. Skip if the model is itself or if it needs to be ignored 
+		
+		auto model = world->ModelByIndex(i);
+		auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
+		
+		if (!act) {
+			continue;
+		} if (act && act == this->dataPtr->actor){
+			continue;
+		}
+		
+		ignition::math::Vector3d modelPos = model->WorldPose().Pos();
+		modelPos.Z() = 0;
+		auto actorPos = actorPose.Pos();
+		actorPos.Z() = 0;
+		ignition::math::Vector3d rad = actorPos-modelPos;
+		double dist = rad.Length();
+		
+		if (dist<this->dataPtr->obstacleMargin){
+			rad.Normalize();	
+			rad/=dist;
+			steer += rad;
+			count++;
+		}
+	}
+	if (steer.Length() >0){
+		steer.Normalize();
+		steer*=this->dataPtr->max_speed;
+		steer-=this->dataPtr->velocity;
+		if (steer.Length()>this->dataPtr->max_force){
+			steer.Normalize();
+			steer*=this->dataPtr->max_force;
+		}
+	}
+	
+	return steer;
+
+}
+
 ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 	ignition::math::Pose3d actorPose = this->dataPtr->actor->WorldPose();
 	ignition::math::Vector3d boundary_force = ignition::math::Vector3d(0,0,0);
@@ -216,10 +267,12 @@ ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 		
 		auto model = world->ModelByIndex(i);
 		auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
-		
-		if (act || (model->GetName() == "myhal" || model->GetName() == "ground_plane")) {
+
+		if (act || (model->GetName() == "myhal") || (model->GetName() == "ground_plane")){ 
 			continue;
 		}
+
+		
 
 		/*
 		1. obtain bouding box of model
@@ -235,8 +288,7 @@ ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 		modelPos.Z() = 0;
 		auto actorPos = actorPose.Pos(); // position of actor
 		actorPos.Z() = 0;
-		//ignition::math::Vector3d rad = actorPos-modelPos;
-		//double dist = rad.Length();
+	
 		
 		ignition::math::Box box = model->BoundingBox();
 		ignition::math::Vector3d min_corner = box.Min();
@@ -307,9 +359,20 @@ ignition::math::Vector3d ActorPlugin::TargetForce(){
 	return a steering force towards the desired target
 	*/
 	ignition::math::Vector3d steer = ignition::math::Vector3d(0,0,0);
-	ignition::math::Pose3d actorPose = this->dataPtr->actor->WorldPose();
+	ignition::math::Vector3d actorPos = ignition::math::Vector3d(this->dataPtr->actor->WorldPose().Pos().X(), this->dataPtr->actor->WorldPose().Pos().Y(), 0);
 
+	ignition::math::Vector3d desired = this->dataPtr->curr_target - actorPos;
+	desired.Normalize();
+	desired*=this->dataPtr->max_speed;
 
+	steer = desired - this->dataPtr->velocity;
+
+	if (steer.Length() > this->dataPtr->max_force){
+		steer.Normalize();
+		steer*=this->dataPtr->max_force;
+	}
+
+	
 	return steer;
 }
 
@@ -324,45 +387,149 @@ void ActorPlugin::SelectRandomTarget(){
 	choose a random point along the resultant ray as the new target
 	*/
 
-	bool target_found = false;
+	ignition::math::Vector3d actorPos = actorPose.Pos();
+	actorPos.Z() = 0;
 	ignition::math::Vector3d new_target = this->dataPtr->curr_target;
+	bool target_found = false;
+
+	auto world = this->dataPtr->actor->GetWorld();
 
 	while (!target_found){
 		//chose a random new direction (rotated from current direction) to cast the ray:
 		//ignition::math::Vector3d ray_dir = ignition::math::Vector3d(ignition::math::Rand::DblUniform())
 		ignition::math::Vector3d dir = this->dataPtr->velocity;
+		if (dir.Length() < 1e-6){
+			dir = ignition::math::Vector3d(ignition::math::Rand::DblUniform(-1, 1),ignition::math::Rand::DblUniform(-1, 1),0);
+		}
 		dir.Normalize();
-		dir = ignition::math::Vector3d(1,0,0);
-		ignition::math::Quaterniond rotation =  ignition::math::Quaterniond::EulerToQuaternion(0,0,ignition::math::Rand::DblUniform(-2, 2)); 
+		ignition::math::Quaterniond rotation =  ignition::math::Quaterniond::EulerToQuaternion(0,0,ignition::math::Rand::DblUniform(-3, 3)); 
 		dir = rotation.RotateVector(dir);
-		//printf("(%f, %f, %f)\n", dir.X(), dir.Y(), dir.Z());
+		//make direction vector large and add it to current position to obtain ray line 
+		dir*=10000;
+		ignition::math::Line3d ray = ignition::math::Line3d(actorPos.X(), actorPos.Y(), actorPos.X() + dir.X(), actorPos.Y() + dir.Y());
+
+		ignition::math::Vector3d closest_intersection;
+		double min_dist = 100000;
+
+		bool flag = false;
+
+		//iterate over all boundaries:
+		for (int i =0; i<(int) this->dataPtr->polygon.size(); i+=2){
+			ignition::math::Line3d boundary_line = ignition::math::Line3d(this->dataPtr->polygon[i].X(), this->dataPtr->polygon[i].Y(), this->dataPtr->polygon[i+1].X(), this->dataPtr->polygon[i+1].Y());
+			
+			
+			ignition::math::Vector3d test_intersection;
+
+			if (ray.Intersect(boundary_line, test_intersection)){ //if the ray intersects the boundary
+				//std::printf("intersection: (%f, %f, %f)\n", test_intersection.X(), test_intersection.Y(), test_intersection.Z());
+				double dist_to_int = (test_intersection-actorPos).Length();
+				if (dist_to_int < min_dist){
+					min_dist = dist_to_int;
+					closest_intersection = test_intersection;
+				}
+
+			}
+		}
+
+
+		//iterate over all objects
+
+		for (unsigned int i = 0; i < world->ModelCount(); ++i) {
+			// iterate over all models. Skip if the model is itself or if it needs to be ignored 
+			
+			auto model = world->ModelByIndex(i);
+			auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
+			
+			if (act || (model->GetName() == "myhal" || model->GetName() == "ground_plane")) {
+				continue;
+			}
+
+			/*
+			1. obtain bouding box of model
+			2. check ray intersection with all edge lines 
+			3. store the closest intersection
+			*/
+		
+			
+			ignition::math::Vector3d modelPos = model->WorldPose().Pos(); // position of model
+			modelPos.Z() = 0;
+			
+			
+			ignition::math::Box box = model->BoundingBox();
+			ignition::math::Vector3d min_corner = box.Min();
+			ignition::math::Vector3d max_corner = box.Max();
+			min_corner.Z() = 0;
+			max_corner.Z() = 0;
+
+
+			//TODO: ensure that these methods work using Line3d
+			ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
+			ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
+			ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
+			ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
+			
+			std::vector<ignition::math::Line3d> edges = {left, right, top, bot};
+
+			//iterate over all edges and test for intersection
+			for (ignition::math::Line3d edge: edges){
+				ignition::math::Vector3d test_intersection;
+
+				if (ray.Intersect(edge, test_intersection)){ //if the ray intersects the boundary
+					double dist_to_int = (test_intersection-actorPos).Length();
+					if (dist_to_int < min_dist){
+						min_dist = dist_to_int;
+						closest_intersection = test_intersection;
+					}
+
+				}
+				
+			
+			}
+		
+		}
+
+		//now we have our intersection point 
+
+		ignition::math::Vector3d final_ray = closest_intersection - actorPos;
+		
+		
+		//randomly scale the ray 
+
+		auto v_to_add = final_ray*ignition::math::Rand::DblUniform(0.3,0.9);
+
+
+		//TODO: fix this "too close check" with a projection
+		if ((final_ray-v_to_add).Length() < (this->dataPtr->obstacleMargin)){ // if the target is too close
+			v_to_add.Normalize();
+			auto small_subtraction = (v_to_add*this->dataPtr->obstacleMargin)*2;
+			v_to_add = final_ray - small_subtraction;
+			if (small_subtraction.Length() > final_ray.Length()){
+				v_to_add*=0;
+			}
+		}
+
+		//add the vector to our current position to obtain the new target pos
+		
+		new_target = v_to_add + actorPos;
+		target_found = true;
 	}
 
-
+	//std::printf("(%f, %f, %f)\n", new_target.X(), new_target.Y(), new_target.Z());
 	this->dataPtr->prev_target = this->dataPtr->curr_target;
 	this->dataPtr->curr_target = new_target;
 }
 
 void ActorPlugin::NetForceUpdate(){
 
-	auto obstacle= this->ObstacleAvoidance();
-	auto boundary = this->WithinBounds();
+
+	auto actor = this->ActorAvoidance();
+	//auto boundary = this->WithinBounds();
 	auto target = this->TargetForce();
-	
-	auto dir = this->dataPtr->velocity;
-	dir.Normalize();
+	//std::printf("actor (%f, %f, %f) \n", actor.X(), actor.Y(), actor.Z());
+	//std::printf("target (%f, %f, %f) \n", target.X(), target.Y(), target.Z()); 
 
-	this->dataPtr->F_net = boundary
-	+ obstacle
-	+ target;
+	this->dataPtr->F_net = actor + target;// + boundary;
 
-
-	//add a "walking" force so the boids don't slow down too much
-	/*
-	if (this->dataPtr->velocity.Length() < (this->dataPtr->max_speed)*0.7){
-		this->dataPtr->F_net+=dir*this->dataPtr->max_force*(((0.7*this->dataPtr->max_speed)-this->dataPtr->velocity.Length())/(0.7*this->dataPtr->max_speed));
-	}
-	*/
 	
 }
 
@@ -380,7 +547,9 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 	ignition::math::Pose3d actorPose = this->dataPtr->actor->WorldPose();
 
 	// retarget iff we are close to the current target or a certain number of second have elapsed since last retarget
-	if ((actorPose.Pos() - this->dataPtr->curr_target).Length() < this->dataPtr->targetRadius || (this->dataPtr->last_target_time - _info.simTime).Double() > 10){
+	auto pos = actorPose.Pos();
+	pos.Z() = 0;
+	if ((pos - this->dataPtr->curr_target).Length() < this->dataPtr->targetRadius || (_info.simTime- this->dataPtr->last_target_time).Double() > 10){
 		this->SelectRandomTarget();
 		this->dataPtr->last_target_time = _info.simTime;
 	}

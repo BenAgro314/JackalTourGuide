@@ -101,8 +101,8 @@
 
   <actor name="TEST_GUY2">
 	<pose>
-		0
-		0
+		4.5
+		4.5
 		1
 		0
 		0
@@ -151,22 +151,50 @@
 5
 5
 </point>
+
+<point>
+-4
+-4
+</point>
+<point>
+-4
+4
+</point>
+<point>
+-4
+-4
+</point>
+<point>
+4
+-4
+</point>
+<point>
+-4
+4
+</point>
+<point>
+4
+</point>
+<point>
+4
+-4
+</point>
+<point>
+4
+4
+</point>
+
 	<pose>
-		0
-		0
+		4.5
+		4.5
 		1
 		0
 		0
 		3.1415
 	</pose>
 
-<velocity>
-0.998349
--1.1427
-0
-</velocity>
 
-<max_speed>1.92786</max_speed>
+<max_speed>1.2</max_speed>
 <obstacle_margin>1</obstacle_margin>
 </plugin>
 </actor>
@@ -185,59 +213,7 @@
       </link>
 </model-->
 
-     <!--actor name="test_guy2">
-	<pose>
-		0
-		0
-    0.9
-		0
-		0
-		0
-	</pose>
 
-
-	<skin>
-	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
-  <scale>0.9 1 1</scale>
-	</skin>
-	<animation name="animation"> 
-		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-  
-		<interpolate_x>true</interpolate_x>
-	</animation>
-	
-	<plugin name="rand_walk" filename="libactor_plugin.so">
-		<point>
-		-5
-		-5
-		</point>
-		<point>
-		-5
-		5
-		</point>
-		<point>
-		5
-		5
-		</point>
-		<point>
-		5
-		-5
-		</point>
-	
-		
-		<pose>
-			0
-			0
-			0.9
-			0
-			0
-			0
-		</pose>
-
-		<velocity>0.6</velocity>
-		<obstacle_margin>0.5</obstacle_margin>
-	</plugin>
-</actor-->
  
   </world>
 </sdf>

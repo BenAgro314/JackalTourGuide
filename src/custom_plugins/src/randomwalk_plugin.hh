@@ -32,6 +32,8 @@ namespace servicesim
 
 	private: ignition::math::Vector3d ObstacleAvoidance();
 
+	private: ignition::math::Vector3d ActorAvoidance();
+
 	private: ignition::math::Vector3d TargetForce();
 
 	private: void SelectRandomTarget();

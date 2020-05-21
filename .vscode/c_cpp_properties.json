@@ -3,7 +3,10 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/usr/include/ignition/math4",
+                "/usr/include/gazebo-9",
+                "/usr/include/sdformat-6.2"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

@@ -349,8 +349,8 @@ struct Section{
 		for (int i =0; i<num_people; i++){
 			ignition::math::Vector2d point;
 			if (random_point(polygon,table_points, point)){
-				// currently: libboids_plugin.so or libactor_plugin.so
-				people.push_back(Person(point, polygon, ignition::math::Rand::DblNormal(0.9,0.15), "libactor_plugin.so"));
+				// currently: libboids_plugin.so or librandomwalk_plugin.so
+				people.push_back(Person(point, polygon, ignition::math::Rand::DblNormal(0.9,0.15), "librandomwalk_plugin.so"));
 			}
 		}
 	}
@@ -373,11 +373,11 @@ void write_point(double x, double y, double angle, ofstream& out, bool target = 
 		out << "\t</target>\n\n";
 	}
 }
-
-void write_actor_plugin(Person person, ofstream& out){
+//TODO: FIX THIS PLUGIN SYSTEM
+void write_randomwalk_plugin(Person person, ofstream& out){
 	 // write the bounds and starting point 
     
-    out << "\t\n<plugin name=\"trajectory\" filename=\"libactor_plugin.so\">\n";
+    out << "\t\n<plugin name=\"trajectory\" filename=\"librandomwalk_plugin.so\">\n";
     
     
     for (int i =0; i < (int) person.polygon.size(); i++){
@@ -392,7 +392,7 @@ void write_actor_plugin(Person person, ofstream& out){
 	write_point(person.start.X(), person.start.Y(), 0, out, false);
     
     
-    out << "\n<velocity>" << person.speed << "</velocity>\n";
+    out << "\n<max_speed>" << person.speed << "</max_speed>\n";
 	out << "<obstacle_margin>1</obstacle_margin>\n";
 	
     
@@ -450,8 +450,8 @@ void write_person(Person person, ofstream& out){
     
     // write the bounds and starting point 
     
-    if (person.plugin_name.compare("libactor_plugin.so") == 0){
-		write_actor_plugin(person, out);
+    if (person.plugin_name.compare("librandomwalk_plugin.so") == 0){
+		write_randomwalk_plugin(person, out);
 	} else if (person.plugin_name.compare("libboids_plugin.so") == 0){
 		write_boid_plugin(person, out);
 	}

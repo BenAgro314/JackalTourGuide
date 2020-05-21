@@ -1,5 +1,5 @@
 #include "worldgen3.h"
-#define DEBUG 2
+#define DEBUG 1
 
 using namespace std;
 
