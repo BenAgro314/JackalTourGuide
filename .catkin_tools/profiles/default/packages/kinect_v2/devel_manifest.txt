@@ -1,0 +1,5 @@
+kinect_v2
+/home/default/catkin_ws/devel/.private/kinect_v2/cmake.lock /home/default/catkin_ws/devel/./cmake.lock
+/home/default/catkin_ws/devel/.private/kinect_v2/share/kinect_v2/cmake/kinect_v2Config-version.cmake /home/default/catkin_ws/devel/share/kinect_v2/cmake/kinect_v2Config-version.cmake
+/home/default/catkin_ws/devel/.private/kinect_v2/share/kinect_v2/cmake/kinect_v2Config.cmake /home/default/catkin_ws/devel/share/kinect_v2/cmake/kinect_v2Config.cmake
+/home/default/catkin_ws/devel/.private/kinect_v2/lib/pkgconfig/kinect_v2.pc /home/default/catkin_ws/devel/lib/pkgconfig/kinect_v2.pc

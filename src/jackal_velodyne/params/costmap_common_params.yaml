@@ -1,0 +1,35 @@
+map_type: costmap
+origin_z: 0.0
+z_resolution: 1
+z_voxels: 2
+
+obstacle_range: 10
+raytrace_range: 10
+
+publish_voxel_map: false
+transform_tolerance: 0.5
+meter_scoring: true
+
+footprint: [[-0.21, -0.165], [-0.21, 0.165], [0.21, 0.165], [0.21, -0.165]]
+footprint_padding: 0.1
+
+plugins:
+- {name: obstacles_layer, type: "costmap_2d::ObstacleLayer"}
+#- {name: static_layer, type: "costmap_2d::StaticLayer"}
+- {name: inflater_layer, type: "costmap_2d::InflationLayer"}
+- {name: social_prox_layer, type: "social_navigation_layers::ProxemicLayer"}
+#- {name: social_pass_layer, type: "social_navigation_layers::PassingLayer"}
+
+obstacles_layer:
+  observation_sources: point_cloud_sensor laser_scan 
+  laser_scan: {sensor_frame: support_link3, data_type: LaserScan, topic: points_to_laser, marking: true, clearing: true, min_obstacle_height: -2.0, max_obstacle_height: 2.0, obstacle_range: 10, raytrace_range: 10}
+  point_cloud_sensor: {sensor_frame: support_link3, data_type: PointCloud2, topic: velodyne_points, marking: true, clearing: true, obstacle_range: 10, raytrace_range: 10}
+  depth_sensor: {sensor_frame: support_link3, data_type: PointCloud2, topic: kinect_V2/depth_registered/points, marking: true, clearing: true, obstacle_range: 5, raytrace_range: 5}
+
+inflater_layer:
+ inflation_radius: 0.1
+
+#social_prox_layer:
+# enabled = true
+ 
+  
