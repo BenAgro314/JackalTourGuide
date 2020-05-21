@@ -1,5 +1,0 @@
-custom_plugins
-/home/default/catkin_ws/devel/.private/custom_plugins/cmake.lock /home/default/catkin_ws/devel/./cmake.lock
-/home/default/catkin_ws/devel/.private/custom_plugins/share/custom_plugins/cmake/custom_pluginsConfig-version.cmake /home/default/catkin_ws/devel/share/custom_plugins/cmake/custom_pluginsConfig-version.cmake
-/home/default/catkin_ws/devel/.private/custom_plugins/share/custom_plugins/cmake/custom_pluginsConfig.cmake /home/default/catkin_ws/devel/share/custom_plugins/cmake/custom_pluginsConfig.cmake
-/home/default/catkin_ws/devel/.private/custom_plugins/lib/pkgconfig/custom_plugins.pc /home/default/catkin_ws/devel/lib/pkgconfig/custom_plugins.pc

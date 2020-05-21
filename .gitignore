@@ -3,4 +3,4 @@
 /data
 /devel
 .vscode
-.catkin_tools
+/.catkin_tools
