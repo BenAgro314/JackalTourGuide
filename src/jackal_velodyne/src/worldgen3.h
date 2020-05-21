@@ -219,8 +219,6 @@ bool random_point(vector <ignition::math::Vector2d> polygon, vector_list table_p
 				ignition::math::Line2d seg = ignition::math::Line2d(polygon[i], polygon[i+1]);
 				ignition::math::Vector2d intersection;
 
-				///TODO: fix seg fault and come back to generalize this 
-				
 				if (intersect(h_line, seg, intersection)){
 					//printf("int test: (%f, %f)\n", intersection.X(), intersection.Y());
 					intersections.push_back(intersection);
@@ -350,7 +348,7 @@ struct Section{
 			ignition::math::Vector2d point;
 			if (random_point(polygon,table_points, point)){
 				// currently: libboids_plugin.so or librandomwalk_plugin.so
-				people.push_back(Person(point, polygon, ignition::math::Rand::DblNormal(0.9,0.15), "librandomwalk_plugin.so"));
+				people.push_back(Person(point, polygon, ignition::math::Rand::DblNormal(0.9,0.15), "libboids_plugin.so"));
 			}
 		}
 	}
@@ -377,7 +375,7 @@ void write_point(double x, double y, double angle, ofstream& out, bool target = 
 void write_randomwalk_plugin(Person person, ofstream& out){
 	 // write the bounds and starting point 
     
-    out << "\t\n<plugin name=\"trajectory\" filename=\"librandomwalk_plugin.so\">\n";
+    out << "\t\n<plugin name=\"trajectory\" filename=\"libactor_plugin.so\">\n";
     
     
     for (int i =0; i < (int) person.polygon.size(); i++){
@@ -419,7 +417,7 @@ void write_boid_plugin(Person person, ofstream& out){
     out << 0 << endl;
     out << "</velocity>" << endl;
     out << "\n<max_speed>" << person.speed*2 << "</max_speed>\n";
-	out << "<obstacle_margin>1</obstacle_margin>\n";
+	out << "<obstacle_margin>0.5</obstacle_margin>\n";
 	
     
     out << "</plugin>\n";

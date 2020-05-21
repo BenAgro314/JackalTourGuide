@@ -94,15 +94,19 @@
  
     
     <!-- insert stuff below -->
-    
+    <include>
+	  <name>myhal</name>
+	  <pose>0 0 0 0 0 0</pose>
+	  <uri>model://Myhal_5th_floor</uri>
+	</include>
     
 
 
 
   <actor name="TEST_GUY2">
 	<pose>
-		4.5
-		4.5
+		0
+		0
 		1
 		0
 		0
@@ -118,75 +122,44 @@
 		<interpolate_x>true</interpolate_x>
 	</animation>
 	
-<plugin name="trajectory" filename="librandomwalk_plugin.so">
+<plugin name="trajectory" filename="libboids_plugin.so">
 <point>
--5
--5
+-10
+-10
 </point>
 <point>
--5
-5
+-10
+10
 </point>
 <point>
--5
--5
+-10
+-10
 </point>
 <point>
-5
--5
+10
+-10
 </point>
 <point>
--5
-5
+-10
+10
 </point>
 <point>
-5
-5
+10
+10
 </point>
 <point>
-5
--5
+10
+-10
 </point>
 <point>
-5
-5
+10
+10
 </point>
 
-<point>
--4
--4
-</point>
-<point>
--4
-4
-</point>
-<point>
--4
--4
-</point>
-<point>
-4
--4
-</point>
-<point>
--4
-4
-</point>
-<point>
-4
-</point>
-<point>
-4
--4
-</point>
-<point>
-4
-4
-</point>
 
 	<pose>
-		4.5
-		4.5
+		0
+		0
 		1
 		0
 		0
@@ -195,7 +168,7 @@
 
 
 <max_speed>1.2</max_speed>
-<obstacle_margin>1</obstacle_margin>
+<obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 

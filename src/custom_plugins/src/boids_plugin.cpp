@@ -88,6 +88,8 @@ class servicesim::ActorPluginPrivate
   public: double cohesion_factor = 0.01;
   public: double alignment_factor = 0.1;
   public: double aversion_factor = 1;
+
+  public: gazebo::physics::Link_V building_links;
 };
 
 /////////////////////////////////////////////////
@@ -204,12 +206,19 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 		
 		auto model = world->ModelByIndex(i);
 		auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
+
+		if (model->GetName() == "myhal" || model->GetName() == "test_cell2"){ //add any desired building name
+			//std::cout << "hi" << std::endl;
+			this->dataPtr->building_links = model->GetLinks();
+		}
 		
 		if (!act) {
 			continue;
 		} if (act && act == this->dataPtr->actor){
 			continue;
 		}
+
+		
 		
 		ignition::math::Vector3d modelPos = model->WorldPose().Pos();
 		modelPos.Z() = 0;
@@ -307,7 +316,7 @@ ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 		auto model = world->ModelByIndex(i);
 		auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
 		
-		if (act || (model->GetName() == "myhal" || model->GetName() == "ground_plane")) {
+		if (act || (model->GetName() == "ground_plane")) {
 			continue;
 		}
 
@@ -319,71 +328,148 @@ ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 
 		TODO: for now we will assume that the bounding box is oriented vertically or horizontally 
 		*/
+
+		//create vector of models links:
+
 	
+	
+		if (model->GetName() == "myhal" || model->GetName() == "test_cell2"){ //add building names here TODO: macro for building names 
+			//std::cout << "in here\n";
+			//TODO: find ways of speeding this up
+
+			auto actorPos = actorPose.Pos(); // position of actor
+			actorPos.Z() = 0;
+
+			for (auto link: this->dataPtr->building_links){
+				//std::cout << "in here\n";
+				
+				ignition::math::Vector3d modelPos = link->WorldPose().Pos(); // position of model
+				modelPos.Z() = 0;
 		
-		ignition::math::Vector3d modelPos = model->WorldPose().Pos(); // position of model
-		modelPos.Z() = 0;
-		auto actorPos = actorPose.Pos(); // position of actor
-		actorPos.Z() = 0;
-		//ignition::math::Vector3d rad = actorPos-modelPos;
-		//double dist = rad.Length();
-		
-		ignition::math::Box box = model->BoundingBox();
-		ignition::math::Vector3d min_corner = box.Min();
-		ignition::math::Vector3d max_corner = box.Max();
-		min_corner.Z() = 0;
-		max_corner.Z() = 0;
-
-
-		//TODO: ensure that these methods work using Line3d
-		ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
-		ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
-		ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
-		ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
-		
-		std::vector<ignition::math::Line3d> edges = {left, right, top, bot};
-
-		ignition::math::Vector3d min_normal;
-		double min_mag = 1000000;
-		bool found = false;
-
-		//printf("pos: (%f, %f, %f)\t", actorPose.Pos().X(), actorPose.Pos().Y(), actorPose.Pos().Z());
-
-		for (ignition::math::Line3d edge: edges){
-
-			//printf("edge: (%f,%f)->(%f,%f)\t", edge[0].X(), edge[0].Y(), edge[1].X(), edge[1].Y());
-
-			ignition::math::Vector3d edge_vector = edge.Direction(); // vector in direction of edge 
-			
-			ignition::math::Vector3d pos_vector = ignition::math::Vector3d(actorPose.Pos().X()-edge[0].X(), actorPose.Pos().Y()-edge[0].Y(), 0);// vector from edge corner to actor pos
-			
-			ignition::math::Vector3d proj = ((pos_vector.Dot(edge_vector))/(edge_vector.Dot(edge_vector)))*edge_vector; // project pos_vector onto edge_vector
-			/*
-			std::printf("pos_v (%f, %f, %f)\t", pos_vector.X(), pos_vector.Y(), pos_vector.Z());
-			std::printf("edge_v (%f, %f, %f)\t", edge_vector.X(), edge_vector.Y(), edge_vector.Z());
-			std::printf("proj_v (%f, %f, %f)\n", proj.X(),proj.Y(), proj.Z());
-			*/
-			//check if the projected point is within the edge
-			if (edge.Within(proj+edge[0])){
-				//compute normal
-				ignition::math::Vector3d normal = pos_vector-proj;
-				//std::printf("in here\n");
-				if (normal.Length() < min_mag){
-					min_normal = normal;
-					min_mag = normal.Length();
-					found = true;
+				if ((actorPos-modelPos).Length() > 5){ //this should eleminate many links from consideration
+					continue;
 				}
 
+				//ignition::math::Vector3d rad = actorPos-modelPos;
+				//double dist = rad.Length();
+				
+				ignition::math::Box box = link->BoundingBox();
+				ignition::math::Vector3d min_corner = box.Min();
+				ignition::math::Vector3d max_corner = box.Max();
+				min_corner.Z() = 0;
+				max_corner.Z() = 0;
+
+
+				//TODO: ensure that these methods work using Line3d
+				ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
+				ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
+				ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
+				ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
+				
+				std::vector<ignition::math::Line3d> edges = {left, right, top, bot};
+
+				ignition::math::Vector3d min_normal;
+				double min_mag = 1000000;
+				bool found = false;
+
+				//printf("pos: (%f, %f, %f)\t", actorPose.Pos().X(), actorPose.Pos().Y(), actorPose.Pos().Z());
+
+				for (ignition::math::Line3d edge: edges){
+
+					//printf("edge: (%f,%f)->(%f,%f)\t", edge[0].X(), edge[0].Y(), edge[1].X(), edge[1].Y());
+
+					ignition::math::Vector3d edge_vector = edge.Direction(); // vector in direction of edge 
+					
+					ignition::math::Vector3d pos_vector = ignition::math::Vector3d(actorPose.Pos().X()-edge[0].X(), actorPose.Pos().Y()-edge[0].Y(), 0);// vector from edge corner to actor pos
+					
+					ignition::math::Vector3d proj = ((pos_vector.Dot(edge_vector))/(edge_vector.Dot(edge_vector)))*edge_vector; // project pos_vector onto edge_vector
+			
+					//check if the projected point is within the edge
+					if (edge.Within(proj+edge[0])){
+						//compute normal
+						ignition::math::Vector3d normal = pos_vector-proj;
+						//std::printf("in here\n");
+						if (normal.Length() < min_mag){
+							min_normal = normal;
+							min_mag = normal.Length();
+							found = true;
+						}
+
+					}
+				
+				}
+				
+				
+				// if conditions are met for this edge (and normal): boundary_force += normal/(dist*dist);
+				double dist = min_normal.Length();
+				if (found && dist < this->dataPtr->obstacleMargin){
+					min_normal.Normalize();
+					boundary_force += min_normal/(dist*dist);
+				}
 			}
-		
-		}
-		
-		
-		// if conditions are met for this edge (and normal): boundary_force += normal/(dist*dist);
-		double dist = min_normal.Length();
-		if (found && dist < this->dataPtr->obstacleMargin){
-			min_normal.Normalize();
-			boundary_force += min_normal/(dist*dist);
+		} else{
+				ignition::math::Vector3d modelPos = model->WorldPose().Pos(); // position of model
+				modelPos.Z() = 0;
+				auto actorPos = actorPose.Pos(); // position of actor
+				actorPos.Z() = 0;
+				//ignition::math::Vector3d rad = actorPos-modelPos;
+				//double dist = rad.Length();
+				
+				ignition::math::Box box = model->BoundingBox();
+				ignition::math::Vector3d min_corner = box.Min();
+				ignition::math::Vector3d max_corner = box.Max();
+				min_corner.Z() = 0;
+				max_corner.Z() = 0;
+
+
+				//TODO: ensure that these methods work using Line3d
+				ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
+				ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
+				ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
+				ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
+				
+				std::vector<ignition::math::Line3d> edges = {left, right, top, bot};
+
+				ignition::math::Vector3d min_normal;
+				double min_mag = 1000000;
+				bool found = false;
+
+				//printf("pos: (%f, %f, %f)\t", actorPose.Pos().X(), actorPose.Pos().Y(), actorPose.Pos().Z());
+
+				for (ignition::math::Line3d edge: edges){
+
+					//printf("edge: (%f,%f)->(%f,%f)\t", edge[0].X(), edge[0].Y(), edge[1].X(), edge[1].Y());
+
+					ignition::math::Vector3d edge_vector = edge.Direction(); // vector in direction of edge 
+					
+					ignition::math::Vector3d pos_vector = ignition::math::Vector3d(actorPose.Pos().X()-edge[0].X(), actorPose.Pos().Y()-edge[0].Y(), 0);// vector from edge corner to actor pos
+					
+					ignition::math::Vector3d proj = ((pos_vector.Dot(edge_vector))/(edge_vector.Dot(edge_vector)))*edge_vector; // project pos_vector onto edge_vector
+			
+					//check if the projected point is within the edge
+					if (edge.Within(proj+edge[0])){
+						//compute normal
+						ignition::math::Vector3d normal = pos_vector-proj;
+						//std::printf("in here\n");
+						if (normal.Length() < min_mag){
+							min_normal = normal;
+							min_mag = normal.Length();
+							found = true;
+						}
+
+					}
+				
+				}
+				
+				
+				// if conditions are met for this edge (and normal): boundary_force += normal/(dist*dist);
+				double dist = min_normal.Length();
+				if (found && dist < this->dataPtr->obstacleMargin){
+					min_normal.Normalize();
+					boundary_force += min_normal/(dist*dist);
+				}
+			
+
 		}
 
 	}
@@ -520,7 +606,7 @@ void ActorPlugin::NetForceUpdate(){
 	//this->Alignement();
 	
 	auto obstacle= this->ObstacleAvoidance();
-	auto boundary = this->WithinBounds();
+	//auto boundary = this->WithinBounds();
 	auto boid = this->BoidAvoidance();
 	auto cohesion = this->Cohesion();
 	auto alignment = this->Alignment();
@@ -529,8 +615,7 @@ void ActorPlugin::NetForceUpdate(){
 	auto dir = this->dataPtr->velocity;
 	dir.Normalize();
 
-	this->dataPtr->F_net = boundary
-	+ obstacle
+	this->dataPtr->F_net = obstacle
 	+(this->dataPtr->aversion_factor*boid)
 	+(this->dataPtr->cohesion_factor*cohesion)
 	+(this->dataPtr->alignment_factor*alignment);
