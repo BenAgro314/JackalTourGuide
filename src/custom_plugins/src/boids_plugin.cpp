@@ -346,7 +346,7 @@ ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 				ignition::math::Vector3d modelPos = link->WorldPose().Pos(); // position of model
 				modelPos.Z() = 0;
 		
-				if ((actorPos-modelPos).Length() > 5){ //this should eleminate many links from consideration
+				if ((actorPos-modelPos).Length() > 5 || modelPos.Z() > 1.5){ //this should eleminate many links from consideration
 					continue;
 				}
 

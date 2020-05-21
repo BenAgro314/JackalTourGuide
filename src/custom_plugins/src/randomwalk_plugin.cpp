@@ -78,6 +78,8 @@ class servicesim::ActorPluginPrivate
   public: bool follower = false;
   
   public: double dt;
+
+  public: gazebo::physics::Link_V building_links;
 };
 
 /////////////////////////////////////////////////
@@ -177,6 +179,20 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
     this->dataPtr->actor->SetCustomTrajectory(trajectoryInfo);
   }
+
+	auto world = this->dataPtr->actor->GetWorld();
+   	for (unsigned int i = 0; i < world->ModelCount(); ++i) {
+		// iterate over all models. Skip if the model is itself or if it needs to be ignored 
+		
+		auto model = world->ModelByIndex(i);
+		auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
+
+		if (model->GetName() == "myhal" || model->GetName() == "test_cell2"){ //add any desired building name
+			//std::cout << "hi" << std::endl;
+			this->dataPtr->building_links = model->GetLinks();
+		}
+   }
+ 
   
 }
 
@@ -414,6 +430,7 @@ void ActorPlugin::SelectRandomTarget(){
 		bool flag = false;
 
 		//iterate over all boundaries:
+		/*
 		for (int i =0; i<(int) this->dataPtr->polygon.size(); i+=2){
 			ignition::math::Line3d boundary_line = ignition::math::Line3d(this->dataPtr->polygon[i].X(), this->dataPtr->polygon[i].Y(), this->dataPtr->polygon[i+1].X(), this->dataPtr->polygon[i+1].Y());
 			
@@ -430,7 +447,7 @@ void ActorPlugin::SelectRandomTarget(){
 
 			}
 		}
-
+		*/
 
 		//iterate over all objects
 
@@ -440,7 +457,7 @@ void ActorPlugin::SelectRandomTarget(){
 			auto model = world->ModelByIndex(i);
 			auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
 			
-			if (act || (model->GetName() == "myhal" || model->GetName() == "ground_plane")) {
+			if (act) {
 				continue;
 			}
 
@@ -451,39 +468,85 @@ void ActorPlugin::SelectRandomTarget(){
 			*/
 		
 			
-			ignition::math::Vector3d modelPos = model->WorldPose().Pos(); // position of model
-			modelPos.Z() = 0;
 			
 			
-			ignition::math::Box box = model->BoundingBox();
-			ignition::math::Vector3d min_corner = box.Min();
-			ignition::math::Vector3d max_corner = box.Max();
-			min_corner.Z() = 0;
-			max_corner.Z() = 0;
+			if (model->GetName() == "myhal" || model->GetName() == "test_cell2"){
+				for (auto link: this->dataPtr->building_links){
 
 
-			//TODO: ensure that these methods work using Line3d
-			ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
-			ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
-			ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
-			ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
-			
-			std::vector<ignition::math::Line3d> edges = {left, right, top, bot};
-
-			//iterate over all edges and test for intersection
-			for (ignition::math::Line3d edge: edges){
-				ignition::math::Vector3d test_intersection;
-
-				if (ray.Intersect(edge, test_intersection)){ //if the ray intersects the boundary
-					double dist_to_int = (test_intersection-actorPos).Length();
-					if (dist_to_int < min_dist){
-						min_dist = dist_to_int;
-						closest_intersection = test_intersection;
+					ignition::math::Vector3d modelPos = link->WorldPose().Pos(); // position of model
+					modelPos.Z() = 0;
+		
+					if (modelPos.Z() > 1.5){ 
+						continue;
 					}
 
+					ignition::math::Box box = link->BoundingBox();
+					ignition::math::Vector3d min_corner = box.Min();
+					ignition::math::Vector3d max_corner = box.Max();
+					min_corner.Z() = 0;
+					max_corner.Z() = 0;
+
+
+					//TODO: ensure that these methods work using Line3d
+					ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
+					ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
+					ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
+					ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
+					
+					std::vector<ignition::math::Line3d> edges = {left, right, top, bot};
+
+					//iterate over all edges and test for intersection
+					for (ignition::math::Line3d edge: edges){
+						ignition::math::Vector3d test_intersection;
+
+						if (ray.Intersect(edge, test_intersection)){ //if the ray intersects the boundary
+							double dist_to_int = (test_intersection-actorPos).Length();
+							if (dist_to_int < min_dist){
+								min_dist = dist_to_int;
+								closest_intersection = test_intersection;
+							}
+
+						}
+						
+					
+					}
 				}
+			} else{
+
+				ignition::math::Vector3d modelPos = model->WorldPose().Pos(); // position of model
+				modelPos.Z() = 0;
+				ignition::math::Box box = model->BoundingBox();
+				ignition::math::Vector3d min_corner = box.Min();
+				ignition::math::Vector3d max_corner = box.Max();
+				min_corner.Z() = 0;
+				max_corner.Z() = 0;
+
+
+				//TODO: ensure that these methods work using Line3d
+				ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
+				ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
+				ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
+				ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
 				
-			
+				std::vector<ignition::math::Line3d> edges = {left, right, top, bot};
+
+				//iterate over all edges and test for intersection
+				for (ignition::math::Line3d edge: edges){
+					ignition::math::Vector3d test_intersection;
+
+					if (ray.Intersect(edge, test_intersection)){ //if the ray intersects the boundary
+						double dist_to_int = (test_intersection-actorPos).Length();
+						if (dist_to_int < min_dist){
+							min_dist = dist_to_int;
+							closest_intersection = test_intersection;
+						}
+
+					}
+					
+				
+				}
+
 			}
 		
 		}

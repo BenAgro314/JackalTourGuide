@@ -122,7 +122,7 @@
 		<interpolate_x>true</interpolate_x>
 	</animation>
 	
-<plugin name="trajectory" filename="libboids_plugin.so">
+<plugin name="trajectory" filename="librandomwalk_plugin.so">
 <point>
 -10
 -10
