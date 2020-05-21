@@ -19,7 +19,7 @@
 #include <gazebo/msgs/msgs.hh>
 #include <map>
 
-#include "boids_plugin.hh"
+#include "randomwalk_plugin.hh"
 
 using namespace gazebo;
 using namespace servicesim;
@@ -69,15 +69,15 @@ class servicesim::ActorPluginPrivate
   
   public: std::vector<ignition::math::Vector2d> polygon;
   
-  public: ignition::math::Pose3d prev_target;
+  public: ignition::math::Vector3d prev_target;
   
-  public: ignition::math::Pose3d curr_target;
+  public: ignition::math::Vector3d curr_target;
   
   public: common::Time last_target_time;
   
   public: bool follower = false;
-
-
+  
+  public: double dt;
 };
 
 /////////////////////////////////////////////////
@@ -111,10 +111,12 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 		pointElem = pointElem->GetNextElement("point");
 	}
 	   
+	   ignition::math::Pose3d holder;
 	   if (_sdf->HasElement("pose")){
-		    this->dataPtr->prev_target = _sdf->GetElement("pose")->Get<ignition::math::Pose3d>();
+		    holder = _sdf->GetElement("pose")->Get<ignition::math::Pose3d>();
 	   } 
-		this->dataPtr->curr_target = this->dataPtr->prev_target;
+		this->dataPtr->curr_target = holder.Pos();
+		this->dataPtr->prev_target = holder.Pos();
   if (_sdf->HasElement("follower")){
 	  this->dataPtr->follower = _sdf->Get<bool>("follower");
   } else{
@@ -311,7 +313,7 @@ ignition::math::Vector3d ActorPlugin::TargetForce(){
 	return steer;
 }
 
-void ActorPlugin::SelectRandomTarget(const common::UpdateInfo &_info){
+void ActorPlugin::SelectRandomTarget(){
 	/*
 	Set curr_target equal to a random target in bounds, store prev_target
 	*/
@@ -323,16 +325,22 @@ void ActorPlugin::SelectRandomTarget(const common::UpdateInfo &_info){
 	*/
 
 	bool target_found = false;
-	ignition::math::Vector3d new_target;
+	ignition::math::Vector3d new_target = this->dataPtr->curr_target;
 
 	while (!target_found){
-		//chose a random new direction to cast the ray:
-		ignition::math::Vector3d ray_dir = ignition::math::Vector3d(ignition::math::Rand::DblUniform())
+		//chose a random new direction (rotated from current direction) to cast the ray:
+		//ignition::math::Vector3d ray_dir = ignition::math::Vector3d(ignition::math::Rand::DblUniform())
+		ignition::math::Vector3d dir = this->dataPtr->velocity;
+		dir.Normalize();
+		dir = ignition::math::Vector3d(1,0,0);
+		ignition::math::Quaterniond rotation =  ignition::math::Quaterniond::EulerToQuaternion(0,0,ignition::math::Rand::DblUniform(-2, 2)); 
+		dir = rotation.RotateVector(dir);
+		//printf("(%f, %f, %f)\n", dir.X(), dir.Y(), dir.Z());
 	}
 
 
-	this->dataPtr->prev_target = this->dataPtr->current_target;
-	this->dataPtr->current_target = new_target;
+	this->dataPtr->prev_target = this->dataPtr->curr_target;
+	this->dataPtr->curr_target = new_target;
 }
 
 void ActorPlugin::NetForceUpdate(){
@@ -372,7 +380,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 	ignition::math::Pose3d actorPose = this->dataPtr->actor->WorldPose();
 
 	// retarget iff we are close to the current target or a certain number of second have elapsed since last retarget
-	if ((actorPose.Pos() - this->dataPtr->current_target).Length() < this->dataPtr->targetRadius || (this->dataPtr->last_target_time - _info.simTime).Double() > 10){
+	if ((actorPose.Pos() - this->dataPtr->curr_target).Length() < this->dataPtr->targetRadius || (this->dataPtr->last_target_time - _info.simTime).Double() > 10){
 		this->SelectRandomTarget();
 		this->dataPtr->last_target_time = _info.simTime;
 	}

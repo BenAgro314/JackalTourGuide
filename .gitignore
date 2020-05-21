@@ -2,3 +2,5 @@
 /build
 /data
 /devel
+.vscode
+.catkin_tools
