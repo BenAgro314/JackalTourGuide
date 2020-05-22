@@ -1,5 +1,7 @@
 ///TODO: ADD DELAY UNTIL ALL OTHER TOPICS HAVE BEEN PUBLISHED
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <ros/ros.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -90,10 +92,7 @@ int main(int argc, char** argv){
     }
     
     tour.close();
-    if ( ros::ok() ) {
-      // no Crlt+C received, i. e. we have to ros::shutdown() 
-      ros::shutdown();
-    }
-  
+    system("/home/default/catkin_ws/shutdown.sh");
+    
     return 0;
 }
