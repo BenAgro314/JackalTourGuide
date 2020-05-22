@@ -34,13 +34,6 @@ int main(int argc, char** argv){
     ros::init(argc, argv, "simple_navigation_goals");
     ros::NodeHandle nh;
 
-    /*
-    std::ifstream in = std::ifstream("./src/jackal_velodyne/src/include/tour_name.txt"); 
-
-    char str[255];
-    in.getline(str, 255);  // delim defaults to '\n'
-    */
-
     std::string bag_name("tour_positions1.bag");
   
     if (!nh.getParam("bag_name", bag_name)){
@@ -58,9 +51,6 @@ int main(int argc, char** argv){
       ros::spinOnce();  
       r.sleep();
     }
-    
-    //std::cout << "Input tour name: ";
-    //std::cin >> bag_name;
 
     //tell the action client that we want to spin a thread by default
     MoveBaseClient ac("move_base", true);
@@ -70,7 +60,7 @@ int main(int argc, char** argv){
       ROS_INFO("Waiting for the move_base action server to come up");
     }
 
-    std::string file_name ="/home/default/catkin_ws/src/jackal_velodyne/src/include/" + bag_name;
+    std::string file_name ="/home/default/catkin_ws/src/jackal_velodyne/src/include/tours/" + bag_name;
     tour.open(file_name);
     
     
@@ -100,7 +90,10 @@ int main(int argc, char** argv){
     }
     
     tour.close();
-  
+    if ( ros::ok() ) {
+      // no Crlt+C received, i. e. we have to ros::shutdown() 
+      ros::shutdown();
+    }
   
     return 0;
 }
