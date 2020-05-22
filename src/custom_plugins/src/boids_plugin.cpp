@@ -225,36 +225,6 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
  
 }
 
-
-
-
-ignition::math::Vector3d ActorPlugin::WithinBounds(){
-	//iterate over all boundaries:
-	//if we are within a certain distance to the boundary, apply a normal force to the person 
-	
-	ignition::math::Pose3d actorPose = this->dataPtr->actor->WorldPose();
-	ignition::math::Vector3d boundary_force = ignition::math::Vector3d(0,0,0);
-	
-	for (int i =0; i<(int) this->dataPtr->polygon.size(); i+=2){
-		ignition::math::Vector3d boundary = ignition::math::Vector3d(this->dataPtr->polygon[i+1].X() - this->dataPtr->polygon[i].X(), this->dataPtr->polygon[i+1].Y() - this->dataPtr->polygon[i].Y(), 0);
-		ignition::math::Vector3d pos = ignition::math::Vector3d(actorPose.Pos().X()-this->dataPtr->polygon[i].X(), actorPose.Pos().Y()-this->dataPtr->polygon[i].Y(), 0);
-		// project pos vector onto boundary 
-		ignition::math::Vector3d proj = ((pos.Dot(boundary))/(boundary.Dot(boundary)))*boundary;
-		//get normal vector:
-		ignition::math::Vector3d normal = pos-proj;
-		double dist = normal.Length();
-		if (dist < this->dataPtr->obstacleMargin){
-			normal.Normalize();
-			boundary_force += normal/(dist*dist);
-		}
-		
-	}
-	
-	return boundary_force;
-	
-}
-
-
 ignition::math::Vector3d ActorPlugin::BoidAvoidance(){
 	ignition::math::Pose3d actorPose = this->dataPtr->actor->WorldPose();
 	ignition::math::Vector3d steer = ignition::math::Vector3d(0,0,0);
@@ -604,7 +574,6 @@ void ActorPlugin::NetForceUpdate(){
 	//this->Alignement();
 	
 	auto obstacle= this->ObstacleAvoidance();
-	//auto boundary = this->WithinBounds();
 	auto boid = this->BoidAvoidance();
 	auto cohesion = this->Cohesion();
 	auto alignment = this->Alignment();

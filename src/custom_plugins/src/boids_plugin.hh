@@ -27,12 +27,10 @@ namespace servicesim
     private: void OnUpdate(const gazebo::common::UpdateInfo &_info);
     
     private: void NetForceUpdate();
-    
-    private: ignition::math::Vector3d WithinBounds();
-    
+  
     private: ignition::math::Vector3d BoidAvoidance();
 
-	private: ignition::math::Vector3d ObstacleAvoidance();
+	  private: ignition::math::Vector3d ObstacleAvoidance();
     
     private: ignition::math::Vector3d Alignment();
     

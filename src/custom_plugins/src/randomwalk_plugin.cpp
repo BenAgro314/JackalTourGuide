@@ -182,9 +182,7 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   
 }
 
-
-
-
+/*
 ignition::math::Vector3d ActorPlugin::WithinBounds(){
 	//iterate over all boundaries:
 	//if we are within a certain distance to the boundary, apply a normal force to the person 
@@ -210,6 +208,7 @@ ignition::math::Vector3d ActorPlugin::WithinBounds(){
 	return boundary_force;
 	
 }
+*/
 
 
 ignition::math::Vector3d ActorPlugin::ActorAvoidance(){
@@ -257,6 +256,7 @@ ignition::math::Vector3d ActorPlugin::ActorAvoidance(){
 	return steer;
 
 }
+
 
 ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 	ignition::math::Pose3d actorPose = this->dataPtr->actor->WorldPose();
@@ -547,13 +547,12 @@ void ActorPlugin::NetForceUpdate(){
 
 
 	auto actor = this->ActorAvoidance();
-	if (actor.Length() > 1e-6){
+	if (actor.Length() > 1e-6){ //if we are near collision with another actor, retarget
 		this->SelectRandomTarget();
 	}
-	//auto boundary = this->WithinBounds();
+	
 	auto target = this->TargetForce();
-	//std::printf("actor (%f, %f, %f) \n", actor.X(), actor.Y(), actor.Z());
-	//std::printf("target (%f, %f, %f) \n", target.X(), target.Y(), target.Z()); 
+	
 
 	this->dataPtr->F_net = actor + target;// + boundary;
 

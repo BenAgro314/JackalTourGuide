@@ -27,16 +27,14 @@ namespace servicesim
     private: void OnUpdate(const gazebo::common::UpdateInfo &_info);
     
     private: void NetForceUpdate();
-    
-    private: ignition::math::Vector3d WithinBounds();
 
-	private: ignition::math::Vector3d ObstacleAvoidance();
+  	private: ignition::math::Vector3d ObstacleAvoidance();
 
-	private: ignition::math::Vector3d ActorAvoidance();
+	  private: ignition::math::Vector3d ActorAvoidance();
 
-	private: ignition::math::Vector3d TargetForce();
+  	private: ignition::math::Vector3d TargetForce();
 
-	private: void SelectRandomTarget();
+	  private: void SelectRandomTarget();
 
     /// \internal
     public: ActorPluginPrivate *dataPtr;
