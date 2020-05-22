@@ -7,6 +7,8 @@
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
 #include "sensor_msgs/PointCloud2.h"
+#include <iostream>
+#include <fstream>
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -27,18 +29,27 @@ void LidarCallback(const sensor_msgs::PointCloud2::ConstPtr& msg){
 
 int main(int argc, char** argv){
 
-    std::string bag_name("tour_positions1.bag");
+    
     
     ros::init(argc, argv, "simple_navigation_goals");
     ros::NodeHandle nh;
-  
+
     /*
+    std::ifstream in = std::ifstream("./src/jackal_velodyne/src/include/tour_name.txt"); 
+
+    char str[255];
+    in.getline(str, 255);  // delim defaults to '\n'
+    */
+
+    std::string bag_name("tour_positions1.bag");
+  
     if (!nh.getParam("bag_name", bag_name)){
       bag_name = "tour_positions1.bag";
     }
-    */
     
-    ROS_WARN("Wating for topics to start tour\n");
+    
+    
+    ROS_WARN("USING TOUR %s\n", bag_name.c_str());
   
     ros::Subscriber lidar_sub = nh.subscribe("velodyne_points", 1000, LidarCallback);
     ros::Rate r(10);

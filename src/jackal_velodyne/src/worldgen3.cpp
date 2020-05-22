@@ -13,7 +13,7 @@ int main(int argc, char ** argv){
 	int num_tables;
 	
 	ros::init(argc, argv, "worldgen3");
-	ros::NodeHandle nh("~");
+	ros::NodeHandle nh;
 	
 	if (!nh.getParam("num_people", num_people)){
 		num_people = 5;
