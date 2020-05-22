@@ -104,116 +104,10 @@
     
     
 
-<actor name="human_-0.167746,-4.52943,1088">
+<actor name="human_0.918521,1.20598,6039">
 	<pose>
-		-0.167746
-		-4.52943
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-
-	<skin>
-	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-	</skin>
-	<animation name="animation"> 
-		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-		<interpolate_x>true</interpolate_x>
-	</animation>
-	
-<plugin name="trajectory" filename="libboids_plugin.so">
-<point>
--8.5
--5
-</point>
-<point>
--8.5
-8.5
-</point>
-<point>
--8.5
--5
-</point>
-<point>
-8
--5
-</point>
-<point>
--8.5
-8.5
-</point>
-<point>
-8
-8.5
-</point>
-<point>
-8
--5
-</point>
-<point>
-8
-8.5
-</point>
-<point>
--3.75
-3.7
-</point>
-<point>
--3.75
-6.8
-</point>
-<point>
--3.75
-3.7
-</point>
-<point>
-5.15
-3.7
-</point>
-<point>
--3.75
-6.8
-</point>
-<point>
-5.15
-6.8
-</point>
-<point>
-5.15
-3.7
-</point>
-<point>
-5.15
-6.8
-</point>
-	<pose>
-		-0.167746
-		-4.52943
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-<velocity>
--1.41687
--0.189727
-0
-</velocity>
-
-<building>myhal</building>
-
-<max_speed>1.86152</max_speed>
-<obstacle_margin>0.5</obstacle_margin>
-</plugin>
-</actor>
-
-<actor name="human_-0.801418,-0.250869,2330">
-	<pose>
-		-0.801418
-		-0.250869
+		0.918521
+		1.20598
 		1
 		0
 		0
@@ -295,8 +189,8 @@
 6.8
 </point>
 	<pose>
-		-0.801418
-		-0.250869
+		0.918521
+		1.20598
 		1
 		0
 		0
@@ -304,22 +198,22 @@
 	</pose>
 
 <velocity>
--0.255021
-0.452531
+0.112467
+1.44624
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>2.2769</max_speed>
+<max_speed>1.55832</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
-<actor name="human_-0.260302,-3.46713,4031">
+<actor name="human_1.3188,2.96544,9298">
 	<pose>
-		-0.260302
-		-3.46713
+		1.3188
+		2.96544
 		1
 		0
 		0
@@ -328,7 +222,7 @@
 
 
 	<skin>
-	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+	<filename>model://actor/meshes/SKIN_man_green_shirt.dae</filename>
 	</skin>
 	<animation name="animation"> 
 		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -401,8 +295,8 @@
 6.8
 </point>
 	<pose>
-		-0.260302
-		-3.46713
+		1.3188
+		2.96544
 		1
 		0
 		0
@@ -410,128 +304,22 @@
 	</pose>
 
 <velocity>
--0.381525
--1.22867
+-0.98602
+0.197246
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>1.81886</max_speed>
+<max_speed>1.84602</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
-<actor name="human_5.39516,-4.96633,5481">
+<actor name="human_-4.9408,7.52492,5449">
 	<pose>
-		5.39516
-		-4.96633
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-
-	<skin>
-	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
-	</skin>
-	<animation name="animation"> 
-		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-		<interpolate_x>true</interpolate_x>
-	</animation>
-	
-<plugin name="trajectory" filename="libboids_plugin.so">
-<point>
--8.5
--5
-</point>
-<point>
--8.5
-8.5
-</point>
-<point>
--8.5
--5
-</point>
-<point>
-8
--5
-</point>
-<point>
--8.5
-8.5
-</point>
-<point>
-8
-8.5
-</point>
-<point>
-8
--5
-</point>
-<point>
-8
-8.5
-</point>
-<point>
--3.75
-3.7
-</point>
-<point>
--3.75
-6.8
-</point>
-<point>
--3.75
-3.7
-</point>
-<point>
-5.15
-3.7
-</point>
-<point>
--3.75
-6.8
-</point>
-<point>
-5.15
-6.8
-</point>
-<point>
-5.15
-3.7
-</point>
-<point>
-5.15
-6.8
-</point>
-	<pose>
-		5.39516
-		-4.96633
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-<velocity>
-0.21732
-0.106126
-0
-</velocity>
-
-<building>myhal</building>
-
-<max_speed>1.6054</max_speed>
-<obstacle_margin>0.5</obstacle_margin>
-</plugin>
-</actor>
-
-<actor name="human_-7.51243,1.35178,1160">
-	<pose>
-		-7.51243
-		1.35178
+		-4.9408
+		7.52492
 		1
 		0
 		0
@@ -613,8 +401,8 @@
 6.8
 </point>
 	<pose>
-		-7.51243
-		1.35178
+		-4.9408
+		7.52492
 		1
 		0
 		0
@@ -622,22 +410,22 @@
 	</pose>
 
 <velocity>
--0.0344989
-0.615536
+1.37566
+-1.3379
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>1.77264</max_speed>
+<max_speed>1.62191</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
-<actor name="human_7.15265,5.24778,1488">
+<actor name="human_6.5282,4.80516,4771">
 	<pose>
-		7.15265
-		5.24778
+		6.5282
+		4.80516
 		1
 		0
 		0
@@ -646,7 +434,7 @@
 
 
 	<skin>
-	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 	</skin>
 	<animation name="animation"> 
 		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -719,8 +507,8 @@
 6.8
 </point>
 	<pose>
-		7.15265
-		5.24778
+		6.5282
+		4.80516
 		1
 		0
 		0
@@ -728,22 +516,22 @@
 	</pose>
 
 <velocity>
--0.0268135
--1.48426
+1.18947
+-1.34527
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>1.23807</max_speed>
+<max_speed>1.64627</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
-<actor name="human_-5.87781,6.39713,8187">
+<actor name="human_2.37685,-4.90328,4538">
 	<pose>
-		-5.87781
-		6.39713
+		2.37685
+		-4.90328
 		1
 		0
 		0
@@ -752,7 +540,7 @@
 
 
 	<skin>
-	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 	</skin>
 	<animation name="animation"> 
 		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -825,8 +613,8 @@
 6.8
 </point>
 	<pose>
-		-5.87781
-		6.39713
+		2.37685
+		-4.90328
 		1
 		0
 		0
@@ -834,109 +622,247 @@
 	</pose>
 
 <velocity>
-0.716316
-0.64984
+-0.773705
+-0.982336
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>2.1102</max_speed>
+<max_speed>2.14607</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_-1.20148,0.484032,2205">
+	<pose>
+		-1.20148
+		0.484032
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8.5
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+-8.5
+-5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+5.15
+6.8
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+5.15
+6.8
+</point>
+	<pose>
+		-1.20148
+		0.484032
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+<velocity>
+-1.21787
+0.215188
+0
+</velocity>
+
+<building>myhal</building>
+
+<max_speed>1.30739</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_4.19282,3.67075,7333">
+	<pose>
+		4.19282
+		3.67075
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8.5
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+-8.5
+-5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+5.15
+6.8
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+5.15
+6.8
+</point>
+	<pose>
+		4.19282
+		3.67075
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+<velocity>
+-1.48705
+1.28359
+0
+</velocity>
+
+<building>myhal</building>
+
+<max_speed>2.09634</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
 <include>
 <uri>model://table_conference_2</uri> 
-<name> "table_-32" </name> 
-<pose> -3 2 0 0 0 1.57 </pose>
+<name> "table_3-3" </name> 
+<pose> 3 -3 0 0 0 0 </pose>
 </include>
 
 <include>
 <uri>model://chair_3</uri> 
-<name> "chair_-2.261432.652970" </name> 
-<pose> -2.26143 2.65297 0 0 0 -2.66007 </pose>
+<name> "chair_3.71655-2.2947934" </name> 
+<pose> 3.71655 -2.29479 0 0 0 0.00663996 </pose>
 </include>
 
 
-<actor name="human_-6.89606,19.1328,7024">
+<actor name="human_-5.82485,14.2201,4415">
 	<pose>
-		-6.89606
-		19.1328
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-
-	<skin>
-	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-	</skin>
-	<animation name="animation"> 
-		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-		<interpolate_x>true</interpolate_x>
-	</animation>
-	
-<plugin name="trajectory" filename="libboids_plugin.so">
-<point>
--8
-10
-</point>
-<point>
--8
-20
-</point>
-<point>
--8
-10
-</point>
-<point>
-8
-10
-</point>
-<point>
--8
-20
-</point>
-<point>
-8
-20
-</point>
-<point>
-8
-10
-</point>
-<point>
-8
-20
-</point>
-	<pose>
-		-6.89606
-		19.1328
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-<velocity>
-1.15744
--0.597711
-0
-</velocity>
-
-<building>myhal</building>
-
-<max_speed>1.81135</max_speed>
-<obstacle_margin>0.5</obstacle_margin>
-</plugin>
-</actor>
-
-<actor name="human_0.836467,16.1127,3057">
-	<pose>
-		0.836467
-		16.1127
+		-5.82485
+		14.2201
 		1
 		0
 		0
@@ -986,8 +912,8 @@
 20
 </point>
 	<pose>
-		0.836467
-		16.1127
+		-5.82485
+		14.2201
 		1
 		0
 		0
@@ -995,96 +921,22 @@
 	</pose>
 
 <velocity>
--0.874389
--1.11436
+0.655763
+-1.19826
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>1.86965</max_speed>
+<max_speed>1.92458</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
-<actor name="human_0.360064,18.4834,7607">
+<actor name="human_3.40626,15.7084,4646">
 	<pose>
-		0.360064
-		18.4834
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-
-	<skin>
-	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
-	</skin>
-	<animation name="animation"> 
-		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-		<interpolate_x>true</interpolate_x>
-	</animation>
-	
-<plugin name="trajectory" filename="libboids_plugin.so">
-<point>
--8
-10
-</point>
-<point>
--8
-20
-</point>
-<point>
--8
-10
-</point>
-<point>
-8
-10
-</point>
-<point>
--8
-20
-</point>
-<point>
-8
-20
-</point>
-<point>
-8
-10
-</point>
-<point>
-8
-20
-</point>
-	<pose>
-		0.360064
-		18.4834
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-<velocity>
--0.893238
-1.03453
-0
-</velocity>
-
-<building>myhal</building>
-
-<max_speed>1.20382</max_speed>
-<obstacle_margin>0.5</obstacle_margin>
-</plugin>
-</actor>
-
-<actor name="human_6.22366,14.5125,4697">
-	<pose>
-		6.22366
-		14.5125
+		3.40626
+		15.7084
 		1
 		0
 		0
@@ -1134,8 +986,8 @@
 20
 </point>
 	<pose>
-		6.22366
-		14.5125
+		3.40626
+		15.7084
 		1
 		0
 		0
@@ -1143,22 +995,22 @@
 	</pose>
 
 <velocity>
-0.157432
--0.276789
+-0.557653
+0.0110055
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>1.75854</max_speed>
+<max_speed>1.52757</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
-<actor name="human_-6.95678,11.0624,1008">
+<actor name="human_1.46437,16.2532,7449">
 	<pose>
-		-6.95678
-		11.0624
+		1.46437
+		16.2532
 		1
 		0
 		0
@@ -1167,7 +1019,7 @@
 
 
 	<skin>
-	<filename>model://actor/meshes/SKIN_man_green_shirt.dae</filename>
+	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 	</skin>
 	<animation name="animation"> 
 		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -1208,8 +1060,8 @@
 20
 </point>
 	<pose>
-		-6.95678
-		11.0624
+		1.46437
+		16.2532
 		1
 		0
 		0
@@ -1217,22 +1069,22 @@
 	</pose>
 
 <velocity>
-0.0860512
--0.156971
+1.34212
+0.662967
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>1.93997</max_speed>
+<max_speed>1.30758</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
-<actor name="human_-4.6545,16.312,1054">
+<actor name="human_-4.87112,10.5133,5199">
 	<pose>
-		-4.6545
-		16.312
+		-4.87112
+		10.5133
 		1
 		0
 		0
@@ -1282,8 +1134,8 @@
 20
 </point>
 	<pose>
-		-4.6545
-		16.312
+		-4.87112
+		10.5133
 		1
 		0
 		0
@@ -1291,204 +1143,190 @@
 	</pose>
 
 <velocity>
--0.559527
-0.513513
+0.633544
+-1.16947
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>1.97713</max_speed>
+<max_speed>1.83104</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_7.46648,16.8776,8653">
+	<pose>
+		7.46648
+		16.8776
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8
+10
+</point>
+<point>
+-8
+20
+</point>
+<point>
+-8
+10
+</point>
+<point>
+8
+10
+</point>
+<point>
+-8
+20
+</point>
+<point>
+8
+20
+</point>
+<point>
+8
+10
+</point>
+<point>
+8
+20
+</point>
+	<pose>
+		7.46648
+		16.8776
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+<velocity>
+-1.47808
+0.757285
+0
+</velocity>
+
+<building>myhal</building>
+
+<max_speed>1.68079</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_7.26949,17.4412,6086">
+	<pose>
+		7.26949
+		17.4412
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8
+10
+</point>
+<point>
+-8
+20
+</point>
+<point>
+-8
+10
+</point>
+<point>
+8
+10
+</point>
+<point>
+-8
+20
+</point>
+<point>
+8
+20
+</point>
+<point>
+8
+10
+</point>
+<point>
+8
+20
+</point>
+	<pose>
+		7.26949
+		17.4412
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+<velocity>
+-0.70702
+-1.28559
+0
+</velocity>
+
+<building>myhal</building>
+
+<max_speed>1.5577</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
 <include>
 <uri>model://table_conference_1</uri> 
-<name> "table_-312" </name> 
-<pose> -3 12 0 0 0 0 </pose>
+<name> "table_-316" </name> 
+<pose> -3 16 0 0 0 1.57 </pose>
 </include>
 
 <include>
 <uri>model://chair_1</uri> 
-<name> "chair_-2.3117813.084790" </name> 
-<pose> -2.31178 13.0847 0 0 0 0.918102 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_1</uri> 
-<name> "chair_-3.8073612.823790" </name> 
-<pose> -3.80736 12.8237 0 0 0 0.805365 </pose>
+<name> "chair_-2.0201116.970877" </name> 
+<pose> -2.02011 16.9708 0 0 0 -1.1335 </pose>
 </include>
 
 
 <include>
 <uri>model://chair_1</uri> 
-<name> "chair_-2.2319411.224275" </name> 
-<pose> -2.23194 11.2242 0 0 0 3.89034 </pose>
+<name> "chair_-3.9188716.671848" </name> 
+<pose> -3.91887 16.6718 0 0 0 0.733876 </pose>
 </include>
 
 
-<include>
-<uri>model://chair_1</uri> 
-<name> "chair_-3.9419411.391642" </name> 
-<pose> -3.94194 11.3916 0 0 0 2.95061 </pose>
-</include>
-
-
-<actor name="human_-1.20026,-12.6586,1289">
+<actor name="human_-5.33877,-16.9135,7887">
 	<pose>
-		-1.20026
-		-12.6586
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-
-	<skin>
-	<filename>model://actor/meshes/SKIN_man_green_shirt.dae</filename>
-	</skin>
-	<animation name="animation"> 
-		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-		<interpolate_x>true</interpolate_x>
-	</animation>
-	
-<plugin name="trajectory" filename="libboids_plugin.so">
-<point>
--8
--20
-</point>
-<point>
--8
--9
-</point>
-<point>
--8
--20
-</point>
-<point>
-2
--20
-</point>
-<point>
--8
--9
-</point>
-<point>
-2
--9
-</point>
-<point>
-2
--20
-</point>
-<point>
-2
--9
-</point>
-	<pose>
-		-1.20026
-		-12.6586
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-<velocity>
--0.963898
-1.36882
-0
-</velocity>
-
-<building>myhal</building>
-
-<max_speed>1.65849</max_speed>
-<obstacle_margin>0.5</obstacle_margin>
-</plugin>
-</actor>
-
-<actor name="human_-0.14717,-15.0705,9198">
-	<pose>
-		-0.14717
-		-15.0705
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-
-	<skin>
-	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-	</skin>
-	<animation name="animation"> 
-		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-		<interpolate_x>true</interpolate_x>
-	</animation>
-	
-<plugin name="trajectory" filename="libboids_plugin.so">
-<point>
--8
--20
-</point>
-<point>
--8
--9
-</point>
-<point>
--8
--20
-</point>
-<point>
-2
--20
-</point>
-<point>
--8
--9
-</point>
-<point>
-2
--9
-</point>
-<point>
-2
--20
-</point>
-<point>
-2
--9
-</point>
-	<pose>
-		-0.14717
-		-15.0705
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-<velocity>
-0.214466
-1.41462
-0
-</velocity>
-
-<building>myhal</building>
-
-<max_speed>1.63865</max_speed>
-<obstacle_margin>0.5</obstacle_margin>
-</plugin>
-</actor>
-
-<actor name="human_-0.435042,-11.0609,6606">
-	<pose>
-		-0.435042
-		-11.0609
+		-5.33877
+		-16.9135
 		1
 		0
 		0
@@ -1538,8 +1376,8 @@
 -9
 </point>
 	<pose>
-		-0.435042
-		-11.0609
+		-5.33877
+		-16.9135
 		1
 		0
 		0
@@ -1547,22 +1385,96 @@
 	</pose>
 
 <velocity>
-1.18703
-0.199475
+0.471089
+0.153223
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>1.96869</max_speed>
+<max_speed>1.54595</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
-<actor name="human_-6.16516,-19.1921,6008">
+<actor name="human_-3.44269,-19.5765,6581">
 	<pose>
-		-6.16516
-		-19.1921
+		-3.44269
+		-19.5765
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8
+-20
+</point>
+<point>
+-8
+-9
+</point>
+<point>
+-8
+-20
+</point>
+<point>
+2
+-20
+</point>
+<point>
+-8
+-9
+</point>
+<point>
+2
+-9
+</point>
+<point>
+2
+-20
+</point>
+<point>
+2
+-9
+</point>
+	<pose>
+		-3.44269
+		-19.5765
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+<velocity>
+-1.11603
+-0.0921933
+0
+</velocity>
+
+<building>myhal</building>
+
+<max_speed>1.75487</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_-2.95595,-12.9818,1884">
+	<pose>
+		-2.95595
+		-12.9818
 		1
 		0
 		0
@@ -1612,8 +1524,8 @@
 -9
 </point>
 	<pose>
-		-6.16516
-		-19.1921
+		-2.95595
+		-12.9818
 		1
 		0
 		0
@@ -1621,14 +1533,88 @@
 	</pose>
 
 <velocity>
-1.10301
--0.863369
+1.03073
+-0.774981
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>1.38956</max_speed>
+<max_speed>1.65827</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_-5.43252,-14.1149,9218">
+	<pose>
+		-5.43252
+		-14.1149
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8
+-20
+</point>
+<point>
+-8
+-9
+</point>
+<point>
+-8
+-20
+</point>
+<point>
+2
+-20
+</point>
+<point>
+-8
+-9
+</point>
+<point>
+2
+-9
+</point>
+<point>
+2
+-20
+</point>
+<point>
+2
+-9
+</point>
+	<pose>
+		-5.43252
+		-14.1149
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+<velocity>
+1.19642
+0.720932
+0
+</velocity>
+
+<building>myhal</building>
+
+<max_speed>1.51621</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
@@ -1636,34 +1622,41 @@
 <include>
 <uri>model://table_conference_3</uri> 
 <name> "table_-1-17" </name> 
-<pose> -1 -17 0 0 0 1.57 </pose>
+<pose> -1 -17 0 0 0 0 </pose>
 </include>
 
 <include>
 <uri>model://chair_2</uri> 
-<name> "chair_0.0406912-16.16923" </name> 
-<pose> 0.0406912 -16.1692 0 0 0 -0.0439773 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_2</uri> 
-<name> "chair_-1.95148-16.231484" </name> 
-<pose> -1.95148 -16.2314 0 0 0 2.94442 </pose>
+<name> "chair_-0.223113-16.27479" </name> 
+<pose> -0.223113 -16.274 0 0 0 0.273298 </pose>
 </include>
 
 
 <include>
 <uri>model://chair_2</uri> 
-<name> "chair_-0.246653-17.964694" </name> 
-<pose> -0.246653 -17.9646 0 0 0 -2.20426 </pose>
+<name> "chair_-1.7433-16.280545" </name> 
+<pose> -1.7433 -16.2805 0 0 0 0.745687 </pose>
 </include>
 
 
-<actor name="human_-11.6459,-0.12225,6099">
+<include>
+<uri>model://chair_2</uri> 
+<name> "chair_-0.175991-17.881728" </name> 
+<pose> -0.175991 -17.8817 0 0 0 4.4783 </pose>
+</include>
+
+
+<include>
+<uri>model://chair_2</uri> 
+<name> "chair_-1.89609-17.695917" </name> 
+<pose> -1.89609 -17.6959 0 0 0 3.29112 </pose>
+</include>
+
+
+<actor name="human_-11.5432,-2.73014,1696">
 	<pose>
-		-11.6459
-		-0.12225
+		-11.5432
+		-2.73014
 		1
 		0
 		0
@@ -1672,7 +1665,7 @@
 
 
 	<skin>
-	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	<filename>model://actor/meshes/SKIN_man_green_shirt.dae</filename>
 	</skin>
 	<animation name="animation"> 
 		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -1713,8 +1706,8 @@
 5
 </point>
 	<pose>
-		-11.6459
-		-0.12225
+		-11.5432
+		-2.73014
 		1
 		0
 		0
@@ -1722,14 +1715,14 @@
 	</pose>
 
 <velocity>
-0.674467
-0.530962
+-0.34028
+1.00005
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>2.1466</max_speed>
+<max_speed>1.70207</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
@@ -1737,20 +1730,94 @@
 <include>
 <uri>model://desk_yellow</uri> 
 <name> "table_-11.53.5" </name> 
-<pose> -11.5 3.5 0 0 0 0 </pose>
+<pose> -11.5 3.5 0 0 0 1.57 </pose>
 </include>
 
 <include>
 <uri>model://chair_3</uri> 
-<name> "chair_-10.53724.3563986" </name> 
-<pose> -10.5372 4.35639 0 0 0 -0.282934 </pose>
+<name> "chair_-10.53864.3855172" </name> 
+<pose> -10.5386 4.38551 0 0 0 -2.00936 </pose>
 </include>
 
 
-<actor name="human_8.44936,-6.92558,9696">
+<actor name="human_-3.16558,-7.35161,7601">
 	<pose>
-		8.44936
-		-6.92558
+		-3.16558
+		-7.35161
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_green_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-14
+-7.5
+</point>
+<point>
+-14
+-6.5
+</point>
+<point>
+-14
+-7.5
+</point>
+<point>
+14
+-7.5
+</point>
+<point>
+-14
+-6.5
+</point>
+<point>
+14
+-6.5
+</point>
+<point>
+14
+-7.5
+</point>
+<point>
+14
+-6.5
+</point>
+	<pose>
+		-3.16558
+		-7.35161
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+<velocity>
+0.561107
+-0.440482
+0
+</velocity>
+
+<building>myhal</building>
+
+<max_speed>1.86354</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_-4.87079,7.64226,8422">
+	<pose>
+		-4.87079
+		7.64226
 		1
 		0
 		0
@@ -1769,39 +1836,39 @@
 <plugin name="trajectory" filename="libboids_plugin.so">
 <point>
 -14
--7.5
+7
 </point>
 <point>
 -14
--6.5
+8
 </point>
 <point>
 -14
--7.5
+7
 </point>
 <point>
 14
--7.5
+7
 </point>
 <point>
 -14
--6.5
+8
 </point>
 <point>
 14
--6.5
+8
 </point>
 <point>
 14
--7.5
+7
 </point>
 <point>
 14
--6.5
+8
 </point>
 	<pose>
-		8.44936
-		-6.92558
+		-4.87079
+		7.64226
 		1
 		0
 		0
@@ -1809,88 +1876,14 @@
 	</pose>
 
 <velocity>
--0.51621
--0.954845
+0.791526
+1.29106
 0
 </velocity>
 
 <building>myhal</building>
 
-<max_speed>2.26895</max_speed>
-<obstacle_margin>0.5</obstacle_margin>
-</plugin>
-</actor>
-
-<actor name="human_13.3445,7.90242,2536">
-	<pose>
-		13.3445
-		7.90242
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-
-	<skin>
-	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-	</skin>
-	<animation name="animation"> 
-		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-		<interpolate_x>true</interpolate_x>
-	</animation>
-	
-<plugin name="trajectory" filename="libboids_plugin.so">
-<point>
--14
-7
-</point>
-<point>
--14
-8
-</point>
-<point>
--14
-7
-</point>
-<point>
-14
-7
-</point>
-<point>
--14
-8
-</point>
-<point>
-14
-8
-</point>
-<point>
-14
-7
-</point>
-<point>
-14
-8
-</point>
-	<pose>
-		13.3445
-		7.90242
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-<velocity>
-1.09627
--1.45624
-0
-</velocity>
-
-<building>myhal</building>
-
-<max_speed>1.77783</max_speed>
+<max_speed>1.98102</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>

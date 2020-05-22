@@ -619,11 +619,11 @@ void ActorPlugin::NetForceUpdate(){
 	+(this->dataPtr->alignment_factor*alignment);
 
 	//add a "walking" force so the boids don't slow down too much
-	/*
-	if (this->dataPtr->velocity.Length() < (this->dataPtr->max_speed)*0.7){
+	
+	if (this->dataPtr->velocity.Length() < (this->dataPtr->max_speed)*0.7 && (obstacle.Length() < 1e-6)){
 		this->dataPtr->F_net+=dir*this->dataPtr->max_force*(((0.7*this->dataPtr->max_speed)-this->dataPtr->velocity.Length())/(0.7*this->dataPtr->max_speed));
 	}
-	*/
+	
 	
 }
 
