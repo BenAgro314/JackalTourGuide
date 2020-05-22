@@ -10,7 +10,7 @@ echo num_people: $1 > src/jackal_velodyne/params/simulation_params.yaml
 echo num_tables: $2 >> src/jackal_velodyne/params/simulation_params.yaml
 echo bag_name: $3 >> src/jackal_velodyne/params/simulation_params.yaml
 roslaunch jackal_velodyne master.launch &
-rosbag record -a -x "/kinect_V2(.*)" #TODO: fix this line
+rosbag record -o "data/" -a -x "(.*)/compressedDepth(.*)" #TODO: compressed depth images cannot be recorded to rosbag
 
 
 
