@@ -61,10 +61,9 @@ class servicesim::ActorPluginPrivate
   /// \brief Time of the last update.
   public: common::Time lastUpdate;
 
-  /// \brief List of models to avoid
-  public: std::vector<std::string> obstacles;
 
-  /// \brief Frequency in Hz to update
+  public: std::vector<std::string> buildings;
+
   public: double updateFreq{60};
   
   public: std::vector<ignition::math::Vector2d> polygon;
@@ -89,7 +88,7 @@ class servicesim::ActorPluginPrivate
   public: double alignment_factor = 0.1;
   public: double aversion_factor = 1;
 
-  public: gazebo::physics::Link_V building_links;
+  public: std::map<std::string,gazebo::physics::Link_V> building_links;
 };
 
 /////////////////////////////////////////////////
@@ -101,38 +100,40 @@ ActorPlugin::ActorPlugin()
 /////////////////////////////////////////////////
 void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
-  this->dataPtr->actor = boost::dynamic_pointer_cast<physics::Actor>(_model);
+  	this->dataPtr->actor = boost::dynamic_pointer_cast<physics::Actor>(_model);
 
-  this->dataPtr->connections.push_back(event::Events::ConnectWorldUpdateBegin(
-      std::bind(&ActorPlugin::OnUpdate, this, std::placeholders::_1)));
+  	this->dataPtr->connections.push_back(event::Events::ConnectWorldUpdateBegin(
+      	std::bind(&ActorPlugin::OnUpdate, this, std::placeholders::_1)));
 
   // Update frequency
-  if (_sdf->HasElement("update_frequency"))
-    this->dataPtr->updateFreq = _sdf->Get<double>("update_frequency");
+  	if (_sdf->HasElement("update_frequency"))
+    	this->dataPtr->updateFreq = _sdf->Get<double>("update_frequency");
 
   // Read in the velocity
-  if (_sdf->HasElement("max_speed"))
-    this->dataPtr->max_speed= _sdf->Get<double>("max_speed");
+  	if (_sdf->HasElement("max_speed"))
+    	this->dataPtr->max_speed= _sdf->Get<double>("max_speed");
    
 
  
 	auto pointElem = _sdf->GetElement("point");
+
 	while (pointElem){
 		
 		this->dataPtr->polygon.push_back(pointElem->Get<ignition::math::Vector2d>());
 		pointElem = pointElem->GetNextElement("point");
 	}
 	   
-	   if (_sdf->HasElement("pose")){
-		    this->dataPtr->prev_target = _sdf->GetElement("pose")->Get<ignition::math::Pose3d>();
-	   } 
+	if (_sdf->HasElement("pose")){
+		this->dataPtr->prev_target = _sdf->GetElement("pose")->Get<ignition::math::Pose3d>();
+	} 
 		this->dataPtr->curr_target = this->dataPtr->prev_target;
-  if (_sdf->HasElement("follower")){
-	  this->dataPtr->follower = _sdf->Get<bool>("follower");
-  } else{
-	  this->dataPtr->follower = false;
-  }
-  
+
+  	if (_sdf->HasElement("follower")){
+	  	this->dataPtr->follower = _sdf->Get<bool>("follower");
+  	} else{
+	  	this->dataPtr->follower = false;
+  	}
+	
 	if (_sdf->HasElement("velocity")){
 		this->dataPtr->velocity = _sdf->GetElement("velocity")->Get<ignition::math::Vector3d>();
 	} 
@@ -154,62 +155,59 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 	} 
   
 
-  // Read in the target mradius
-  if (_sdf->HasElement("target_radius"))
-    this->dataPtr->targetRadius = _sdf->Get<double>("target_radius");
+  	// Read in the target mradius
+  	if (_sdf->HasElement("target_radius"))
+    	this->dataPtr->targetRadius = _sdf->Get<double>("target_radius");
 
-  // Read in the obstacle margin
-  if (_sdf->HasElement("obstacle_margin"))
-    this->dataPtr->obstacleMargin = _sdf->Get<double>("obstacle_margin");
+  	// Read in the obstacle margin
+  	if (_sdf->HasElement("obstacle_margin"))
+    	this->dataPtr->obstacleMargin = _sdf->Get<double>("obstacle_margin");
 
-  // Read in the animation factor
-  if (_sdf->HasElement("animation_factor"))
-    this->dataPtr->animationFactor = _sdf->Get<double>("animation_factor");
+  	// Read in the animation factor
+  	if (_sdf->HasElement("animation_factor"))
+    	this->dataPtr->animationFactor = _sdf->Get<double>("animation_factor");
 
-  // Read in the obstacles
-  if (_sdf->HasElement("obstacle"))
-  {
-    auto obstacleElem = _sdf->GetElement("obstacle");
-    while (obstacleElem)
-    {
-      auto name = obstacleElem->Get<std::string>();
-      this->dataPtr->obstacles.push_back(name);
-      obstacleElem = obstacleElem->GetNextElement("obstacle");
-    }
-  }
+   	// Read in the buildings
+  	if (_sdf->HasElement("building"))
+  	{
+    	auto obstacleElem = _sdf->GetElement("building");
+    	while (obstacleElem){
+      		auto name = obstacleElem->Get<std::string>();
+      		this->dataPtr->buildings.push_back(name);
+      		obstacleElem = obstacleElem->GetNextElement("building");
+    	}
+  	}
 
 	///TODO: add running at a certain speed
-  // Read in the animation name
-  std::string animation{"animation"};
-  if (_sdf->HasElement("animation"))
-    animation = _sdf->Get<std::string>("animation");
+  	// Read in the animation name
+  	std::string animation{"animation"};
+  	if (_sdf->HasElement("animation"))
+    	animation = _sdf->Get<std::string>("animation");
 
-  auto skelAnims = this->dataPtr->actor->SkeletonAnimations();
-  if (skelAnims.find(animation) == skelAnims.end())
-  {
-    gzerr << "Skeleton animation [" << animation << "] not found in Actor."
-          << std::endl;
-  }
-  else
-  {
-    // Set custom trajectory
-    gazebo::physics::TrajectoryInfoPtr trajectoryInfo(new physics::TrajectoryInfo());
-    trajectoryInfo->type = animation;
-    trajectoryInfo->duration = 1.0;
+  	auto skelAnims = this->dataPtr->actor->SkeletonAnimations();
+  	if (skelAnims.find(animation) == skelAnims.end()){
+    	gzerr << "Skeleton animation [" << animation << "] not found in Actor."
+          	<< std::endl;
+  	}
+  	else{
+		// Set custom trajectory
+    	gazebo::physics::TrajectoryInfoPtr trajectoryInfo(new physics::TrajectoryInfo());
+    	trajectoryInfo->type = animation;
+    	trajectoryInfo->duration = 1.0;
 
-    this->dataPtr->actor->SetCustomTrajectory(trajectoryInfo);
-  }
+    	this->dataPtr->actor->SetCustomTrajectory(trajectoryInfo);
+  	}
   
-  auto world = this->dataPtr->actor->GetWorld();
-  for (unsigned int i = 0; i < world->ModelCount(); ++i) {
+  	auto world = this->dataPtr->actor->GetWorld();
+ 	for (unsigned int i = 0; i < world->ModelCount(); ++i) {
 		// iterate over all models. Skip if the model is itself or if it needs to be ignored 
 		
 		auto model = world->ModelByIndex(i);
 		auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
 
-		if (model->GetName() == "myhal" || model->GetName() == "test_cell2"){ //add any desired building name
+		if (std::find(this->dataPtr->buildings.begin(),this->dataPtr->buildings.end(), model->GetName()) != this->dataPtr->buildings.end()){ //add any desired building name
 			//std::cout << "hi" << std::endl;
-			this->dataPtr->building_links = model->GetLinks();
+			this->dataPtr->building_links[model->GetName()] = model->GetLinks();
 		}
 		
 		if (!act) {
@@ -333,14 +331,14 @@ ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 
 	
 	
-		if (model->GetName() == "myhal" || model->GetName() == "test_cell2"){ //add building names here TODO: macro for building names 
+		if (std::find(this->dataPtr->buildings.begin(),this->dataPtr->buildings.end(), model->GetName()) != this->dataPtr->buildings.end()){ //add building names here TODO: macro for building names 
 			//std::cout << "in here\n";
 			//TODO: find ways of speeding this up
 
 			auto actorPos = actorPose.Pos(); // position of actor
 			actorPos.Z() = 0;
 
-			for (auto link: this->dataPtr->building_links){
+			for (auto link: this->dataPtr->building_links[model->GetName()]){
 				//std::cout << "in here\n";
 				
 				ignition::math::Vector3d modelPos = link->WorldPose().Pos(); // position of model

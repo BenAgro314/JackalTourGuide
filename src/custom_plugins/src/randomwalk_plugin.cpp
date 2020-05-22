@@ -11,6 +11,7 @@
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Box.hh>
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <gazebo/common/Animation.hh>
 #include <gazebo/common/Console.hh>
@@ -62,7 +63,7 @@ class servicesim::ActorPluginPrivate
   public: common::Time lastUpdate;
 
   /// \brief List of models to avoid
-  public: std::vector<std::string> obstacles;
+  public: std::vector<std::string> buildings;
 
   /// \brief Frequency in Hz to update
   public: double updateFreq{60};
@@ -75,11 +76,10 @@ class servicesim::ActorPluginPrivate
   
   public: common::Time last_target_time;
   
-  public: bool follower = false;
-  
   public: double dt;
 
-  public: gazebo::physics::Link_V building_links;
+  public: std::map<std::string,gazebo::physics::Link_V> building_links;
+
 };
 
 /////////////////////////////////////////////////
@@ -91,94 +91,80 @@ ActorPlugin::ActorPlugin()
 /////////////////////////////////////////////////
 void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
-  this->dataPtr->actor = boost::dynamic_pointer_cast<physics::Actor>(_model);
+  	this->dataPtr->actor = boost::dynamic_pointer_cast<physics::Actor>(_model);
 
-  this->dataPtr->connections.push_back(event::Events::ConnectWorldUpdateBegin(
-      std::bind(&ActorPlugin::OnUpdate, this, std::placeholders::_1)));
+ 	 this->dataPtr->connections.push_back(event::Events::ConnectWorldUpdateBegin(
+      	std::bind(&ActorPlugin::OnUpdate, this, std::placeholders::_1)));
 
-  // Update frequency
-  if (_sdf->HasElement("update_frequency"))
-    this->dataPtr->updateFreq = _sdf->Get<double>("update_frequency");
+  	// Update frequency
+  	if (_sdf->HasElement("update_frequency"))
+    	this->dataPtr->updateFreq = _sdf->Get<double>("update_frequency");
 
 
-  // Read in the velocity
-  if (_sdf->HasElement("max_speed"))
-    this->dataPtr->max_speed= _sdf->Get<double>("max_speed");
+  	// Read in the velocity
+  	if (_sdf->HasElement("max_speed"))
+    	this->dataPtr->max_speed= _sdf->Get<double>("max_speed");
 
 
  
 	auto pointElem = _sdf->GetElement("point");
+	
 	while (pointElem){
 		
 		this->dataPtr->polygon.push_back(pointElem->Get<ignition::math::Vector2d>());
 		pointElem = pointElem->GetNextElement("point");
 	}
 	   
-	   ignition::math::Pose3d holder;
-	   if (_sdf->HasElement("pose")){
-		    holder = _sdf->GetElement("pose")->Get<ignition::math::Pose3d>();
-			this->dataPtr->actor->SetWorldPose(holder, false, false);
-			this->dataPtr->curr_target = holder.Pos();
-			this->dataPtr->curr_target.Z() = 0;
-			this->dataPtr->prev_target = this->dataPtr->curr_target;
-	   } 
-		
-  if (_sdf->HasElement("follower")){
-	  this->dataPtr->follower = _sdf->Get<bool>("follower");
-  } else{
-	  this->dataPtr->follower = false;
-  }
-  /*
-	if (_sdf->HasElement("velocity")){
-		this->dataPtr->velocity = _sdf->GetElement("velocity")->Get<ignition::math::Vector3d>();
+	ignition::math::Pose3d holder;
+	if (_sdf->HasElement("pose")){
+		holder = _sdf->GetElement("pose")->Get<ignition::math::Pose3d>();
+		this->dataPtr->actor->SetWorldPose(holder, false, false);
+		this->dataPtr->curr_target = holder.Pos();
+		this->dataPtr->curr_target.Z() = 0;
+		this->dataPtr->prev_target = this->dataPtr->curr_target;
 	} 
-  */
 
-  // Read in the target mradius
-  if (_sdf->HasElement("target_radius"))
-    this->dataPtr->targetRadius = _sdf->Get<double>("target_radius");
+  	// Read in the target mradius
+  	if (_sdf->HasElement("target_radius"))
+    	this->dataPtr->targetRadius = _sdf->Get<double>("target_radius");
 
-  // Read in the obstacle margin
-  if (_sdf->HasElement("obstacle_margin"))
-    this->dataPtr->obstacleMargin = _sdf->Get<double>("obstacle_margin");
+  	// Read in the obstacle margin
+  	if (_sdf->HasElement("obstacle_margin"))
+    	this->dataPtr->obstacleMargin = _sdf->Get<double>("obstacle_margin");
 
-  // Read in the animation factor
-  if (_sdf->HasElement("animation_factor"))
-    this->dataPtr->animationFactor = _sdf->Get<double>("animation_factor");
+  	// Read in the animation factor
+ 	if (_sdf->HasElement("animation_factor"))
+    	this->dataPtr->animationFactor = _sdf->Get<double>("animation_factor");
 
-  // Read in the obstacles
-  if (_sdf->HasElement("obstacle"))
-  {
-    auto obstacleElem = _sdf->GetElement("obstacle");
-    while (obstacleElem)
-    {
-      auto name = obstacleElem->Get<std::string>();
-      this->dataPtr->obstacles.push_back(name);
-      obstacleElem = obstacleElem->GetNextElement("obstacle");
-    }
-  }
+ 	 // Read in the obstacles
+  	if (_sdf->HasElement("building"))
+  	{
+    	auto obstacleElem = _sdf->GetElement("building");
+    	while (obstacleElem){
+      		auto name = obstacleElem->Get<std::string>();
+      		this->dataPtr->buildings.push_back(name);
+      		obstacleElem = obstacleElem->GetNextElement("building");
+    	}
+  	}
 
 	///TODO: add running at a certain speed
-  // Read in the animation name
-  std::string animation{"animation"};
-  if (_sdf->HasElement("animation"))
-    animation = _sdf->Get<std::string>("animation");
+  	// Read in the animation name
+  	std::string animation{"animation"};
+ 	 if (_sdf->HasElement("animation"))
+    	animation = _sdf->Get<std::string>("animation");
 
-  auto skelAnims = this->dataPtr->actor->SkeletonAnimations();
-  if (skelAnims.find(animation) == skelAnims.end())
-  {
-    gzerr << "Skeleton animation [" << animation << "] not found in Actor."
-          << std::endl;
-  }
-  else
-  {
-    // Set custom trajectory
-    gazebo::physics::TrajectoryInfoPtr trajectoryInfo(new physics::TrajectoryInfo());
-    trajectoryInfo->type = animation;
-    trajectoryInfo->duration = 1.0;
+  	auto skelAnims = this->dataPtr->actor->SkeletonAnimations();
+  	if (skelAnims.find(animation) == skelAnims.end()){
+    	gzerr << "Skeleton animation [" << animation << "] not found in Actor."
+          	<< std::endl;
+  	} else {
+    	// Set custom trajectory
+    	gazebo::physics::TrajectoryInfoPtr trajectoryInfo(new physics::TrajectoryInfo());
+    	trajectoryInfo->type = animation;
+    	trajectoryInfo->duration = 1.0;
 
-    this->dataPtr->actor->SetCustomTrajectory(trajectoryInfo);
-  }
+    	this->dataPtr->actor->SetCustomTrajectory(trajectoryInfo);
+  	}
 
 	auto world = this->dataPtr->actor->GetWorld();
    	for (unsigned int i = 0; i < world->ModelCount(); ++i) {
@@ -187,11 +173,11 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 		auto model = world->ModelByIndex(i);
 		auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
 
-		if (model->GetName() == "myhal" || model->GetName() == "test_cell2"){ //add any desired building name
+		if (std::find(this->dataPtr->buildings.begin(),this->dataPtr->buildings.end(), model->GetName()) != this->dataPtr->buildings.end()){ //add any desired building name
 			//std::cout << "hi" << std::endl;
-			this->dataPtr->building_links = model->GetLinks();
+			this->dataPtr->building_links[model->GetName()] = model->GetLinks();
 		}
-   }
+   	}
  
   
 }
@@ -429,28 +415,6 @@ void ActorPlugin::SelectRandomTarget(){
 
 		bool flag = false;
 
-		//iterate over all boundaries:
-		/*
-		for (int i =0; i<(int) this->dataPtr->polygon.size(); i+=2){
-			ignition::math::Line3d boundary_line = ignition::math::Line3d(this->dataPtr->polygon[i].X(), this->dataPtr->polygon[i].Y(), this->dataPtr->polygon[i+1].X(), this->dataPtr->polygon[i+1].Y());
-			
-			
-			ignition::math::Vector3d test_intersection;
-
-			if (ray.Intersect(boundary_line, test_intersection)){ //if the ray intersects the boundary
-				//std::printf("intersection: (%f, %f, %f)\n", test_intersection.X(), test_intersection.Y(), test_intersection.Z());
-				double dist_to_int = (test_intersection-actorPos).Length();
-				if (dist_to_int < min_dist){
-					min_dist = dist_to_int;
-					closest_intersection = test_intersection;
-				}
-
-			}
-		}
-		*/
-
-		//iterate over all objects
-
 		for (unsigned int i = 0; i < world->ModelCount(); ++i) {
 			// iterate over all models. Skip if the model is itself or if it needs to be ignored 
 			
@@ -466,12 +430,9 @@ void ActorPlugin::SelectRandomTarget(){
 			2. check ray intersection with all edge lines 
 			3. store the closest intersection
 			*/
-		
 			
-			
-			
-			if (model->GetName() == "myhal" || model->GetName() == "test_cell2"){
-				for (auto link: this->dataPtr->building_links){
+			if (std::find(this->dataPtr->buildings.begin(),this->dataPtr->buildings.end(), model->GetName()) != this->dataPtr->buildings.end()){
+				for (auto link: this->dataPtr->building_links[model->GetName()]){
 
 
 					ignition::math::Vector3d modelPos = link->WorldPose().Pos(); // position of model
