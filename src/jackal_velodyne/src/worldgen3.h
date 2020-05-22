@@ -348,7 +348,7 @@ struct Section{
 			ignition::math::Vector2d point;
 			if (random_point(polygon,table_points, point)){
 				// currently: libboids_plugin.so or librandomwalk_plugin.so
-				people.push_back(Person(point, polygon, ignition::math::Rand::DblNormal(0.9,0.15), "libboids_plugin.so"));
+				people.push_back(Person(point, polygon, ignition::math::Rand::DblNormal(0.9,0.15), "librandomwalk_plugin.so"));
 			}
 		}
 	}
@@ -391,7 +391,7 @@ void write_randomwalk_plugin(Person person, ofstream& out){
     
     out << "\n<building>myhal</building>\n";
     out << "\n<max_speed>" << person.speed << "</max_speed>\n";
-	out << "<obstacle_margin>1</obstacle_margin>\n";
+	out << "<obstacle_margin>0.5</obstacle_margin>\n";
 	
     
     out << "</plugin>\n";
