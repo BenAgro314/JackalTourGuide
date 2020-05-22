@@ -27,22 +27,26 @@ void LidarCallback(const sensor_msgs::PointCloud2::ConstPtr& msg){
 
 int main(int argc, char** argv){
 
-  std::string bag_name;
+    std::string bag_name("tour_positions1.bag");
     
-  ros::init(argc, argv, "simple_navigation_goals");
-  ros::NodeHandle nh("~");
+    ros::init(argc, argv, "simple_navigation_goals");
+    ros::NodeHandle nh;
   
-  if (!nh.getParam("bag_name", bag_name)){
-    bag_name = "tour_positions1.bag";
-  }
+    /*
+    if (!nh.getParam("bag_name", bag_name)){
+      bag_name = "tour_positions1.bag";
+    }
+    */
     
-  ROS_WARN("Wating for topics to start tour\n");
+    ROS_WARN("Wating for topics to start tour\n");
   
-  /*
     ros::Subscriber lidar_sub = nh.subscribe("velodyne_points", 1000, LidarCallback);
-    ROS_WARN("HEREHERE\n");
-    ros::spin();
-  */
+    ros::Rate r(10);
+    while (!start_tour){
+      
+      ros::spinOnce();  
+      r.sleep();
+    }
     
     //std::cout << "Input tour name: ";
     //std::cin >> bag_name;
@@ -87,5 +91,5 @@ int main(int argc, char** argv){
     tour.close();
   
   
-  return 0;
+    return 0;
 }

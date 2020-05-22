@@ -54,16 +54,17 @@ int main(int argc, char ** argv){
 	
 	ros::init(argc, argv, "ground_truth_monitor");
 
-	ros::NodeHandle nh("~");
+	ros::NodeHandle nh;
 	
 	//bag1.open("test_pose.bag", rosbag::bagmode::Write);
 	
 	
-	string param;
-	
+	string param("default_name");
+	/*
 	if (!nh.getParam("param", param)){
 		param = "default_name";
 	}
+	*/
 	cout << "FILENAME: " << param << endl;
 	
 	string bag_path = "./data/" + param + "_lidar.bag";

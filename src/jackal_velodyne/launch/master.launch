@@ -71,7 +71,7 @@
   <!--- Run Move Base -->
  <include file="$(find jackal_velodyne)/launch/include/move_base.launch" />
  
- <arg name="node_start_delay" default="30.0" />  
-  <node pkg="jackal_velodyne" type="navigation_goals" name="navigation_goals" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " args="_bag_name:=$(arg bag_name)"/>
+ <arg name="node_start_delay" default="0" />  
+  <node pkg="jackal_velodyne" type="navigation_goals" name="navigation_goals" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' "/>
   
 </launch>

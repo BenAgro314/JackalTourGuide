@@ -1,7 +1,7 @@
 <launch>
   <arg name="use_sim_time" default="true" />
-  <arg name="gui" default="true" /> <!-- adjust gui and headless to speed up simulation by removing the gazebo gui -->
-  <arg name="headless" default="false" />
+  <arg name="gui" default="false" /> <!-- adjust gui and headless to speed up simulation by removing the gazebo gui -->
+  <arg name="headless" default="true" />
   <arg name="world_name" default="$(find jackal_velodyne)/worlds/out2.world" />
 
   <!-- Short-term hack to support the original front_laser:=true argument for spawning
