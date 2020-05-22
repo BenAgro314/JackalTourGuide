@@ -8,7 +8,7 @@ The first goal of the project is to produce pointcloud and pose data from the Ja
 
 ### Description
 
-##### Packages
+#### Packages
 
 ##### jackal_velodyne
 
