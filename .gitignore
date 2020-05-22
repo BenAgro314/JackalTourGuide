@@ -4,3 +4,5 @@
 /devel
 .vscode
 /.catkin_tools
+topics.txt
+*.bag

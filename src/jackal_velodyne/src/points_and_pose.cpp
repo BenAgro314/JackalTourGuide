@@ -53,12 +53,7 @@ void LidarCallback(const sensor_msgs::PointCloud2::ConstPtr& msg){
 int main(int argc, char ** argv){
 	
 	ros::init(argc, argv, "ground_truth_monitor");
-	
-	
-	
-	
-	
-	
+
 	ros::NodeHandle nh("~");
 	
 	//bag1.open("test_pose.bag", rosbag::bagmode::Write);
