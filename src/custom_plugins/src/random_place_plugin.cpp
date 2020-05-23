@@ -105,7 +105,6 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 	7. if there are no suitable segments, rechoose horizontal line
 	*/
 	
-	//TODO: fix this if statement
 
 	bool found_valid_place = false;
 	ignition::math::Vector3d res_pos;
@@ -204,11 +203,21 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
 		//ensure that we are safe:
 		/*
-		1. iterate over all bouding boxes:
+		1. iterate over all bounding boxes:
 		2. check if our position is too close (normally) to any of the bounding boxes edges
 		3. check if we are in a bounding box 
 		4. if no to 2. and 3. , the positon is safe 
 		*/
+
+		for (auto const& link_list: this->dataPtr->building_links){
+			
+			for (auto link: link_list.second){ //iterate over all links of all buildings 
+				auto normal = this->min_normal(res_pos, link);
+				if (normal.Length() < this->dataPtr->obstacle_margin || this->point_in_object(res_pos, link)){
+					found_valid_place = false;
+				}
+			}
+		}
 		
 	}
 
@@ -259,6 +268,25 @@ std::vector<ignition::math::Vector3d> RandomPlacement::get_corners(gazebo::physi
 
 	return corners;
 }
+
+
+bool RandomPlacement::point_in_object(ignition::math::Vector3d pos,gazebo::physics::EntityPtr entity){
+	ignition::math::Box box = entity->BoundingBox();
+	ignition::math::Vector3d min_corner = box.Min();
+	ignition::math::Vector3d max_corner = box.Max();
+	min_corner.Z() = 0;
+	max_corner.Z() = 0;
+
+	if (pos.X() >= std::min(min_corner.X(), max_corner.X()) 
+	&& pos.X() <= std::max(min_corner.X(), max_corner.X())
+	&& pos.Y() >= std::min(min_corner.Y(), max_corner.Y())
+	&& pos.Y() <= std::max(min_corner.Y(), max_corner.Y())){
+		return  true;
+	} else{
+		return false;
+	}
+}
+
 
 //returns the shortest normal vector between pos and one of the edges on the bounding box of entity
 // will return the shortest corner distance if the normal does not exist 

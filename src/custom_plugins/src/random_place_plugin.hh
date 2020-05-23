@@ -28,6 +28,8 @@ namespace servicesim
 
     private: ignition::math::Vector3d min_normal(ignition::math::Vector3d pos, gazebo::physics::EntityPtr entity);
 
+    private: bool point_in_object(ignition::math::Vector3d pos,gazebo::physics::EntityPtr entity);
+
     /// \internal
     public: RandomPlacementPrivate *dataPtr;
 

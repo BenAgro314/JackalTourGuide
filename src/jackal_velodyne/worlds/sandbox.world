@@ -118,7 +118,42 @@
 
 
 
-  <actor name="randomguy4">
+  
+    
+<include>
+  <uri>model://table_conference_2</uri> 
+  <name> "table_1" </name> 
+  <pose> 0 0 0 0 0 0 </pose>
+  <plugin name="placement" filename="librandom_place_plugin.so">
+        <building>box</building>
+        <obstacle_margin>1.5</obstacle_margin>
+        <z_pos>0</z_pos>
+  </plugin>
+</include>
+
+<include>
+  <uri>model://table_conference_2</uri> 
+  <name> "table_2" </name> 
+  <pose> 0 0 0 0 0 0 </pose>
+  <plugin name="placement" filename="librandom_place_plugin.so">
+        <building>box</building>
+        <obstacle_margin>1.5</obstacle_margin>
+        <z_pos>0</z_pos>
+  </plugin>
+</include>
+
+<include>
+  <uri>model://table_conference_2</uri> 
+  <name> "table_3" </name> 
+  <pose> 0 0 0 0 0 0 </pose>
+  <plugin name="placement" filename="librandom_place_plugin.so">
+        <building>box</building>
+        <obstacle_margin>1.5</obstacle_margin>
+        <z_pos>0</z_pos>
+  </plugin>
+</include>
+
+<actor name="randomguy4">
 
 
       <skin>
@@ -134,7 +169,7 @@
         <obstacle_margin>0.7</obstacle_margin>
       </plugin>
 
-      <plugin name="trajectory" filename="librandomwalk_plugin.so">
+      <plugin name="trajectory" filename="libboids_plugin.so">
 
         <target_point>
         3
@@ -151,19 +186,6 @@
       
 	
   </actor>
-
-    
-<include>
-  <uri>model://table_conference_2</uri> 
-  <name> "table_-32" </name> 
-  <pose> 0 0 0 0 0 0 </pose>
-  <plugin name="placement" filename="librandom_place_plugin.so">
-        <building>box</building>
-        <obstacle_margin>3</obstacle_margin>
-        <z_pos>0</z_pos>
-  </plugin>
-</include>
-
 
 
  
