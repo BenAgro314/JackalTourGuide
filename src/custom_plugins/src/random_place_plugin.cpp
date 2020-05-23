@@ -104,28 +104,34 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 	6. randomly choose a suitable line (one that is long enough), and place the model in that position
 	7. if there are no suitable segments, rechoose horizontal line
 	*/
+
+		//find maximum and min y value of building 
+	double min_y = 10000;
+	double max_y = -10000;
+	double min_x = 10000;
+	double max_x = -10000;
+
+	for (auto const& link_list: this->dataPtr->building_links){
+			
+		for (auto link: link_list.second){ //iterate over all links of all buildings 
+			ignition::math::Box box = link->BoundingBox();
+			ignition::math::Vector3d min_corner = box.Min();
+			ignition::math::Vector3d max_corner = box.Max();
+			max_y = std::max(max_y, std::max(min_corner.Y(), max_corner.Y()));
+			min_y = std::min(min_y, std::min(min_corner.Y(), max_corner.Y()));
+			max_x = std::max(max_x, std::max(min_corner.X(), max_corner.X()));
+			min_x = std::min(min_x, std::min(min_corner.X(), max_corner.X()));			}
+	}
+
+
+	std::printf("min_y %f, max_y %f, min_x %f, max_x %f\n", min_y, max_y, min_x, max_x);
 	
 
 	bool found_valid_place = false;
 	ignition::math::Vector3d res_pos;
 	while (!found_valid_place){
-		//find maximum and min y value of building 
-		double min_y = 10000;
-		double max_y = -10000;
+		
 
-		for (auto const& link_list: this->dataPtr->building_links){
-			
-			for (auto link: link_list.second){ //iterate over all links of all buildings 
-				ignition::math::Box box = link->BoundingBox();
-				ignition::math::Vector3d min_corner = box.Min();
-				ignition::math::Vector3d max_corner = box.Max();
-
-				max_y = std::max(max_y, std::max(min_corner.Y(), max_corner.Y()));
-				min_y = std::min(min_y, std::min(min_corner.Y(), max_corner.Y()));
-			}
-		}
-
-		//std::printf("min_y %f, max_y %f\n", min_y, max_y);
 
 		double h = ignition::math::Rand::DblUniform(min_y, max_y);
 		ignition::math::Line3d h_line = ignition::math::Line3d(-10000, h, 10000,h);
@@ -215,14 +221,21 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 				auto normal = this->min_normal(res_pos, link);
 				if (normal.Length() < this->dataPtr->obstacle_margin || this->point_in_object(res_pos, link)){
 					found_valid_place = false;
+					
 				}
 			}
 		}
+
+		if (res_pos.X() <= min_x+this->dataPtr->obstacle_margin || res_pos.X() >= max_x-this->dataPtr->obstacle_margin){
+			found_valid_place = false;
+			
+		}
+		
 		
 	}
 
 	auto pose = ignition::math::Pose3d(res_pos.X(), res_pos.Y(), this->dataPtr->z_pos, 0, 0, 0);
-	//std::printf("(%f, %f, %f)\n", res_pos.X(), res_pos.Y(), res_pos.Z());
+	std::printf("(%f, %f, %f)\n", res_pos.X(), res_pos.Y(), res_pos.Z());
 	this->dataPtr->self->SetWorldPose(pose , true, true);
   
 }
