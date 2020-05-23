@@ -61,8 +61,8 @@
  <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map1.yaml"/>
  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
-  <!--- Run leg_detection -->
- <include file="$(find jackal_velodyne)/launch/include/leg_detector.launch" />
+  <!--- Run leg_detection: this was causing probelems and was thus removed  -->
+ <!--include file="$(find jackal_velodyne)/launch/include/leg_detector.launch" /-->
 
   <!--- Run AMCL -->
  <include file="$(find jackal_velodyne)/launch/include/amcl.launch" />

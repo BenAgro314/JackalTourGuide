@@ -8,6 +8,8 @@ using namespace std;
 
 
 int main(int argc, char ** argv){
+
+
 	srand( (unsigned)time(NULL));
 	int num_people;
 	int num_tables;

@@ -9,6 +9,7 @@
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
 #include "sensor_msgs/PointCloud2.h"
+#include "sensor_msgs/Image.h"
 #include <iostream>
 #include <fstream>
 
@@ -18,13 +19,19 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 //int max_cycles = 10;
 
 rosbag::Bag tour;
-bool start_tour = false;
+bool lidar = false;
+bool camera = false;
 
+void ImageCallback(const sensor_msgs::Image::ConstPtr& msg){
+	
+	ROS_WARN("Camera Recieved!\n");
+	camera = true;
+}
 
 void LidarCallback(const sensor_msgs::PointCloud2::ConstPtr& msg){
 	
-	ROS_WARN("Starting Tour\n");
-	start_tour = true;
+	ROS_WARN("Lidar Recieved!\n");
+	lidar = true;
 }
 
 
@@ -47,8 +54,9 @@ int main(int argc, char** argv){
     ROS_WARN("USING TOUR %s\n", bag_name.c_str());
   
     ros::Subscriber lidar_sub = nh.subscribe("velodyne_points", 1000, LidarCallback);
+    ros::Subscriber camera_sub = nh.subscribe("kinect_V2/depth/image_raw", 1000, ImageCallback);
     ros::Rate r(10);
-    while (!start_tour){
+    while (!lidar || !camera){ // wait until both lidar and camera have been recieved 
       
       ros::spinOnce();  
       r.sleep();
@@ -67,7 +75,7 @@ int main(int argc, char** argv){
     
     
     move_base_msgs::MoveBaseGoal goal;
-    
+    ROS_WARN("Starting Tour\n");
     for (rosbag::MessageInstance const m: rosbag::View(tour)){
       
       ROS_WARN("\nSending Command:\n");
