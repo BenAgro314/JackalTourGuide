@@ -91,6 +91,8 @@ class servicesim::ActorPluginPrivate
   public: double aversion_factor = 1;
 
   public: std::map<std::string,gazebo::physics::Link_V> building_links;
+
+  public: double view_angle = 6.28;
 };
 
 /////////////////////////////////////////////////
@@ -166,6 +168,10 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 	if (_sdf->HasElement("n_dist")){
 		this->dataPtr->n_dist = _sdf->GetElement("n_dist")->Get<double>();
 	} 
+
+	if (_sdf->HasElement("view_angle")){
+		this->dataPtr->view_angle = _sdf->GetElement("n_dist")->Get<double>();
+	}
   
 
   	// Read in the target mradius
@@ -511,7 +517,7 @@ ignition::math::Vector3d  ActorPlugin::Alignment(){
 			double angle = std::acos(actor_dir.Dot(facing_dir));
 			//std::cout << "angle: " << angle << std::endl;
 
-			if (angle < 2){//if the angle is less than 2 rad (either side is considered)
+			if (angle < this->dataPtr->view_angle/2){
 				//std::cout << "angle: " << angle << std::endl;
 				ignition::math::Vector3d past_pos = this->dataPtr->prev_poses[model->GetName()];
 				this->dataPtr->prev_poses[model->GetName()] = otherPos;
@@ -592,7 +598,7 @@ ignition::math::Vector3d  ActorPlugin::Cohesion(){
 			double angle = std::acos(actor_dir.Dot(facing_dir));
 			//std::cout << "angle: " << angle << std::endl;
 
-			if (angle < 2){//if the angle is less than 2rad (either side is considered)
+			if (angle < this->dataPtr->view_angle/2){//if the angle is less than 2rad (either side is considered)
 				count++;
 				sum+= otherPos;
 			}

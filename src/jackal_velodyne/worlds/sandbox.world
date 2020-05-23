@@ -134,7 +134,7 @@
         3
         0
         </target_point>
-
+        <cohesive_factor>0.1</cohesive_factor>
         <building>box</building>
 
         <max_speed>0.866189</max_speed>
@@ -176,7 +176,7 @@
         3
         0
         </target_point>
-
+        <cohesive_factor>0.1</cohesive_factor>
         <building>box</building>
 
         <max_speed>0.866189</max_speed>
@@ -219,7 +219,7 @@
         3
         0
         </target_point>
-
+        <cohesive_factor>0.1</cohesive_factor>
         <building>box</building>
 
         <max_speed>0.866189</max_speed>
