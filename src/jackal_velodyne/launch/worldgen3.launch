@@ -5,7 +5,7 @@
 <arg name="sim_world" default="worldgen3"/>
 <arg name="gui" default="true"/>
 
-
+<rosparam file="$(find jackal_velodyne)/params/simulation_params.yaml" command="load" />
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find jackal_velodyne)/worlds/$(arg sim_world).world"/>

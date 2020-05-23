@@ -1,8 +1,8 @@
 <launch>
 
-  <rosparam file="$(find jackal_velodyne)/params/simulation_params.yaml" command="load" />
+  <!--rosparam file="$(find jackal_velodyne)/params/simulation_params.yaml" command="load" /-->
 
-  <node pkg="jackal_velodyne" type="worldgen3" name="worldgen3"/>
+  <!--node pkg="jackal_velodyne" type="worldgen3" name="worldgen3"/-->
   
   <arg name="use_sim_time" default="true" />
   <arg name="gui" default="false" /> <!-- adjust gui and headless to speed up simulation by removing the gazebo gui -->

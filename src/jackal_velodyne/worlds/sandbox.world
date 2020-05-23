@@ -95,97 +95,139 @@
     
     <!-- insert stuff below -->
     <include>
-	  <name>myhal</name>
-	  <pose>0 0 0 0 0 0</pose>
-	  <uri>model://Myhal_5th_floor</uri>
-	</include>
+      <name>box</name>
+      <pose>0 0 0 0 0 0</pose>
+      <uri>model://10x10Box</uri>
+	  </include>
     
+    <actor name="guy1">
+      <pose>
+        0
+        0
+        1
+        0
+        0
+        3.1415
+      </pose>
 
 
-
-  <actor name="TEST_GUY2">
-	<pose>
-		0
-		0
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-
-	<skin>
-	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
-	</skin>
-	<animation name="animation"> 
-		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-		<interpolate_x>true</interpolate_x>
-	</animation>
+      <skin>
+      <filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+      </skin>
+      <animation name="animation"> 
+        <filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
 	
-<plugin name="trajectory" filename="librandomwalk_plugin.so">
-<point>
--10
--10
-</point>
-<point>
--10
-10
-</point>
-<point>
--10
--10
-</point>
-<point>
-10
--10
-</point>
-<point>
--10
-10
-</point>
-<point>
-10
-10
-</point>
-<point>
-10
--10
-</point>
-<point>
-10
-10
-</point>
+      <plugin name="trajectory" filename="libboids_plugin.so">
+        <pose>
+          0
+          0
+          1
+          0
+          0
+          3.1415
+        </pose>
+
+        <target_point>
+        3
+        3
+        0
+        </target_point>
+
+        <building>box</building>
+
+        <max_speed>0.866189</max_speed>
+        <obstacle_margin>0.5</obstacle_margin>
+      </plugin>
+  </actor>
+
+  <actor name="guy2">
+      <pose>
+        1.3836
+        3.19008
+        1
+        0
+        0
+        3.1415
+      </pose>
 
 
-	<pose>
-		0
-		0
-		1
-		0
-		0
-		3.1415
-	</pose>
+      <skin>
+      <filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+      </skin>
+      <animation name="animation"> 
+        <filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+	
+      <plugin name="trajectory" filename="libboids_plugin.so">
+        <pose>
+          1.3836
+          3.19008
+          1
+          0
+          0
+          3.1415
+        </pose>
+
+        <target_point>
+        3
+        3
+        0
+        </target_point>
+
+        <building>box</building>
+
+        <max_speed>0.866189</max_speed>
+        <obstacle_margin>0.5</obstacle_margin>
+      </plugin>
+    </actor>
 
 
-<max_speed>1.2</max_speed>
-<obstacle_margin>0.5</obstacle_margin>
-</plugin>
-</actor>
+    <actor name="guy3">
+      <pose>
+        -1
+        -1
+        1
+        0
+        0
+        3.1415
+      </pose>
 
-<!-- adding mesh from ShapeNet-->
 
-<!--model name="my_mesh">
-      <pose>0 0 0  0 0 0</pose>
-      <static>true</static>
-      <link name="body">
-        <visual name="visual">
-          <geometry>
-            <mesh><uri>model://test_table/model.dae</uri></mesh>
-          </geometry>
-        </visual>
-      </link>
-</model-->
+      <skin>
+      <filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+      </skin>
+      <animation name="animation"> 
+        <filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+	
+      <plugin name="trajectory" filename="libboids_plugin.so">
+        <pose>
+          0
+          0
+          1
+          0
+          0
+          3.1415
+        </pose>
 
+        <target_point>
+        3
+        3
+        0
+        </target_point>
+
+        <building>box</building>
+
+        <max_speed>0.866189</max_speed>
+        <obstacle_margin>0.5</obstacle_margin>
+      </plugin>
+  </actor>
+
+  
 
  
   </world>

@@ -67,6 +67,8 @@ class servicesim::ActorPluginPrivate
   public: double updateFreq{60};
   
   public: std::vector<ignition::math::Vector2d> polygon;
+
+  public: std::vector<ignition::math::Vector3d> target_points;
   
   public: ignition::math::Pose3d prev_target;
   
@@ -114,13 +116,24 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     	this->dataPtr->max_speed= _sdf->Get<double>("max_speed");
    
 
- 
-	auto pointElem = _sdf->GetElement("point");
+	if (_sdf->HasElement("point")){
+		auto pointElem = _sdf->GetElement("point");
 
-	while (pointElem){
-		
-		this->dataPtr->polygon.push_back(pointElem->Get<ignition::math::Vector2d>());
-		pointElem = pointElem->GetNextElement("point");
+		while (pointElem){
+			
+			this->dataPtr->polygon.push_back(pointElem->Get<ignition::math::Vector2d>());
+			pointElem = pointElem->GetNextElement("point");
+		}
+	}
+
+	if (_sdf->HasElement("target_point")){
+		auto pointElem = _sdf->GetElement("target_point");
+
+		while (pointElem){
+			
+			this->dataPtr->target_points.push_back(pointElem->Get<ignition::math::Vector3d>());
+			pointElem = pointElem->GetNextElement("target_point");
+		}
 	}
 	   
 	if (_sdf->HasElement("pose")){
@@ -477,15 +490,38 @@ ignition::math::Vector3d  ActorPlugin::Alignment(){
 		
 		if ((actorPos-otherPos).Length() < this->dataPtr->n_dist){
 			//if we are in the radius of consideration
-			
-			ignition::math::Vector3d past_pos = this->dataPtr->prev_poses[model->GetName()];
-			this->dataPtr->prev_poses[model->GetName()] = otherPos;
-			
-			ignition::math::Vector3d vel = (otherPos-past_pos)/this->dataPtr->dt;
-			count++;
-			//ignition::math::Vector3d vel = model->WorldLinearVel();	
-			sum+= vel;
-			//std::printf("(%f, %f, %f)\n", vel.X(), vel.Y(), vel.Z());
+
+			//check if the actor is within a 180 degree viewing angle
+			/*
+			1. obtain the current direction vector we are facing
+			2. obtain the direction vector to the neighbour
+			3. find the angle between them. If it is within +-90 degrees, that actor is under consideration 
+			*/
+
+			double currentYaw = actorPose.Rot().Yaw();
+			auto rotation = ignition::math::Quaterniond(0,0,currentYaw);
+			ignition::math::Vector3d facing_dir = ignition::math::Vector3d(1,0,0); // position along x-axis to start
+			facing_dir = rotation.RotateVector(facing_dir);
+			facing_dir.Normalize();
+			//std::printf("Yaw: %f, facing_dir: (%f, %f, %f)\n", currentYaw, facing_dir.X(), facing_dir.Y(), facing_dir.Z());
+
+			auto actor_dir = otherPos-actorPos;
+			actor_dir.Normalize();
+
+			double angle = std::acos(actor_dir.Dot(facing_dir));
+			//std::cout << "angle: " << angle << std::endl;
+
+			if (angle < 2){//if the angle is less than 2 rad (either side is considered)
+				//std::cout << "angle: " << angle << std::endl;
+				ignition::math::Vector3d past_pos = this->dataPtr->prev_poses[model->GetName()];
+				this->dataPtr->prev_poses[model->GetName()] = otherPos;
+				
+				ignition::math::Vector3d vel = (otherPos-past_pos)/this->dataPtr->dt;
+				count++;
+				//ignition::math::Vector3d vel = model->WorldLinearVel();	
+				sum+= vel;
+				//std::printf("(%f, %f, %f)\n", vel.X(), vel.Y(), vel.Z());
+			}
 		}
 		
 	}
@@ -535,8 +571,31 @@ ignition::math::Vector3d  ActorPlugin::Cohesion(){
 		
 		if ((actorPos-otherPos).Length() < this->dataPtr->n_dist){
 			//if we are in the radius of consideration
-			count++;
-			sum+= otherPos;
+
+			//check if the actor is within a 180 degree viewing angle
+			/*
+			1. obtain the current direction vector we are facing
+			2. obtain the direction vector to the neighbour
+			3. find the angle between them. If it is within +-90 degrees, that actor is under consideration 
+			*/
+
+			double currentYaw = actorPose.Rot().Yaw();
+			auto rotation = ignition::math::Quaterniond(0,0,currentYaw);
+			ignition::math::Vector3d facing_dir = ignition::math::Vector3d(1,0,0); // position along x-axis to start
+			facing_dir = rotation.RotateVector(facing_dir);
+			facing_dir.Normalize();
+			//std::printf("Yaw: %f, facing_dir: (%f, %f, %f)\n", currentYaw, facing_dir.X(), facing_dir.Y(), facing_dir.Z());
+
+			auto actor_dir = otherPos-actorPos;
+			actor_dir.Normalize();
+
+			double angle = std::acos(actor_dir.Dot(facing_dir));
+			//std::cout << "angle: " << angle << std::endl;
+
+			if (angle < 2){//if the angle is less than 2rad (either side is considered)
+				count++;
+				sum+= otherPos;
+			}
 			
 		}
 		
