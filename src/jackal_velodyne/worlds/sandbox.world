@@ -98,6 +98,7 @@
       <name>box</name>
       <pose>0 0 0 0 0 0</pose>
       <uri>model://10x10Box</uri>
+      <!--uri>model://Myhal_5th_floor</uri-->
 	  </include>
 
     <!--model name="my_model">
@@ -259,14 +260,14 @@
   </actor-->
 
   <actor name="randomguy4">
-      <pose>
-        2
-        2
+      <!--pose>
+        100
+        100
         1
         0
         0
         3.1415
-      </pose>
+      </pose-->
 
 
       <skin>
@@ -276,16 +277,13 @@
         <filename>model://actor/meshes/ANIMATION_walking.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-	
+
+      <plugin name="placement" filename="librandom_place_plugin.so">
+        <building>box</building>
+        <obstacle_margin>0.7</obstacle_margin>
+      </plugin>
+
       <plugin name="trajectory" filename="librandomwalk_plugin.so">
-        <pose>
-          2
-          2
-          1
-          0
-          0
-          3.1415
-        </pose>
 
         <target_point>
         3
@@ -298,6 +296,9 @@
         <max_speed>0.866189</max_speed>
         <obstacle_margin>0.5</obstacle_margin>
       </plugin>
+
+      
+	
   </actor>
 
  

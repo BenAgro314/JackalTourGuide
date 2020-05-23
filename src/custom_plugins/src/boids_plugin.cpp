@@ -70,12 +70,6 @@ class servicesim::ActorPluginPrivate
 
   public: std::vector<ignition::math::Vector3d> target_points;
   
-  public: ignition::math::Pose3d prev_target;
-  
-  public: ignition::math::Pose3d curr_target;
-  
-  public: ignition::math::Pose3d targetPose;
-  
   public: common::Time last_target_time;
   
   public: bool follower = false;
@@ -138,10 +132,7 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 		}
 	}
 	   
-	if (_sdf->HasElement("pose")){
-		this->dataPtr->prev_target = _sdf->GetElement("pose")->Get<ignition::math::Pose3d>();
-	} 
-		this->dataPtr->curr_target = this->dataPtr->prev_target;
+
 
   	if (_sdf->HasElement("follower")){
 	  	this->dataPtr->follower = _sdf->Get<bool>("follower");

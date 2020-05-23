@@ -28,6 +28,9 @@ target_link_libraries(randomwalk_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 add_library(boids_plugin src/boids_plugin.cpp)
 target_link_libraries(boids_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_library(random_place_plugin src/random_place_plugin.cpp)
+target_link_libraries(random_place_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 add_library(TrajectoryActorPlugin src/TrajectoryActorPlugin.cc)
 target_link_libraries(TrajectoryActorPlugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 

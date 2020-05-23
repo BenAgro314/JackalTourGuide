@@ -104,10 +104,10 @@
     
     
 
-<actor name="human_5.77435,2.09423,8130">
+<actor name="human_6.7098,4.10509,4313">
 	<pose>
-		5.77435
-		2.09423
+		6.7098
+		4.10509
 		1
 		0
 		0
@@ -188,59 +188,226 @@
 5.15
 6.8
 </point>
+<velocity>
+1.36731
+0.416217
+0
+</velocity>
+<cohesion_factor>0.01</cohesion_factor>
+<alignment_factor>0.1</alignment_factor>
+<aversion_factor>1</aversion_factor>
+
+<building>myhal</building>
+
+<max_speed>1.91437</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_5.45821,-2.76632,4956">
 	<pose>
-		5.77435
-		2.09423
+		5.45821
+		-2.76632
 		1
 		0
 		0
 		3.1415
 	</pose>
 
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_green_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8.5
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+-8.5
+-5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+5.15
+6.8
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+5.15
+6.8
+</point>
 <velocity>
--1.18341
-0.916722
+-0.665553
+-0.950034
 0
 </velocity>
+<cohesion_factor>0.01</cohesion_factor>
+<alignment_factor>0.1</alignment_factor>
+<aversion_factor>1</aversion_factor>
 
 <building>myhal</building>
 
-<max_speed>1.66845</max_speed>
+<max_speed>2.10068</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
-<include>
-<uri>model://table_conference_2</uri> 
-<name> "table_32" </name> 
-<pose> 3 2 0 0 0 0 </pose>
-</include>
-
-<include>
-<uri>model://chair_3</uri> 
-<name> "chair_3.915442.6279751" </name> 
-<pose> 3.91544 2.62797 0 0 0 0.187016 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_3</uri> 
-<name> "chair_2.261472.8434198" </name> 
-<pose> 2.26147 2.84341 0 0 0 1.04246 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_3</uri> 
-<name> "chair_3.832281.0300941" </name> 
-<pose> 3.83228 1.03009 0 0 0 2.21358 </pose>
-</include>
-
-
-<actor name="human_2.84146,11.9334,2430">
+<actor name="human_-6.16207,-0.79943,9482">
 	<pose>
-		2.84146
-		11.9334
+		-6.16207
+		-0.79943
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8.5
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+-8.5
+-5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+5.15
+6.8
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+5.15
+6.8
+</point>
+<velocity>
+1.4977
+-0.581377
+0
+</velocity>
+<cohesion_factor>0.01</cohesion_factor>
+<alignment_factor>0.1</alignment_factor>
+<aversion_factor>1</aversion_factor>
+
+<building>myhal</building>
+
+<max_speed>1.75291</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_6.33384,6.60371,6431">
+	<pose>
+		6.33384
+		6.60371
 		1
 		0
 		0
@@ -250,6 +417,106 @@
 
 	<skin>
 	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8.5
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+-8.5
+-5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+5.15
+6.8
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+5.15
+6.8
+</point>
+<velocity>
+1.30876
+0.536276
+0
+</velocity>
+<cohesion_factor>0.01</cohesion_factor>
+<alignment_factor>0.1</alignment_factor>
+<aversion_factor>1</aversion_factor>
+
+<building>myhal</building>
+
+<max_speed>1.56063</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_6.22307,12.3498,2193">
+	<pose>
+		6.22307
+		12.3498
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
 	</skin>
 	<animation name="animation"> 
 		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -289,53 +556,361 @@
 8
 20
 </point>
+<velocity>
+-1.11888
+-0.264693
+0
+</velocity>
+<cohesion_factor>0.01</cohesion_factor>
+<alignment_factor>0.1</alignment_factor>
+<aversion_factor>1</aversion_factor>
+
+<building>myhal</building>
+
+<max_speed>1.98576</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_-4.0116,17.8187,5683">
 	<pose>
-		2.84146
-		11.9334
+		-4.0116
+		17.8187
 		1
 		0
 		0
 		3.1415
 	</pose>
 
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8
+10
+</point>
+<point>
+-8
+20
+</point>
+<point>
+-8
+10
+</point>
+<point>
+8
+10
+</point>
+<point>
+-8
+20
+</point>
+<point>
+8
+20
+</point>
+<point>
+8
+10
+</point>
+<point>
+8
+20
+</point>
 <velocity>
--0.304332
-1.39323
+-1.04585
+-1.31074
 0
 </velocity>
+<cohesion_factor>0.01</cohesion_factor>
+<alignment_factor>0.1</alignment_factor>
+<aversion_factor>1</aversion_factor>
 
 <building>myhal</building>
 
-<max_speed>1.63889</max_speed>
+<max_speed>2.04786</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
-<include>
-<uri>model://table_conference_1</uri> 
-<name> "table_-312" </name> 
-<pose> -3 12 0 0 0 1.57 </pose>
-</include>
-
-<include>
-<uri>model://chair_1</uri> 
-<name> "chair_-1.9670112.70473" </name> 
-<pose> -1.96701 12.7047 0 0 0 -0.675036 </pose>
-</include>
+<actor name="human_-1.28331,11.1434,2107">
+	<pose>
+		-1.28331
+		11.1434
+		1
+		0
+		0
+		3.1415
+	</pose>
 
 
-<include>
-<uri>model://table_conference_3</uri> 
-<name> "table_-6-11" </name> 
-<pose> -6 -11 0 0 0 0 </pose>
-</include>
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8
+10
+</point>
+<point>
+-8
+20
+</point>
+<point>
+-8
+10
+</point>
+<point>
+8
+10
+</point>
+<point>
+-8
+20
+</point>
+<point>
+8
+20
+</point>
+<point>
+8
+10
+</point>
+<point>
+8
+20
+</point>
+<velocity>
+-0.898295
+1.0533
+0
+</velocity>
+<cohesion_factor>0.01</cohesion_factor>
+<alignment_factor>0.1</alignment_factor>
+<aversion_factor>1</aversion_factor>
 
-<include>
-<uri>model://chair_2</uri> 
-<name> "chair_-5.23318-10.220466" </name> 
-<pose> -5.23318 -10.2204 0 0 0 -0.272605 </pose>
-</include>
+<building>myhal</building>
 
+<max_speed>1.67776</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_-3.35722,-11.7676,2043">
+	<pose>
+		-3.35722
+		-11.7676
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_green_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8
+-20
+</point>
+<point>
+-8
+-9
+</point>
+<point>
+-8
+-20
+</point>
+<point>
+2
+-20
+</point>
+<point>
+-8
+-9
+</point>
+<point>
+2
+-9
+</point>
+<point>
+2
+-20
+</point>
+<point>
+2
+-9
+</point>
+<velocity>
+1.20355
+-0.790845
+0
+</velocity>
+<cohesion_factor>0.01</cohesion_factor>
+<alignment_factor>0.1</alignment_factor>
+<aversion_factor>1</aversion_factor>
+
+<building>myhal</building>
+
+<max_speed>1.69879</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_-6.16304,-12.8753,1405">
+	<pose>
+		-6.16304
+		-12.8753
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8
+-20
+</point>
+<point>
+-8
+-9
+</point>
+<point>
+-8
+-20
+</point>
+<point>
+2
+-20
+</point>
+<point>
+-8
+-9
+</point>
+<point>
+2
+-9
+</point>
+<point>
+2
+-20
+</point>
+<point>
+2
+-9
+</point>
+<velocity>
+0.15719
+-0.358181
+0
+</velocity>
+<cohesion_factor>0.01</cohesion_factor>
+<alignment_factor>0.1</alignment_factor>
+<aversion_factor>1</aversion_factor>
+
+<building>myhal</building>
+
+<max_speed>1.69051</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_-11.9129,0.0156614,7637">
+	<pose>
+		-11.9129
+		0.0156614
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-13
+-5
+</point>
+<point>
+-13
+5
+</point>
+<point>
+-13
+-5
+</point>
+<point>
+-10
+-5
+</point>
+<point>
+-13
+5
+</point>
+<point>
+-10
+5
+</point>
+<point>
+-10
+-5
+</point>
+<point>
+-10
+5
+</point>
+<velocity>
+-0.213196
+1.36743
+0
+</velocity>
+<cohesion_factor>0.01</cohesion_factor>
+<alignment_factor>0.1</alignment_factor>
+<aversion_factor>1</aversion_factor>
+
+<building>myhal</building>
+
+<max_speed>1.88231</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
     
     
     

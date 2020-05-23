@@ -387,7 +387,7 @@ void write_randomwalk_plugin(Person person, ofstream& out){
 	}
 
     
-	write_point(person.start.X(), person.start.Y(), 0, out, false);
+	//write_point(person.start.X(), person.start.Y(), 0, out, false);
     
     out << "\n<building>myhal</building>\n";
     out << "\n<max_speed>" << person.speed << "</max_speed>\n";
@@ -410,15 +410,20 @@ void write_boid_plugin(Person person, ofstream& out){
 	}
 
     
-	write_point(person.start.X(), person.start.Y(), 0, out, false);
+	//write_point(person.start.X(), person.start.Y(), 0, out, false);
     out << "<velocity>" << endl;
     out << ignition::math::Rand::DblUniform(-1.5,1.5) << endl;
     out << ignition::math::Rand::DblUniform(-1.5,1.5) << endl;
     out << 0 << endl;
     out << "</velocity>" << endl;
+
+	out << "<cohesion_factor>0.01</cohesion_factor>\n";
+    out << "<alignment_factor>0.1</alignment_factor>\n";
+    out << "<aversion_factor>1</aversion_factor>\n";
+
 	out << "\n<building>myhal</building>\n";
-    out << "\n<max_speed>" << person.speed*2 << "</max_speed>\n";
-	out << "<obstacle_margin>0.5</obstacle_margin>\n";
+    out << "\n<max_speed>" << person.speed << "</max_speed>\n";
+	out << "<obstacle_margin>0.7</obstacle_margin>\n";
 	
     
     out << "</plugin>\n";
