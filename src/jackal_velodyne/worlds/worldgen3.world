@@ -103,6 +103,239 @@
     
     
     
+
+<actor name="human_5.77435,2.09423,8130">
+	<pose>
+		5.77435
+		2.09423
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_green_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8.5
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+-8.5
+-5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+5.15
+6.8
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+5.15
+6.8
+</point>
+	<pose>
+		5.77435
+		2.09423
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+<velocity>
+-1.18341
+0.916722
+0
+</velocity>
+
+<building>myhal</building>
+
+<max_speed>1.66845</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<include>
+<uri>model://table_conference_2</uri> 
+<name> "table_32" </name> 
+<pose> 3 2 0 0 0 0 </pose>
+</include>
+
+<include>
+<uri>model://chair_3</uri> 
+<name> "chair_3.915442.6279751" </name> 
+<pose> 3.91544 2.62797 0 0 0 0.187016 </pose>
+</include>
+
+
+<include>
+<uri>model://chair_3</uri> 
+<name> "chair_2.261472.8434198" </name> 
+<pose> 2.26147 2.84341 0 0 0 1.04246 </pose>
+</include>
+
+
+<include>
+<uri>model://chair_3</uri> 
+<name> "chair_3.832281.0300941" </name> 
+<pose> 3.83228 1.03009 0 0 0 2.21358 </pose>
+</include>
+
+
+<actor name="human_2.84146,11.9334,2430">
+	<pose>
+		2.84146
+		11.9334
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="libboids_plugin.so">
+<point>
+-8
+10
+</point>
+<point>
+-8
+20
+</point>
+<point>
+-8
+10
+</point>
+<point>
+8
+10
+</point>
+<point>
+-8
+20
+</point>
+<point>
+8
+20
+</point>
+<point>
+8
+10
+</point>
+<point>
+8
+20
+</point>
+	<pose>
+		2.84146
+		11.9334
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+<velocity>
+-0.304332
+1.39323
+0
+</velocity>
+
+<building>myhal</building>
+
+<max_speed>1.63889</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<include>
+<uri>model://table_conference_1</uri> 
+<name> "table_-312" </name> 
+<pose> -3 12 0 0 0 1.57 </pose>
+</include>
+
+<include>
+<uri>model://chair_1</uri> 
+<name> "chair_-1.9670112.70473" </name> 
+<pose> -1.96701 12.7047 0 0 0 -0.675036 </pose>
+</include>
+
+
+<include>
+<uri>model://table_conference_3</uri> 
+<name> "table_-6-11" </name> 
+<pose> -6 -11 0 0 0 0 </pose>
+</include>
+
+<include>
+<uri>model://chair_2</uri> 
+<name> "chair_-5.23318-10.220466" </name> 
+<pose> -5.23318 -10.2204 0 0 0 -0.272605 </pose>
+</include>
+
     
     
     

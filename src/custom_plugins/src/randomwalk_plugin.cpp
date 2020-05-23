@@ -80,6 +80,8 @@ class servicesim::ActorPluginPrivate
 
   public: std::map<std::string,gazebo::physics::Link_V> building_links;
 
+  public: bool placed = false;
+
 };
 
 /////////////////////////////////////////////////
@@ -92,7 +94,7 @@ ActorPlugin::ActorPlugin()
 void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
   	this->dataPtr->actor = boost::dynamic_pointer_cast<physics::Actor>(_model);
-
+	
  	 this->dataPtr->connections.push_back(event::Events::ConnectWorldUpdateBegin(
       	std::bind(&ActorPlugin::OnUpdate, this, std::placeholders::_1)));
 
@@ -106,14 +108,16 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     	this->dataPtr->max_speed= _sdf->Get<double>("max_speed");
 
 
- 
-	auto pointElem = _sdf->GetElement("point");
-	
-	while (pointElem){
+	if (_sdf->HasElement("point")){
+		auto pointElem = _sdf->GetElement("point");
 		
-		this->dataPtr->polygon.push_back(pointElem->Get<ignition::math::Vector2d>());
-		pointElem = pointElem->GetNextElement("point");
-	}
+
+		while (pointElem){
+			
+			this->dataPtr->polygon.push_back(pointElem->Get<ignition::math::Vector2d>());
+			pointElem = pointElem->GetNextElement("point");
+		}
+	}	
 	   
 	ignition::math::Pose3d holder;
 	if (_sdf->HasElement("pose")){
@@ -122,6 +126,7 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 		this->dataPtr->curr_target = holder.Pos();
 		this->dataPtr->curr_target.Z() = 0;
 		this->dataPtr->prev_target = this->dataPtr->curr_target;
+		this->dataPtr->placed = true;
 	} 
 
   	// Read in the target mradius
@@ -165,7 +170,7 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
     	this->dataPtr->actor->SetCustomTrajectory(trajectoryInfo);
   	}
-
+	
 	auto world = this->dataPtr->actor->GetWorld();
    	for (unsigned int i = 0; i < world->ModelCount(); ++i) {
 		// iterate over all models. Skip if the model is itself or if it needs to be ignored 
@@ -174,11 +179,120 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 		auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
 
 		if (std::find(this->dataPtr->buildings.begin(),this->dataPtr->buildings.end(), model->GetName()) != this->dataPtr->buildings.end()){ //add any desired building name
-			//std::cout << "hi" << std::endl;
+			
 			this->dataPtr->building_links[model->GetName()] = model->GetLinks();
 		}
    	}
- 
+
+	/*
+	random world placement
+
+	1. if not placed: choose a random free spot in the building to start 
+	3. find the minimum and maximum y of the building 
+	2. draw a horizontal line at a random y
+	3. obtain a list of all intersections with the bouding boxes of objects, buildings, and people
+	4. every two intersections will actually count as one intersection (because each bouding box will be intersected twice)
+	5. construct a list of "free" line segements where the actor could be placed 
+	6. randomly choose a suitable line (one that is long enough), and place the actor in that position
+	7. if there are no suitable segments, rechoose horizontal line
+	*/
+	
+	//TODO: fix this if statement
+	if (true){//!this->dataPtr->placed){
+		//find maximum and min y value of building 
+		double min_y = 10000;
+		double max_y = -10000;
+		
+		for (auto const& link_list: this->dataPtr->building_links){
+			
+			for (auto link: link_list.second){ //iterate over all links of all buildings 
+				ignition::math::Box box = link->BoundingBox();
+				ignition::math::Vector3d min_corner = box.Min();
+				ignition::math::Vector3d max_corner = box.Max();
+
+				max_y = std::max(max_y, std::max(min_corner.Y(), max_corner.Y()));
+				min_y = std::min(min_y, std::min(min_corner.Y(), max_corner.Y()));
+			}
+		}
+
+		//std::printf("min_y %f, max_y %f\n", min_y, max_y);
+
+
+
+
+		double h = ignition::math::Rand::DblUniform(min_y, max_y);
+		ignition::math::Line3d h_line = ignition::math::Line3d(-10000, h, 10000,h);
+
+		std::vector<ignition::math::Vector3d> intersections;
+
+		for (auto const& link_list: this->dataPtr->building_links){
+			
+			for (auto link: link_list.second){ //iterate over all links of all buildings 
+				ignition::math::Box box = link->BoundingBox();
+				ignition::math::Vector3d min_corner = box.Min();
+				ignition::math::Vector3d max_corner = box.Max();
+				min_corner.Z() = 0;
+				max_corner.Z() = 0;
+
+
+				//TODO: ensure that these methods work using Line3d
+				ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
+				ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
+				ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
+				ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
+				
+				std::vector<ignition::math::Line3d> edges = {left, right, top, bot}; // store all edges of link bounding box
+
+				for (ignition::math::Line3d edge: edges){
+					ignition::math::Vector3d test_intersection;
+					if (edge.Intersect(h_line,test_intersection)){
+						intersections.push_back(test_intersection);
+					}
+				}
+			}
+		}
+
+		//check intersections with models 
+		for (unsigned int i = 0; i < world->ModelCount(); ++i) {
+			auto model = world->ModelByIndex(i);
+			auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
+			if (std::find(this->dataPtr->buildings.begin(),this->dataPtr->buildings.end(), model->GetName()) != this->dataPtr->buildings.end()){ //already dealt with buildings
+				continue;
+			}
+			if ((act && act == this->dataPtr->actor) || (model->GetName() == "ground_plane")) { //ignore self and ground 
+				continue; 
+			}
+
+			ignition::math::Box box = model->BoundingBox();
+			ignition::math::Vector3d min_corner = box.Min();
+			ignition::math::Vector3d max_corner = box.Max();
+			min_corner.Z() = 0;
+			max_corner.Z() = 0;
+
+
+			//TODO: ensure that these methods work using Line3d
+			ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
+			ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
+			ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
+			ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
+				
+			std::vector<ignition::math::Line3d> edges = {left, right, top, bot}; // store all edges of link bounding box
+
+			for (ignition::math::Line3d edge: edges){
+				ignition::math::Vector3d test_intersection;
+				if (edge.Intersect(h_line,test_intersection)){
+					intersections.push_back(test_intersection);
+				}
+			}
+
+
+		}
+
+		//now intersections should be filled 
+
+		std::cout << intersections.size() << std::endl;
+		
+	}
   
 }
 
@@ -259,6 +373,7 @@ ignition::math::Vector3d ActorPlugin::ActorAvoidance(){
 
 
 ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
+	
 	ignition::math::Pose3d actorPose = this->dataPtr->actor->WorldPose();
 	ignition::math::Vector3d boundary_force = ignition::math::Vector3d(0,0,0);
 	auto world = this->dataPtr->actor->GetWorld();
@@ -286,10 +401,10 @@ ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 		//create vector of models links:
 
 	
-	
+		//TODO: streamline this code
 		if (std::find(this->dataPtr->buildings.begin(),this->dataPtr->buildings.end(), model->GetName()) != this->dataPtr->buildings.end()){ //add building names here TODO: macro for building names 
 			//std::cout << "in here\n";
-			//TODO: find ways of speeding this up
+			
 
 			auto actorPos = actorPose.Pos(); // position of actor
 			actorPos.Z() = 0;
@@ -298,11 +413,13 @@ ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 				//std::cout << "in here\n";
 				
 				ignition::math::Vector3d modelPos = link->WorldPose().Pos(); // position of model
+				double z = modelPos.Z();
 				modelPos.Z() = 0;
 		
-				if ((actorPos-modelPos).Length() > 5 || modelPos.Z() > 1.5){ //this should eleminate many links from consideration
+				if ((actorPos-modelPos).Length() > 5 || z > 2){ //this should eleminate many links from consideration
 					continue;
 				}
+				
 
 				//ignition::math::Vector3d rad = actorPos-modelPos;
 				//double dist = rad.Length();
@@ -641,6 +758,8 @@ void ActorPlugin::NetForceUpdate(){
 
 void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 {
+
+	
 	// Time delta
 	this->dataPtr->dt = (_info.simTime - this->dataPtr->lastUpdate).Double();
 

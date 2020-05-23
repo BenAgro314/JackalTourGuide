@@ -86,9 +86,9 @@ class servicesim::ActorPluginPrivate
   
   public: std::map<std::string, ignition::math::Vector3d> prev_poses;
   
-  public: double cohesion_factor = 1;
-  public: double alignment_factor = 1;
-  public: double aversion_factor = 1;
+  public: double cohesion_factor = 1; //usually should be 0.01
+  public: double alignment_factor = 1; //usually should be 0.1
+  public: double aversion_factor = 1; // usually should be 1
 
   public: std::map<std::string,gazebo::physics::Link_V> building_links;
 
@@ -331,9 +331,10 @@ ignition::math::Vector3d ActorPlugin::ObstacleAvoidance(){
 				//std::cout << "in here\n";
 				
 				ignition::math::Vector3d modelPos = link->WorldPose().Pos(); // position of model
+				double z = modelPos.Z();
 				modelPos.Z() = 0;
 		
-				if ((actorPos-modelPos).Length() > 5 || modelPos.Z() > 1.5){ //this should eleminate many links from consideration
+				if ((actorPos-modelPos).Length() > 5 || z > 2){ //this should eleminate many links from consideration
 					continue;
 				}
 

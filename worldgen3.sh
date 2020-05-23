@@ -11,8 +11,6 @@ sudo killall rviz
 sudo killall roscore
 sudo killall rosmaster
 
-bash shutdown.sh
-
 roscore &
 echo num_people: $1 > src/jackal_velodyne/params/simulation_params.yaml
 echo num_tables: $2 >> src/jackal_velodyne/params/simulation_params.yaml
