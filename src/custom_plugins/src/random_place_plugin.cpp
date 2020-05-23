@@ -222,8 +222,8 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 	}
 
 	auto pose = ignition::math::Pose3d(res_pos.X(), res_pos.Y(), this->dataPtr->z_pos, 0, 0, 0);
-	std::printf("(%f, %f, %f)\n", res_pos.X(), res_pos.Y(), res_pos.Z());
-	this->dataPtr->self->SetWorldPose(pose , false, false);
+	//std::printf("(%f, %f, %f)\n", res_pos.X(), res_pos.Y(), res_pos.Z());
+	this->dataPtr->self->SetWorldPose(pose , true, true);
   
 }
 

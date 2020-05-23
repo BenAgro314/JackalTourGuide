@@ -681,7 +681,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 	// Update actor
 	//this->dataPtr->actor->FillMsg(msgs::Convert(this->dataPtr->velocity));	
 	
-	this->dataPtr->actor->SetWorldPose(actorPose, false, false);
+	this->dataPtr->actor->SetWorldPose(actorPose, true, true);
 	this->dataPtr->actor->SetScriptTime(this->dataPtr->actor->ScriptTime() + (distanceTraveled * this->dataPtr->animationFactor));
 
 	
