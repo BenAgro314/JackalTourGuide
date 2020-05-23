@@ -134,7 +134,9 @@
         3
         0
         </target_point>
-        <cohesive_factor>0.1</cohesive_factor>
+        <cohesive_factor>1</cohesive_factor>
+        <alignment_factor>1</alignment_factor>
+        <aversion_factor>1</aversion_factor>
         <building>box</building>
 
         <max_speed>0.866189</max_speed>
@@ -176,7 +178,9 @@
         3
         0
         </target_point>
-        <cohesive_factor>0.1</cohesive_factor>
+        <cohesive_factor>1</cohesive_factor>
+        <alignment_factor>1</alignment_factor>
+        <aversion_factor>1</aversion_factor>
         <building>box</building>
 
         <max_speed>0.866189</max_speed>
@@ -219,7 +223,9 @@
         3
         0
         </target_point>
-        <cohesive_factor>0.1</cohesive_factor>
+        <cohesive_factor>1</cohesive_factor>
+        <alignment_factor>1</alignment_factor>
+        <aversion_factor>1</aversion_factor>
         <building>box</building>
 
         <max_speed>0.866189</max_speed>

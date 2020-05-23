@@ -86,8 +86,8 @@ class servicesim::ActorPluginPrivate
   
   public: std::map<std::string, ignition::math::Vector3d> prev_poses;
   
-  public: double cohesion_factor = 0.01;
-  public: double alignment_factor = 0.1;
+  public: double cohesion_factor = 1;
+  public: double alignment_factor = 1;
   public: double aversion_factor = 1;
 
   public: std::map<std::string,gazebo::physics::Link_V> building_links;
