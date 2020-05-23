@@ -348,7 +348,7 @@ struct Section{
 			ignition::math::Vector2d point;
 			if (random_point(polygon,table_points, point)){
 				// currently: libboids_plugin.so or librandomwalk_plugin.so
-				people.push_back(Person(point, polygon, ignition::math::Rand::DblNormal(0.9,0.15), "libboids_plugin.so"));
+				people.push_back(Person(point, polygon, ignition::math::Rand::DblNormal(0.9,0.15), "librandomwalk_plugin.so"));
 			}
 		}
 	}

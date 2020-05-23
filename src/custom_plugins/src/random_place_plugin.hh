@@ -21,8 +21,18 @@ namespace servicesim
     /// \param[in] _sdf Pointer to the plugin's SDF elements.
     public: virtual void Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf)
         override;
+
+    private: std::vector<ignition::math::Line3d> get_edges(gazebo::physics::EntityPtr entity);
+
+    private: std::vector<ignition::math::Vector3d> get_corners(gazebo::physics::EntityPtr entity);
+
+    private: ignition::math::Vector3d min_normal(ignition::math::Vector3d pos, gazebo::physics::EntityPtr entity);
+
     /// \internal
     public: RandomPlacementPrivate *dataPtr;
+
+
+    
 
   };
 }

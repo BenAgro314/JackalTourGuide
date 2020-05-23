@@ -33,7 +33,7 @@ class servicesim::RandomPlacementPrivate
 
   /// \brief Margin by which to increase an obstacle's bounding box on every
   /// direction (2x per axis).
-  public: double obstacleMargin{0.2};
+  public: double obstacle_margin{0.2};
 
   /// \brief List of models to avoid
   public: std::vector<std::string> buildings;
@@ -72,6 +72,12 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   	}
 
+	  if (_sdf->HasElement("obstacle_margin")){
+
+      	this->dataPtr->obstacle_margin = _sdf->GetElement("obstacle_margin")->Get<double>();
+
+  	}
+
 	
 	auto world = this->dataPtr->self->GetWorld();
    	for (unsigned int i = 0; i < world->ModelCount(); ++i) {
@@ -107,7 +113,7 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 		//find maximum and min y value of building 
 		double min_y = 10000;
 		double max_y = -10000;
-		
+
 		for (auto const& link_list: this->dataPtr->building_links){
 			
 			for (auto link: link_list.second){ //iterate over all links of all buildings 
@@ -122,9 +128,6 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
 		//std::printf("min_y %f, max_y %f\n", min_y, max_y);
 
-
-
-
 		double h = ignition::math::Rand::DblUniform(min_y, max_y);
 		ignition::math::Line3d h_line = ignition::math::Line3d(-10000, h, 10000,h);
 
@@ -133,20 +136,7 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 		for (auto const& link_list: this->dataPtr->building_links){
 			
 			for (auto link: link_list.second){ //iterate over all links of all buildings 
-				ignition::math::Box box = link->BoundingBox();
-				ignition::math::Vector3d min_corner = box.Min();
-				ignition::math::Vector3d max_corner = box.Max();
-				min_corner.Z() = 0;
-				max_corner.Z() = 0;
-
-
-				//TODO: ensure that these methods work using Line3d
-				ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
-				ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
-				ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
-				ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
-				
-				std::vector<ignition::math::Line3d> edges = {left, right, top, bot}; // store all edges of link bounding box
+				std::vector<ignition::math::Line3d> edges = this->get_edges(link);
 
 				for (ignition::math::Line3d edge: edges){
 					ignition::math::Vector3d test_intersection;
@@ -166,21 +156,8 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 			if ((model == this->dataPtr->self) || (model->GetName() == "ground_plane")) { //ignore self and ground 
 				continue; 
 			}
-
-			ignition::math::Box box = model->BoundingBox();
-			ignition::math::Vector3d min_corner = box.Min();
-			ignition::math::Vector3d max_corner = box.Max();
-			min_corner.Z() = 0;
-			max_corner.Z() = 0;
-
-
-			//TODO: ensure that these methods work using Line3d
-			ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
-			ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
-			ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
-			ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
 				
-			std::vector<ignition::math::Line3d> edges = {left, right, top, bot}; // store all edges of link bounding box
+			std::vector<ignition::math::Line3d> edges = this->get_edges(model);
 
 			for (ignition::math::Line3d edge: edges){
 				ignition::math::Vector3d test_intersection;
@@ -204,7 +181,7 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
 			ignition::math::Line3d seg = ignition::math::Line3d(start, end);
 
-			if (seg.Length() > 2*this->dataPtr->obstacleMargin){ //is the segment a valid placement point
+			if (seg.Length() > 2*this->dataPtr->obstacle_margin){ //is the segment a valid placement point
 				segments.push_back(seg);
 			}
 		}
@@ -221,9 +198,17 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
 		//we must ensure that the person is placed at a valid point on the segement (not too close to either side)
 
-		double length = ignition::math::Rand::DblUniform(this->dataPtr->obstacleMargin, seg.Length() - this->dataPtr->obstacleMargin);
+		double length = ignition::math::Rand::DblUniform(this->dataPtr->obstacle_margin, seg.Length() - this->dataPtr->obstacle_margin);
 
 		res_pos = ignition::math::Vector3d(1,0,0)*length + seg[0];
+
+		//ensure that we are safe:
+		/*
+		1. iterate over all bouding boxes:
+		2. check if our position is too close (normally) to any of the bounding boxes edges
+		3. check if we are in a bounding box 
+		4. if no to 2. and 3. , the positon is safe 
+		*/
 		
 	}
 
@@ -233,4 +218,92 @@ void RandomPlacement::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   
 }
 
+/*
+helper function that takes in an entity and returns a list of lines of its bounding box with Z=0
+*/
 
+std::vector<ignition::math::Line3d> RandomPlacement::get_edges(gazebo::physics::EntityPtr entity){
+	ignition::math::Box box = entity->BoundingBox();
+	ignition::math::Vector3d min_corner = box.Min();
+	ignition::math::Vector3d max_corner = box.Max();
+	min_corner.Z() = 0;
+	max_corner.Z() = 0;
+
+
+	//TODO: ensure that these methods work using Line3d
+	ignition::math::Line3d left = ignition::math::Line3d(min_corner.X(),min_corner.Y(),min_corner.X(), max_corner.Y());
+	ignition::math::Line3d right = ignition::math::Line3d(max_corner.X(),min_corner.Y(),max_corner.X(), max_corner.Y());
+	ignition::math::Line3d top = ignition::math::Line3d(min_corner.X(),max_corner.Y(),max_corner.X(), max_corner.Y());
+	ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
+				
+	std::vector<ignition::math::Line3d> edges = {left, right, top, bot}; // store all edges of link bounding box
+
+	return edges;
+}
+
+std::vector<ignition::math::Vector3d> RandomPlacement::get_corners(gazebo::physics::EntityPtr entity){
+	ignition::math::Box box = entity->BoundingBox();
+	ignition::math::Vector3d min_corner = box.Min();
+	ignition::math::Vector3d max_corner = box.Max();
+	min_corner.Z() = 0;
+	max_corner.Z() = 0;
+
+
+	//TODO: ensure that these methods work using Line3d
+	ignition::math::Vector3d bot_l = min_corner;
+	ignition::math::Vector3d bot_r = ignition::math::Vector3d(max_corner.X(),min_corner.Y(),0);
+	ignition::math::Vector3d top_l = ignition::math::Vector3d(min_corner.X(),max_corner.Y(),0);
+	ignition::math::Vector3d top_r = max_corner;
+				
+	std::vector<ignition::math::Vector3d> corners = {bot_l, bot_r, top_l, top_r}; // store all edges of link bounding box
+
+	return corners;
+}
+
+//returns the shortest normal vector between pos and one of the edges on the bounding box of entity
+// will return the shortest corner distance if the normal does not exist 
+
+ignition::math::Vector3d RandomPlacement::min_normal(ignition::math::Vector3d pos, gazebo::physics::EntityPtr entity){
+	std::vector<ignition::math::Line3d> edges = this->get_edges(entity);
+
+	ignition::math::Vector3d min_normal;
+	double min_mag = 1000000;
+	bool found = false;
+
+	for (ignition::math::Line3d edge: edges){
+
+					
+		ignition::math::Vector3d edge_vector = edge.Direction(); // vector in direction of edge 
+					
+		ignition::math::Vector3d pos_vector = ignition::math::Vector3d(pos.X()-edge[0].X(), pos.Y()-edge[0].Y(), 0);// vector from edge corner to actor pos
+					
+		ignition::math::Vector3d proj = ((pos_vector.Dot(edge_vector))/(edge_vector.Dot(edge_vector)))*edge_vector; // project pos_vector onto edge_vector
+			
+		//check if the projected point is within the edge
+		if (edge.Within(proj+edge[0])){
+			//compute normal
+			ignition::math::Vector3d normal = pos_vector-proj;
+						
+			if (normal.Length() < min_mag){
+				min_normal = normal;
+				min_mag = normal.Length();
+				found = true;
+			}
+
+		}
+				
+	}
+
+	if (!found){ // iterate over all corners and find the closest one 
+		min_mag = 1000000;
+		auto corners = this->get_corners(entity);
+		for (auto corner: corners){
+			if (pos.Distance(corner) < min_mag){
+				min_mag = pos.Distance(corner);
+				min_normal = pos-corner;
+			}
+		}
+	}
+
+	return min_normal;
+}
