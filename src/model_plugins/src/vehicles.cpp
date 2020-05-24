@@ -50,7 +50,7 @@ void Vehicle::Seek(ignition::math::Vector3d target){
     ApplyForce(steer);
 }
 
-void Vehicle::Arrival(ignition::math::Vector3d target){
+void Vehicle::Arrival(ignition::math::Vector3d target){ //TODO: fix arrival to stop properly
 
     ignition::math::Vector3d desired_v = target-this->pose.Pos();
     double dist = desired_v.Length();
@@ -58,7 +58,7 @@ void Vehicle::Arrival(ignition::math::Vector3d target){
 
     if (dist <this->slowing_distance){
         desired_v*=(dist/this->slowing_distance)*(this->max_speed);
-    } else{
+    }else{
         desired_v*=this->max_speed;
     }
 
@@ -102,16 +102,22 @@ void Vehicle::UpdatePosition(double dt){
         this->velocity*=this->max_speed;
     }
 
-    
-    
     ignition::math::Vector3d direction = this->velocity;
+
     direction.Normalize();
     double dir_yaw = atan2(direction.Y(), direction.X());
     double current_yaw = this->pose.Rot().Yaw();
 
-    ignition::math::Angle yaw_diff = dir_yaw-current_yaw+IGN_PI_2;
-    yaw_diff.Normalize();
 
+    ignition::math::Angle yaw_diff = dir_yaw-current_yaw+IGN_PI_2;
+    if (this->velocity.Length() < 10e-1){
+        yaw_diff =0;   
+    } else{
+        yaw_diff.Normalize();
+    }
+    
+
+    //std::printf("(%f, %f)\n", this->pose.Pos().X(),this->pose.Pos().Y());
     this->pose.Pos() += this->velocity*dt;
     this->pose.Rot() = ignition::math::Quaterniond(IGN_PI_2, 0, current_yaw + yaw_diff.Radian()*0.1);
     

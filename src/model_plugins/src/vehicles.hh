@@ -19,7 +19,7 @@ class Vehicle{
         double animation_factor{5.1};
 
         double slowing_distance = 2;
-        double arrival_distance = 0.1;
+        double arrival_distance = 0.5;
 
     public:
 
