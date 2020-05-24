@@ -678,15 +678,11 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 	// animation
 	double distanceTraveled = (actorPose.Pos() - this->dataPtr->actor->WorldPose().Pos()).Length();
 
-	// Update actor
-	//this->dataPtr->actor->FillMsg(msgs::Convert(this->dataPtr->velocity));	
-	
 	this->dataPtr->actor->SetWorldPose(actorPose, true, true);
 	this->dataPtr->actor->SetScriptTime(this->dataPtr->actor->ScriptTime() + (distanceTraveled * this->dataPtr->animationFactor));
-
 	
-	//this->dataPtr->actor->SetLinearVel(ignition::math::Vector3d(1,0,0));
-	
+	//this->dataPtr->actor->SetWorldPose(ignition::math::Pose3d(0,0,1,0,0,0), true, true);
+	//this->dataPtr->actor->SetScriptTime(this->dataPtr->actor->ScriptTime());
 
 }
 

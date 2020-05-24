@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(model_plugins)
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++14)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -19,8 +19,11 @@ find_package(gazebo REQUIRED)
 link_directories(${GAZEBO_LIBRARY_DIRS})
 include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 
-add_library(vehical_plugin src/vehical_plugin.cpp)
-target_link_libraries(vehical_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+add_library(vehicles src/vehicles.cpp)
+target_link_libraries(vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
+add_library(vehicle_plugin src/vehicle_plugin.cpp)
+target_link_libraries(vehicle_plugin vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 
 catkin_package(

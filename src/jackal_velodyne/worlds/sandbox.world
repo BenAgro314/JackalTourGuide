@@ -166,7 +166,7 @@
         <interpolate_x>true</interpolate_x>
       </animation>
 
-      <plugin name="steering" filename="libvehical_plugin.so"/>
+      <plugin name="steering" filename="libvehicle_plugin.so"/>
 </actor>
 
   <!--actor name="randomguy2">
