@@ -18,6 +18,8 @@ class ModelHandler : public ModelPlugin{
     // Pointer to the update event connection
     private: event::ConnectionPtr update_connection;
 
+
+    //private: Vehicle *vehicle;
     private: std::unique_ptr<Vehicle> vehicle;
 	
 };

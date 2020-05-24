@@ -1,6 +1,7 @@
 #include "vehicles.hh"
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Pose3.hh>
+#include <ignition/math/Rand.hh>
 #include <vector>
 #include <string>
 
@@ -19,6 +20,7 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
         this->pose = initial_pose;
         this->velocity = initial_velocity;
         this->acceleration = ignition::math::Vector3d(0,0,0);
+        this->curr_target = initial_pose.Pos();
 
         auto skelAnims = this->actor->SkeletonAnimations();
   	    if (skelAnims.find(animation) == skelAnims.end()){
@@ -83,7 +85,7 @@ void Vehicle::OnUpdate(const gazebo::common::UpdateInfo &_inf){
 
     this->last_update = _inf.simTime;
 
-    this->Arrival(ignition::math::Vector3d(5,5,this->pose.Pos().Z()));
+    this->Arrival(this->curr_target);
     
     this->UpdatePosition(dt);
     this->UpdateModel();
@@ -104,21 +106,23 @@ void Vehicle::UpdatePosition(double dt){
 
     ignition::math::Vector3d direction = this->velocity;
 
+  
     direction.Normalize();
     double dir_yaw = atan2(direction.Y(), direction.X());
     double current_yaw = this->pose.Rot().Yaw();
 
 
     ignition::math::Angle yaw_diff = dir_yaw-current_yaw+IGN_PI_2;
-    if (this->velocity.Length() < 10e-1){
-        yaw_diff =0;   
-    } else{
-        yaw_diff.Normalize();
-    }
-    
+   
+    yaw_diff.Normalize();
 
-    //std::printf("(%f, %f)\n", this->pose.Pos().X(),this->pose.Pos().Y());
+  
+    if (this->velocity.Length()<10e-2){
+        yaw_diff = 0;
+    }
+   
     this->pose.Pos() += this->velocity*dt;
+    //TODO: fix oscillation
     this->pose.Rot() = ignition::math::Quaterniond(IGN_PI_2, 0, current_yaw + yaw_diff.Radian()*0.1);
     
 
@@ -129,4 +133,46 @@ void Vehicle::UpdateModel(){
     double distance_travelled = (this->pose.Pos() - this->actor->WorldPose().Pos()).Length();
 	this->actor->SetWorldPose(this->pose, true, true);
 	this->actor->SetScriptTime(this->actor->ScriptTime() + (distance_travelled * this->animation_factor));
+}
+
+
+void Wanderer::OnUpdate(const gazebo::common::UpdateInfo &_inf){
+
+    
+
+    double dt = (_inf.simTime - this->last_update).Double();
+
+    if (dt < 1/this->update_freq){
+        return;
+    }
+
+    this->last_update = _inf.simTime;
+
+    this->SetNextTarget();
+
+    this->Arrival(this->curr_target);
+    
+    this->UpdatePosition(dt);
+    this->UpdateModel();
+}
+
+void Wanderer::SetNextTarget(){
+    this->curr_theta += ignition::math::Rand::DblUniform(-this->rand_amp,this->rand_amp); //TODO: perlin noise
+    ignition::math::Vector3d dir = this->velocity;
+    dir.Normalize();
+    dir*=2;
+
+    ignition::math::Vector3d offset =  ignition::math::Vector3d(1,0,0);
+    ignition::math::Quaterniond rotation = ignition::math::Quaterniond(0,0,this->curr_theta);
+
+    offset = rotation.RotateVector(offset);
+
+    
+
+    this->curr_target = this->pose.Pos() + dir + offset;
+
+}
+
+void Wanderer::SetRandAmplitude(double _rand_amp){
+    this->rand_amp = _rand_amp;
 }

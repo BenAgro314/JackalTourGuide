@@ -27,7 +27,7 @@ class Vehicle{
 
         Vehicle(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation);
 
-        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+        virtual void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 
     protected:
 
@@ -41,6 +41,8 @@ class Vehicle{
 
         void UpdateModel();
 
+        ignition::math::Vector3d curr_target;
+
     public: 
 
         void SetSlowingDistance(double _slowing_distance){
@@ -51,3 +53,39 @@ class Vehicle{
             this->arrival_distance = _arrival_distance;
         }
 };
+
+class Wanderer: public Vehicle{
+
+    private:
+
+        double curr_theta =0;
+        double rand_amp = 0.4;
+
+    protected:
+        void SetNextTarget(); 
+
+    public:
+        using Vehicle::Vehicle;
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+
+        void SetRandAmplitude(double angle);
+
+};
+
+/*
+class RandomWalker: public Vehicle{
+
+
+    protected:
+        void SetNextTarget(); 
+
+    public:
+        using Vehicle::Vehicle;
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+
+        void SetRandAmplitude(double angle);
+
+};
+*/
