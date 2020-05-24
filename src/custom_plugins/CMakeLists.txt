@@ -34,6 +34,9 @@ target_link_libraries(random_place_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES
 add_library(TrajectoryActorPlugin src/TrajectoryActorPlugin.cc)
 target_link_libraries(TrajectoryActorPlugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_library(world_plugin src/world_plugin.cpp)
+target_link_libraries(world_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 catkin_package(
 	DEPENDS gazebo_ros roscpp rospy std_msgs
 )
