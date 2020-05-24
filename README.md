@@ -26,4 +26,6 @@ The first goal of the project is to produce pointcloud and pose data from the Ja
 
 [Jackal Simulation](https://www.clearpathrobotics.com/assets/guides/kinetic/jackal/simulation.html)
 
+[Craig W. Reynolds, Steering Behaviors For Autonomous Characters](http://www.red3d.com/cwr/steer/gdc99/)
 
+[Daniel Shiffman, THE NATURE OF CODE](https://natureofcode.com/book/chapter-6-autonomous-agents/)
