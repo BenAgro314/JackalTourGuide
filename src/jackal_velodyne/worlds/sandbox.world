@@ -97,7 +97,7 @@
     <include>
       <name>box</name>
       <pose>0 0 0 0 0 0</pose>
-      <uri>model://10x10Box</uri>
+      <uri>model://3rooms</uri>
     
       <!--uri>model://Myhal_5th_floor</uri-->
 	  </include>
@@ -170,10 +170,9 @@
         <vehicle_type>path_follower</vehicle_type>
         <building>box</building>
         <max_speed>1</max_speed>
-        <path_point>2 2 0</path_point>
-        <path_point>2 -2 0</path_point>
-        <path_point>-2 -2 0</path_point>
-        <path_point>-2 2 0</path_point>
+        <path_point>-5 2.5 0</path_point>
+        <path_point>5 2.5 0</path_point>
+        
       </plugin>
 </actor>
 
@@ -189,13 +188,10 @@
       </animation>
 
       <plugin name="steering" filename="libvehicle_plugin.so">
-        <vehicle_type>path_follower</vehicle_type>
+        <vehicle_type>wanderer</vehicle_type>
         <building>box</building>
         <max_speed>1</max_speed>
-        <path_point>2 2 0</path_point>
-        <path_point>2 -2 0</path_point>
-        <path_point>-2 -2 0</path_point>
-        <path_point>-2 2 0</path_point>
+
       </plugin>
 </actor>
 

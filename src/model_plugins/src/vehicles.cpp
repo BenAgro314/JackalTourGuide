@@ -52,7 +52,12 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
             if (model->GetName()== this->building_name){
                 std::vector<gazebo::physics::LinkPtr> links = model->GetLinks();
                 for (gazebo::physics::LinkPtr link: links){
-                    this->objects.push_back(link); //TODO: check if this is correct (maybe do dynamic pointer cast )
+
+                    std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
+                    for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
+                        this->objects.push_back(collision_box); //TODO: check if this is correct (maybe do dynamic pointer cast )
+                    }
+                    
                 }
             } else if (model->GetName() != "ground_plane"){
                 this->objects.push_back(model);
@@ -69,7 +74,11 @@ void Vehicle::AvoidObstacles(){
     
     ignition::math::Vector3d boundary_force = ignition::math::Vector3d(0,0,0);
     for (gazebo::physics::EntityPtr object: this->objects){
-
+        ignition::math::Box box = object->BoundingBox();
+        double min_z = std::min(box.Min().Z(), box.Max().Z());
+        if (min_z > 1.5){
+            continue;
+        }
         ignition::math::Vector3d min_normal = utilities::min_repulsive_vector(this->pose.Pos(), object);
 	
 		double dist = min_normal.Length();
@@ -124,6 +133,7 @@ void Vehicle::AvoidActors(){
     this->ApplyForce(steer);
 }
 
+//TODO: add weighting to seek
 void Vehicle::Seek(ignition::math::Vector3d target){
 
     ignition::math::Vector3d desired_v = target-this->pose.Pos();
@@ -637,6 +647,9 @@ void PathFollower::FollowPath(){
         }
     }
 
-    target.Z() = this->pose.Pos().Z();
-    this->Seek(target);
+    if (min_normal_dist > this->path->radius){
+        target.Z() = this->pose.Pos().Z();
+        this->Seek(target);
+    }
+    
 }

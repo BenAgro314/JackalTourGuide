@@ -19,11 +19,10 @@ namespace utilities{
 
 
     class Path{
-        protected:
-            
-            double radius = 0.5;
 
         public:
+
+            double radius = 0.5;    
 
             Path();
 
