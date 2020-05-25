@@ -1,9 +1,6 @@
 #include "vehicles.hh"
-#include <ignition/math/Vector3.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Rand.hh>
-#include <vector>
-#include <string>
+#include "utilities.hh"
+
 
 Vehicle::Vehicle(gazebo::physics::ActorPtr _actor, 
     double _mass, 
@@ -11,7 +8,8 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
     double _max_speed,
     ignition::math::Pose3d initial_pose, 
     ignition::math::Vector3d initial_velocity,
-    std::string animation){
+    std::string animation,
+    std::string _building_name){
 
         this->actor = _actor;
         this->mass = _mass;
@@ -21,6 +19,7 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
         this->velocity = initial_velocity;
         this->acceleration = ignition::math::Vector3d(0,0,0);
         this->curr_target = initial_pose.Pos();
+        
 
         auto skelAnims = this->actor->SkeletonAnimations();
   	    if (skelAnims.find(animation) == skelAnims.end()){
@@ -31,10 +30,54 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
             trajectoryInfo->type = animation;
             trajectoryInfo->duration = 1.0;
             this->actor->SetCustomTrajectory(trajectoryInfo);
-  	}   
+  	    }   
+
+        this->building_name = _building_name;
+
+        gazebo::physics::WorldPtr world = this->actor->GetWorld();
+
+        this->initial_model_count = world->ModelCount();
+
+        for (unsigned int i = 0; i < world->ModelCount(); ++i) {
+            gazebo::physics::ModelPtr model = world->ModelByIndex(i);
+            gazebo::physics::ActorPtr act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
+
+            if (act){
+                continue;
+            }
+
+            if (model->GetName()== this->building_name){
+                std::vector<gazebo::physics::LinkPtr> links = model->GetLinks();
+                for (gazebo::physics::LinkPtr link: links){
+                    this->objects.push_back(link); //TODO: check if this is correct (maybe do dynamic pointer cast )
+                }
+            } else if (model->GetName() != "ground_plane"){
+                this->objects.push_back(model);
+            }
+        }
 
     }
 
+void Vehicle::AvoidObstacles(){
+    gazebo::physics::WorldPtr world = this->actor->GetWorld();
+    if (world->ModelCount() > this->initial_model_count){
+        this->objects.push_back(world->ModelByIndex(this->initial_model_count++));
+    }
+    
+    ignition::math::Vector3d boundary_force = ignition::math::Vector3d(0,0,0);
+    for (gazebo::physics::EntityPtr object: this->objects){
+
+        ignition::math::Vector3d min_normal = utilities::min_repulsive_vector(this->pose.Pos(), object);
+	
+		double dist = min_normal.Length();
+		if (dist < this->obstacle_margin){
+			min_normal.Normalize();
+			boundary_force += min_normal/(dist*dist);
+		}
+    }
+
+    this->ApplyForce(boundary_force);
+}
 
 void Vehicle::Seek(ignition::math::Vector3d target){
 
@@ -136,6 +179,8 @@ void Vehicle::UpdateModel(){
 }
 
 
+//WANDERER CLASS
+
 void Wanderer::OnUpdate(const gazebo::common::UpdateInfo &_inf){
 
     
@@ -148,9 +193,10 @@ void Wanderer::OnUpdate(const gazebo::common::UpdateInfo &_inf){
 
     this->last_update = _inf.simTime;
 
+    
     this->SetNextTarget();
-
     this->Arrival(this->curr_target);
+    this->AvoidObstacles();
     
     this->UpdatePosition(dt);
     this->UpdateModel();
@@ -171,8 +217,4 @@ void Wanderer::SetNextTarget(){
 
     this->curr_target = this->pose.Pos() + dir + offset;
 
-}
-
-void Wanderer::SetRandAmplitude(double _rand_amp){
-    this->rand_amp = _rand_amp;
 }

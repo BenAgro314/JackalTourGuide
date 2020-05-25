@@ -19,8 +19,11 @@ find_package(gazebo REQUIRED)
 link_directories(${GAZEBO_LIBRARY_DIRS})
 include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 
+add_library(utilities src/utilities.cpp)
+target_link_libraries(utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 add_library(vehicles src/vehicles.cpp)
-target_link_libraries(vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(vehicles utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(vehicle_plugin src/vehicle_plugin.cpp)
 target_link_libraries(vehicle_plugin vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})

@@ -12,10 +12,19 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
     	animation = _sdf->Get<std::string>("animation");
     }
 
+    /*
+    For general vehicle we need:
+    - mass
+    - max force
+    - max speed 
+    - initial_pos
+    - building name
+    */
+
     this->update_connection = event::Events::ConnectWorldUpdateBegin(std::bind(&ModelHandler::OnUpdate, this, std::placeholders::_1));
 
     //this->vehicle = new Wanderer::Vehicle(boost::dynamic_pointer_cast<physics::Actor>(_parent), 1, 5, 1, ignition::math::Pose3d(0,0,1,0,0,0), ignition::math::Vector3d(0,0,0), animation);
-	this->vehicle = std::make_unique<Wanderer>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 1, 5, 1, ignition::math::Pose3d(0,0,1,0,0,0), ignition::math::Vector3d(0,0,0), animation);
+	this->vehicle = std::make_unique<Wanderer>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 1, 5, 1, ignition::math::Pose3d(0,0,1,0,0,0), ignition::math::Vector3d(0,0,0), animation, "box");
 
 }
 

@@ -1,5 +1,6 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
+#include <vector>
 
 class Vehicle{
 
@@ -20,12 +21,18 @@ class Vehicle{
 
         double slowing_distance = 2;
         double arrival_distance = 0.5;
+        double obstacle_margin = 0.5;
+        
+        std::string building_name;
+
+        std::vector<gazebo::physics::EntityPtr> objects;
+        int initial_model_count;
 
     public:
 
         
 
-        Vehicle(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation);
+        Vehicle(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name);
 
         virtual void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 
@@ -43,6 +50,10 @@ class Vehicle{
 
         ignition::math::Vector3d curr_target;
 
+        void AvoidActors(); 
+
+        void AvoidObstacles();
+
     public: 
 
         void SetSlowingDistance(double _slowing_distance){
@@ -51,6 +62,10 @@ class Vehicle{
 
         void SetArrivalDistance(double _arrival_distance){
             this->arrival_distance = _arrival_distance;
+        }
+
+        void SetObstacleMargin(double _obstacle_margin){
+            this->obstacle_margin = _obstacle_margin;
         }
 };
 
@@ -69,7 +84,9 @@ class Wanderer: public Vehicle{
 
         void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 
-        void SetRandAmplitude(double angle);
+        void SetRandAmplitude(double angle){
+            this->rand_amp = angle;
+        }
 
 };
 
