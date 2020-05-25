@@ -42,7 +42,10 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
             gazebo::physics::ModelPtr model = world->ModelByIndex(i);
             gazebo::physics::ActorPtr act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
 
-            if (act){
+            if (act && act == this->actor){
+                continue;
+            } else if (act){
+                this->actors.push_back(act);
                 continue;
             }
 
@@ -76,7 +79,49 @@ void Vehicle::AvoidObstacles(){
 		}
     }
 
+    if (boundary_force.Length() >0){
+		boundary_force.Normalize();
+		boundary_force*=this->max_speed;
+		boundary_force-=this->velocity;
+		if (boundary_force.Length()>this->max_force){
+			boundary_force.Normalize();
+			boundary_force*=this->max_force;
+		}
+	}
+
     this->ApplyForce(boundary_force);
+}
+
+void Vehicle::AvoidActors(){
+
+    ignition::math::Vector3d steer = ignition::math::Vector3d(0,0,0);
+
+    for (gazebo::physics::ActorPtr other: this->actors){
+        ignition::math::Vector3d this_pos = this->pose.Pos();
+		this_pos.Z() = 0;
+		ignition::math::Vector3d other_pos = other->WorldPose().Pos();
+		other_pos.Z() = 0;
+		ignition::math::Vector3d rad = this_pos-other_pos;
+		double dist = rad.Length();
+		
+		if (dist<this->obstacle_margin){
+			rad.Normalize();	
+			rad/=dist;
+			steer += rad;
+		}
+    }
+
+    if (steer.Length() >0){
+		steer.Normalize();
+		steer*=this->max_speed;
+		steer-=this->velocity;
+		if (steer.Length()>this->max_force){
+			steer.Normalize();
+			steer*=this->max_force;
+		}
+	}
+
+    this->ApplyForce(steer);
 }
 
 void Vehicle::Seek(ignition::math::Vector3d target){
@@ -196,6 +241,7 @@ void Wanderer::OnUpdate(const gazebo::common::UpdateInfo &_inf){
     
     this->SetNextTarget();
     this->Arrival(this->curr_target);
+    this->AvoidActors();
     this->AvoidObstacles();
     
     this->UpdatePosition(dt);

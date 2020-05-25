@@ -157,12 +157,25 @@
 
 <actor name="randomguy1">
 
-
+      <pose>2 2 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
       <animation name="animation"> 
-        <filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+        <filename>walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+
+      <plugin name="steering" filename="libvehicle_plugin.so"/>
+</actor>
+
+<actor name="randomguy2">
+      <pose>0 0 1 0 0 0</pose>
+      <skin>
+      <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+      </skin>
+      <animation name="animation"> 
+        <filename>walk.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
 

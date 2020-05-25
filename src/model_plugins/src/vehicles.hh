@@ -26,6 +26,7 @@ class Vehicle{
         std::string building_name;
 
         std::vector<gazebo::physics::EntityPtr> objects;
+        std::vector<gazebo::physics::ActorPtr> actors;
         int initial_model_count;
 
     public:
@@ -78,6 +79,8 @@ class Wanderer: public Vehicle{
 
     protected:
         void SetNextTarget(); 
+
+        void SteerAway();
 
     public:
         using Vehicle::Vehicle;
