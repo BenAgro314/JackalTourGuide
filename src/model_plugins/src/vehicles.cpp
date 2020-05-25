@@ -278,13 +278,24 @@ void Boid::OnUpdate(const gazebo::common::UpdateInfo &_inf){
     this->Alignement(dt);
     this->Cohesion();
     this->Separation();
+    this->AvoidObstacles();
 
     this->UpdatePosition(dt);
     this->UpdateModel();
 }
 
 
-Boid::Boid(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name, double _alignement, double _cohesion, double _separation)
+Boid::Boid(gazebo::physics::ActorPtr _actor, 
+double _mass, 
+double _max_force, 
+double _max_speed, 
+ignition::math::Pose3d initial_pose, 
+ignition::math::Vector3d initial_velocity, 
+std::string animation, 
+std::string _building_name, 
+double _alignement, 
+double _cohesion, 
+double _separation)
 : Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, animation, _building_name){
     this->weights[ALI] = _alignement;
     this->weights[COH] = _cohesion;
@@ -296,7 +307,46 @@ Boid::Boid(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, do
 }
 
 void Boid::Separation(){
-    
+    ignition::math::Vector3d steer = ignition::math::Vector3d(0,0,0);
+
+    for (gazebo::physics::ActorPtr other: this->actors){
+        ignition::math::Vector3d this_pos = this->pose.Pos();
+		this_pos.Z() = 0;
+		ignition::math::Vector3d other_pos = other->WorldPose().Pos();
+		other_pos.Z() = 0;
+		ignition::math::Vector3d rad = this_pos-other_pos;
+		double dist = rad.Length();
+
+        ignition::math::Vector3d dir = this->velocity;
+        dir.Normalize();
+        rad.Normalize();
+        double angle = std::acos(rad.Dot(dir));
+		
+		if (dist<this->obstacle_margin){// && angle<this->FOV_angle/2){
+			rad.Normalize();	
+			rad/=dist;
+			steer += rad;
+		}
+    }
+
+    if (steer.Length() >0){
+		steer.Normalize();
+		steer*=this->max_speed;
+		steer-=this->velocity;
+		if (steer.Length()>this->max_force){
+			steer.Normalize();
+			steer*=this->max_force;
+		}
+	}
+
+    if ((steer*this->weights[SEP]).Length() > this->max_force){
+        steer.Normalize();
+        steer*=this->max_force;
+    } else{
+        steer*= this->weights[SEP];
+    }
+
+    this->ApplyForce(steer);
 }
 
 void Boid::Alignement(double dt){
@@ -305,24 +355,36 @@ void Boid::Alignement(double dt){
 
     for (gazebo::physics::ActorPtr other : this->actors){
 
-        ignition::math::Vector3d past_pos = this->last_pos[other];
-		this->last_pos[other] = other->WorldPose().Pos();
+        
 
-        ignition::math::Vector3d r = other->WorldPose().Pos() - this->pose.Pos();
-        if (r.Length() < this->FOV_radius){
-            ignition::math::Vector3d dir = this->velocity;
-            dir.Normalize();
-            r.Normalize();
-            double angle = std::acos(r.Dot(dir));
+        ignition::math::Vector3d this_pos = this->pose.Pos();
+		this_pos.Z() = 0;
+		ignition::math::Vector3d other_pos = other->WorldPose().Pos();
+		other_pos.Z() = 0;
+		ignition::math::Vector3d r = this_pos-other_pos;
 
-            if (angle<this->FOV_angle/2){
-                
-				ignition::math::Vector3d vel = (other->WorldPose().Pos()-past_pos)/dt;
-                count++;
-				
-				vel_sum+= vel;
+        if (r.Length() < this->FOV_radius*2){
+            ignition::math::Vector3d past_pos = this->last_pos[other]; //track the pos of all actors in 2* the FOV radius 
+		    this->last_pos[other] = other->WorldPose().Pos();
+
+            if (r.Length() < this->FOV_radius){
+
+                ignition::math::Vector3d dir = this->velocity;
+                dir.Normalize();
+                r.Normalize();
+                double angle = std::acos(r.Dot(dir));
+
+                if (angle<this->FOV_angle/2){
+                    
+                    ignition::math::Vector3d vel = (other->WorldPose().Pos()-past_pos)/dt;
+                    count++;
+                    
+                    vel_sum+= vel;
+                }
             }
         }
+
+        
     }
 
     if (count >0){
@@ -335,13 +397,62 @@ void Boid::Alignement(double dt){
 			vel_sum.Normalize();
 			vel_sum*=this->max_force;
 		}
+
+        if ((vel_sum*this->weights[SEP]).Length() > this->max_force){
+            vel_sum.Normalize();
+            vel_sum*=this->max_force;
+        } else{
+            vel_sum*= this->weights[SEP];
+        }
+
+	    this->ApplyForce(vel_sum);
 	}
-	
-	this->ApplyForce(vel_sum*this->weights[0]);
+
+   
 }
 
 void Boid::Cohesion(){
-    
+    ignition::math::Vector3d sum_pos = ignition::math::Vector3d(0,0,0);
+
+    int count = 0;
+
+    ignition::math::Vector3d this_pos = this->pose.Pos();
+	this_pos.Z() = 0;
+
+    for (gazebo::physics::ActorPtr other: this->actors){
+        
+		ignition::math::Vector3d other_pos = other->WorldPose().Pos();
+		other_pos.Z() = 0;
+		ignition::math::Vector3d rad = this_pos-other_pos;
+		double dist = rad.Length();
+
+        ignition::math::Vector3d dir = this->velocity;
+        dir.Normalize();
+        rad.Normalize();
+        double angle = std::acos(rad.Dot(dir));
+		
+		if (dist<this->FOV_radius && angle<this->FOV_angle/2){
+            sum_pos+=other_pos;
+            count++;
+        }
+    }
+
+    if (count >0){
+        ignition::math::Vector3d desired_v = sum_pos-this_pos;
+        desired_v.Normalize();
+        desired_v*=this->max_speed;
+
+        ignition::math::Vector3d steer = desired_v - this->velocity;
+
+        if ((steer*this->weights[COH]).Length() > this->max_force){
+            steer.Normalize();
+            steer*=this->max_force;
+        } else{
+            steer*=this->weights[COH];
+        }
+
+        ApplyForce(steer);
+    }
 }
 
 //RANDOM WALKER CLASS (depreciated, should use wanderer)

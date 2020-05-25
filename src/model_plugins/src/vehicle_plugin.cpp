@@ -25,7 +25,7 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
     this->update_connection = event::Events::ConnectWorldUpdateBegin(std::bind(&ModelHandler::OnUpdate, this, std::placeholders::_1));
 
     //this->vehicle = new Wanderer::Vehicle(boost::dynamic_pointer_cast<physics::Actor>(_parent), 1, 5, 1, ignition::math::Pose3d(0,0,1,0,0,0), ignition::math::Vector3d(0,0,0), animation);
-	this->vehicle = std::make_unique<RandomWalker>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 1, 10, 1, _parent->WorldPose(), ignition::math::Vector3d(0,0,0), animation, "box");
+	this->vehicle = std::make_unique<Boid>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 1, 10, 1, _parent->WorldPose(), ignition::math::Vector3d(1,0,0), animation, "box", 0.1,0.01,1);
 
 }
 

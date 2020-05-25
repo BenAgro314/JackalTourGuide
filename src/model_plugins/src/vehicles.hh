@@ -123,7 +123,7 @@ class Boid: public Vehicle{
 
         double weights[3];
 
-        double FOV_angle = 5;
+        double FOV_angle = 4;
         double FOV_radius = 3;
 
         std::map<gazebo::physics::ActorPtr, ignition::math::Vector3d> last_pos;
@@ -131,7 +131,7 @@ class Boid: public Vehicle{
 
     public:
 
-        Boid::Boid(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name, double _alignement, double _cohesion, double _separation);
+        Boid(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name, double _alignement, double _cohesion, double _separation);
 
         void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 
