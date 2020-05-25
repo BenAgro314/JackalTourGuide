@@ -1,6 +1,7 @@
 #include "vehicles.hh"
 #include "utilities.hh"
 
+// VEHICLE CLASS
 
 Vehicle::Vehicle(gazebo::physics::ActorPtr _actor, 
     double _mass, 
@@ -228,8 +229,6 @@ void Vehicle::UpdateModel(){
 
 void Wanderer::OnUpdate(const gazebo::common::UpdateInfo &_inf){
 
-    
-
     double dt = (_inf.simTime - this->last_update).Double();
 
     if (dt < 1/this->update_freq){
@@ -240,7 +239,7 @@ void Wanderer::OnUpdate(const gazebo::common::UpdateInfo &_inf){
 
     
     this->SetNextTarget();
-    this->Arrival(this->curr_target);
+    this->Seek(this->curr_target);
     this->AvoidActors();
     this->AvoidObstacles();
     
@@ -263,4 +262,97 @@ void Wanderer::SetNextTarget(){
 
     this->curr_target = this->pose.Pos() + dir + offset;
 
+}
+
+
+//RANDOM WALKER CLASS (depreciated, should use wanderer)
+
+void RandomWalker::OnUpdate(const gazebo::common::UpdateInfo &_inf){
+
+    double dt = (_inf.simTime - this->last_update).Double();
+
+    if (dt < 1/this->update_freq){
+        return;
+    }
+
+    this->last_update = _inf.simTime;
+
+    if ((this->pose.Pos() - this->curr_target).Length()<this->arrival_distance){
+        this->SetNextTarget();
+    }
+
+    
+    this->Seek(this->curr_target);
+    this->AvoidActors();
+    
+    this->UpdatePosition(dt);
+    this->UpdateModel();
+}
+
+void RandomWalker::SetNextTarget(){
+    bool target_found = false;
+
+    while (!target_found){
+        
+        ignition::math::Vector3d dir = this->velocity;
+		if (dir.Length() < 1e-6){
+			dir = ignition::math::Vector3d(ignition::math::Rand::DblUniform(-1, 1),ignition::math::Rand::DblUniform(-1, 1),0);
+		}
+        dir.Normalize();
+        ignition::math::Quaterniond rotation =  ignition::math::Quaterniond::EulerToQuaternion(0,0,ignition::math::Rand::DblUniform(-3, 3)); 
+		dir = rotation.RotateVector(dir);
+        dir*=10000;
+		ignition::math::Line3d ray = ignition::math::Line3d(this->pose.Pos().X(), this->pose.Pos().Y(), this->pose.Pos().X() + dir.X(), this->pose.Pos().Y() + dir.Y());
+		ignition::math::Vector3d closest_intersection;
+        ignition::math::Line3d closest_edge;
+		double min_dist = 100000;
+
+        for (gazebo::physics::EntityPtr object: this->objects){
+            std::vector<ignition::math::Line3d> edges = utilities::get_edges(object);
+
+            for (ignition::math::Line3d edge: edges){
+				ignition::math::Vector3d test_intersection;
+
+				if (ray.Intersect(edge, test_intersection)){ //if the ray intersects the boundary
+                    ignition::math::Vector3d zero_z = this->pose.Pos();
+                    zero_z.Z() = 0;
+					double dist_to_int = (test_intersection-zero_z).Length();
+					if (dist_to_int < min_dist){
+						min_dist = dist_to_int;
+						closest_intersection = test_intersection;
+                        closest_edge = edge;
+					}
+
+				}
+						
+			}
+        }
+
+        ignition::math::Vector3d zero_z = this->pose.Pos();
+        zero_z.Z() = 0;
+        ignition::math::Vector3d final_ray = closest_intersection - zero_z;
+		ignition::math::Vector3d v_to_add = final_ray*ignition::math::Rand::DblUniform(0.1,0.9);
+
+
+        //TODO: project against closest edge to check if we are too close 
+        ignition::math::Vector3d normal;
+        if (utilities::get_normal_to_edge(this->pose.Pos(), closest_edge, normal) && (normal.Length() < this->obstacle_margin)){
+            continue;
+        } 
+
+        if ((final_ray-v_to_add).Length() < (this->obstacle_margin)){ 
+			v_to_add.Normalize();
+			auto small_subtraction = (v_to_add*this->obstacle_margin)*2;
+			v_to_add = final_ray - small_subtraction;
+			if (small_subtraction.Length() > final_ray.Length()){
+				v_to_add*=0;
+			}
+		}
+		
+		this->curr_target = v_to_add + this->pose.Pos();
+		target_found = true;
+
+    }
+
+    
 }

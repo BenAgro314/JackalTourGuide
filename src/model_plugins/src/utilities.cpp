@@ -39,6 +39,22 @@ std::vector<ignition::math::Vector3d> utilities::get_corners(gazebo::physics::En
 	return corners;
 }
 
+//returns true if the projection of pos falls within the bounds of edge. If it does, it stores the normal distance between the edge and pos in normal
+
+bool utilities::get_normal_to_edge(ignition::math::Vector3d pos, ignition::math::Line3d edge, ignition::math::Vector3d &normal){
+    ignition::math::Vector3d edge_vector = edge.Direction(); 
+					
+	ignition::math::Vector3d pos_vector = ignition::math::Vector3d(pos.X()-edge[0].X(), pos.Y()-edge[0].Y(), 0);
+	ignition::math::Vector3d proj = ((pos_vector.Dot(edge_vector))/(edge_vector.Dot(edge_vector)))*edge_vector; 
+
+	if (edge.Within(proj+edge[0])){
+		normal = pos_vector-proj;
+        return true;
+	} else{
+        return false;
+    }
+}
+
 //returns the shortest normal vector between pos and one of the edges on the bounding box of entity
 // will return the shortest corner distance if the normal does not exist 
 

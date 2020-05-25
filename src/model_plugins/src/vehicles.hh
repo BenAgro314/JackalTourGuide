@@ -31,8 +31,6 @@ class Vehicle{
 
     public:
 
-        
-
         Vehicle(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name);
 
         virtual void OnUpdate(const gazebo::common::UpdateInfo &_inf);
@@ -80,8 +78,6 @@ class Wanderer: public Vehicle{
     protected:
         void SetNextTarget(); 
 
-        void SteerAway();
-
     public:
         using Vehicle::Vehicle;
 
@@ -93,19 +89,20 @@ class Wanderer: public Vehicle{
 
 };
 
-/*
+
 class RandomWalker: public Vehicle{
 
 
     protected:
+
         void SetNextTarget(); 
 
+        
+
     public:
+
         using Vehicle::Vehicle;
 
         void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 
-        void SetRandAmplitude(double angle);
-
 };
-*/
