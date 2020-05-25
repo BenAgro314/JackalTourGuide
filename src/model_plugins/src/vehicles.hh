@@ -168,8 +168,8 @@ class Boid: public Vehicle{
 class PathFollower: public Vehicle{
 
     protected:
-        utilities::Path path;
-        void FollowPath(double dt);
+        std::shared_ptr<utilities::Path> path;
+        void FollowPath();
 
     public: 
 
@@ -183,7 +183,7 @@ class PathFollower: public Vehicle{
          ignition::math::Vector3d initial_velocity, 
          std::string animation, 
          std::string _building_name, 
-         utilities::Path _path);
+         std::shared_ptr<utilities::Path> _path);
 
 
 };

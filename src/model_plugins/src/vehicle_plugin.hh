@@ -19,6 +19,8 @@ class ModelHandler : public ModelPlugin{
 
     public: void ReadParams();
 
+    public: void ReadPath(sdf::ElementPtr _sdf);
+
     // Pointer to the update event connection
     private: event::ConnectionPtr update_connection;
 
@@ -32,6 +34,8 @@ class ModelHandler : public ModelPlugin{
     private: double max_speed = 1;
     private: std::vector<double> vehicle_params;
     private: std::vector<double> boid_params;
+
+    private: std::shared_ptr<utilities::Path> path;
 	
 };
 

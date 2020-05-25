@@ -157,7 +157,7 @@
 
 <actor name="randomguy1">
 
-      <pose>1 1 1 0 0 0</pose>
+      <pose>2 2 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
@@ -167,14 +167,19 @@
       </animation>
 
       <plugin name="steering" filename="libvehicle_plugin.so">
-        <vehicle_type>boid</vehicle_type>
+        <vehicle_type>path_follower</vehicle_type>
         <building>box</building>
         <max_speed>1</max_speed>
+        <path_point>2 2 0</path_point>
+        <path_point>2 -2 0</path_point>
+        <path_point>-2 -2 0</path_point>
+        <path_point>-2 2 0</path_point>
       </plugin>
 </actor>
 
 <actor name="randomguy2">
-      <pose>0 0 1 0 0 0</pose>
+
+      <pose>-2 -2 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
@@ -184,13 +189,17 @@
       </animation>
 
       <plugin name="steering" filename="libvehicle_plugin.so">
-        <vehicle_type>random_walker</vehicle_type>
+        <vehicle_type>path_follower</vehicle_type>
         <building>box</building>
-        <max_speed>1.1</max_speed>
+        <max_speed>1</max_speed>
+        <path_point>2 2 0</path_point>
+        <path_point>2 -2 0</path_point>
+        <path_point>-2 -2 0</path_point>
+        <path_point>-2 2 0</path_point>
       </plugin>
 </actor>
 
-<actor name="randomguy3">
+<!--actor name="randomguy3">
       <pose>-1 0 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
@@ -205,7 +214,7 @@
         <building>box</building>
         <max_speed>1.2</max_speed>
       </plugin>
-</actor>
+</actor-->
 
   <!--actor name="randomguy2">
 

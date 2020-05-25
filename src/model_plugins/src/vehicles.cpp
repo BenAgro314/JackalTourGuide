@@ -559,10 +559,16 @@ PathFollower::PathFollower(gazebo::physics::ActorPtr _actor,
     ignition::math::Vector3d initial_velocity, 
     std::string animation, 
     std::string _building_name, 
-    utilities::Path _path)
+    std::shared_ptr<utilities::Path> _path)
 : Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, animation, _building_name){
     
     this->path = _path;
+    if (initial_velocity.Length() <10e-6){
+        ignition::math::Vector3d random_vel = ignition::math::Vector3d(ignition::math::Rand::DblUniform(-1,1),ignition::math::Rand::DblUniform(-1,1),0);
+        random_vel.Normalize();
+        random_vel*=this->max_speed;
+        this->velocity = random_vel;
+    }
     
 }
 
@@ -578,7 +584,7 @@ void PathFollower::OnUpdate(const gazebo::common::UpdateInfo &_inf){
     
 
     
-    this->FollowPath(dt);
+    this->FollowPath();
     this->AvoidActors();
     this->AvoidObstacles();
     
@@ -586,22 +592,25 @@ void PathFollower::OnUpdate(const gazebo::common::UpdateInfo &_inf){
     this->UpdateModel();
 }
 
-void PathFollower::FollowPath(double dt){
+void PathFollower::FollowPath(){
+    
     ignition::math::Vector3d target;
     double min_normal_dist = 100000;
 
-    for (int i =0; i<(int) this->path.points.size(); i++){
-        ignition::math::Vector3d start = path.points[i];
+    for (int i =0; i<(int) this->path->points.size(); i++){
+        ignition::math::Vector3d start = path->points[i];
         ignition::math::Vector3d end;
-        if (i == (int) this->path.points.size()-1){
-            end = path.points[0];
+        if (i == (int) this->path->points.size()-1){
+            end = path->points[0];
         } else{
-            end = path.points[i+1];
+            end = path->points[i+1];
         }
 
-        ignition::math::Vector3d dir = this->velocity*dt;
-
+        ignition::math::Vector3d dir = this->velocity;
+        //dir.Normalize();
+        
         ignition::math::Vector3d predicted_loc = this->pose.Pos() + dir;
+        predicted_loc.Z() = 0;
 
         ignition::math::Vector3d normal_vec;
         ignition::math::Vector3d normal_point;
@@ -609,7 +618,15 @@ void PathFollower::FollowPath(double dt){
         if(utilities::get_normal_to_edge(predicted_loc, ignition::math::Line3d(start,end), normal_vec)){
             normal_point = predicted_loc-normal_vec;
         } else{
-            normal_point = end;
+            //chose a point on the start of the next segment
+            ignition::math::Vector3d start = end;
+            ignition::math::Vector3d end = path->points[(i+2)%(path->points.size())];;
+
+            ignition::math::Vector3d line_vec = end-start;
+            line_vec*=0.05;
+
+
+            normal_point = start+line_vec;
         }
 
         double dist = (normal_point-predicted_loc).Length();
@@ -620,5 +637,6 @@ void PathFollower::FollowPath(double dt){
         }
     }
 
+    target.Z() = this->pose.Pos().Z();
     this->Seek(target);
 }

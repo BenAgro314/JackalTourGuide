@@ -63,6 +63,21 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
         this->animation, 
         this->building);
 
+    } else if (this->vehicle_type == "path_follower"){
+
+        this->ReadPath(_sdf);
+
+        
+        this->vehicle = std::make_unique<PathFollower>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
+        mass, 
+        max_force, 
+        max_speed, 
+        _parent->WorldPose(), 
+        ignition::math::Vector3d(0,0,0), 
+        this->animation, 
+        this->building,
+        this->path);
+        
     } else{
         //wanderer
         
@@ -100,6 +115,22 @@ void ModelHandler::ReadSDF(sdf::ElementPtr _sdf){
         this->max_speed =_sdf->GetElement("max_speed")->Get<double>();
     }
   
+}
+
+void ModelHandler::ReadPath(sdf::ElementPtr _sdf){
+
+    this->path = std::make_shared<utilities::Path>();
+    
+    if (_sdf->HasElement("path_point")){
+		auto point_elem = _sdf->GetElement("path_point");
+        
+		while (point_elem){
+			this->path->AddPoint(point_elem->Get<ignition::math::Vector3d>());
+            
+			point_elem = point_elem->GetNextElement("path_point");
+		}
+	}
+    
 }
 
 void ModelHandler::ReadParams(){
