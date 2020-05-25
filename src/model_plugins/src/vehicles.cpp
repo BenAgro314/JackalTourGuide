@@ -1,5 +1,4 @@
 #include "vehicles.hh"
-#include "utilities.hh"
 
 // VEHICLE CLASS
 
@@ -552,3 +551,74 @@ void RandomWalker::SetNextTarget(){
     
 }
 
+PathFollower::PathFollower(gazebo::physics::ActorPtr _actor,
+    double _mass,
+    double _max_force, 
+    double _max_speed, 
+    ignition::math::Pose3d initial_pose, 
+    ignition::math::Vector3d initial_velocity, 
+    std::string animation, 
+    std::string _building_name, 
+    utilities::Path _path)
+: Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, animation, _building_name){
+    
+    this->path = _path;
+    
+}
+
+void PathFollower::OnUpdate(const gazebo::common::UpdateInfo &_inf){
+    double dt = (_inf.simTime - this->last_update).Double();
+
+    if (dt < 1/this->update_freq){
+        return;
+    }
+
+    this->last_update = _inf.simTime;
+
+    
+
+    
+    this->FollowPath(dt);
+    this->AvoidActors();
+    this->AvoidObstacles();
+    
+    this->UpdatePosition(dt);
+    this->UpdateModel();
+}
+
+void PathFollower::FollowPath(double dt){
+    ignition::math::Vector3d target;
+    double min_normal_dist = 100000;
+
+    for (int i =0; i<(int) this->path.points.size(); i++){
+        ignition::math::Vector3d start = path.points[i];
+        ignition::math::Vector3d end;
+        if (i == (int) this->path.points.size()-1){
+            end = path.points[0];
+        } else{
+            end = path.points[i+1];
+        }
+
+        ignition::math::Vector3d dir = this->velocity*dt;
+
+        ignition::math::Vector3d predicted_loc = this->pose.Pos() + dir;
+
+        ignition::math::Vector3d normal_vec;
+        ignition::math::Vector3d normal_point;
+
+        if(utilities::get_normal_to_edge(predicted_loc, ignition::math::Line3d(start,end), normal_vec)){
+            normal_point = predicted_loc-normal_vec;
+        } else{
+            normal_point = end;
+        }
+
+        double dist = (normal_point-predicted_loc).Length();
+
+        if (dist<min_normal_dist){
+            min_normal_dist = dist;
+            target = normal_point;
+        }
+    }
+
+    this->Seek(target);
+}

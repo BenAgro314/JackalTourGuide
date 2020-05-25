@@ -1,5 +1,6 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
+#include "utilities.hh"
 #include <vector>
 #include <map>
 
@@ -136,7 +137,19 @@ class Boid: public Vehicle{
 
     public:
 
-        Boid(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name, double _alignement, double _cohesion, double _separation, double angle, double radius);
+        Boid(gazebo::physics::ActorPtr _actor,
+         double _mass,
+         double _max_force, 
+         double _max_speed, 
+         ignition::math::Pose3d initial_pose, 
+         ignition::math::Vector3d initial_velocity, 
+         std::string animation, 
+         std::string _building_name, 
+         double _alignement, 
+         double _cohesion, 
+         double _separation, 
+         double angle, 
+         double radius);
 
         void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 
@@ -150,4 +163,27 @@ class Boid: public Vehicle{
             this->FOV_angle = _angle;
             this->FOV_radius = _radius;
         }
+};
+
+class PathFollower: public Vehicle{
+
+    protected:
+        utilities::Path path;
+        void FollowPath(double dt);
+
+    public: 
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+
+        PathFollower(gazebo::physics::ActorPtr _actor,
+         double _mass,
+         double _max_force, 
+         double _max_speed, 
+         ignition::math::Pose3d initial_pose, 
+         ignition::math::Vector3d initial_velocity, 
+         std::string animation, 
+         std::string _building_name, 
+         utilities::Path _path);
+
+
 };

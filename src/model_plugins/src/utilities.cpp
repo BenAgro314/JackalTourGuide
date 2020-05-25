@@ -102,3 +102,16 @@ ignition::math::Vector3d utilities::min_repulsive_vector(ignition::math::Vector3
 
 	return min_normal;
 }
+
+utilities::Path::Path(){
+	this->radius = 0.5;
+}
+
+utilities::Path::Path(double _radius){
+	this->radius = _radius;
+	
+}
+
+void utilities::Path::AddPoint(ignition::math::Vector3d _point){
+	this->points.push_back(_point);
+}

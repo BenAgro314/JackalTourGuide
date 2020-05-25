@@ -16,4 +16,22 @@ namespace utilities{
     bool get_normal_to_edge(ignition::math::Vector3d pos, ignition::math::Line3d edge, ignition::math::Vector3d &normal);
 
     ignition::math::Vector3d min_repulsive_vector(ignition::math::Vector3d pos, gazebo::physics::EntityPtr entity);
+
+
+    class Path{
+        protected:
+            
+            double radius = 0.5;
+
+        public:
+
+            Path();
+
+            Path(double _radius);
+
+            void AddPoint(ignition::math::Vector3d _point);
+
+            std::vector<ignition::math::Vector3d> points;
+
+    };
 }
