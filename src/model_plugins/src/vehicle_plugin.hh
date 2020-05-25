@@ -15,12 +15,23 @@ class ModelHandler : public ModelPlugin{
 	// Called by the world update start event
     public: void OnUpdate(const common::UpdateInfo &_info);
 
+    public: void ReadSDF(sdf::ElementPtr _sdf);
+
+    public: void ReadParams();
+
     // Pointer to the update event connection
     private: event::ConnectionPtr update_connection;
 
 
     //private: Vehicle *vehicle;
     private: std::unique_ptr<Vehicle> vehicle;
+
+    private: std::string animation = "animation";
+    private: std::string vehicle_type;
+    private: std::string building;
+    private: double max_speed = 1;
+    private: std::vector<double> vehicle_params;
+    private: std::vector<double> boid_params;
 	
 };
 

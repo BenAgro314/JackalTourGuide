@@ -166,7 +166,11 @@
         <interpolate_x>true</interpolate_x>
       </animation>
 
-      <plugin name="steering" filename="libvehicle_plugin.so"/>
+      <plugin name="steering" filename="libvehicle_plugin.so">
+        <vehicle_type>boid</vehicle_type>
+        <building>box</building>
+        <max_speed>1</max_speed>
+      </plugin>
 </actor>
 
 <actor name="randomguy2">
@@ -179,7 +183,11 @@
         <interpolate_x>true</interpolate_x>
       </animation>
 
-      <plugin name="steering" filename="libvehicle_plugin.so"/>
+      <plugin name="steering" filename="libvehicle_plugin.so">
+        <vehicle_type>random_walker</vehicle_type>
+        <building>box</building>
+        <max_speed>1.1</max_speed>
+      </plugin>
 </actor>
 
 <actor name="randomguy3">
@@ -192,7 +200,11 @@
         <interpolate_x>true</interpolate_x>
       </animation>
 
-      <plugin name="steering" filename="libvehicle_plugin.so"/>
+      <plugin name="steering" filename="libvehicle_plugin.so">
+        <vehicle_type>wanderer</vehicle_type>
+        <building>box</building>
+        <max_speed>1.2</max_speed>
+      </plugin>
 </actor>
 
   <!--actor name="randomguy2">

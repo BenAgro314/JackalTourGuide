@@ -36,7 +36,14 @@ class Vehicle{
 
     public:
 
-        Vehicle(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name);
+        Vehicle(gazebo::physics::ActorPtr _actor, 
+        double _mass, 
+        double _max_force, 
+        double _max_speed, 
+        ignition::math::Pose3d initial_pose, 
+        ignition::math::Vector3d initial_velocity, 
+        std::string animation, 
+        std::string _building_name);
 
         virtual void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 
@@ -102,8 +109,6 @@ class RandomWalker: public Vehicle{
 
         void SetNextTarget(); 
 
-        
-
     public:
 
         using Vehicle::Vehicle;
@@ -131,11 +136,11 @@ class Boid: public Vehicle{
 
     public:
 
-        Boid(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name, double _alignement, double _cohesion, double _separation);
+        Boid(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name, double _alignement, double _cohesion, double _separation, double angle, double radius);
 
         void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 
-        void SetWeights(double _separation, double _alignement, double _cohesion){
+        void SetWeights(double _alignement, double _cohesion, double _separation){
             this->weights[ALI] = _alignement;
             this->weights[COH] = _cohesion;
             this->weights[SEP] = _separation;

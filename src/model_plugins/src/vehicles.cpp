@@ -295,7 +295,9 @@ std::string animation,
 std::string _building_name, 
 double _alignement, 
 double _cohesion, 
-double _separation)
+double _separation,
+double angle,
+double radius)
 : Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, animation, _building_name){
     this->weights[ALI] = _alignement;
     this->weights[COH] = _cohesion;
@@ -304,6 +306,9 @@ double _separation)
     for (gazebo::physics::ActorPtr other: this->actors){
         this->last_pos[other] = other->WorldPose().Pos();
     }
+
+    this->FOV_angle = angle;
+    this->FOV_radius = radius;
 }
 
 void Boid::Separation(){
