@@ -264,6 +264,85 @@ void Wanderer::SetNextTarget(){
 
 }
 
+// BOID CLASS
+
+void Boid::OnUpdate(const gazebo::common::UpdateInfo &_inf){
+    double dt = (_inf.simTime - this->last_update).Double();
+
+    if (dt < 1/this->update_freq){
+        return;
+    }
+
+    this->last_update = _inf.simTime;
+
+    this->Alignement(dt);
+    this->Cohesion();
+    this->Separation();
+
+    this->UpdatePosition(dt);
+    this->UpdateModel();
+}
+
+
+Boid::Boid(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name, double _alignement, double _cohesion, double _separation)
+: Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, animation, _building_name){
+    this->weights[ALI] = _alignement;
+    this->weights[COH] = _cohesion;
+    this->weights[SEP] = _separation;
+
+    for (gazebo::physics::ActorPtr other: this->actors){
+        this->last_pos[other] = other->WorldPose().Pos();
+    }
+}
+
+void Boid::Separation(){
+    
+}
+
+void Boid::Alignement(double dt){
+    ignition::math::Vector3d vel_sum = ignition::math::Vector3d(0,0,0);
+    int count = 0;
+
+    for (gazebo::physics::ActorPtr other : this->actors){
+
+        ignition::math::Vector3d past_pos = this->last_pos[other];
+		this->last_pos[other] = other->WorldPose().Pos();
+
+        ignition::math::Vector3d r = other->WorldPose().Pos() - this->pose.Pos();
+        if (r.Length() < this->FOV_radius){
+            ignition::math::Vector3d dir = this->velocity;
+            dir.Normalize();
+            r.Normalize();
+            double angle = std::acos(r.Dot(dir));
+
+            if (angle<this->FOV_angle/2){
+                
+				ignition::math::Vector3d vel = (other->WorldPose().Pos()-past_pos)/dt;
+                count++;
+				
+				vel_sum+= vel;
+            }
+        }
+    }
+
+    if (count >0){
+		
+		// Implement Reynolds: Steering = Desired - Velocity
+		vel_sum.Normalize();
+		vel_sum*=this->max_speed;
+		vel_sum-=this->velocity;
+		if (vel_sum.Length() > this->max_force){
+			vel_sum.Normalize();
+			vel_sum*=this->max_force;
+		}
+	}
+	
+	this->ApplyForce(vel_sum*this->weights[0]);
+}
+
+void Boid::Cohesion(){
+    
+}
 
 //RANDOM WALKER CLASS (depreciated, should use wanderer)
 
@@ -356,3 +435,4 @@ void RandomWalker::SetNextTarget(){
 
     
 }
+

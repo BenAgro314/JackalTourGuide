@@ -1,6 +1,11 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include <vector>
+#include <map>
+
+#define ALI 0 
+#define COH 1
+#define SEP 2
 
 class Vehicle{
 
@@ -105,4 +110,39 @@ class RandomWalker: public Vehicle{
 
         void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 
+};
+
+
+class Boid: public Vehicle{
+
+    protected:
+
+        void Separation();
+        void Alignement(double dt);
+        void Cohesion();
+
+        double weights[3];
+
+        double FOV_angle = 5;
+        double FOV_radius = 3;
+
+        std::map<gazebo::physics::ActorPtr, ignition::math::Vector3d> last_pos;
+        
+
+    public:
+
+        Boid::Boid(gazebo::physics::ActorPtr _actor, double _mass, double _max_force, double _max_speed, ignition::math::Pose3d initial_pose, ignition::math::Vector3d initial_velocity, std::string animation, std::string _building_name, double _alignement, double _cohesion, double _separation);
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+
+        void SetWeights(double _separation, double _alignement, double _cohesion){
+            this->weights[ALI] = _alignement;
+            this->weights[COH] = _cohesion;
+            this->weights[SEP] = _separation;
+        }
+
+        void SetFOV(double _angle, double _radius){
+            this->FOV_angle = _angle;
+            this->FOV_radius = _radius;
+        }
 };
