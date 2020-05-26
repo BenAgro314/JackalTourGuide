@@ -4,3 +4,5 @@ Currently available vehicle behaviours:
 - Wandering 
 - Boid
 - Random Target Selection
+- Path Following 
+- Standing 
