@@ -6,21 +6,8 @@
 #include <gazebo/gazebo.hh>
 #include <utility>
 
-/*
-class SDFString{
 
-    public:
 
-        std::string value;
-
-        std::vector<std::shared_ptr<HeaderTag>> header_tags;
-
-        std::vector<std::shared_ptr<DataTags>> data_tags;
-
-        SDFString();
-
-};
-*/
 
 
 
@@ -69,5 +56,32 @@ class HeaderTag : public SDFTag{
         void AddSubtag(std::shared_ptr<SDFTag> _tag);
 
 };
+
+class SDFPlugin : public HeaderTag{
+
+    public:
+
+        std::string name;
+
+        std::string filename;
+
+        SDFPlugin(std::string _name, std::string _filename);
+
+        void AddSubtag(std::string name, std::string value);
+
+};
+
+class SDFAnimation : public HeaderTag{
+
+    public:
+
+        std::string name;
+        std::string filename;
+        bool interpolate_x;
+
+        SDFAnimation(std::string _name, std::string _filename, bool _interpolate_x);
+
+};
+
 
 #endif

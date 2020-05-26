@@ -4,7 +4,7 @@
 #include "gazebo/common/common.hh"
 #include <functional>
 #include "gazebo/gazebo.hh"
-#include "sdfstring.hh"
+#include "world_entities.hh"
 #include <utility>
 
 class WorldHander: public gazebo::WorldPlugin{

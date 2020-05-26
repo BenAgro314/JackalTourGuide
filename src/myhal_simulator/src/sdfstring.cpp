@@ -77,3 +77,32 @@ std::string HeaderTag::WriteTag(int pretabs){
 
     return tag.str();
 }
+
+
+SDFPlugin::SDFPlugin(std::string _name, std::string _filename): HeaderTag("plugin"){
+    this->name = _name;
+    this->filename = _filename;
+    this->AddAttribute("name", _name);
+    this->AddAttribute("filename", _filename);
+}
+
+void SDFPlugin::AddSubtag(std::string name ,std::string value){
+    std::shared_ptr<DataTag> data = std::make_shared<DataTag>(name, value);
+    HeaderTag::AddSubtag(data);
+}
+
+SDFAnimation::SDFAnimation(std::string _name ,std::string _filename, bool _interpolate_x): HeaderTag("animation"){
+    this->name = _name;
+    this->filename = _filename;
+    this->interpolate_x = _interpolate_x;
+    this->AddAttribute("name", _name);
+    std::shared_ptr<DataTag> file = std::make_shared<DataTag>("filename", _filename);
+    this->AddSubtag(file);
+    if (_interpolate_x){
+        std::shared_ptr<DataTag> inter = std::make_shared<DataTag>("interpolate_x", "true");
+        this->AddSubtag(inter);
+    } else{
+        std::shared_ptr<DataTag> inter = std::make_shared<DataTag>("interpolate_x", "false");
+        this->AddSubtag(inter);
+    }
+}
