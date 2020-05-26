@@ -1,3 +1,6 @@
+#ifndef VEHICLES_HH
+#define VEHICLES_HH
+
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include "utilities.hh"
@@ -219,3 +222,5 @@ class Stander: public Wanderer{
          double _walking_duration);
 
 };
+
+#endif

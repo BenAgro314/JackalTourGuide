@@ -1,5 +1,11 @@
+#ifndef SIMULATOR_PLUGIN_HH
+#define SIMULATOR_PLUGIN_HH
+
 #include "gazebo/common/common.hh"
+#include <functional>
 #include "gazebo/gazebo.hh"
+#include "sdfstring.hh"
+#include <utility>
 
 class WorldHander: public gazebo::WorldPlugin{
 
@@ -15,3 +21,5 @@ class WorldHander: public gazebo::WorldPlugin{
 
     
 };
+
+#endif

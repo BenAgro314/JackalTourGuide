@@ -1,3 +1,6 @@
+#ifndef UTILITIES_HH
+#define UTILITIES_HH
+
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include <ignition/math/Vector3.hh>
@@ -33,3 +36,5 @@ namespace utilities{
 
     };
 }
+
+#endif

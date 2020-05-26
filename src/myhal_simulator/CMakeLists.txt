@@ -28,8 +28,12 @@ target_link_libraries(vehicles utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES}
 add_library(vehicle_plugin src/vehicle_plugin.cpp)
 target_link_libraries(vehicle_plugin vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+
+add_library(sdfstring src/sdfstring.cpp)
+target_link_libraries(sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 add_library(simulator_plugin src/simulator_plugin.cpp)
-target_link_libraries(simulator_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(simulator_plugin sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 catkin_package(
 	DEPENDS gazebo_ros roscpp rospy std_msgs

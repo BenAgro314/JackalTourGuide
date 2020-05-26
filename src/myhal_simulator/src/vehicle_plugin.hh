@@ -1,3 +1,6 @@
+#ifndef VEHICLE_PLUGIN_HH
+#define VEHICLE_PLUGIN_HH
+
 #include <functional>
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
@@ -46,4 +49,4 @@ class ModelHandler : public ModelPlugin{
 	
 };
 
-
+#endif
