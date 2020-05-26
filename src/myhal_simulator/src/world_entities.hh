@@ -8,24 +8,40 @@
 
 namespace myhal{
 
-    class Actor{
 
-        private:
+    class Model{
 
-            static int num_actors;
+        protected:
+
+            static int num_models;
 
             std::string name;
             ignition::math::Pose3d pose;
-            std::string skin_file;
-
             std::vector<std::shared_ptr<SDFPlugin>> plugins;
+
+        public:
+
+            Model(std::string _name, ignition::math::Pose3d _pose);
+
+            void AddPlugin(std::shared_ptr<SDFPlugin> plugin);
+
+            virtual std::string CreateSDF();
+
+    };
+
+    class Actor: public Model{
+
+        private:
+
+            
+            std::string skin_file;
+            
             std::vector<std::shared_ptr<SDFAnimation>> animations;
 
         public:
 
             Actor(std::string _name, ignition::math::Pose3d _pose, std::string _skin_file);
-
-            void AddPlugin(std::shared_ptr<SDFPlugin> plugin);
+            
             void AddAnimation(std::shared_ptr<SDFAnimation> animation);
 
             std::string CreateSDF();
