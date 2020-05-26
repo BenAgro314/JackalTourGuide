@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(model_plugins)
+project(myhal_simulator)
 
 add_definitions(-std=c++14)
 
