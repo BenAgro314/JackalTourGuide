@@ -1,4 +1,5 @@
 #include "vehicles.hh"
+#include <iterator>
 
 // VEHICLE CLASS
 
@@ -20,17 +21,21 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
         this->acceleration = ignition::math::Vector3d(0,0,0);
         this->curr_target = initial_pose.Pos();
         
+        //load in all skeleton animations
 
-        auto skelAnims = this->actor->SkeletonAnimations();
-  	    if (skelAnims.find(animation) == skelAnims.end()){
-    	    std::cout << "Skeleton animation [" << animation << "] not found in Actor."
-          	    << std::endl;
-  	    }else{
-            gazebo::physics::TrajectoryInfoPtr trajectoryInfo(new gazebo::physics::TrajectoryInfo());
-            trajectoryInfo->type = animation;
-            trajectoryInfo->duration = 1.0;
-            this->actor->SetCustomTrajectory(trajectoryInfo);
-  	    }   
+        std::map<std::string, gazebo::common::SkeletonAnimation *>::iterator it;
+        std::map<std::string, gazebo::common::SkeletonAnimation *> skel_anims = this->actor->SkeletonAnimations();
+
+        for ( it = skel_anims.begin(); it != skel_anims.end(); it++ ){   
+            this->trajectories[it->first] = std::make_shared<gazebo::physics::TrajectoryInfo>();
+            this->trajectories[it->first]->type = it->first;
+            this->trajectories[it->first]->duration = 1.0;
+        }
+
+        this->actor->SetCustomTrajectory(this->trajectories["walking"]);
+        this->last_trajectory = "walking";
+
+
 
         this->building_name = _building_name;
 
@@ -193,7 +198,6 @@ void Vehicle::ApplyForce(ignition::math::Vector3d force){
     this->acceleration+=(force/this->mass);
 }
 
-
 void Vehicle::UpdatePosition(double dt){
     this->velocity+=this->acceleration*dt;
     
@@ -201,6 +205,7 @@ void Vehicle::UpdatePosition(double dt){
         this->velocity.Normalize();
         this->velocity*=this->max_speed;
     }
+
 
     ignition::math::Vector3d direction = this->velocity;
 
@@ -227,7 +232,7 @@ void Vehicle::UpdatePosition(double dt){
 }
 
 void Vehicle::UpdateModel(){
- 
+
     double distance_travelled = (this->pose.Pos() - this->actor->WorldPose().Pos()).Length();
 	this->actor->SetWorldPose(this->pose, true, true);
 	this->actor->SetScriptTime(this->actor->ScriptTime() + (distance_travelled * this->animation_factor));
@@ -653,3 +658,82 @@ void PathFollower::FollowPath(){
     }
     
 }
+
+
+Stander::Stander(gazebo::physics::ActorPtr _actor, 
+double _mass, 
+double _max_force, 
+double _max_speed, 
+ignition::math::Pose3d initial_pose, 
+ignition::math::Vector3d initial_velocity, 
+std::string animation, 
+std::string _building_name, 
+double _standing_duration,
+double _walking_duration)
+: Wanderer(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, animation, _building_name){
+    this->standing_duration = _standing_duration;
+    this->walking_duration = _walking_duration;
+
+    
+    this->actor->SetCustomTrajectory(this->trajectories["standing"]);
+
+    this->UpdatePosition(0.1);
+    this->actor->SetWorldPose(this->pose, true, true);
+    this->actor->SetScriptTime(this->actor->ScriptTime());
+}
+
+void Stander::UpdateModel(double dt){
+
+    if (this->standing){
+        this->actor->SetWorldPose(this->pose, true, true);
+	    this->actor->SetScriptTime(this->actor->ScriptTime() + dt*this->animation_factor);
+    } else{
+        double distance_travelled = (this->pose.Pos() - this->actor->WorldPose().Pos()).Length();
+	    this->actor->SetWorldPose(this->pose, true, true);
+	    this->actor->SetScriptTime(this->actor->ScriptTime() + (distance_travelled * this->animation_factor));
+    }
+    
+}
+
+void Stander::OnUpdate(const gazebo::common::UpdateInfo &_inf){
+
+    double dt = (_inf.simTime - this->last_update).Double();
+
+    if (dt < 1/this->update_freq){
+        return;
+    }
+
+    this->last_update = _inf.simTime;
+
+
+    if (this->standing){
+
+        this->AvoidActors();
+        this->AvoidObstacles();
+
+        if((_inf.simTime - this->standing_start).Double() >= this->standing_duration){
+            this->standing = false;
+            this->walking_start = _inf.simTime;
+            this->actor->SetCustomTrajectory(this->trajectories["walking"]);
+            
+        }
+    } else{
+
+        this->SetNextTarget();
+        this->Seek(this->curr_target);
+        this->AvoidActors();
+        this->AvoidObstacles();
+    
+        this->UpdatePosition(dt);
+
+        if((_inf.simTime - this->walking_start).Double() >= this->walking_duration){
+            this->standing = true;
+            this->standing_start = _inf.simTime;
+            this->actor->SetCustomTrajectory(this->trajectories["standing"]);
+            
+        }
+    }
+ 
+    this->UpdateModel(dt);
+}
+

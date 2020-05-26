@@ -78,6 +78,19 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
         this->building,
         this->path);
         
+    } else if (this->vehicle_type == "stander"){
+        
+        this->vehicle = std::make_unique<Stander>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
+        mass, 
+        max_force, 
+        max_speed, 
+        _parent->WorldPose(), 
+        ignition::math::Vector3d(0,0,0), 
+        this->animation, 
+        this->building,
+        5,
+        5); //todo: read these in as parameters 
+        
     } else{
         //wanderer
         
@@ -98,10 +111,6 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
 }
 
 void ModelHandler::ReadSDF(sdf::ElementPtr _sdf){
-    //std::string animation = "animation";
-    if (_sdf->HasElement("animation")){
-    	this->animation = _sdf->Get<std::string>("animation");
-    }
 
     if (_sdf->HasElement("vehicle_type")){
         this->vehicle_type =_sdf->GetElement("vehicle_type")->Get<std::string>();

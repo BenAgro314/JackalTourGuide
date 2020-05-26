@@ -28,7 +28,7 @@ class ModelHandler : public ModelPlugin{
     //private: Vehicle *vehicle;
     private: std::unique_ptr<Vehicle> vehicle;
 
-    private: std::string animation = "animation";
+    private: std::string animation = "walking";
     private: std::string vehicle_type;
     private: std::string building;
     private: double max_speed = 1;

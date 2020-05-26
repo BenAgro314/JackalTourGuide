@@ -97,27 +97,8 @@
     <include>
       <name>box</name>
       <pose>0 0 0 0 0 0</pose>
-      <uri>model://myhal_V3</uri>
+      <uri>model://10x10Box</uri>
 	  </include>
-
-
-
-    <!--model name="my_model">
-      <pose>10 10 0 0 0 0</pose>
-      <static>true</static>
-      <link name="body">
-        <visual name="visual">
-          <geometry>
-            <mesh>
-                <uri>model://onshape_test1/model.dae</uri>
-            </mesh>
-          </geometry>
-        </visual>
-      </link>
-    </model-->
-
-
-
 
   
     
@@ -173,23 +154,27 @@
     </link>
 </model-->
 
-<!--actor name="randomguy1">
+<actor name="randomguy1">
 
       <pose>2 2 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
-      <animation name="animation"> 
+      <animation name="walking"> 
         <filename>walk.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
+      <animation name="talking"> 
+        <filename>talk_a.dae</filename>
+      </animation>
+      <animation name="standing"> 
+        <filename>stand.dae</filename>
+      </animation>
 
       <plugin name="steering" filename="libvehicle_plugin.so">
-        <vehicle_type>path_follower</vehicle_type>
+        <vehicle_type>stander</vehicle_type>
         <building>box</building>
         <max_speed>1</max_speed>
-        <path_point>-5 2.5 0</path_point>
-        <path_point>5 2.5 0</path_point>
         
       </plugin>
 </actor>
@@ -200,7 +185,7 @@
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
-      <animation name="animation"> 
+      <animation name="walking"> 
         <filename>walk.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
@@ -211,7 +196,7 @@
         <max_speed>1</max_speed>
 
       </plugin>
-</actor-->
+</actor>
 
 <!--actor name="randomguy3">
       <pose>-1 0 1 0 0 0</pose>

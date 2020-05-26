@@ -60,11 +60,15 @@ class Vehicle{
 
         void UpdateModel();
 
-        ignition::math::Vector3d curr_target;
-
         void AvoidActors(); 
 
         void AvoidObstacles();
+
+        ignition::math::Vector3d curr_target;
+
+        std::map<std::string, std::shared_ptr<gazebo::physics::TrajectoryInfo>> trajectories; 
+
+        std::string last_trajectory; 
 
     public: 
 
@@ -185,5 +189,36 @@ class PathFollower: public Vehicle{
          std::string _building_name, 
          std::shared_ptr<utilities::Path> _path);
 
+
+};
+
+class Stander: public Wanderer{
+
+    protected: 
+    
+
+        void UpdateModel(double dt);
+
+        bool standing = true;
+        double standing_duration;
+        double walking_duration;
+
+        gazebo::common::Time standing_start;
+        gazebo::common::Time walking_start;
+
+    public:
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+
+        Stander(gazebo::physics::ActorPtr _actor,
+         double _mass,
+         double _max_force, 
+         double _max_speed, 
+         ignition::math::Pose3d initial_pose, 
+         ignition::math::Vector3d initial_velocity, 
+         std::string animation, 
+         std::string _building_name, 
+         double _standing_duration,
+         double _walking_duration);
 
 };

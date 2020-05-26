@@ -17,7 +17,6 @@ namespace utilities{
 
     ignition::math::Vector3d min_repulsive_vector(ignition::math::Vector3d pos, gazebo::physics::EntityPtr entity);
 
-
     class Path{
 
         public:
