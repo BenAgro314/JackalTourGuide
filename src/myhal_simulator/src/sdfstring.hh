@@ -6,16 +6,21 @@
 #include <gazebo/gazebo.hh>
 #include <utility>
 
+/*
 class SDFString{
 
     public:
 
-        SDFString();
-
         std::string value;
 
-};
+        std::vector<std::shared_ptr<HeaderTag>> header_tags;
 
+        std::vector<std::shared_ptr<DataTags>> data_tags;
+
+        SDFString();
+
+};
+*/
 
 
 
@@ -27,7 +32,7 @@ class SDFTag{
 
         SDFTag(std::string _name);
 
-        virtual std::string WriteTag();
+        virtual std::string WriteTag(int pretabs);
 
 };
 
@@ -39,7 +44,7 @@ class DataTag : public SDFTag{
 
         DataTag(std::string _name, std::string _data);
 
-        std::string WriteTag();
+        std::string WriteTag(int pretabs);
 
 };
 
@@ -49,7 +54,7 @@ class HeaderTag : public SDFTag{
 
     private:
 
-        std::vector<std::shared_ptr<DataTag>> sub_tags;
+        std::vector<std::shared_ptr<SDFTag>> sub_tags;
 
         std::vector<std::vector<std::string>> attributes;
 
@@ -57,11 +62,11 @@ class HeaderTag : public SDFTag{
 
         using SDFTag::SDFTag;
 
-        std::string WriteTag();
+        std::string WriteTag(int pretabs);
 
         void AddAttribute(std::string title, std::string value);
 
-        void AddSubtag(std::shared_ptr<DataTag> _tag);
+        void AddSubtag(std::shared_ptr<SDFTag> _tag);
 
 };
 

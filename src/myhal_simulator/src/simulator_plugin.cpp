@@ -13,13 +13,20 @@ void WorldHander::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     std::cout << "HELLO WORLD" << std::endl;
 
-    std::shared_ptr<DataTag> tag = std::make_shared<DataTag>("vehicle_type", "wanderer");
-    std::unique_ptr<HeaderTag> super = std::make_unique<HeaderTag>("plugin");
-    super->AddAttribute("name", "simulator");
-    super->AddAttribute("filename","libvehicle_plugin.so");
-    super->AddSubtag(tag);
+    std::shared_ptr<HeaderTag> actor = std::make_unique<HeaderTag>("actor");
+    actor->AddAttribute("name", "bob");
+    std::shared_ptr<DataTag> data = std::make_shared<DataTag>("vehicle_type", "wanderer");
+    std::shared_ptr<DataTag> pose = std::make_shared<DataTag>("pose", "1 1 0 0 0 0");
+    std::shared_ptr<HeaderTag> plugin = std::make_unique<HeaderTag>("plugin");
 
-    std::cout << << super->WriteTag() << std::endl;
+    plugin->AddAttribute("name", "simulator");
+    plugin->AddAttribute("filename","libvehicle_plugin.so");
+    plugin->AddSubtag(data);
+
+    actor->AddSubtag(plugin);
+    actor->AddSubtag(pose);
+
+    std::cout << actor->WriteTag(0) << std::endl;
 }
 
 void WorldHander::OnUpdate(const gazebo::common::UpdateInfo &_info){
