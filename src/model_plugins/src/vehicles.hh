@@ -43,7 +43,6 @@ class Vehicle{
         double _max_speed, 
         ignition::math::Pose3d initial_pose, 
         ignition::math::Vector3d initial_velocity, 
-        std::string animation, 
         std::string _building_name);
 
         virtual void OnUpdate(const gazebo::common::UpdateInfo &_inf);
@@ -147,7 +146,6 @@ class Boid: public Vehicle{
          double _max_speed, 
          ignition::math::Pose3d initial_pose, 
          ignition::math::Vector3d initial_velocity, 
-         std::string animation, 
          std::string _building_name, 
          double _alignement, 
          double _cohesion, 
@@ -185,7 +183,6 @@ class PathFollower: public Vehicle{
          double _max_speed, 
          ignition::math::Pose3d initial_pose, 
          ignition::math::Vector3d initial_velocity, 
-         std::string animation, 
          std::string _building_name, 
          std::shared_ptr<utilities::Path> _path);
 
@@ -200,6 +197,7 @@ class Stander: public Wanderer{
         void UpdateModel(double dt);
 
         bool standing = true;
+        bool never_walk = false;
         double standing_duration;
         double walking_duration;
 
@@ -216,7 +214,6 @@ class Stander: public Wanderer{
          double _max_speed, 
          ignition::math::Pose3d initial_pose, 
          ignition::math::Vector3d initial_velocity, 
-         std::string animation, 
          std::string _building_name, 
          double _standing_duration,
          double _walking_duration);

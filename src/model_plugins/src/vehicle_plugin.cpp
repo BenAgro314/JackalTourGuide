@@ -19,10 +19,9 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
 
     double mass = this->vehicle_params[0];
     double max_force = this->vehicle_params[1];
-    double max_speed = this->vehicle_params[2];
-    double slowing_distance = this->vehicle_params[3];
-    double arrival_distance = this->vehicle_params[4];
-    double obstacle_margin = this->vehicle_params[5];
+    double slowing_distance = this->vehicle_params[2];
+    double arrival_distance = this->vehicle_params[3];
+    double obstacle_margin = this->vehicle_params[4];
 
     if (this->vehicle_type == "boid"){
         
@@ -39,10 +38,9 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
         this->vehicle = std::make_unique<Boid>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
         mass, 
         max_force, 
-        max_speed, 
+        this->max_speed, 
         _parent->WorldPose(), 
         random_vel, 
-        this->animation, 
         this->building, 
         ali,
         coh,
@@ -60,7 +58,6 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
         max_speed, 
         _parent->WorldPose(), 
         ignition::math::Vector3d(0,0,0), 
-        this->animation, 
         this->building);
 
     } else if (this->vehicle_type == "path_follower"){
@@ -71,10 +68,9 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
         this->vehicle = std::make_unique<PathFollower>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
         mass, 
         max_force, 
-        max_speed, 
+        this->max_speed, 
         _parent->WorldPose(), 
         ignition::math::Vector3d(0,0,0), 
-        this->animation, 
         this->building,
         this->path);
         
@@ -83,13 +79,12 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
         this->vehicle = std::make_unique<Stander>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
         mass, 
         max_force, 
-        max_speed, 
+        this->max_speed, 
         _parent->WorldPose(), 
         ignition::math::Vector3d(0,0,0), 
-        this->animation, 
         this->building,
-        5,
-        5); //todo: read these in as parameters 
+        this->standing_duration,
+        this->walking_duration); //todo: read these in as parameters 
         
     } else{
         //wanderer
@@ -97,10 +92,9 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
         this->vehicle = std::make_unique<Wanderer>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
         mass, 
         max_force, 
-        max_speed, 
+        this->max_speed, 
         _parent->WorldPose(), 
         ignition::math::Vector3d(0,0,0), 
-        this->animation, 
         this->building);
 
     }
@@ -122,6 +116,14 @@ void ModelHandler::ReadSDF(sdf::ElementPtr _sdf){
 
     if (_sdf->HasElement("max_speed")){
         this->max_speed =_sdf->GetElement("max_speed")->Get<double>();
+    }
+
+    if (_sdf->HasElement("walking_duration")){
+        this->walking_duration =_sdf->GetElement("walking_duration")->Get<double>();
+    }
+
+    if (_sdf->HasElement("standing_duration")){
+        this->standing_duration =_sdf->GetElement("standing_duration")->Get<double>();
     }
   
 }

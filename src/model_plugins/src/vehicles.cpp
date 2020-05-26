@@ -9,7 +9,6 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
     double _max_speed,
     ignition::math::Pose3d initial_pose, 
     ignition::math::Vector3d initial_velocity,
-    std::string animation,
     std::string _building_name){
 
         this->actor = _actor;
@@ -305,14 +304,13 @@ double _max_force,
 double _max_speed, 
 ignition::math::Pose3d initial_pose, 
 ignition::math::Vector3d initial_velocity, 
-std::string animation, 
 std::string _building_name, 
 double _alignement, 
 double _cohesion, 
 double _separation,
 double angle,
 double radius)
-: Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, animation, _building_name){
+: Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity,  _building_name){
     this->weights[ALI] = _alignement;
     this->weights[COH] = _cohesion;
     this->weights[SEP] = _separation;
@@ -572,10 +570,9 @@ PathFollower::PathFollower(gazebo::physics::ActorPtr _actor,
     double _max_speed, 
     ignition::math::Pose3d initial_pose, 
     ignition::math::Vector3d initial_velocity, 
-    std::string animation, 
     std::string _building_name, 
     std::shared_ptr<utilities::Path> _path)
-: Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, animation, _building_name){
+: Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, _building_name){
     
     this->path = _path;
     if (initial_velocity.Length() <10e-6){
@@ -666,15 +663,17 @@ double _max_force,
 double _max_speed, 
 ignition::math::Pose3d initial_pose, 
 ignition::math::Vector3d initial_velocity, 
-std::string animation, 
 std::string _building_name, 
 double _standing_duration,
 double _walking_duration)
-: Wanderer(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, animation, _building_name){
+: Wanderer(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, _building_name){
     this->standing_duration = _standing_duration;
     this->walking_duration = _walking_duration;
 
-    
+    if (walking_duration <= 0){
+        this->never_walk = true;
+    }
+        
     this->actor->SetCustomTrajectory(this->trajectories["standing"]);
 
     this->UpdatePosition(0.1);
@@ -708,10 +707,7 @@ void Stander::OnUpdate(const gazebo::common::UpdateInfo &_inf){
 
     if (this->standing){
 
-        this->AvoidActors();
-        this->AvoidObstacles();
-
-        if((_inf.simTime - this->standing_start).Double() >= this->standing_duration){
+        if(!this->never_walk && (_inf.simTime - this->standing_start).Double() >= this->standing_duration){
             this->standing = false;
             this->walking_start = _inf.simTime;
             this->actor->SetCustomTrajectory(this->trajectories["walking"]);

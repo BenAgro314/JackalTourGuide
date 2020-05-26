@@ -25,17 +25,24 @@ class ModelHandler : public ModelPlugin{
     private: event::ConnectionPtr update_connection;
 
 
-    //private: Vehicle *vehicle;
     private: std::unique_ptr<Vehicle> vehicle;
 
-    private: std::string animation = "walking";
     private: std::string vehicle_type;
     private: std::string building;
-    private: double max_speed = 1;
+    private: double max_speed;
+
+    //for all vehicles 
     private: std::vector<double> vehicle_params;
+
+    //for boids
     private: std::vector<double> boid_params;
 
+    //for path follower
     private: std::shared_ptr<utilities::Path> path;
+
+    //for stander
+    private: double walking_duration = 0;
+    private: double standing_duration = 5;
 	
 };
 

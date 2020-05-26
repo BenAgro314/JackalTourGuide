@@ -175,6 +175,8 @@
         <vehicle_type>stander</vehicle_type>
         <building>box</building>
         <max_speed>1</max_speed>
+        <standing_duration>1</standing_duration>
+        <walking_duration>-1</walking_duration>
         
       </plugin>
 </actor>
