@@ -3,7 +3,7 @@
 
 class WorldHander: public gazebo::WorldPlugin{
 
-    
+
     public: void Load(gazebo::physics::WorldPtr world, sdf::ElementPtr _sdf);
 
     public: void OnUpdate(const gazebo::common::UpdateInfo &_info);
@@ -14,5 +14,4 @@ class WorldHander: public gazebo::WorldPlugin{
     public: sdf::ElementPtr sdf;
 
     
-
 };
