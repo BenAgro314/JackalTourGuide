@@ -20,7 +20,9 @@ class WorldHander: public gazebo::WorldPlugin{
 
         sdf::ElementPtr sdf;
 
-    
+        std::vector<std::shared_ptr<myhal::Room>> rooms;
+
+        int tick = 0;
 };
 
 #endif

@@ -17,6 +17,29 @@ void Model::AddPlugin(std::shared_ptr<SDFPlugin>  plugin){
 }
 
 std::string Model::CreateSDF(){
+    return "";
+}
+
+void Model::AddToWorld(gazebo::physics::WorldPtr _world){
+
+
+    for (int i =0; i < _world->ModelCount(); i++){
+        //TODO
+        //std::cout << this->name << " vs " << _world->ModelByIndex(i)->GetName() << std::endl;
+        if (_world->ModelByIndex(i)->GetName() == this->name){
+            //std::cout << "DEBUG\n";
+            return;
+        }
+    }
+
+    sdf::SDF modelSDF;
+    modelSDF.SetFromString(this->CreateSDF());
+
+    _world->InsertModelSDF(modelSDF);
+
+}
+
+std::string IncludeModel::CreateSDF(){
 
     std::shared_ptr<HeaderTag> include = std::make_shared<HeaderTag>("include");
 
@@ -40,13 +63,6 @@ std::string Model::CreateSDF(){
     sdf << "</sdf>\n";
 
     return sdf.str();
-}
-
-void Model::InsertIntoWorld(gazebo::physics::WorldPtr _world){
-    sdf::SDF modelSDF;
-    modelSDF.SetFromString(this->CreateSDF());
-
-    _world->InsertModelSDF(modelSDF);
 }
 
 
@@ -95,9 +111,16 @@ std::string Actor::CreateSDF(){
     return sdf.str();
 }
 
-void Actor::InsertIntoWorld(gazebo::physics::WorldPtr _world){
-    sdf::SDF actorSDF;
-    actorSDF.SetFromString(this->CreateSDF());
+Room::Room(double x_min, double y_min, double x_max, double y_max){
+    this->boundary = ignition::math::Box(ignition::math::Vector3d(x_min,y_min,0), ignition::math::Vector3d(x_max,y_max,0));
+}
 
-    _world->InsertModelSDF(actorSDF);
+void Room::AddModel(std::shared_ptr<Model> model){
+    this->models.push_back(model);
+}
+
+void Room::AddToWorld(gazebo::physics::WorldPtr _world){
+    for (std::shared_ptr<Model> model : this->models){
+        model->AddToWorld(_world);
+    }
 }

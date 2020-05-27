@@ -5,6 +5,7 @@
 #include <string>
 #include "sdfstring.hh"
 #include <ignition/math/Pose3.hh>
+#include <ignition/math/Box.hh>
 #include "gazebo/physics/physics.hh"
 #include "gazebo/common/common.hh"
 #include "gazebo/gazebo.hh"
@@ -17,6 +18,7 @@ namespace myhal{
         protected:
 
             static int num_models;
+            //static std::vector<std::string> 
 
             std::string name;
             ignition::math::Pose3d pose;
@@ -29,9 +31,9 @@ namespace myhal{
 
             void AddPlugin(std::shared_ptr<SDFPlugin> plugin);
 
-            std::string CreateSDF();
+            virtual std::string CreateSDF();
 
-            void InsertIntoWorld(gazebo::physics::WorldPtr _world);
+            void AddToWorld(gazebo::physics::WorldPtr _world);
 
     };
 
@@ -49,7 +51,32 @@ namespace myhal{
 
             std::string CreateSDF();
 
-            void InsertIntoWorld(gazebo::physics::WorldPtr _world);
+    };
+
+    class IncludeModel: public Model{
+
+        public:
+
+            using Model::Model;
+
+            std::string CreateSDF();
+
+    };
+
+    class Room{
+
+        protected:
+
+            ignition::math::Box boundary; 
+            std::vector<std::shared_ptr<Model>> models;
+
+        public: 
+
+            Room(double x_min, double y_min, double x_max, double y_max);
+
+            void AddModel(std::shared_ptr<Model> model);
+
+            void AddToWorld(gazebo::physics::WorldPtr _world);
     };
 
 }

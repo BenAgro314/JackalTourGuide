@@ -41,6 +41,7 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
         gazebo::physics::WorldPtr world = this->actor->GetWorld();
 
         this->initial_model_count = world->ModelCount();
+    
 
         for (unsigned int i = 0; i < world->ModelCount(); ++i) {
             gazebo::physics::ModelPtr model = world->ModelByIndex(i);
