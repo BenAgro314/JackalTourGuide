@@ -36,12 +36,9 @@ void WorldHander::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     std::shared_ptr<myhal::BoundaryBox> box3 = std::make_shared<myhal::BoundaryBox>(2,0,1,4);
     std::shared_ptr<myhal::BoundaryBox> box4 = std::make_shared<myhal::BoundaryBox>(-2,0,1,4);
 
-    std::shared_ptr<myhal::Room> main_atrium = std::make_shared<myhal::Room>(-3,-6,3,0);
+    std::shared_ptr<myhal::Room> main_atrium = std::make_shared<myhal::Room>(-3,-2,3,2, true);
   
-    main_atrium->AddModel(box1);
-    main_atrium->AddModel(box2);
-    main_atrium->AddModel(box3);
-    main_atrium->AddModel(box4);
+   
     //for (auto model: group.group){
     //    main_atrium->AddModel(model);
     //}

@@ -174,8 +174,22 @@ void ModelGroup::AddObject(std::string _name, ignition::math::Pose3d _pose, std:
 
 ///Room
 
-Room::Room(double x_min, double y_min, double x_max, double y_max){
+Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclosed = false){
     this->boundary = ignition::math::Box(ignition::math::Vector3d(x_min,y_min,0), ignition::math::Vector3d(x_max,y_max,0));
+    this->enclosed = _enclosed;
+
+    if (this->enclosed){
+        //create boundary box
+        std::shared_ptr<BoundaryBox> bot = std::make_shared<BoundaryBox>((x_min+x_max)/2,y_min-0.125,x_max-x_min,0.25);
+        std::shared_ptr<BoundaryBox> top = std::make_shared<BoundaryBox>((x_min+x_max)/2,y_max+0.125,x_max-x_min,0.25);
+        std::shared_ptr<BoundaryBox> left = std::make_shared<BoundaryBox>(x_min-0.125,(y_min+y_max)/2,0.25,y_max-y_min+0.5);
+        std::shared_ptr<BoundaryBox> right = std::make_shared<BoundaryBox>(x_max+0.125,(y_min+y_max)/2,0.25,y_max-y_min+0.5);
+
+        this->AddModel(bot);
+        this->AddModel(top);
+        this->AddModel(left);
+        this->AddModel(right);
+    }
 }
 
 void Room::AddModel(std::shared_ptr<Model> model){

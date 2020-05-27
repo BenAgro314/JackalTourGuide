@@ -97,10 +97,11 @@ namespace myhal{
 
             ignition::math::Box boundary; 
             std::vector<std::shared_ptr<Model>> models;
+            bool enclosed;
 
         public: 
 
-            Room(double x_min, double y_min, double x_max, double y_max);
+            Room(double x_min, double y_min, double x_max, double y_max, bool _enclosed);
 
             void AddModel(std::shared_ptr<Model> model);
 
