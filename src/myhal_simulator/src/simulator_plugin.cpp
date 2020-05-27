@@ -26,15 +26,26 @@ void WorldHander::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     std::shared_ptr<myhal::IncludeModel> table = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(2, 0, 0, 0, 0, 0), "model://table_conference_2");
     std::shared_ptr<myhal::IncludeModel> table2 = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(-2, 0, 0, 0, 0, 0), "model://table_conference_2");
+    //std::shared_ptr<myhal::IncludeModel> table3 = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(0, -1, 0, 0, 0, 0), "model://table_conference_2");
+    //std::shared_ptr<myhal::IncludeModel> table4 = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(0, 1, 0, 0, 0, 0), "model://table_conference_2");
+
+
+    //std::shared_ptr<myhal::GroupedModel> group = std::make_shared<myhal::GroupedModel>("t_group", ignition::math::Pose3d(0, -4, 0, 0, 0, 0), "model://table_conference_3");
+   //std::shared_ptr<myhal::IncludeModel> chair1 = std::make_shared<myhal::IncludeModel>("chair", ignition::math::Pose3d(0,-5,0,0,0,0), "model://chair_1");
+
+    myhal::ModelGroup group = myhal::ModelGroup("t_group", ignition::math::Pose3d(0, -4, 0, 0, 0, 0), "model://table_conference_3");
+    group.AddObject("chair", ignition::math::Pose3d(0,-5,0,0,0,0), "model://chair_1");
+
     
-    //actor->AddToWorld(this->world);
-    //table->AddToWorld(this->world);
 
     std::shared_ptr<myhal::Room> main_atrium = std::make_shared<myhal::Room>(-3,-6,3,0);
     
    
     main_atrium->AddModel(table);
     main_atrium->AddModel(table2);
+    for (auto model: group.group){
+        main_atrium->AddModel(model);
+    }
     
     this->rooms.push_back(main_atrium);
     this->rooms[0]->AddToWorld(this->world);
@@ -45,7 +56,7 @@ void WorldHander::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 void WorldHander::OnUpdate(const gazebo::common::UpdateInfo &_info){
 
     
-    //std::cout << "HELLO WORLD" << std::endl;
+    //TODO: figure out this jank
     if (this->tick == 1){
         
         this->rooms[0]->AddToWorld(this->world);

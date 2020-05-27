@@ -32,18 +32,35 @@ void Model::AddToWorld(gazebo::physics::WorldPtr _world){
         }
     }
 
-    sdf::SDF modelSDF;
-    modelSDF.SetFromString(this->CreateSDF());
-
-    _world->InsertModelSDF(modelSDF);
+    std::string sdf = "<sdf version ='1.6'>\n" + this->CreateSDF() + "</sdf>\n";
+    _world->InsertModelString(sdf);
 
 }
 
+
+ModelGroup::ModelGroup(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
+    this->center = std::make_shared<IncludeModel>(_name, _pose, _model_file);
+    this->group.push_back(this->center);
+}
+
+ignition::math::Pose3d ModelGroup::GetCenterPose(){
+    return this->center->pose;
+}
+
+void ModelGroup::AddObject(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
+    this->group.push_back(std::make_shared<IncludeModel>(_name, _pose, _model_file));
+}
+
+
 std::string IncludeModel::CreateSDF(){
+
+
+    std::shared_ptr<HeaderTag> model = std::make_shared<HeaderTag>("model");
+    model->AddAttribute("name", this->name);
 
     std::shared_ptr<HeaderTag> include = std::make_shared<HeaderTag>("include");
 
-    std::shared_ptr<DataTag> name = std::make_shared<DataTag>("name", this->name);
+    std::shared_ptr<DataTag> name = std::make_shared<DataTag>("name", this->name + "_include");
 
     std::string pose_string = std::to_string(this->pose.Pos().X()) + " " + std::to_string(this->pose.Pos().Y()) + " " + std::to_string(this->pose.Pos().Z()) + " " + std::to_string(this->pose.Rot().Roll()) + " " + std::to_string(this->pose.Rot().Pitch()) + " " + std::to_string(this->pose.Rot().Yaw());
     std::shared_ptr<DataTag> pose_tag = std::make_shared<DataTag>("pose", pose_string);
@@ -54,13 +71,11 @@ std::string IncludeModel::CreateSDF(){
     include->AddSubtag(pose_tag);
     include->AddSubtag(uri);
 
+    model->AddSubtag(include);
+
     std::stringstream sdf;
 
-    sdf<< "<sdf version ='1.6'>\n";
-
-    sdf << include->WriteTag(1);
-
-    sdf << "</sdf>\n";
+    sdf << model->WriteTag(1);
 
     return sdf.str();
 }
@@ -102,11 +117,7 @@ std::string Actor::CreateSDF(){
 
     std::stringstream sdf;
 
-    sdf<< "<sdf version ='1.6'>\n";
-
     sdf << actor->WriteTag(1);
-
-    sdf << "</sdf>\n";
 
     return sdf.str();
 }

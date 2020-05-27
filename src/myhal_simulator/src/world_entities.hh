@@ -18,14 +18,15 @@ namespace myhal{
         protected:
 
             static int num_models;
-            //static std::vector<std::string> 
 
             std::string name;
-            ignition::math::Pose3d pose;
+            
             std::string model_file;
             std::vector<std::shared_ptr<SDFPlugin>> plugins;
 
         public:
+
+            ignition::math::Pose3d pose;
 
             Model(std::string _name, ignition::math::Pose3d _pose, std::string _model_file);
 
@@ -60,6 +61,21 @@ namespace myhal{
             using Model::Model;
 
             std::string CreateSDF();
+
+    };
+
+    class ModelGroup{ //used for tables 
+
+        public:
+
+            std::vector<std::shared_ptr<IncludeModel>> group; 
+            std::shared_ptr<IncludeModel> center;
+
+            ModelGroup(std::string _name, ignition::math::Pose3d _pose, std::string _model_file);
+
+            void AddObject(std::string _name, ignition::math::Pose3d _pose, std::string _model_file);
+
+            ignition::math::Pose3d GetCenterPose();
 
     };
 
