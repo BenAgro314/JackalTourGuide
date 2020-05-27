@@ -16,7 +16,7 @@ std::vector<ignition::math::Line3d> utilities::get_edges(gazebo::physics::Entity
 	ignition::math::Line3d bot = ignition::math::Line3d(min_corner.X(),min_corner.Y(),max_corner.X(), min_corner.Y());
 				
 	std::vector<ignition::math::Line3d> edges = {left, right, top, bot}; // store all edges of link bounding box
-
+	
 	return edges;
 }
 

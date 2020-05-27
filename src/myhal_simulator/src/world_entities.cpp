@@ -174,8 +174,8 @@ void ModelGroup::AddObject(std::string _name, ignition::math::Pose3d _pose, std:
 
 ///Room
 
-Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclosed = false){
-    this->boundary = ignition::math::Box(ignition::math::Vector3d(x_min,y_min,0), ignition::math::Vector3d(x_max,y_max,0));
+Room::Room(double x_min, double y_min, double x_max, double y_max, gazebo::physics::ModelPtr _building, bool _enclosed = false){
+    this->boundary = ignition::math::Box(ignition::math::Vector3d(x_min,y_min,0), ignition::math::Vector3d(x_max,y_max,10));
     this->enclosed = _enclosed;
 
     if (this->enclosed){
@@ -190,10 +190,82 @@ Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclose
         this->AddModel(left);
         this->AddModel(right);
     }
+
+    std::vector<gazebo::physics::LinkPtr> links = _building->GetLinks();
+
+    for (gazebo::physics::LinkPtr link: links){
+        std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
+        for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
+
+            if (collision_box->BoundingBox().Intersects(this->boundary)){
+                this->collision_links.push_back(collision_box); 
+            }
+        }
+    }
+
+    this->building_name = _building->GetName();
 }
 
 void Room::AddModel(std::shared_ptr<Model> model){
     this->models.push_back(model);
+}
+
+bool Room::AddModelRandomly(std::shared_ptr<Model> model, gazebo::physics::WorldPtr world, double margin){
+    /*
+    This function will attempt to place model randomly within the bounds such that it doesn't collide with the other models already in the room
+    */
+    //update our list of collision links to consider (those that are part of this room and haven't already been added)
+    for (std::shared_ptr<Model> object: this->models){
+        gazebo::physics::ModelPtr other_model = world->ModelByName(object->name);
+        if (other_model){
+            if (std::find(this->collision_links.begin(), this->collision_links.end(), other_model) == this->collision_links.end()){ //if we have not yet already added the model
+                this->collision_links.push_back(other_model);
+            }
+            
+        }
+    }
+    int iterations = 0;
+    bool found = false;
+
+    ignition::math::Box model_box;
+    ignition::math::Pose3d res_pose = ignition::math::Pose3d(0,0,model->pose.Pos().Z(), model->pose.Rot().Roll(), model->pose.Rot().Pitch(), model->pose.Rot().Yaw()); // we want to maintain the models current height and orientation
+
+    while (iterations < 1000 && !found){
+       
+        //for now we will just guess randomly in the box. TODO: use a more nuanced method to choose guess point
+
+        double x_min = this->boundary.Min().X();
+        double y_min = this->boundary.Min().Y();
+        double x_max = this->boundary.Max().X();
+        double y_max = this->boundary.Max().Y();
+
+        res_pose.Pos().X() = ignition::math::Rand::DblUniform(x_min+margin, x_max-margin);
+        res_pose.Pos().Y() = ignition::math::Rand::DblUniform(y_min+margin, y_max-margin);
+
+        found = true;
+
+        //check if that position is valid 
+        ignition::math::Vector3d min_corner = ignition::math::Vector3d(res_pose.Pos().X()-margin,res_pose.Pos().Y()-margin,0);
+        ignition::math::Vector3d max_corner = ignition::math::Vector3d(res_pose.Pos().X()+margin,res_pose.Pos().Y()+margin,10);
+        model_box = ignition::math::Box(min_corner, max_corner);
+
+        //if the position is invald 
+
+        for (gazebo::physics::EntityPtr link: this->collision_links){
+            if (link->BoundingBox().Intersects(model_box)){
+                found = false;
+            }
+        }
+
+        iterations++;
+    }
+
+    if (found){
+        model->pose = res_pose;
+        this->AddModel(model);
+    }
+
+    return found;
 }
 
 void Room::AddToWorld(gazebo::physics::WorldPtr _world){

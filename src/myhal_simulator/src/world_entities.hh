@@ -18,13 +18,12 @@ namespace myhal{
         protected:
 
             static int num_models;
-
-            std::string name;
-            
             std::string model_file;
             std::vector<std::shared_ptr<SDFPlugin>> plugins;
 
         public:
+
+            std::string name;
 
             ignition::math::Pose3d pose;
 
@@ -97,13 +96,18 @@ namespace myhal{
 
             ignition::math::Box boundary; 
             std::vector<std::shared_ptr<Model>> models;
+            std::string building_name;
+            std::vector<gazebo::physics::EntityPtr> collision_links;
             bool enclosed;
+
 
         public: 
 
-            Room(double x_min, double y_min, double x_max, double y_max, bool _enclosed);
+            Room(double x_min, double y_min, double x_max, double y_max, gazebo::physics::ModelPtr _building, bool _enclosed);
 
             void AddModel(std::shared_ptr<Model> model);
+
+            bool AddModelRandomly(std::shared_ptr<Model> model, gazebo::physics::WorldPtr world, double margin);
 
             void AddToWorld(gazebo::physics::WorldPtr _world);
     };

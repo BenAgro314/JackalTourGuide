@@ -92,7 +92,9 @@
       </camera>
     </gui>
  
-    <plugin name="myhal_simulator" filename="libsimulator_plugin.so"/>
+    <plugin name="myhal_simulator" filename="libsimulator_plugin.so">
+      <building>building</building>
+    </plugin>
     
     
     <include>

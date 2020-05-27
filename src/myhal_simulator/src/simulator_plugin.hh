@@ -20,7 +20,13 @@ class WorldHander: public gazebo::WorldPlugin{
 
         sdf::ElementPtr sdf;
 
+        gazebo::physics::ModelPtr building;
+
         std::vector<std::shared_ptr<myhal::Room>> rooms;
+
+        //std::vector<std::shared_ptr<SDFPlugin>> vehicle_plugins;
+
+        //std::vector<std::shared_ptr<SDFAnimation>> actor_animations;
 
         int tick = 0;
 };
