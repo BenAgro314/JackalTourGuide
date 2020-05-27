@@ -24,20 +24,22 @@ void WorldHander::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
 
 
-    std::shared_ptr<myhal::IncludeModel> table = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(4, 0, 0, 0, 0, 0), "model://table_conference_2");
-
+    std::shared_ptr<myhal::IncludeModel> table = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(2, 0, 0, 0, 0, 0), "model://table_conference_2");
+    std::shared_ptr<myhal::IncludeModel> table2 = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(-2, 0, 0, 0, 0, 0), "model://table_conference_2");
     
     //actor->AddToWorld(this->world);
     //table->AddToWorld(this->world);
 
     std::shared_ptr<myhal::Room> main_atrium = std::make_shared<myhal::Room>(-3,-6,3,0);
     
-    main_atrium->AddModel(actor);
+   
     main_atrium->AddModel(table);
+    main_atrium->AddModel(table2);
     
     this->rooms.push_back(main_atrium);
     this->rooms[0]->AddToWorld(this->world);
     //std::cout << actor->CreateSDF() << std::endl;
+    this->rooms[0]->AddModel(actor);
 }
 
 void WorldHander::OnUpdate(const gazebo::common::UpdateInfo &_info){
