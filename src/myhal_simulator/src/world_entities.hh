@@ -64,6 +64,18 @@ namespace myhal{
 
     };
 
+
+    class BoundaryBox: public Model{
+
+        public:
+
+            double width,length;
+            
+            BoundaryBox(double _x, double _y, double _width, double _length);
+
+            std::string CreateSDF();
+    };
+
     class ModelGroup{ //used for tables 
 
         public:

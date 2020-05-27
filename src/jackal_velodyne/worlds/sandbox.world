@@ -100,21 +100,6 @@
       <uri>model://myhal_V3</uri>
 	  </include>
 
-    <model name = "chair_4">
-     
-        <include>
-                <name>chair_4</name>
-                <pose>0.000000 -5.000000 0.000000 0.000000 -0.000000 0.000000</pose>
-                <uri>model://chair_1</uri>
-        </include>
-     
-        <include>
-                <name>chair_5</name>
-                <pose>0.000000 -7.000000 0.000000 0.000000 -0.000000 0.000000</pose>
-                <uri>model://chair_1</uri>
-        </include>
-    
-    </model>
     
 <!--include>
   <uri>model://table_conference_2</uri> 
@@ -147,8 +132,8 @@
         <z_pos>0</z_pos>
   </plugin>
 </include-->
-<!--model name = "blocker">
-  <pose>0 2.5 -0.5 0 0 0</pose>
+<model name = "blocker">
+  <pose>0 0 -0.5 0 0 0</pose>
   <static>true</static>
   <link name="link">
       <collision name="collision">
@@ -158,15 +143,8 @@
           </box>
         </geometry>
       </collision>
-      <visual name="visual">
-        <geometry>
-          <box>
-            <size>1 1 1</size>
-          </box>
-        </geometry>
-      </visual>
     </link>
-</model-->
+</model>
 
 <actor name="randomguy1">
 
@@ -197,7 +175,7 @@
 
 <actor name="randomguy2">
 
-      <pose>-2 -2 1 0 0 0</pose>
+      <pose>-3 0 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
@@ -207,9 +185,11 @@
       </animation>
 
       <plugin name="steering" filename="libvehicle_plugin.so">
-        <vehicle_type>wanderer</vehicle_type>
+        <vehicle_type>path_follower</vehicle_type>
         <building>box</building>
         <max_speed>1</max_speed>
+        <path_point>3 0 0</path_point>
+        <path_point>-3 0 0</path_point>
 
       </plugin>
 </actor>

@@ -24,28 +24,27 @@ void WorldHander::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
 
 
-    std::shared_ptr<myhal::IncludeModel> table = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(2, 0, 0, 0, 0, 0), "model://table_conference_2");
-    std::shared_ptr<myhal::IncludeModel> table2 = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(-2, 0, 0, 0, 0, 0), "model://table_conference_2");
-    //std::shared_ptr<myhal::IncludeModel> table3 = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(0, -1, 0, 0, 0, 0), "model://table_conference_2");
-    //std::shared_ptr<myhal::IncludeModel> table4 = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(0, 1, 0, 0, 0, 0), "model://table_conference_2");
-
-
-    //std::shared_ptr<myhal::GroupedModel> group = std::make_shared<myhal::GroupedModel>("t_group", ignition::math::Pose3d(0, -4, 0, 0, 0, 0), "model://table_conference_3");
-   //std::shared_ptr<myhal::IncludeModel> chair1 = std::make_shared<myhal::IncludeModel>("chair", ignition::math::Pose3d(0,-5,0,0,0,0), "model://chair_1");
-
-    myhal::ModelGroup group = myhal::ModelGroup("t_group", ignition::math::Pose3d(0, -4, 0, 0, 0, 0), "model://table_conference_3");
-    group.AddObject("chair", ignition::math::Pose3d(0,-5,0,0,0,0), "model://chair_1");
-
+    //std::shared_ptr<myhal::IncludeModel> table = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(2, 0, 0, 0, 0, 0), "model://table_conference_2");
+    //std::shared_ptr<myhal::IncludeModel> table2 = std::make_shared<myhal::IncludeModel>("table", ignition::math::Pose3d(-2, 0, 0, 0, 0, 0), "model://table_conference_2");
     
+
+    //myhal::ModelGroup group = myhal::ModelGroup("t_group", ignition::math::Pose3d(0, -4, 0, 0, 0, 0), "model://table_conference_3");
+    //group.AddObject("chair", ignition::math::Pose3d(0,-5,0,0,0,0), "model://chair_1");
+
+    std::shared_ptr<myhal::BoundaryBox> box1 = std::make_shared<myhal::BoundaryBox>(0,-2,4,1);
+    std::shared_ptr<myhal::BoundaryBox> box2 = std::make_shared<myhal::BoundaryBox>(0,2,4,1);
+    std::shared_ptr<myhal::BoundaryBox> box3 = std::make_shared<myhal::BoundaryBox>(2,0,1,4);
+    std::shared_ptr<myhal::BoundaryBox> box4 = std::make_shared<myhal::BoundaryBox>(-2,0,1,4);
 
     std::shared_ptr<myhal::Room> main_atrium = std::make_shared<myhal::Room>(-3,-6,3,0);
-    
-   
-    main_atrium->AddModel(table);
-    main_atrium->AddModel(table2);
-    for (auto model: group.group){
-        main_atrium->AddModel(model);
-    }
+  
+    main_atrium->AddModel(box1);
+    main_atrium->AddModel(box2);
+    main_atrium->AddModel(box3);
+    main_atrium->AddModel(box4);
+    //for (auto model: group.group){
+    //    main_atrium->AddModel(model);
+    //}
     
     this->rooms.push_back(main_atrium);
     this->rooms[0]->AddToWorld(this->world);

@@ -2,6 +2,8 @@
 
 using namespace myhal;
 
+///Model
+
 int Model::num_models = 0;
 
 Model::Model(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
@@ -10,7 +12,6 @@ Model::Model(std::string _name, ignition::math::Pose3d _pose, std::string _model
     this->model_file = _model_file;
     num_models++;
 }
-
 
 void Model::AddPlugin(std::shared_ptr<SDFPlugin>  plugin){
     this->plugins.push_back(plugin);
@@ -37,20 +38,7 @@ void Model::AddToWorld(gazebo::physics::WorldPtr _world){
 
 }
 
-
-ModelGroup::ModelGroup(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
-    this->center = std::make_shared<IncludeModel>(_name, _pose, _model_file);
-    this->group.push_back(this->center);
-}
-
-ignition::math::Pose3d ModelGroup::GetCenterPose(){
-    return this->center->pose;
-}
-
-void ModelGroup::AddObject(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
-    this->group.push_back(std::make_shared<IncludeModel>(_name, _pose, _model_file));
-}
-
+///IncludeModel
 
 std::string IncludeModel::CreateSDF(){
 
@@ -80,6 +68,7 @@ std::string IncludeModel::CreateSDF(){
     return sdf.str();
 }
 
+///Actor
 
 void Actor::AddAnimation(std::shared_ptr<SDFAnimation> animation){
     this->animations.push_back(animation);
@@ -121,6 +110,69 @@ std::string Actor::CreateSDF(){
 
     return sdf.str();
 }
+
+///BoundaryBox
+
+BoundaryBox::BoundaryBox(double _x, double _y, double _width, double _length)
+: Model("box", ignition::math::Pose3d(_x,_y,-0.5, 0,0,0), ""){
+    this->width = _width;
+    this->length = _length;
+}
+
+std::string BoundaryBox::CreateSDF(){
+    std::shared_ptr<HeaderTag> model = std::make_shared<HeaderTag>("model");
+    model->AddAttribute("name", this->name);
+
+    std::string pose_string = std::to_string(this->pose.Pos().X()) + " " + std::to_string(this->pose.Pos().Y()) + " " + std::to_string(this->pose.Pos().Z()) + " " + std::to_string(this->pose.Rot().Roll()) + " " + std::to_string(this->pose.Rot().Pitch()) + " " + std::to_string(this->pose.Rot().Yaw());
+    std::shared_ptr<DataTag> pose_tag = std::make_shared<DataTag>("pose", pose_string);
+
+    model->AddSubtag(pose_tag);
+
+    std::shared_ptr<DataTag> static_tag = std::make_shared<DataTag>("static", "true");
+
+    model->AddSubtag(static_tag);
+
+    std::shared_ptr<HeaderTag> link = std::make_shared<HeaderTag>("link");
+    link->AddAttribute("name", this->name + "_link");
+
+    std::shared_ptr<HeaderTag> collision = std::make_shared<HeaderTag>("collision");
+    collision->AddAttribute("name", this->name + "_collision");
+
+    std::shared_ptr<HeaderTag> geometry = std::make_shared<HeaderTag>("geometry");
+    std::shared_ptr<HeaderTag> box = std::make_shared<HeaderTag>("box");
+
+    std::string size_string = std::to_string(this->width) + " " + std::to_string(this->length) + " 1";
+    std::shared_ptr<DataTag> size = std::make_shared<DataTag>("size", size_string);
+
+    box->AddSubtag(size);
+    geometry->AddSubtag(box);
+    collision->AddSubtag(geometry);
+    link->AddSubtag(collision);
+    model->AddSubtag(link);
+
+    std::stringstream sdf;
+
+    sdf << model->WriteTag(1);
+
+    return sdf.str();
+}
+
+///ModelGroup
+
+ModelGroup::ModelGroup(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
+    this->center = std::make_shared<IncludeModel>(_name, _pose, _model_file);
+    this->group.push_back(this->center);
+}
+
+ignition::math::Pose3d ModelGroup::GetCenterPose(){
+    return this->center->pose;
+}
+
+void ModelGroup::AddObject(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
+    this->group.push_back(std::make_shared<IncludeModel>(_name, _pose, _model_file));
+}
+
+///Room
 
 Room::Room(double x_min, double y_min, double x_max, double y_max){
     this->boundary = ignition::math::Box(ignition::math::Vector3d(x_min,y_min,0), ignition::math::Vector3d(x_max,y_max,0));
