@@ -174,7 +174,8 @@ void ModelGroup::AddObject(std::string _name, ignition::math::Pose3d _pose, std:
 
 ///Room
 
-Room::Room(double x_min, double y_min, double x_max, double y_max, gazebo::physics::ModelPtr _building, bool _enclosed = false){
+Room::Room(std::string _name, double x_min, double y_min, double x_max, double y_max, gazebo::physics::ModelPtr _building, bool _enclosed = false){
+    this->room_name = _name;
     this->boundary = ignition::math::Box(ignition::math::Vector3d(x_min,y_min,0), ignition::math::Vector3d(x_max,y_max,10));
     this->enclosed = _enclosed;
 

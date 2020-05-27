@@ -94,6 +94,7 @@ namespace myhal{
 
         protected:
 
+            std::string room_name;
             ignition::math::Box boundary; 
             std::vector<std::shared_ptr<Model>> models;
             std::string building_name;
@@ -103,11 +104,11 @@ namespace myhal{
 
         public: 
 
-            Room(double x_min, double y_min, double x_max, double y_max, gazebo::physics::ModelPtr _building, bool _enclosed);
+            Room(std::string _name, double x_min, double y_min, double x_max, double y_max, gazebo::physics::ModelPtr _building, bool _enclosed);
 
             void AddModel(std::shared_ptr<Model> model);
 
-            bool AddModelRandomly(std::shared_ptr<Model> model, gazebo::physics::WorldPtr world, double margin);
+            bool AddModelRandomly(std::shared_ptr<Model> model, gazebo::physics::WorldPtr world, double margin); //currently this should only be used for actors
 
             void AddToWorld(gazebo::physics::WorldPtr _world);
     };

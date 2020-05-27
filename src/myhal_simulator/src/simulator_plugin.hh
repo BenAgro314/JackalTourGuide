@@ -4,17 +4,22 @@
 #include <functional>
 #include "world_entities.hh"
 #include <utility>
+#include <ros/ros.h>
 
-class WorldHander: public gazebo::WorldPlugin{
+class WorldHandler: public gazebo::WorldPlugin{
 
-
-    public: 
+    private: 
+    
+        
         
         void Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf);
 
         void OnUpdate(const gazebo::common::UpdateInfo &_info);
 
+        void LoadParams();
+
         gazebo::event::ConnectionPtr update_connection;
+
 
         gazebo::physics::WorldPtr world;
 
@@ -24,11 +29,18 @@ class WorldHander: public gazebo::WorldPlugin{
 
         std::vector<std::shared_ptr<myhal::Room>> rooms;
 
-        //std::vector<std::shared_ptr<SDFPlugin>> vehicle_plugins;
+        
 
         //std::vector<std::shared_ptr<SDFAnimation>> actor_animations;
 
         int tick = 0;
+
+        // filled by parameters 
+
+        std::map<std::string, std::shared_ptr<SDFPlugin>> vehicle_plugins; //one per actor
+        std::vector<std::shared_ptr<SDFAnimation>> animation_list; //added to all actors 
+
+        
 };
 
 #endif

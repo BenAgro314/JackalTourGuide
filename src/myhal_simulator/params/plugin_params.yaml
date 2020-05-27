@@ -1,0 +1,20 @@
+plugin_names:
+  - wanderer
+  - stander
+
+wanderer:
+  name: vehicle
+  filename: libvehicle_plugin.so
+  vehicle_type: wanderer
+  building: building
+  max_speed: "1"
+
+
+stander:
+  name: vehicle
+  filename: libvehicle_plugin.so
+  vehicle_type: stander
+  building: building
+  max_speed: "1"
+  standing_duration: "5"
+  walking_duration: "5"

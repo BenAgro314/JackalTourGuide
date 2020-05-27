@@ -146,7 +146,7 @@ void ModelHandler::ReadPath(sdf::ElementPtr _sdf){
 
 void ModelHandler::ReadParams(){
     std::string line;
-    std::ifstream param_file("/home/default/catkin_ws/src/myhal_simulator/src/params/vehicle_params.txt");
+    std::ifstream param_file("/home/default/catkin_ws/src/myhal_simulator/params/vehicle_params.txt");
     if (param_file.is_open()){
 
         while (std::getline(param_file, line)){

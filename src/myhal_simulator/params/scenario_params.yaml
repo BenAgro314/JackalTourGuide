@@ -1,0 +1,11 @@
+1:
+  pop_density: 1
+  table_percentage: 0
+  actor_type: wanderer
+  model_type: table1
+
+2:
+  pop_density: 0.5
+  table_percentage: 50
+  actor_type: wanderer
+  model_type: table2

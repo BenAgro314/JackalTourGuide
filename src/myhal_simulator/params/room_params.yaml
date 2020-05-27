@@ -1,0 +1,10 @@
+room1: 
+  x_min: -3
+  y_min: -5
+  x_max: 3
+  y_max: 1
+  p1_x: 0 
+  p1_y: 0
+  senario: 1
+  bounded: 1
+  id: 1

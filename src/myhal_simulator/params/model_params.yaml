@@ -1,0 +1,5 @@
+table1:
+  filename: model://table_conference_1
+
+table2:
+  filename: model://table_conference_2
