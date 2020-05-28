@@ -94,7 +94,7 @@ namespace myhal{
 
         protected:
 
-            std::string room_name;
+           
             ignition::math::Box boundary; 
             std::vector<std::shared_ptr<Model>> models;
             std::string building_name;
@@ -104,7 +104,7 @@ namespace myhal{
 
         public: 
 
-            Room(std::string _name, double x_min, double y_min, double x_max, double y_max, gazebo::physics::ModelPtr _building, bool _enclosed);
+            Room(double x_min, double y_min, double x_max, double y_max, gazebo::physics::ModelPtr _building, bool _enclosed);
 
             void AddModel(std::shared_ptr<Model> model);
 

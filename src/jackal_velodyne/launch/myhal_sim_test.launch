@@ -5,12 +5,12 @@
 <arg name="sim_world" default="myhal_sim"/>
 <arg name="gui" default="true"/>
 
-<!--rosparam file="$(find myhal_simulator)/params/room_params.yaml" command="load" /-->
-<!--rosparam file="$(find myhal_simulator)/params/scenario_params.yaml" command="load" /-->
+<rosparam file="$(find myhal_simulator)/params/room_params.yaml" command="load" />
+<rosparam file="$(find myhal_simulator)/params/scenario_params.yaml" command="load" />
 <rosparam file="$(find myhal_simulator)/params/animation_params.yaml" command="load" />
 <rosparam file="$(find myhal_simulator)/params/plugin_params.yaml" command="load" />
-<!--rosparam file="$(find myhal_simulator)/params/model_params.yaml" command="load" /-->
-<!--rosparam file="$(find myhal_simulator)/params/myhal_params.yaml" command="load" /-->
+<rosparam file="$(find myhal_simulator)/params/model_params.yaml" command="load" />
+
 
 <include file="$(find gazebo_ros)/launch/empty_world.launch">
   <arg name="world_name" value="$(find myhal_simulator)/worlds/$(arg sim_world).world"/>

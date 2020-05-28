@@ -1,5 +1,24 @@
+model_names:
+  - table1
+  - table2
+
 table1:
   filename: model://table_conference_1
 
 table2:
   filename: model://table_conference_2
+
+actor_names:
+  - actor1
+  - actor2
+
+actor1: 
+  filename: model://actor/meshes/SKIN_man_blue_shirt.dae
+  plugin: wanderer
+  obstacle_margin: "0.5"
+
+actor2: 
+  filename: model://actor/meshes/SKIN_man_blue_shirt.dae
+  plugin: stander
+  obstacle_margin: "0.5"
+  

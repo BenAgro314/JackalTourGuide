@@ -1,11 +1,19 @@
-1:
-  pop_density: 1
-  table_percentage: 0
-  actor_type: wanderer
-  model_type: table1
+scenario_names:
+  - crowd 
+  - study
 
-2:
-  pop_density: 0.5
-  table_percentage: 50
-  actor_type: wanderer
-  model_type: table2
+crowd:
+  pop_density: "1"
+  table_percentage: "0"
+  vehicle_plugin: wanderer
+  model_list: L1
+
+study:
+  pop_density: "0.5"
+  table_percentage: "50"
+  vehicle_plugin: stander
+  model_list: L1
+
+L1:
+  - table1
+  - table2
