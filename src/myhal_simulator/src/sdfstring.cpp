@@ -59,16 +59,18 @@ std::string HeaderTag::WriteTag(int pretabs){
     }
 
     tag << "<" << this->name;
+    
 
     for (std::vector<std::string> attribute: this->attributes){
         tag << " " << attribute[0] << "=\"" << attribute[1] << "\"";
     }
+   
     tag << ">\n";
 
     for (std::shared_ptr<SDFTag> sub_tag: this->sub_tags){
         tag <<  sub_tag->WriteTag(pretabs+1);
     }
-
+   
     for (int i = 0; i<pretabs; i++){
         tag << "\t";
     }
@@ -76,6 +78,7 @@ std::string HeaderTag::WriteTag(int pretabs){
     tag << "</" << this->name << ">\n";
 
     return tag.str();
+    
 }
 
 

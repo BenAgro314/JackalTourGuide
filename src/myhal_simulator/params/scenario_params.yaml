@@ -3,15 +3,15 @@ scenario_names:
   - study
 
 crowd:
-  pop_density: "1"
+  pop_density: "0.01"
   table_percentage: "0"
-  vehicle_plugin: wanderer
+  actor: actor1
   model_list: L1
 
 study:
-  pop_density: "0.5"
-  table_percentage: "50"
-  vehicle_plugin: stander
+  pop_density: "0.2"
+  table_percentage: "1"
+  actor: actor2
   model_list: L1
 
 L1:

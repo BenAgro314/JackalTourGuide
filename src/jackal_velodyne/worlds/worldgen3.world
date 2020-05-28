@@ -104,10 +104,102 @@
     
     
 
-<actor name="human_-3.53553,7.51237,8124">
+<actor name="human_3.30446,-0.382135,7001">
 	<pose>
-		-3.53553
-		7.51237
+		3.30446
+		-0.382135
+		1
+		0
+		0
+		3.1415
+	</pose>
+
+
+	<skin>
+	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
+	</skin>
+	<animation name="animation"> 
+		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+		<interpolate_x>true</interpolate_x>
+	</animation>
+	
+<plugin name="trajectory" filename="librandomwalk_plugin.so">
+<point>
+-8.5
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+-8.5
+-5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+-8.5
+8.5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+8
+-5
+</point>
+<point>
+8
+8.5
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+-3.75
+3.7
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+-3.75
+6.8
+</point>
+<point>
+5.15
+6.8
+</point>
+<point>
+5.15
+3.7
+</point>
+<point>
+5.15
+6.8
+</point>
+
+<building>myhal</building>
+
+<max_speed>1.00366</max_speed>
+<obstacle_margin>0.5</obstacle_margin>
+</plugin>
+</actor>
+
+<actor name="human_2.17408,7.71832,489">
+	<pose>
+		2.17408
+		7.71832
 		1
 		0
 		0
@@ -191,136 +283,10 @@
 
 <building>myhal</building>
 
-<max_speed>0.96414</max_speed>
+<max_speed>1.03692</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
-
-<actor name="human_-3.33292,-0.572766,6941">
-	<pose>
-		-3.33292
-		-0.572766
-		1
-		0
-		0
-		3.1415
-	</pose>
-
-
-	<skin>
-	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-	</skin>
-	<animation name="animation"> 
-		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-		<interpolate_x>true</interpolate_x>
-	</animation>
-	
-<plugin name="trajectory" filename="librandomwalk_plugin.so">
-<point>
--8.5
--5
-</point>
-<point>
--8.5
-8.5
-</point>
-<point>
--8.5
--5
-</point>
-<point>
-8
--5
-</point>
-<point>
--8.5
-8.5
-</point>
-<point>
-8
-8.5
-</point>
-<point>
-8
--5
-</point>
-<point>
-8
-8.5
-</point>
-<point>
--3.75
-3.7
-</point>
-<point>
--3.75
-6.8
-</point>
-<point>
--3.75
-3.7
-</point>
-<point>
-5.15
-3.7
-</point>
-<point>
--3.75
-6.8
-</point>
-<point>
-5.15
-6.8
-</point>
-<point>
-5.15
-3.7
-</point>
-<point>
-5.15
-6.8
-</point>
-
-<building>myhal</building>
-
-<max_speed>0.896268</max_speed>
-<obstacle_margin>0.5</obstacle_margin>
-</plugin>
-</actor>
-
-<include>
-<uri>model://table_conference_2</uri> 
-<name> "table_32" </name> 
-<pose> 3 2 0 0 0 1.57 </pose>
-</include>
-
-<include>
-<uri>model://chair_3</uri> 
-<name> "chair_3.617513.0602741" </name> 
-<pose> 3.61751 3.06027 0 0 0 -2.52082 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_3</uri> 
-<name> "chair_2.206192.607844" </name> 
-<pose> 2.20619 2.60784 0 0 0 1.39933 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_3</uri> 
-<name> "chair_3.971111.390263" </name> 
-<pose> 3.97111 1.39026 0 0 0 -0.0794474 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_3</uri> 
-<name> "chair_1.956860.94351310" </name> 
-<pose> 1.95686 0.943513 0 0 0 2.58627 </pose>
-</include>
-
 
 <include>
 <uri>model://table_conference_2</uri> 
@@ -330,15 +296,22 @@
 
 <include>
 <uri>model://chair_3</uri> 
-<name> "chair_-1.918733.0407285" </name> 
-<pose> -1.91873 3.04072 0 0 0 -1.24275 </pose>
+<name> "chair_-2.08482.927442" </name> 
+<pose> -2.0848 2.9274 0 0 0 -2.35881 </pose>
 </include>
 
 
-<actor name="human_-0.237871,17.7074,7182">
+<include>
+<uri>model://chair_3</uri> 
+<name> "chair_-3.656962.6079382" </name> 
+<pose> -3.65696 2.60793 0 0 0 1.01125 </pose>
+</include>
+
+
+<actor name="human_-6.13955,13.8311,6332">
 	<pose>
-		-0.237871
-		17.7074
+		-6.13955
+		13.8311
 		1
 		0
 		0
@@ -347,7 +320,7 @@
 
 
 	<skin>
-	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
 	</skin>
 	<animation name="animation"> 
 		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -390,44 +363,10 @@
 
 <building>myhal</building>
 
-<max_speed>0.960715</max_speed>
+<max_speed>1.1869</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
-
-<include>
-<uri>model://table_conference_1</uri> 
-<name> "table_-316" </name> 
-<pose> -3 16 0 0 0 0 </pose>
-</include>
-
-<include>
-<uri>model://chair_1</uri> 
-<name> "chair_-2.3277716.730597" </name> 
-<pose> -2.32777 16.7305 0 0 0 -0.910449 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_1</uri> 
-<name> "chair_-3.9526216.843221" </name> 
-<pose> -3.95262 16.8432 0 0 0 -1.04018 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_1</uri> 
-<name> "chair_-2.312715.328862" </name> 
-<pose> -2.3127 15.3288 0 0 0 3.94324 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_1</uri> 
-<name> "chair_-3.885715.26573" </name> 
-<pose> -3.8857 15.2657 0 0 0 2.44834 </pose>
-</include>
-
 
 <include>
 <uri>model://table_conference_1</uri> 
@@ -437,29 +376,15 @@
 
 <include>
 <uri>model://chair_1</uri> 
-<name> "chair_-2.0086913.071289" </name> 
-<pose> -2.00869 13.0712 0 0 0 -3.05719 </pose>
+<name> "chair_-2.1496412.725449" </name> 
+<pose> -2.14964 12.7254 0 0 0 -2.79601 </pose>
 </include>
 
 
-<include>
-<uri>model://chair_1</uri> 
-<name> "chair_-3.6710513.05449" </name> 
-<pose> -3.67105 13.0544 0 0 0 1.95828 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_1</uri> 
-<name> "chair_-2.1461311.076643" </name> 
-<pose> -2.14613 11.0766 0 0 0 -0.675011 </pose>
-</include>
-
-
-<actor name="human_-0.574922,-9.73626,2670">
+<actor name="human_-4.37906,-16.5609,3951">
 	<pose>
-		-0.574922
-		-9.73626
+		-4.37906
+		-16.5609
 		1
 		0
 		0
@@ -511,110 +436,69 @@
 
 <building>myhal</building>
 
-<max_speed>0.970649</max_speed>
+<max_speed>0.908951</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>
 
 <include>
 <uri>model://table_conference_3</uri> 
-<name> "table_-6-17" </name> 
-<pose> -6 -17 0 0 0 0 </pose>
+<name> "table_-1-11" </name> 
+<pose> -1 -11 0 0 0 0 </pose>
 </include>
 
 <include>
 <uri>model://chair_2</uri> 
-<name> "chair_-5.01518-16.317627" </name> 
-<pose> -5.01518 -16.3176 0 0 0 0.611038 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_2</uri> 
-<name> "chair_-6.7314-16.154993" </name> 
-<pose> -6.7314 -16.1549 0 0 0 -0.373793 </pose>
+<name> "chair_0.0304748-10.373173" </name> 
+<pose> 0.0304748 -10.3731 0 0 0 0.463244 </pose>
 </include>
 
 
 <include>
 <uri>model://chair_2</uri> 
-<name> "chair_-5.17464-17.86697" </name> 
-<pose> -5.17464 -17.8669 0 0 0 3.17383 </pose>
+<name> "chair_-1.71912-10.079351" </name> 
+<pose> -1.71912 -10.0793 0 0 0 0.228509 </pose>
 </include>
 
 
 <include>
 <uri>model://chair_2</uri> 
-<name> "chair_-6.95915-17.641940" </name> 
-<pose> -6.95915 -17.6419 0 0 0 3.34217 </pose>
-</include>
-
-
-<include>
-<uri>model://table_conference_3</uri> 
-<name> "table_-1-17" </name> 
-<pose> -1 -17 0 0 0 0 </pose>
-</include>
-
-<include>
-<uri>model://chair_2</uri> 
-<name> "chair_-0.356607-16.208641" </name> 
-<pose> -0.356607 -16.2086 0 0 0 0.897179 </pose>
+<name> "chair_-0.338086-11.851153" </name> 
+<pose> -0.338086 -11.8511 0 0 0 2.53508 </pose>
 </include>
 
 
 <include>
 <uri>model://chair_2</uri> 
-<name> "chair_-1.67705-16.398557" </name> 
-<pose> -1.67705 -16.3985 0 0 0 -0.910803 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_2</uri> 
-<name> "chair_0.0775763-17.862979" </name> 
-<pose> 0.0775763 -17.8629 0 0 0 3.09934 </pose>
+<name> "chair_-1.93098-11.957773" </name> 
+<pose> -1.93098 -11.9577 0 0 0 2.47814 </pose>
 </include>
 
 
 <include>
 <uri>model://desk_yellow</uri> 
-<name> "table_-11.53.5" </name> 
-<pose> -11.5 3.5 0 0 0 0 </pose>
+<name> "table_-11.5-2.5" </name> 
+<pose> -11.5 -2.5 0 0 0 1.57 </pose>
 </include>
 
 <include>
 <uri>model://chair_3</uri> 
-<name> "chair_-10.58514.3526483" </name> 
-<pose> -10.5851 4.35264 0 0 0 -0.501342 </pose>
-</include>
-
-
-<include>
-<uri>model://chair_3</uri> 
-<name> "chair_-12.4354.1489494" </name> 
-<pose> -12.435 4.14894 0 0 0 -0.464116 </pose>
+<name> "chair_-10.7149-1.6471810" </name> 
+<pose> -10.7149 -1.64718 0 0 0 -0.806706 </pose>
 </include>
 
 
 <include>
 <uri>model://chair_3</uri> 
-<name> "chair_-10.60592.5842270" </name> 
-<pose> -10.6059 2.58422 0 0 0 2.57313 </pose>
+<name> "chair_-12.3608-1.880625" </name> 
+<pose> -12.3608 -1.88062 0 0 0 1.23746 </pose>
 </include>
 
 
-<include>
-<uri>model://chair_3</uri> 
-<name> "chair_-12.18272.4923123" </name> 
-<pose> -12.1827 2.49231 0 0 0 2.73018 </pose>
-</include>
-
-
-<actor name="human_-4.31379,7.74555,1571">
+<actor name="human_11.7283,7.04336,8246">
 	<pose>
-		-4.31379
-		7.74555
+		11.7283
+		7.04336
 		1
 		0
 		0
@@ -623,7 +507,7 @@
 
 
 	<skin>
-	<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+	<filename>model://actor/meshes/SKIN_man_red_shirt.dae</filename>
 	</skin>
 	<animation name="animation"> 
 		<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -666,7 +550,7 @@
 
 <building>myhal</building>
 
-<max_speed>0.89597</max_speed>
+<max_speed>0.818063</max_speed>
 <obstacle_margin>0.5</obstacle_margin>
 </plugin>
 </actor>

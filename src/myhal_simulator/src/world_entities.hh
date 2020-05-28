@@ -6,9 +6,6 @@
 #include "sdfstring.hh"
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Box.hh>
-#include "gazebo/physics/physics.hh"
-#include "gazebo/common/common.hh"
-#include "gazebo/gazebo.hh"
 
 namespace myhal{
 
@@ -27,13 +24,15 @@ namespace myhal{
 
             ignition::math::Pose3d pose;
 
-            Model(std::string _name, ignition::math::Pose3d _pose, std::string _model_file);
+            ignition::math::Box box;
+
+            Model(std::string _name, ignition::math::Pose3d _pose, std::string _model_file, double _width, double _length);
 
             void AddPlugin(std::shared_ptr<SDFPlugin> plugin);
 
             virtual std::string CreateSDF();
 
-            void AddToWorld(gazebo::physics::WorldPtr _world);
+            void AddToWorld(std::string &world_string);
 
     };
 
@@ -75,20 +74,20 @@ namespace myhal{
             std::string CreateSDF();
     };
 
-    class ModelGroup{ //used for tables 
+    // class ModelGroup{ //used for tables 
 
-        public:
+    //     public:
 
-            std::vector<std::shared_ptr<IncludeModel>> group; 
-            std::shared_ptr<IncludeModel> center;
+    //         std::vector<std::shared_ptr<IncludeModel>> group; 
+    //         std::shared_ptr<IncludeModel> center;
 
-            ModelGroup(std::string _name, ignition::math::Pose3d _pose, std::string _model_file);
+    //         ModelGroup(std::string _name, ignition::math::Pose3d _pose, std::string _model_file);
 
-            void AddObject(std::string _name, ignition::math::Pose3d _pose, std::string _model_file);
+    //         void AddObject(std::string _name, ignition::math::Pose3d _pose, std::string _model_file);
 
-            ignition::math::Pose3d GetCenterPose();
+    //         ignition::math::Pose3d GetCenterPose();
 
-    };
+    // };
 
     class Room{
 
@@ -98,19 +97,21 @@ namespace myhal{
             ignition::math::Box boundary; 
             std::vector<std::shared_ptr<Model>> models;
             std::string building_name;
-            std::vector<gazebo::physics::EntityPtr> collision_links;
+            //std::vector<gazebo::physics::EntityPtr> collision_links;
             bool enclosed;
 
 
         public: 
 
-            Room(double x_min, double y_min, double x_max, double y_max, gazebo::physics::ModelPtr _building, bool _enclosed);
+            Room(double x_min, double y_min, double x_max, double y_max, bool _enclosed);
 
             void AddModel(std::shared_ptr<Model> model);
 
-            bool AddModelRandomly(std::shared_ptr<Model> model, gazebo::physics::WorldPtr world, double margin); //currently this should only be used for actors
+            bool AddModelRandomly(std::shared_ptr<Model> model); 
 
-            void AddToWorld(gazebo::physics::WorldPtr _world);
+            void AddToWorld(std::string &world_string);
+
+            double Area();
     };
 
 }

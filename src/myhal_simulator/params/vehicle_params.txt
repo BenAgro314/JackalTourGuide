@@ -1,6 +1,6 @@
 Vehicle:
 format: (mass, max_force, slowing_distance, arrival_distance, obstacle_margin)
-1, 10, 2, 0.5, 0.5
+1, 10, 2, 0.5, 0.75
 
 Boid:
 format: (alignement, cohesion, separation, FOV_angle, FOV_radius)

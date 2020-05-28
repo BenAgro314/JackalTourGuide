@@ -6,11 +6,14 @@ using namespace myhal;
 
 int Model::num_models = 0;
 
-Model::Model(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
+Model::Model(std::string _name, ignition::math::Pose3d _pose, std::string _model_file, double _width, double _length){
     this->name = _name + "_" + std::to_string(num_models); //this ensures name uniqueness 
     this->pose = _pose;
     this->model_file = _model_file;
     num_models++;
+    auto min = ignition::math::Vector3d(_pose.Pos().X()-_width/2, _pose.Pos().Y()-_length/2, 0);
+    auto max = ignition::math::Vector3d(_pose.Pos().X()+_width/2, _pose.Pos().Y()+_length/2, 10);
+    this->box = ignition::math::Box(min,max);
 }
 
 void Model::AddPlugin(std::shared_ptr<SDFPlugin>  plugin){
@@ -21,28 +24,20 @@ std::string Model::CreateSDF(){
     return "";
 }
 
-void Model::AddToWorld(gazebo::physics::WorldPtr _world){
-
-
-    for (int i =0; i < _world->ModelCount(); i++){
-        //TODO
-        //std::cout << this->name << " vs " << _world->ModelByIndex(i)->GetName() << std::endl;
-        if (_world->ModelByIndex(i)->GetName() == this->name){
-            //std::cout << "DEBUG\n";
-            return;
-        }
-    }
-
-    std::string sdf = "<sdf version ='1.6'>\n" + this->CreateSDF() + "</sdf>\n";
-    _world->InsertModelString(sdf);
-
+void Model::AddToWorld(std::string &world_string){
+    //std::cout << "here1\n";
+    std::string sdf = this->CreateSDF();
+    //std::cout << "here3\n";
+    world_string+= sdf; 
 }
+
+
 
 ///IncludeModel
 
 std::string IncludeModel::CreateSDF(){
 
-
+    
     std::shared_ptr<HeaderTag> model = std::make_shared<HeaderTag>("model");
     model->AddAttribute("name", this->name);
 
@@ -63,8 +58,8 @@ std::string IncludeModel::CreateSDF(){
 
     std::stringstream sdf;
 
-    sdf << model->WriteTag(1);
-
+    sdf << model->WriteTag(2);
+    
     return sdf.str();
 }
 
@@ -75,13 +70,15 @@ void Actor::AddAnimation(std::shared_ptr<SDFAnimation> animation){
 }
 
 std::string Actor::CreateSDF(){
-
+   
     //make appropriate tags:
 
     //skin
     std::shared_ptr<DataTag> s_file = std::make_shared<DataTag>("filename", this->model_file);
     std::shared_ptr<HeaderTag> s_header = std::make_shared<HeaderTag>("skin");
     s_header->AddSubtag(s_file);
+
+  
 
     //pose
     std::string pose_string = std::to_string(this->pose.Pos().X()) + " " + std::to_string(this->pose.Pos().Y()) + " " + std::to_string(this->pose.Pos().Z()) + " " + std::to_string(this->pose.Rot().Roll()) + " " + std::to_string(this->pose.Rot().Pitch()) + " " + std::to_string(this->pose.Rot().Yaw());
@@ -92,29 +89,32 @@ std::string Actor::CreateSDF(){
     actor->AddAttribute("name", this->name);
     actor->AddSubtag(pose_tag);
     actor->AddSubtag(s_header);
-   
+
 
     for (std::shared_ptr<SDFAnimation> animation : this->animations){
         actor->AddSubtag(animation);
     }
 
+  
+
     for (std::shared_ptr<SDFPlugin> plugin : this->plugins){
         actor->AddSubtag(plugin);
     }
-
+    
     //write to stream
-
+   
     std::stringstream sdf;
 
-    sdf << actor->WriteTag(1);
-
+    sdf << actor->WriteTag(2);
+  
+    //std::cout << sdf.str() << std::endl;
     return sdf.str();
 }
 
 ///BoundaryBox
 
 BoundaryBox::BoundaryBox(double _x, double _y, double _width, double _length)
-: Model("box", ignition::math::Pose3d(_x,_y,-0.5, 0,0,0), ""){
+: Model("box", ignition::math::Pose3d(_x,_y,-0.5, 0,0,0), "", _width, _length){
     this->width = _width;
     this->length = _length;
 }
@@ -152,29 +152,29 @@ std::string BoundaryBox::CreateSDF(){
 
     std::stringstream sdf;
 
-    sdf << model->WriteTag(1);
+    sdf << model->WriteTag(2);
 
     return sdf.str();
 }
 
 ///ModelGroup
 
-ModelGroup::ModelGroup(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
-    this->center = std::make_shared<IncludeModel>(_name, _pose, _model_file);
-    this->group.push_back(this->center);
-}
+// ModelGroup::ModelGroup(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
+//     this->center = std::make_shared<IncludeModel>(_name, _pose, _model_file);
+//     this->group.push_back(this->center);
+// }
 
-ignition::math::Pose3d ModelGroup::GetCenterPose(){
-    return this->center->pose;
-}
+// ignition::math::Pose3d ModelGroup::GetCenterPose(){
+//     return this->center->pose;
+// }
 
-void ModelGroup::AddObject(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
-    this->group.push_back(std::make_shared<IncludeModel>(_name, _pose, _model_file));
-}
+// void ModelGroup::AddObject(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
+//     this->group.push_back(std::make_shared<IncludeModel>(_name, _pose, _model_file));
+// }
 
 ///Room
 
-Room::Room(double x_min, double y_min, double x_max, double y_max, gazebo::physics::ModelPtr _building, bool _enclosed = false){
+Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclosed = false){
     this->boundary = ignition::math::Box(ignition::math::Vector3d(x_min,y_min,0), ignition::math::Vector3d(x_max,y_max,10));
     this->enclosed = _enclosed;
      
@@ -191,43 +191,23 @@ Room::Room(double x_min, double y_min, double x_max, double y_max, gazebo::physi
         this->AddModel(right);
     }
 
-    std::vector<gazebo::physics::LinkPtr> links = _building->GetLinks();
-   
-    for (gazebo::physics::LinkPtr link: links){
-        std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
-        for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
-
-            if (collision_box->BoundingBox().Intersects(this->boundary)){
-                this->collision_links.push_back(collision_box); 
-            }
-        }
-    }
-
-    this->building_name = _building->GetName();
 }
 
 void Room::AddModel(std::shared_ptr<Model> model){
     this->models.push_back(model);
 }
 
-bool Room::AddModelRandomly(std::shared_ptr<Model> model, gazebo::physics::WorldPtr world, double margin){
-    /*
-    This function will attempt to place model randomly within the bounds such that it doesn't collide with the other models already in the room
-    */
+
+bool Room::AddModelRandomly(std::shared_ptr<Model> model){
+   
     //update our list of collision links to consider (those that are part of this room and haven't already been added)
-    for (std::shared_ptr<Model> object: this->models){
-        gazebo::physics::ModelPtr other_model = world->ModelByName(object->name);
-        if (other_model){
-            if (std::find(this->collision_links.begin(), this->collision_links.end(), other_model) == this->collision_links.end()){ //if we have not yet already added the model
-                this->collision_links.push_back(other_model);
-            }
-            
-        }
-    }
+
     int iterations = 0;
     bool found = false;
 
-    ignition::math::Box model_box;
+    
+    double width = std::abs(model->box.Max().X() - model->box.Min().X());
+    double length = std::abs(model->box.Max().Y() - model->box.Min().Y());
     ignition::math::Pose3d res_pose = ignition::math::Pose3d(0,0,model->pose.Pos().Z(), model->pose.Rot().Roll(), model->pose.Rot().Pitch(), model->pose.Rot().Yaw()); // we want to maintain the models current height and orientation
 
     while (iterations < 1000 && !found){
@@ -239,20 +219,18 @@ bool Room::AddModelRandomly(std::shared_ptr<Model> model, gazebo::physics::World
         double x_max = this->boundary.Max().X();
         double y_max = this->boundary.Max().Y();
 
-        res_pose.Pos().X() = ignition::math::Rand::DblUniform(x_min+margin, x_max-margin);
-        res_pose.Pos().Y() = ignition::math::Rand::DblUniform(y_min+margin, y_max-margin);
+        res_pose.Pos().X() = ignition::math::Rand::DblUniform(x_min+(width/2), x_max-(width/2));
+        res_pose.Pos().Y() = ignition::math::Rand::DblUniform(y_min+(length/2), y_max-(length/2));
+
+        model->box.Min() += ignition::math::Vector3d(res_pose.Pos().X(), res_pose.Pos().Y(), 0);
+        model->box.Max() += ignition::math::Vector3d(res_pose.Pos().X(), res_pose.Pos().Y(), 0);
 
         found = true;
 
-        //check if that position is valid 
-        ignition::math::Vector3d min_corner = ignition::math::Vector3d(res_pose.Pos().X()-margin,res_pose.Pos().Y()-margin,0);
-        ignition::math::Vector3d max_corner = ignition::math::Vector3d(res_pose.Pos().X()+margin,res_pose.Pos().Y()+margin,10);
-        model_box = ignition::math::Box(min_corner, max_corner);
-
         //if the position is invald 
 
-        for (gazebo::physics::EntityPtr link: this->collision_links){
-            if (link->BoundingBox().Intersects(model_box)){
+        for (auto other: this->models){
+            if (other->box.Intersects(model->box)){
                 found = false;
             }
         }
@@ -263,13 +241,25 @@ bool Room::AddModelRandomly(std::shared_ptr<Model> model, gazebo::physics::World
     if (found){
         model->pose = res_pose;
         this->AddModel(model);
+    } else{
+        std::cout << "no place found" << std::endl;
     }
 
     return found;
 }
 
-void Room::AddToWorld(gazebo::physics::WorldPtr _world){
+
+void Room::AddToWorld(std::string &world_string){
     for (std::shared_ptr<Model> model : this->models){
-        model->AddToWorld(_world);
+        model->AddToWorld(world_string);
     }
+}
+
+double Room::Area(){
+    double x_min = this->boundary.Min().X();
+    double y_min = this->boundary.Min().Y();
+    double x_max = this->boundary.Max().X();
+    double y_max = this->boundary.Max().Y();
+
+    return (x_max-x_min)*(y_max- y_min);
 }

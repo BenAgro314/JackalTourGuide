@@ -16,6 +16,14 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(gazebo REQUIRED)
 
+
+catkin_package(
+	DEPENDS gazebo_ros roscpp rospy std_msgs
+	INCLUDE_DIRS 
+)
+
+
+
 link_directories(${GAZEBO_LIBRARY_DIRS})
 include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 
@@ -34,11 +42,7 @@ target_link_libraries(sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 add_library(world_entities src/world_entities.cpp)
 target_link_libraries(world_entities sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
-add_library(simulator_plugin src/simulator_plugin.cpp)
-target_link_libraries(simulator_plugin world_entities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
-catkin_package(
-	DEPENDS gazebo_ros roscpp rospy std_msgs
-)
+add_executable(world_factory src/world_factory.cpp) 
+target_link_libraries(world_factory world_entities ${catkin_LIBRARIES})
 
 

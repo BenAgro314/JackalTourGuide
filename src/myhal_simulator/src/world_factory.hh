@@ -1,5 +1,5 @@
-#ifndef SIMULATOR_PLUGIN_HH
-#define SIMULATOR_PLUGIN_HH
+#ifndef WORLD_FACTORY_HH
+#define  WORLD_FACTORY_HH
 
 #include <functional>
 #include "world_entities.hh"
@@ -11,9 +11,9 @@ class RoomInfo{
     public:
         std::shared_ptr<myhal::Room> room;
         std::string scenario;
-        std::vector<double> positions;
+        std::vector<std::vector<double>> positions;
 
-        RoomInfo(std::shared_ptr<myhal::Room> _room, std::string _scenario, std::vector<double> _positions):
+        RoomInfo(std::shared_ptr<myhal::Room> _room, std::string _scenario, std::vector<std::vector<double>> _positions):
         room(_room), scenario(_scenario), positions(_positions){}
 
 };
@@ -23,8 +23,10 @@ class ModelInfo{
     public: 
         std::string name;
         std::string filename;
+        double width;
+        double length;
 
-        ModelInfo(std::string _name, std::string _filename) : name(_name), filename(_filename)
+        ModelInfo(std::string _name, std::string _filename, double _width, double _length) : name(_name), filename(_filename), width(_width), length(_length)
         {}
 };
 
@@ -32,10 +34,9 @@ class ActorInfo: public ModelInfo{
 
     public: 
         std::string plugin;
-        double obstacle_margin;
 
         ActorInfo(std::string _name, std::string _filename, std::string _plugin, double _obstacle_margin):
-        ModelInfo(_name,_filename), plugin(_plugin), obstacle_margin(_obstacle_margin){}
+        ModelInfo(_name,_filename, _obstacle_margin, _obstacle_margin), plugin(_plugin){}
 };
 
 class Scenario{
@@ -58,35 +59,22 @@ class Scenario{
         std::shared_ptr<ModelInfo> GetRandomModel();
 };
 
-class WorldHandler: public gazebo::WorldPlugin{
+class WorldHandler{
 
-    private: 
+    public: 
+        WorldHandler();
 
-        void Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf);
-
-        void OnUpdate(const gazebo::common::UpdateInfo &_info);
+        void Load();
 
         void LoadParams();
 
-        void FillRoomModels(std::shared_ptr<RoomInfo> room_info);
+        void WriteToFile(std::string out_name);
 
-        void FillRoomActors(std::shared_ptr<RoomInfo> room_info);
+        void FillRoom(std::shared_ptr<RoomInfo> room_info);
 
-        gazebo::event::ConnectionPtr update_connection;
+        std::string world_string;
 
-
-        gazebo::physics::WorldPtr world;
-
-        sdf::ElementPtr sdf;
-
-        gazebo::physics::ModelPtr building;
-
-
-        
-
-        //std::vector<std::shared_ptr<SDFAnimation>> actor_animations;
-
-        int tick = 0;
+        std::vector<std::shared_ptr<myhal::Model>> world_models;
 
         // filled by parameters 
 
