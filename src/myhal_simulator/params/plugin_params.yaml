@@ -1,8 +1,10 @@
 plugin_names:
-  - wanderer
-  - stander
+  - basic_wanderer
+  - basic_stander
+  - basic_boid
+  - basic_random_walker
 
-wanderer:
+basic_wanderer:
   name: vehicle
   filename: libvehicle_plugin.so
   vehicle_type: wanderer
@@ -10,7 +12,7 @@ wanderer:
   max_speed: "1"
 
 
-stander:
+basic_stander:
   name: vehicle
   filename: libvehicle_plugin.so
   vehicle_type: stander
@@ -18,3 +20,18 @@ stander:
   max_speed: "1"
   standing_duration: "5"
   walking_duration: "5"
+
+basic_boid:
+  name: vehicle
+  filename: libvehicle_plugin.so
+  vehicle_type: boid
+  building: building
+  max_speed: "1"
+
+basic_random_walker:
+  name: vehicle
+  filename: libvehicle_plugin.so
+  vehicle_type: random_walker
+  building: building
+  max_speed: "1"
+  

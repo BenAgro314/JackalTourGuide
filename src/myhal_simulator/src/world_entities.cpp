@@ -194,6 +194,7 @@ Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclose
 }
 
 void Room::AddModel(std::shared_ptr<Model> model){
+    //std::printf("(%f, %f) (%f, %f)\n", model->box.Min().X(), model->box.Min().Y(), model->box.Max().X(), model->box.Max().Y());
     this->models.push_back(model);
 }
 
@@ -221,7 +222,7 @@ bool Room::AddModelRandomly(std::shared_ptr<Model> model){
 
         res_pose.Pos().X() = ignition::math::Rand::DblUniform(x_min+(width/2), x_max-(width/2));
         res_pose.Pos().Y() = ignition::math::Rand::DblUniform(y_min+(length/2), y_max-(length/2));
-
+        
         model->box.Min() += ignition::math::Vector3d(res_pose.Pos().X(), res_pose.Pos().Y(), 0);
         model->box.Max() += ignition::math::Vector3d(res_pose.Pos().X(), res_pose.Pos().Y(), 0);
 
@@ -230,8 +231,21 @@ bool Room::AddModelRandomly(std::shared_ptr<Model> model){
         //if the position is invald 
 
         for (auto other: this->models){
+          
             if (other->box.Intersects(model->box)){
+                
                 found = false;
+            }
+
+            double minx = other->box.Min().X();
+            double miny = other->box.Min().Y();
+            double maxx = other->box.Max().X();
+            double maxy = other->box.Max().Y();
+
+            if (res_pose.Pos().X() > std::min(minx,maxx) && res_pose.Pos().X() < std::max(minx, maxx)){
+                if (res_pose.Pos().Y() > std::min(miny,maxy) && res_pose.Pos().Y() < std::max(miny, maxy)){
+                    found = false;
+                }
             }
         }
 

@@ -1,28 +1,45 @@
 model_names:
   - table1
   - table2
+  - table3
 
 table1:
   filename: model://table_conference_1
-  width: "3"
+  width: "4"
   length: "2"
 
 table2:
   filename: model://table_conference_2
   width: "3"
-  length: "2"
+  length: "2.5"
+
+table3:
+  filename: model://table_conference_3
+  width: "4"
+  length: "2.5"
 
 actor_names:
-  - actor1
-  - actor2
+  - actor_basic_wanderer
+  - actor_basic_stander
+  - actor_basic_boid
+  - actor_basic_random_walker
 
-actor1: 
+actor_basic_wanderer: 
   filename: model://actor/meshes/SKIN_man_blue_shirt.dae
-  plugin: wanderer
-  obstacle_margin: "0.5"
+  plugin: basic_wanderer
+  obstacle_margin: "0.6"
 
-actor2: 
+actor_basic_stander: 
   filename: model://actor/meshes/SKIN_man_blue_shirt.dae
-  plugin: stander
-  obstacle_margin: "0.5"
-  
+  plugin: basic_stander
+  obstacle_margin: "0.6"
+
+actor_basic_boid: 
+  filename: walk.dae
+  plugin: basic_boid
+  obstacle_margin: "0.6"
+
+actor_basic_random_walker:
+  filename: moonwalk.dae
+  plugin: basic_random_walker
+  obstacle_margin: "0.6"

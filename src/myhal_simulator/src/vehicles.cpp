@@ -492,6 +492,7 @@ void RandomWalker::OnUpdate(const gazebo::common::UpdateInfo &_inf){
     
     this->Seek(this->curr_target);
     this->AvoidActors();
+    this->AvoidObstacles();//TODO: make sure this is safe here
     
     this->UpdatePosition(dt);
     this->UpdateModel();
@@ -668,15 +669,20 @@ std::string _building_name,
 double _standing_duration,
 double _walking_duration)
 : Wanderer(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, _building_name){
-    this->standing_duration = _standing_duration;
-    this->walking_duration = _walking_duration;
+
+    this->standing_duration = std::max(0.0 ,_standing_duration +  ignition::math::Rand::DblUniform(-0.5,0.5));
+    this->walking_duration = std::max(0.0 , _walking_duration +  ignition::math::Rand::DblUniform(-0.5,0.5));
+
+    this->standing = (bool) ignition::math::Rand::IntUniform(0,1);
 
     if (walking_duration <= 0){
         this->never_walk = true;
     }
-        
-    this->actor->SetCustomTrajectory(this->trajectories["standing"]);
-
+    if (standing){
+        this->actor->SetCustomTrajectory(this->trajectories["standing"]);
+    } else{
+        this->actor->SetCustomTrajectory(this->trajectories["walking"]);
+    }
     this->UpdatePosition(0.1);
     this->actor->SetWorldPose(this->pose, true, true);
     this->actor->SetScriptTime(this->actor->ScriptTime());
@@ -712,7 +718,10 @@ void Stander::OnUpdate(const gazebo::common::UpdateInfo &_inf){
             this->standing = false;
             this->walking_start = _inf.simTime;
             this->actor->SetCustomTrajectory(this->trajectories["walking"]);
-            
+            this->standing_duration += ignition::math::Rand::DblUniform(-0.5,0.5);
+            if (this->standing_duration <= 0){
+                this->standing_duration = 0;
+            }
         }
     } else{
 
@@ -727,7 +736,10 @@ void Stander::OnUpdate(const gazebo::common::UpdateInfo &_inf){
             this->standing = true;
             this->standing_start = _inf.simTime;
             this->actor->SetCustomTrajectory(this->trajectories["standing"]);
-            
+            this->walking_duration += ignition::math::Rand::DblUniform(-0.5,0.5);
+            if (this->walking_duration <= 0){
+                this->walking_duration = 0;
+            }
         }
     }
  

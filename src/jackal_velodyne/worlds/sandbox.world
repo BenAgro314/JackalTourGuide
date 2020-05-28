@@ -195,53 +195,6 @@
 </actor-->
 
 
-<actor name="actor1_5">
-                <pose>0.618968 0.175755 1.000000 0.000000 -0.000000 0.000000</pose>
-                <skin>
-                        <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-                </skin>
-                <animation name="walking">
-                        <filename>walk.dae</filename>
-                        <interpolate_x>true</interpolate_x>
-                </animation>
-                <plugin name="vehicle" filename="libvehicle_plugin.so">
-                        <vehicle_type>wanderer</vehicle_type>
-                        <building>building</building>
-                        <max_speed>1</max_speed>
-                </plugin>
-        </actor>
-
-        <actor name="actor1_6">
-                <pose>-2.462314 -4.018197 1.000000 0.000000 -0.000000 0.000000</pose>
-                <skin>
-                        <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-                </skin>
-                <animation name="walking">
-                        <filename>walk.dae</filename>
-                        <interpolate_x>true</interpolate_x>
-                </animation>
-                <plugin name="vehicle" filename="libvehicle_plugin.so">
-                        <vehicle_type>wanderer</vehicle_type>
-                        <building>building</building>
-                        <max_speed>1</max_speed>
-                </plugin>
-        </actor>
-
-        <actor name="actor1_7">
-                <pose>-0.454213 -0.833699 1.000000 0.000000 -0.000000 0.000000</pose>
-                <skin>
-                        <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-                </skin>
-                <animation name="walking">
-                        <filename>walk.dae</filename>
-                        <interpolate_x>true</interpolate_x>
-                </animation>
-                <plugin name="vehicle" filename="libvehicle_plugin.so">
-                        <vehicle_type>wanderer</vehicle_type>
-                        <building>building</building>
-                        <max_speed>1</max_speed>
-                </plugin>
-        </actor>
 
 <!--actor name="randomguy3">
       <pose>-1 0 1 0 0 0</pose>

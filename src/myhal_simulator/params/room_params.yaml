@@ -1,41 +1,51 @@
 room_names:
-  - room1
-  - room2
+  - main_atrium
+  - lower_middle
 
-room1: 
+main_atrium: 
   geometry: geo1
   positions: pos1
-  enclosed: "1"
-  scenario: study
+  enclosed: "0"
+  scenario: basic_study_area
 
 geo1:
-  x_min: -3
+  x_min: -8
   y_min: -5
-  x_max: 3
-  y_max: 1
+  x_max: 7
+  y_max: 2
 
 pos1:
+  - -6
   - 0
+  - -2
   - 0
-  - 4
+  - 2
   - 0
+  - -6
+  - -3
+  - -2
+  - -3
+  - 2
+  - -3
 
-room2: 
+lower_middle:
   geometry: geo2
   positions: pos2
   enclosed: "1"
-  scenario: crowd
+  scenario: basic_social_meeting
 
 geo2:
-  x_min: -8
-  y_min: 10
-  x_max: 8
-  y_max: 17
+  x_min: -7
+  y_min: -18
+  x_max: 1
+  y_max: -9
 
 pos2:
-  - -7
-  - 12
-  - -4
-  - 12
-  - 0
-  - 12
+  - -5
+  - -12
+  - 1
+  - -12
+  - -5
+  - -16
+  - 1
+  - -16

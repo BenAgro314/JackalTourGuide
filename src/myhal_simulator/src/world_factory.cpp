@@ -8,8 +8,14 @@
 
 int main(int argc, char ** argv){
 
+    auto box1 = ignition::math::Box(ignition::math::Vector3d(10,10,10),ignition::math::Vector3d(11,11,11));
+    auto box2 = ignition::math::Box(ignition::math::Vector3d(-1,-1,-1),ignition::math::Vector3d(1,1,1));
+    
+   
+
     auto world_handler = WorldHandler();
- 
+    
+
 
     world_handler.Load();
     
@@ -19,22 +25,6 @@ int main(int argc, char ** argv){
 
 void WorldHandler::Load(){
 
-    /*
-    std::shared_ptr<SDFPlugin> plugin = std::make_shared<SDFPlugin>("vehicle", "libvehicle_plugin.so");
-    plugin->AddSubtag("vehicle_type", "wanderer");
-    plugin->AddSubtag("building", "building");
-    plugin->AddSubtag("max_speed", "1");
-    std::shared_ptr<SDFAnimation> animation = std::make_shared<SDFAnimation>("walking", "walk.dae", true);
-
-    std::shared_ptr<myhal::Actor> actor = std::make_shared<myhal::Actor>("guy", ignition::math::Pose3d(0, 0, 1, 0, 0, 0), "model://actor/meshes/SKIN_man_blue_shirt.dae", 0.5, 0.5);
-
-    actor->AddAnimation(animation);
-    actor->AddPlugin(plugin);
-
-    actor->AddToWorld(this->world_string);
-    */
-
-
     //load parameters 
 
     this->LoadParams();
@@ -43,8 +33,9 @@ void WorldHandler::Load(){
     
     for (auto r_info: this->rooms){
         this->FillRoom(r_info);
-        
+        std::cout << "before\n";
         r_info->room->AddToWorld(this->world_string);
+        std::cout << "after\n";
     }
 
     // add all rooms to the world 
@@ -163,14 +154,14 @@ void WorldHandler::LoadParams(){
     }
 
     for (auto name: scenario_names){
-        //std::cout << name << std::endl;
+      //std::cout << name << std::endl;
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
             std::cout << "ERROR READING PARAMS\n";
             return;
         }
-
+        //std::cout << info["pop_density"] << " " << info["table_percentage"] << std::endl;
         std::shared_ptr<Scenario> scenario = std::make_shared<Scenario>(std::stod(info["pop_density"]), std::stod(info["table_percentage"]), info["actor"]);
 
         std::vector<std::string> model_list; 
@@ -231,6 +222,8 @@ void WorldHandler::LoadParams(){
         //this->rooms[name] = room;
         
     }
+
+    //std::cout << "done\n";
 }
 
 void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
@@ -240,10 +233,10 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
     int num_models = (int) (scenario->model_percentage*((room_info->positions.size())));
     
     std::random_shuffle(room_info->positions.begin(), room_info->positions.end());
-    std::cout << num_models << std::endl;
+    
     for (int i = 0; i < num_models; ++i){
         auto m_info = scenario->GetRandomModel();
-        std::cout << room_info->positions[i][0] << " " << room_info->positions[i][1] << std::endl;
+       
         auto random_pose = ignition::math::Pose3d(room_info->positions[i][0], room_info->positions[i][1], 0, 0, 0, 0); //TODO: specify randomization parameters in yaml
         if (m_info){
             auto new_model = std::make_shared<myhal::IncludeModel>(m_info->name, random_pose, m_info->filename, m_info->width, m_info->length);
@@ -251,11 +244,19 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
         } 
     }
 
+    
+
     int num_actors = (int) ((scenario->pop_density)*(room_info->room->Area()));
     
+   
+
     auto a_info = this->actor_info[scenario->actor];
+
+  
     
     auto plugin = this->vehicle_plugins[a_info->plugin];
+
+   
 
     for (int i =0; i<num_actors; i++){
         auto new_actor = std::make_shared<myhal::Actor>(a_info->name, ignition::math::Pose3d(0,0,1,0,0,0), a_info->filename, a_info->width, a_info->length); //TODO randomize initial Rot
