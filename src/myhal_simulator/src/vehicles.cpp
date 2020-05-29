@@ -746,3 +746,105 @@ void Stander::OnUpdate(const gazebo::common::UpdateInfo &_inf){
     this->UpdateModel(dt);
 }
 
+Follower::Follower(gazebo::physics::ActorPtr _actor,
+double _mass,
+double _max_force, 
+double _max_speed, 
+ignition::math::Pose3d initial_pose, 
+ignition::math::Vector3d initial_velocity, 
+std::string _building_name, 
+std::string _leader_name)
+: Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, _building_name){
+
+    this->leader_name = _leader_name;
+    for (gazebo::physics::ActorPtr other: this->actors){
+        if (other->GetName() == this->leader_name){
+            this->leader = other;
+        }
+    }
+
+    this->last_leader_pose = this->leader->WorldPose();
+}
+
+void Follower::AvoidActors(){
+    ignition::math::Vector3d steer = ignition::math::Vector3d(0,0,0);
+
+    for (gazebo::physics::ActorPtr other: this->actors){
+        if (other->GetName() == this->leader_name){
+            continue;
+        }
+        ignition::math::Vector3d this_pos = this->pose.Pos();
+		this_pos.Z() = 0;
+		ignition::math::Vector3d other_pos = other->WorldPose().Pos();
+		other_pos.Z() = 0;
+		ignition::math::Vector3d rad = this_pos-other_pos;
+		double dist = rad.Length();
+		
+		if (dist<this->obstacle_margin){
+			rad.Normalize();	
+			rad/=dist;
+			steer += rad;
+		}
+    }
+
+    if (steer.Length() >0){
+		steer.Normalize();
+		steer*=this->max_speed;
+		steer-=this->velocity;
+		if (steer.Length()>this->max_force){
+			steer.Normalize();
+			steer*=this->max_force;
+		}
+	}
+
+    this->ApplyForce(steer);
+}
+
+void Follower::SetNextTarget(double dt){
+    auto leader_dir = (this->leader->WorldPose().Pos() - this->last_leader_pose.Pos())/dt;
+    
+    leader_dir.Normalize();
+
+    // if we find ourselves in front of the leader, steer laterally away from the leaders path 
+
+    auto front_edge = ignition::math::Line3d(this->leader->WorldPose().Pos(), this->leader->WorldPose().Pos() + leader_dir);
+
+    ignition::math::Vector3d normal;
+
+    if (utilities::get_normal_to_edge(this->pose.Pos(), front_edge, normal)){
+        if (normal.Length() < this->obstacle_margin){
+            auto mag = normal.Length();
+            normal.Normalize();
+            normal *= 1/(mag*mag);
+            if (normal.Length() > this->max_force){
+                normal.Normalize();
+                normal*=this->max_force;
+            }
+            this->ApplyForce(normal);
+        }
+    }
+
+    this->curr_target = this->leader->WorldPose().Pos() - leader_dir;
+
+    this->last_leader_pose = this->leader->WorldPose();
+}
+
+void Follower::OnUpdate(const gazebo::common::UpdateInfo &_inf){
+    double dt = (_inf.simTime - this->last_update).Double();
+
+    if (dt < 1/this->update_freq){
+        return;
+    }
+
+    this->last_update = _inf.simTime;
+    
+    this->SetNextTarget(dt);
+    this->Arrival(this->curr_target);
+    
+    std::printf("(%f, %f, %f)\n", this->acceleration.X(), this->acceleration.Y(), this->acceleration.Z());
+    this->AvoidActors();
+    this->AvoidObstacles();
+    
+    this->UpdatePosition(dt);
+    this->UpdateModel();
+}

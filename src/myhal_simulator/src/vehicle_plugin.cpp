@@ -22,7 +22,7 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
     double slowing_distance = this->vehicle_params[2];
     double arrival_distance = this->vehicle_params[3];
     double obstacle_margin = this->vehicle_params[4];
-
+   
     if (this->vehicle_type == "boid"){
         
         ignition::math::Vector3d random_vel = ignition::math::Vector3d(ignition::math::Rand::DblUniform(-1,1),ignition::math::Rand::DblUniform(-1,1),0);
@@ -86,7 +86,18 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
         this->standing_duration,
         this->walking_duration); //todo: read these in as parameters 
         
-    } else{
+    } else if (this->vehicle_type == "follower"){
+       
+        this->vehicle = std::make_unique<Follower>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
+        mass, 
+        max_force, 
+        this->max_speed, 
+        _parent->WorldPose(), 
+        ignition::math::Vector3d(0,0,0), 
+        this->building,
+        this->leader);
+        
+    } else {
         //wanderer
         
         this->vehicle = std::make_unique<Wanderer>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
@@ -125,6 +136,10 @@ void ModelHandler::ReadSDF(sdf::ElementPtr _sdf){
 
     if (_sdf->HasElement("standing_duration")){
         this->standing_duration =_sdf->GetElement("standing_duration")->Get<double>();
+    }
+
+    if (_sdf->HasElement("leader")){
+        this->leader =_sdf->GetElement("leader")->Get<std::string>();
     }
   
 }

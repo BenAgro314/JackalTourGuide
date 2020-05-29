@@ -94,11 +94,11 @@
  
     <!--plugin name="factory" filename="libworld_plugin.so"/-->
     <!-- insert stuff below -->
-    <include>
+    <!--include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>
       <uri>model://myhal_V3</uri>
-	  </include>
+	  </include-->
 
     
 <!--include>
@@ -173,7 +173,28 @@
       </plugin>
 </actor-->
 
-<!--actor name="randomguy2">
+<actor name="leader">
+
+      <pose>0 0 1 0 0 0</pose>
+      <skin>
+      <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+      </skin>
+      <animation name="walking"> 
+        <filename>walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+
+      <plugin name="steering" filename="libvehicle_plugin.so">
+        <vehicle_type>path_follower</vehicle_type>
+        <building>building</building>
+        <max_speed>1</max_speed>
+        <path_point>4 0 0</path_point>
+        <path_point>-4 0 0</path_point>
+
+      </plugin>
+</actor>
+
+<actor name="follower">
 
       <pose>-3 0 1 0 0 0</pose>
       <skin>
@@ -185,15 +206,12 @@
       </animation>
 
       <plugin name="steering" filename="libvehicle_plugin.so">
-        <vehicle_type>path_follower</vehicle_type>
-        <building>box</building>
+        <vehicle_type>follower</vehicle_type>
+        <building>building</building>
         <max_speed>1</max_speed>
-        <path_point>3 0 0</path_point>
-        <path_point>-3 0 0</path_point>
-
+        <leader>leader</leader>
       </plugin>
-</actor-->
-
+</actor>
 
 
 <!--actor name="randomguy3">

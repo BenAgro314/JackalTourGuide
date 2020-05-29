@@ -46,6 +46,10 @@ class ModelHandler : public ModelPlugin{
     //for stander
     private: double walking_duration = 0;
     private: double standing_duration = 5;
+
+    //for follower
+
+    private: std::string leader;
 	
 };
 

@@ -223,4 +223,30 @@ class Stander: public Wanderer{
 
 };
 
+class Follower: public Vehicle{
+
+    protected:
+
+        std::string leader_name;
+        ignition::math::Pose3d last_leader_pose;
+        gazebo::physics::ActorPtr leader;
+
+        void SetNextTarget(double dt);
+        void AvoidActors(); 
+
+    public:
+
+        Follower(gazebo::physics::ActorPtr _actor,
+         double _mass,
+         double _max_force, 
+         double _max_speed, 
+         ignition::math::Pose3d initial_pose, 
+         ignition::math::Vector3d initial_velocity, 
+         std::string _building_name, 
+         std::string _leader_name);
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+
+};
+
 #endif
