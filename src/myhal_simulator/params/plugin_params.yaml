@@ -3,6 +3,7 @@ plugin_names:
   - basic_stander
   - basic_boid
   - basic_random_walker
+  - basic_path_follower
 
 basic_wanderer:
   name: vehicle
@@ -35,3 +36,11 @@ basic_random_walker:
   building: building
   max_speed: "1"
   
+basic_path_follower:
+  name: vehicle
+  filename: libvehicle_plugin.so
+  vehicle_type: path_follower
+  building: building
+  max_speed: "1"
+  path_point: "-12 7 0"
+  path_point: "19 7 0"

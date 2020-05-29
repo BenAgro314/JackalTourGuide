@@ -4,6 +4,7 @@ room_names:
   - upper_middle
   - mid_right
   - long_right
+  # - upper_hallway
 
 main_atrium: 
   geometry: geo1
@@ -118,3 +119,19 @@ pos5:
   - -10
   - 18
   - -14
+
+upper_hallway:
+  geometry: geo6
+  positions: pos6
+  enclosed: "0"
+  scenario: hallway1
+
+geo6:
+  x_min: -12
+  y_min: 6
+  x_max: 20
+  y_max: 8
+
+pos6:
+  - 0
+  - 0
