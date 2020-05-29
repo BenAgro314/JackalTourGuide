@@ -3,6 +3,7 @@ room_names:
   - lower_middle
   - upper_middle
   - mid_right
+  - long_right
 
 main_atrium: 
   geometry: geo1
@@ -37,9 +38,9 @@ lower_middle:
   scenario: basic_social_meeting
 
 geo2:
-  x_min: -7
-  y_min: -18
-  x_max: 1
+  x_min: -8
+  y_min: -19
+  x_max: 2
   y_max: -9
 
 pos2:
@@ -93,3 +94,27 @@ geo4:
 pos4:
   - 12
   - -1
+
+long_right:
+  geometry: geo5
+  positions: pos5
+  enclosed: "0"
+  scenario: casual_study_area
+
+geo5:
+  x_min: 15
+  y_min: -19
+  x_max: 19
+  y_max: 5
+
+pos5:
+  - 18
+  - 2
+  - 18
+  - -2
+  - 18
+  - -6
+  - 18
+  - -10
+  - 18
+  - -14

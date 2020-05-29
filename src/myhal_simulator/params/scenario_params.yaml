@@ -4,6 +4,7 @@ scenario_names:
   - basic_social_meeting
   - basic_no_people
   - sparse_study_area
+  - casual_study_area
 
 basic_crowd:
   pop_density: "0.4"
@@ -40,6 +41,13 @@ sparse_study_area:
   model_list: model_list1
   table_group_list: group_list1
 
+casual_study_area:
+  pop_density: "0.05"
+  table_percentage: "0.7"
+  actor: actor_basic_random_walker
+  model_list: model_list1
+  table_group_list: group_casual
+
 model_list1:
   - table1
   - table2
@@ -53,3 +61,4 @@ group_list1:
 group_casual:
   - table_group_4
   - table_group_5
+  - table_group_6

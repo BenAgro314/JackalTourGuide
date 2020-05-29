@@ -317,15 +317,16 @@ Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclose
         std::shared_ptr<BoundaryBox> left = std::make_shared<BoundaryBox>(x_min - 0.125, (y_min + y_max) / 2, 0.25, y_max - y_min + 0.5);
         std::shared_ptr<BoundaryBox> right = std::make_shared<BoundaryBox>(x_max + 0.125, (y_min + y_max) / 2, 0.25, y_max - y_min + 0.5);
 
-        this->AddModel(bot);
-        this->AddModel(top);
-        this->AddModel(left);
-        this->AddModel(right);
+        this->models.push_back(bot);
+        this->models.push_back(top);
+        this->models.push_back(left);
+        this->models.push_back(right);
     }
 }
 
 bool Room::AddModel(std::shared_ptr<Model> model)
-{
+{   
+    
     for (auto other : this->models)
     {
         if (model->DoesCollide(other))
@@ -333,6 +334,7 @@ bool Room::AddModel(std::shared_ptr<Model> model)
             return false;
         }
     }
+    
     this->models.push_back(model);
     return true;
 }

@@ -8,28 +8,23 @@
 
 int main(int argc, char ** argv){
 
-    auto box1 = ignition::math::Box(ignition::math::Vector3d(10,10,10),ignition::math::Vector3d(11,11,11));
-    auto box2 = ignition::math::Box(ignition::math::Vector3d(-1,-1,-1),ignition::math::Vector3d(1,1,1));
-    
-   
+    ROS_WARN("WORLD GENERATION BEGINNING:");
 
     auto world_handler = WorldHandler();
-    
-
 
     world_handler.Load();
     
 
-    std::cout << "World Created" << std::endl;
+    return 0;
 }
 
 void WorldHandler::Load(){
 
-    //load parameters 
+    ROS_INFO("Loading Parameters");
 
     this->LoadParams();
 
-    // fill rooms
+    ROS_INFO("Filling Rooms");
     
     for (auto r_info: this->rooms){
         this->FillRoom(r_info);
@@ -38,9 +33,12 @@ void WorldHandler::Load(){
 
     }
 
-    // add all rooms to the world 
+    ROS_INFO("Writing to file");
 
     this->WriteToFile("myhal_sim.world");
+
+    ROS_WARN("WORLD CREATED!");
+    std::cout << "WORLD CREATED\n";
 }
 
 WorldHandler::WorldHandler(){
@@ -61,7 +59,7 @@ void WorldHandler::LoadParams(){
     
     std::vector<std::string> plugin_names;
     if (!nh.getParam("plugin_names", plugin_names)){
-        std::cout << "ERROR READING PARAMS\n";
+        ROS_ERROR("ERROR READING PLUGIN NAMES");
         return;
     }
 
@@ -70,7 +68,7 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            std::cout << "ERROR READING PARAMS\n";
+            ROS_ERROR("ERROR READING PLUGIN PARAMS");
             return;
         }
 
@@ -91,7 +89,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> animation_names;
     if (!nh.getParam("animation_names", animation_names)){
-        std::cout << "ERROR READING PARAMS\n";
+        ROS_ERROR("ERROR READING ANIMATION NAMES");
         return;
     }
 
@@ -100,7 +98,7 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            std::cout << "ERROR READING PARAMS\n";
+            ROS_ERROR("ERROR READING ANIMATION PARAMS");
             return;
         }
 
@@ -114,7 +112,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> model_names;
     if (!nh.getParam("model_names", model_names)){
-        std::cout << "ERROR READING PARAMS\n";
+        ROS_ERROR("ERROR READING MODEL NAMES");
         return;
     }
 
@@ -123,7 +121,7 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            std::cout << "ERROR READING PARAMS\n";
+            ROS_ERROR("ERROR READING MODEL PARAMS");
             return;
         }
 
@@ -135,7 +133,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> table_group_names;
     if (!nh.getParam("table_group_names", table_group_names)){
-        std::cout << "ERROR READING TABLE GROUP NAME PARAMS\n";
+        ROS_ERROR("ERROR READING TABLE GROUP NAMES");
         return;
     }
 
@@ -144,7 +142,7 @@ void WorldHandler::LoadParams(){
     
 
         if (!nh.getParam(name,info)){
-            std::cout << "ERROR READING TABLE GROUP PARAMS\n";
+            ROS_ERROR("ERROR READING TABLE GROUP PARAMS");
             return;
         }
 
@@ -157,7 +155,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> actor_names;
     if (!nh.getParam("actor_names", actor_names)){
-        std::cout << "ERROR READING PARAMS\n";
+        ROS_ERROR("ERROR READING ACTOR NAMES");
         return;
     }
 
@@ -165,7 +163,7 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            std::cout << "ERROR READING PARAMS\n";
+            ROS_ERROR("ERROR READING ACTOR PARAMS");
             return;
         }
 
@@ -178,7 +176,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> scenario_names;
     if (!nh.getParam("scenario_names", scenario_names)){
-        std::cout << "ERROR READING PARAMS\n";
+        ROS_ERROR("ERROR READING SCENARIO NAMES");
         return;
     }
 
@@ -187,7 +185,7 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            std::cout << "ERROR READING PARAMS\n";
+            ROS_ERROR("ERROR READING SCENARIO PARAMS");
             return;
         }
 
@@ -196,7 +194,7 @@ void WorldHandler::LoadParams(){
         std::vector<std::string> model_list; 
 
         if (!nh.getParam(info["model_list"], model_list)){
-            std::cout << "ERROR READING PARAMS\n";
+            ROS_ERROR("ERROR READING MODEL LIST");
             return;
         }
 
@@ -209,7 +207,7 @@ void WorldHandler::LoadParams(){
         std::vector<std::string> table_group_list; 
 
         if (!nh.getParam(info["table_group_list"], table_group_list)){
-            std::cout << "ERROR READING TABLE GROUP LIST PARAMS\n";
+            ROS_ERROR("ERROR READING TABLE GROUP LIST");
             return;
         }
 
@@ -226,7 +224,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> room_names;
     if (!nh.getParam("room_names", room_names)){
-        std::cout << "ERROR READING PARAMS\n";
+        ROS_ERROR("ERROR READING ROOM NAMES");
         return;
     }
 
@@ -235,14 +233,14 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            std::cout << "ERROR READING PARAMS\n";
+            ROS_ERROR("ERROR READING ROOM PARAMS");
             return;
         }
 
         std::map<std::string, double> geometry; 
 
         if (!nh.getParam(info["geometry"], geometry)){
-            std::cout << "ERROR READING PARAMS\n";
+            ROS_ERROR("ERROR READING ROOM GEOMETRY");
             return;
         }
 
@@ -251,7 +249,7 @@ void WorldHandler::LoadParams(){
         std::vector<double> poses;
 
         if (!nh.getParam(info["positions"], poses)){
-            std::cout << "ERROR READING PARAMS\n";
+            ROS_ERROR("ERROR READING POSITION PARAMS");
             return;
         }
         std::vector<std::vector<double>> positions;
@@ -303,7 +301,7 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
     auto plugin = this->vehicle_plugins[a_info->plugin];
 
     for (int i =0; i<num_actors; i++){
-        auto new_actor = std::make_shared<myhal::Actor>(a_info->name, ignition::math::Pose3d(0,0,1,0,0,0), a_info->filename, a_info->width, a_info->length); //TODO randomize initial Rot
+        auto new_actor = std::make_shared<myhal::Actor>(a_info->name, ignition::math::Pose3d(0,0,1,0,0,ignition::math::Rand::DblUniform(0,6.28)), a_info->filename, a_info->width, a_info->length); //TODO randomize initial Rot
 
         for (auto animation: this->animation_list){
             new_actor->AddAnimation(animation);
@@ -324,9 +322,9 @@ void WorldHandler::WriteToFile(std::string out_name){
     std::ifstream in = std::ifstream("/home/default/catkin_ws/src/myhal_simulator/worlds/myhal_template.txt");
 
     if (in){
-		std::cout << "Template Found\n";
+        ROS_INFO("TEMPLATE FILE FOUND");
 	} else{
-		std::cout << "Template Not Found\n";
+        ROS_ERROR("TEMPLATE FILE NOT FOUND");
         return;
 	}
 

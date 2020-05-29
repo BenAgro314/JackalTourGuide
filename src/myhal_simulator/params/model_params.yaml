@@ -117,6 +117,8 @@ table_group_names:
   - table_group_3
   - table_group_4
   - table_group_5
+  - table_group_6
+  - table_group_7
 
 table_group_1:
   table: table2
@@ -137,3 +139,11 @@ table_group_4:
 table_group_5:
   table: coffee_table_set_1
   chair: chair1
+
+table_group_6:
+  table: coffee_table_set_2
+  chair: kitchen_chair
+
+table_group_7:
+  table: table
+  chair: chair2
