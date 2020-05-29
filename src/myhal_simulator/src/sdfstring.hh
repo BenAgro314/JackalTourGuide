@@ -7,10 +7,6 @@
 #include <utility>
 
 
-
-
-
-
 class SDFTag{
 
     public: 

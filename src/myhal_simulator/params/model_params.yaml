@@ -1,7 +1,11 @@
+#basic model parameters 
+
 model_names:
   - table1
   - table2
   - table3
+  - chair1
+  - chair2
 
 table1:
   filename: model://table_conference_1
@@ -15,8 +19,20 @@ table2:
 
 table3:
   filename: model://table_conference_3
-  width: "4"
-  length: "2.5"
+  width: "2.5"
+  length: "4"
+
+chair1:
+  filename: model://chair_1
+  width: "0.5"
+  length: "0.5"
+
+chair2:
+  filename: model://chair_2
+  width: "0.5"
+  length: "0.5"
+
+#actors parameters 
 
 actor_names:
   - actor_basic_wanderer
@@ -43,3 +59,17 @@ actor_basic_random_walker:
   filename: moonwalk.dae
   plugin: basic_random_walker
   obstacle_margin: "0.6"
+
+# table group parameters 
+
+table_group_names:
+  - table_group_1
+  - table_group_2
+
+table_group_1:
+  table: table2
+  chair: chair1
+
+table_group_2:
+  table: table1
+  chair: chair2

@@ -15,16 +15,19 @@ namespace myhal{
         protected:
 
             static int num_models;
-            std::string model_file;
+            
             std::vector<std::shared_ptr<SDFPlugin>> plugins;
+            
 
         public:
+
+            std::string model_file;
+
+            std::vector<ignition::math::Vector3d> corners; 
 
             std::string name;
 
             ignition::math::Pose3d pose;
-
-            ignition::math::Box box;
 
             Model(std::string _name, ignition::math::Pose3d _pose, std::string _model_file, double _width, double _length);
 
@@ -33,6 +36,18 @@ namespace myhal{
             virtual std::string CreateSDF();
 
             void AddToWorld(std::string &world_string);
+
+            ignition::math::Box GetCollisionBox();
+
+            bool DoesCollide(std::shared_ptr<Model> other);
+
+            void Reposition(double x_shift, double y_shift);
+
+            void RotateClockwise(double angle);
+
+            double GetWidth();
+
+            double GetLength();
 
     };
 
@@ -74,20 +89,19 @@ namespace myhal{
             std::string CreateSDF();
     };
 
-    // class ModelGroup{ //used for tables 
+    class TableGroup{
 
-    //     public:
+        public:
 
-    //         std::vector<std::shared_ptr<IncludeModel>> group; 
-    //         std::shared_ptr<IncludeModel> center;
+            std::vector<std::shared_ptr<Model>> chairs;
+            int num_chairs;
+            double rotation_angle;
+            std::shared_ptr<Model> table_model;
+            std::shared_ptr<Model> chair_model;
 
-    //         ModelGroup(std::string _name, ignition::math::Pose3d _pose, std::string _model_file);
+            TableGroup(std::shared_ptr<Model> _table_model, std::shared_ptr<Model> _chair_model, int _num_chairs, double _rotation_angle);
 
-    //         void AddObject(std::string _name, ignition::math::Pose3d _pose, std::string _model_file);
-
-    //         ignition::math::Pose3d GetCenterPose();
-
-    // };
+    };
 
     class Room{
 
@@ -97,7 +111,6 @@ namespace myhal{
             ignition::math::Box boundary; 
             std::vector<std::shared_ptr<Model>> models;
             std::string building_name;
-            //std::vector<gazebo::physics::EntityPtr> collision_links;
             bool enclosed;
 
 

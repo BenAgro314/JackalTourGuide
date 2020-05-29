@@ -39,7 +39,7 @@ std::vector<ignition::math::Vector3d> utilities::get_corners(gazebo::physics::En
 	return corners;
 }
 
-//returns true if the projection of pos falls within the bounds of edge. If it does, it stores the normal distance between the edge and pos in normal
+//returns true if the projection of pos falls within the bounds of edge. If it does, it stores the normal vector between the edge and pos in normal (pointing from edge to point)
 
 bool utilities::get_normal_to_edge(ignition::math::Vector3d pos, ignition::math::Line3d edge, ignition::math::Vector3d &normal){
     ignition::math::Vector3d edge_vector = edge.Direction(); 

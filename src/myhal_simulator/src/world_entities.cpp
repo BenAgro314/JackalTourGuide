@@ -1,4 +1,6 @@
 #include "world_entities.hh"
+#include "utilities.hh"
+#include <algorithm>
 
 using namespace myhal;
 
@@ -6,38 +8,141 @@ using namespace myhal;
 
 int Model::num_models = 0;
 
-Model::Model(std::string _name, ignition::math::Pose3d _pose, std::string _model_file, double _width, double _length){
-    this->name = _name + "_" + std::to_string(num_models); //this ensures name uniqueness 
+Model::Model(std::string _name, ignition::math::Pose3d _pose, std::string _model_file, double _width, double _length)
+{
+    this->name = _name + "_" + std::to_string(num_models); //this ensures name uniqueness
     this->pose = _pose;
     this->model_file = _model_file;
     num_models++;
-    auto min = ignition::math::Vector3d(_pose.Pos().X()-_width/2, _pose.Pos().Y()-_length/2, 0);
-    auto max = ignition::math::Vector3d(_pose.Pos().X()+_width/2, _pose.Pos().Y()+_length/2, 10);
-    this->box = ignition::math::Box(min,max);
+
+    this->corners.push_back(ignition::math::Vector3d(_pose.Pos().X() + _width / 2, _pose.Pos().Y() + _length / 2, 0)); //top right
+    this->corners.push_back(ignition::math::Vector3d(_pose.Pos().X() - _width / 2, _pose.Pos().Y() + _length / 2, 0)); //top left
+    this->corners.push_back(ignition::math::Vector3d(_pose.Pos().X() - _width / 2, _pose.Pos().Y() - _length / 2, 0)); //bot left
+    this->corners.push_back(ignition::math::Vector3d(_pose.Pos().X() + _width / 2, _pose.Pos().Y() - _length / 2, 0)); // bot right
 }
 
-void Model::AddPlugin(std::shared_ptr<SDFPlugin>  plugin){
+void Model::AddPlugin(std::shared_ptr<SDFPlugin> plugin)
+{
     this->plugins.push_back(plugin);
 }
 
-std::string Model::CreateSDF(){
+std::string Model::CreateSDF()
+{
     return "";
 }
 
-void Model::AddToWorld(std::string &world_string){
-    //std::cout << "here1\n";
+void Model::AddToWorld(std::string &world_string)
+{
     std::string sdf = this->CreateSDF();
-    //std::cout << "here3\n";
-    world_string+= sdf; 
+    world_string += sdf;
 }
 
+ignition::math::Box Model::GetCollisionBox()
+{
+    // return the smallest box that this object can be contained within
 
+    double min_x = 10e6;
+    double max_x = -10e6;
+    double min_y = 10e6;
+    double max_y = -10e6;
+    for (auto corner : this->corners)
+    {
+        if (corner.X() > max_x)
+        {
+            max_x = corner.X();
+        }
+        if (corner.X() < min_x)
+        {
+            min_x = corner.X();
+        }
+        if (corner.Y() > max_y)
+        {
+            max_y = corner.Y();
+        }
+        if (corner.Y() < min_y)
+        {
+            min_y = corner.Y();
+        }
+    }
+
+    return ignition::math::Box(ignition::math::Vector3d(min_x, min_y, 0), ignition::math::Vector3d(max_x, max_y, 10));
+}
+
+double Model::GetWidth(){
+    auto box = this->GetCollisionBox();
+    return box.Max().X() - box.Min().X();
+}
+
+double Model::GetLength(){
+    auto box = this->GetCollisionBox();
+    return box.Max().Y() - box.Min().Y();
+}
+
+bool Model::DoesCollide(std::shared_ptr<Model> other)
+{
+
+    auto other_box = other->GetCollisionBox();
+    auto this_box = this->GetCollisionBox();
+
+    if (other_box.Intersects(this_box))
+    {
+        return true;
+    }
+
+    //redundancy check: TODO: remove
+    double minx = other_box.Min().X();
+    double miny = other_box.Min().Y();
+    double maxx = other_box.Max().X();
+    double maxy = other_box.Max().Y();
+
+    if (this->pose.Pos().X() > std::min(minx, maxx) && this->pose.Pos().X() < std::max(minx, maxx))
+    {
+        if (this->pose.Pos().Y() > std::min(miny, maxy) && this->pose.Pos().Y() < std::max(miny, maxy))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void Model::Reposition(double new_x, double new_y)
+{
+    double x_shift = new_x - this->pose.Pos().X();
+    double y_shift = new_y - this->pose.Pos().Y();
+
+    this->pose.Pos().X() = new_x;
+    this->pose.Pos().Y() = new_y;
+
+    for (int i = 0; i < (int)this->corners.size(); ++i)
+    {
+        this->corners[i].X() += x_shift;
+        this->corners[i].Y() += y_shift;
+    }
+}
+
+void Model::RotateClockwise(double angle)
+{
+    // rotate and find new corners
+
+    auto rotation = ignition::math::Quaterniond(0, 0, angle);
+
+    for (int i = 0; i < (int)this->corners.size(); ++i)
+    {
+        auto corner_vector = this->corners[i] - this->pose.Pos();
+        corner_vector = rotation.RotateVector(corner_vector);
+        this->corners[i] = corner_vector + this->pose.Pos();
+    }
+
+    auto current_yaw = this->pose.Rot().Yaw();
+    this->pose.Rot() = ignition::math::Quaterniond(this->pose.Rot().Roll(), this->pose.Rot().Pitch(), current_yaw + angle);
+}
 
 ///IncludeModel
 
-std::string IncludeModel::CreateSDF(){
+std::string IncludeModel::CreateSDF()
+{
 
-    
     std::shared_ptr<HeaderTag> model = std::make_shared<HeaderTag>("model");
     model->AddAttribute("name", this->name);
 
@@ -59,26 +164,26 @@ std::string IncludeModel::CreateSDF(){
     std::stringstream sdf;
 
     sdf << model->WriteTag(2);
-    
+
     return sdf.str();
 }
 
 ///Actor
 
-void Actor::AddAnimation(std::shared_ptr<SDFAnimation> animation){
+void Actor::AddAnimation(std::shared_ptr<SDFAnimation> animation)
+{
     this->animations.push_back(animation);
 }
 
-std::string Actor::CreateSDF(){
-   
+std::string Actor::CreateSDF()
+{
+
     //make appropriate tags:
 
     //skin
     std::shared_ptr<DataTag> s_file = std::make_shared<DataTag>("filename", this->model_file);
     std::shared_ptr<HeaderTag> s_header = std::make_shared<HeaderTag>("skin");
     s_header->AddSubtag(s_file);
-
-  
 
     //pose
     std::string pose_string = std::to_string(this->pose.Pos().X()) + " " + std::to_string(this->pose.Pos().Y()) + " " + std::to_string(this->pose.Pos().Z()) + " " + std::to_string(this->pose.Rot().Roll()) + " " + std::to_string(this->pose.Rot().Pitch()) + " " + std::to_string(this->pose.Rot().Yaw());
@@ -90,23 +195,22 @@ std::string Actor::CreateSDF(){
     actor->AddSubtag(pose_tag);
     actor->AddSubtag(s_header);
 
-
-    for (std::shared_ptr<SDFAnimation> animation : this->animations){
+    for (std::shared_ptr<SDFAnimation> animation : this->animations)
+    {
         actor->AddSubtag(animation);
     }
 
-  
-
-    for (std::shared_ptr<SDFPlugin> plugin : this->plugins){
+    for (std::shared_ptr<SDFPlugin> plugin : this->plugins)
+    {
         actor->AddSubtag(plugin);
     }
-    
+
     //write to stream
-   
+
     std::stringstream sdf;
 
     sdf << actor->WriteTag(2);
-  
+
     //std::cout << sdf.str() << std::endl;
     return sdf.str();
 }
@@ -114,12 +218,14 @@ std::string Actor::CreateSDF(){
 ///BoundaryBox
 
 BoundaryBox::BoundaryBox(double _x, double _y, double _width, double _length)
-: Model("box", ignition::math::Pose3d(_x,_y,-0.5, 0,0,0), "", _width, _length){
+    : Model("box", ignition::math::Pose3d(_x, _y, -0.5, 0, 0, 0), "", _width, _length)
+{
     this->width = _width;
     this->length = _length;
 }
 
-std::string BoundaryBox::CreateSDF(){
+std::string BoundaryBox::CreateSDF()
+{
     std::shared_ptr<HeaderTag> model = std::make_shared<HeaderTag>("model");
     model->AddAttribute("name", this->name);
 
@@ -157,62 +263,88 @@ std::string BoundaryBox::CreateSDF(){
     return sdf.str();
 }
 
-///ModelGroup
+///TableGroup
 
-// ModelGroup::ModelGroup(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
-//     this->center = std::make_shared<IncludeModel>(_name, _pose, _model_file);
-//     this->group.push_back(this->center);
-// }
+TableGroup::TableGroup(std::shared_ptr<Model> _table_model, std::shared_ptr<Model> _chair_model, int _num_chairs, double _rotation_angle){
+    this->table_model = _table_model;
+    this->chair_model = _chair_model;
+    this->num_chairs = std::min(_num_chairs,4); //TODO: allow more chairs in the future
 
-// ignition::math::Pose3d ModelGroup::GetCenterPose(){
-//     return this->center->pose;
-// }
+    this->rotation_angle = _rotation_angle;
+    this->table_model->RotateClockwise(_rotation_angle);
+    auto corners = table_model->corners;
 
-// void ModelGroup::AddObject(std::string _name, ignition::math::Pose3d _pose, std::string _model_file){
-//     this->group.push_back(std::make_shared<IncludeModel>(_name, _pose, _model_file));
-// }
+    auto pos = table_model->pose.Pos();
+    pos.Z() = 0;
+
+    int start = ignition::math::Rand::IntUniform(0,3);
+
+    for (int i = start; i < start+num_chairs; i++){
+        std::shared_ptr<Model> new_chair = std::make_shared<IncludeModel>("chair", table_model->pose, this->chair_model->model_file, this->chair_model->GetWidth(), this->chair_model->GetWidth());
+        new_chair->RotateClockwise(ignition::math::Rand::DblUniform(0,6.28));
+
+        auto table_edge = ignition::math::Line3d(corners[(i+1)%(corners.size())], corners[i%(corners.size())]);
+       
+        // find normal from tables center to edge 
+        ignition::math::Vector3d normal;
+    
+        
+        if (utilities::get_normal_to_edge(pos, table_edge, normal)){
+            normal*=-1;
+            auto res_pos = pos+normal;
+            normal.Normalize();
+            normal*= std::sqrt(std::pow(new_chair->GetWidth(),2) + std::pow(new_chair->GetLength(),2)); //TODO: fix this
+            res_pos+=normal;
+            new_chair->Reposition(res_pos.X(), res_pos.Y());
+            this->chairs.push_back(new_chair);
+        }
+    }
+
+}
 
 ///Room
 
-Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclosed = false){
-    this->boundary = ignition::math::Box(ignition::math::Vector3d(x_min,y_min,0), ignition::math::Vector3d(x_max,y_max,10));
+Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclosed = false)
+{
+    this->boundary = ignition::math::Box(ignition::math::Vector3d(x_min, y_min, 0), ignition::math::Vector3d(x_max, y_max, 10));
     this->enclosed = _enclosed;
-     
-    if (this->enclosed){
+
+    if (this->enclosed)
+    {
         //create boundary box
-        std::shared_ptr<BoundaryBox> bot = std::make_shared<BoundaryBox>((x_min+x_max)/2,y_min-0.125,x_max-x_min,0.25);
-        std::shared_ptr<BoundaryBox> top = std::make_shared<BoundaryBox>((x_min+x_max)/2,y_max+0.125,x_max-x_min,0.25);
-        std::shared_ptr<BoundaryBox> left = std::make_shared<BoundaryBox>(x_min-0.125,(y_min+y_max)/2,0.25,y_max-y_min+0.5);
-        std::shared_ptr<BoundaryBox> right = std::make_shared<BoundaryBox>(x_max+0.125,(y_min+y_max)/2,0.25,y_max-y_min+0.5);
+        std::shared_ptr<BoundaryBox> bot = std::make_shared<BoundaryBox>((x_min + x_max) / 2, y_min - 0.125, x_max - x_min, 0.25);
+        std::shared_ptr<BoundaryBox> top = std::make_shared<BoundaryBox>((x_min + x_max) / 2, y_max + 0.125, x_max - x_min, 0.25);
+        std::shared_ptr<BoundaryBox> left = std::make_shared<BoundaryBox>(x_min - 0.125, (y_min + y_max) / 2, 0.25, y_max - y_min + 0.5);
+        std::shared_ptr<BoundaryBox> right = std::make_shared<BoundaryBox>(x_max + 0.125, (y_min + y_max) / 2, 0.25, y_max - y_min + 0.5);
 
         this->AddModel(bot);
         this->AddModel(top);
         this->AddModel(left);
         this->AddModel(right);
     }
-
 }
 
-void Room::AddModel(std::shared_ptr<Model> model){
+void Room::AddModel(std::shared_ptr<Model> model)
+{
     //std::printf("(%f, %f) (%f, %f)\n", model->box.Min().X(), model->box.Min().Y(), model->box.Max().X(), model->box.Max().Y());
     this->models.push_back(model);
 }
 
+bool Room::AddModelRandomly(std::shared_ptr<Model> model)
+{
 
-bool Room::AddModelRandomly(std::shared_ptr<Model> model){
-   
     //update our list of collision links to consider (those that are part of this room and haven't already been added)
 
     int iterations = 0;
     bool found = false;
 
-    
-    double width = std::abs(model->box.Max().X() - model->box.Min().X());
-    double length = std::abs(model->box.Max().Y() - model->box.Min().Y());
-    ignition::math::Pose3d res_pose = ignition::math::Pose3d(0,0,model->pose.Pos().Z(), model->pose.Rot().Roll(), model->pose.Rot().Pitch(), model->pose.Rot().Yaw()); // we want to maintain the models current height and orientation
+    auto col_box = model->GetCollisionBox();
+    double width = model->GetWidth();
+    double length = model->GetLength();
 
-    while (iterations < 1000 && !found){
-       
+    while (iterations < 1000 && !found)
+    {
+
         //for now we will just guess randomly in the box. TODO: use a more nuanced method to choose guess point
 
         double x_min = this->boundary.Min().X();
@@ -220,60 +352,49 @@ bool Room::AddModelRandomly(std::shared_ptr<Model> model){
         double x_max = this->boundary.Max().X();
         double y_max = this->boundary.Max().Y();
 
-        res_pose.Pos().X() = ignition::math::Rand::DblUniform(x_min+(width/2), x_max-(width/2));
-        res_pose.Pos().Y() = ignition::math::Rand::DblUniform(y_min+(length/2), y_max-(length/2));
-        
-        model->box.Min() += ignition::math::Vector3d(res_pose.Pos().X(), res_pose.Pos().Y(), 0);
-        model->box.Max() += ignition::math::Vector3d(res_pose.Pos().X(), res_pose.Pos().Y(), 0);
+        model->Reposition(ignition::math::Rand::DblUniform(x_min + (width / 2), x_max - (width / 2)), ignition::math::Rand::DblUniform(y_min + (length / 2), y_max - (length / 2)));
 
         found = true;
 
-        //if the position is invald 
+        //if the position is invald
 
-        for (auto other: this->models){
-          
-            if (other->box.Intersects(model->box)){
-                
+        for (auto other : this->models)
+        {
+            if (model->DoesCollide(other))
+            {
                 found = false;
-            }
-
-            double minx = other->box.Min().X();
-            double miny = other->box.Min().Y();
-            double maxx = other->box.Max().X();
-            double maxy = other->box.Max().Y();
-
-            if (res_pose.Pos().X() > std::min(minx,maxx) && res_pose.Pos().X() < std::max(minx, maxx)){
-                if (res_pose.Pos().Y() > std::min(miny,maxy) && res_pose.Pos().Y() < std::max(miny, maxy)){
-                    found = false;
-                }
             }
         }
 
         iterations++;
     }
 
-    if (found){
-        model->pose = res_pose;
+    if (found)
+    {
         this->AddModel(model);
-    } else{
+    }
+    else
+    {
         std::cout << "no place found" << std::endl;
     }
 
     return found;
 }
 
-
-void Room::AddToWorld(std::string &world_string){
-    for (std::shared_ptr<Model> model : this->models){
+void Room::AddToWorld(std::string &world_string)
+{
+    for (std::shared_ptr<Model> model : this->models)
+    {
         model->AddToWorld(world_string);
     }
 }
 
-double Room::Area(){
+double Room::Area()
+{
     double x_min = this->boundary.Min().X();
     double y_min = this->boundary.Min().Y();
     double x_max = this->boundary.Max().X();
     double y_max = this->boundary.Max().Y();
 
-    return (x_max-x_min)*(y_max- y_min);
+    return (x_max - x_min) * (y_max - y_min);
 }

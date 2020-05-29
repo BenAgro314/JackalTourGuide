@@ -18,6 +18,18 @@ class RoomInfo{
 
 };
 
+class TableInfo{
+
+    public: 
+        std::string name;
+        std::string table_name;
+        std::string chair_name;
+
+        TableInfo(std::string _name, std::string _table_name, std::string _chair_name):
+        name(_name), table_name(_table_name), chair_name(_chair_name){}
+    
+};
+
 class ModelInfo{
 
     public: 
@@ -44,6 +56,7 @@ class Scenario{
     protected:
 
         std::vector<std::shared_ptr<ModelInfo>> models;
+        std::vector<std::shared_ptr<TableInfo>> tables;
 
     public:
 
@@ -55,8 +68,10 @@ class Scenario{
         Scenario(double _pop_denisty, double _model_percentage, std::string _actor);
 
         void AddModel(std::shared_ptr<ModelInfo> model);
+        void AddTable(std::shared_ptr<TableInfo> table);
 
         std::shared_ptr<ModelInfo> GetRandomModel();
+        std::shared_ptr<TableInfo> GetRandomTable();
 };
 
 class WorldHandler{
@@ -78,11 +93,14 @@ class WorldHandler{
 
         // filled by parameters 
 
+
+        //TODO: change these to not be pointers
         std::map<std::string, std::shared_ptr<SDFPlugin>> vehicle_plugins; //one per actor
         std::vector<std::shared_ptr<SDFAnimation>> animation_list; //added to all actors 
         std::map<std::string, std::shared_ptr<ModelInfo>> model_info;
         std::map<std::string, std::shared_ptr<Scenario>> scenarios;
         std::map<std::string , std::shared_ptr<ActorInfo>> actor_info;
+        std::map<std::string, std::shared_ptr<TableInfo>> table_info;
 
         std::vector<std::shared_ptr<RoomInfo>> rooms;
         //std::map<std::string , std::shared_ptr<myhal::Room>> rooms;

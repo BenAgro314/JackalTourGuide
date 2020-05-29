@@ -33,9 +33,9 @@ void WorldHandler::Load(){
     
     for (auto r_info: this->rooms){
         this->FillRoom(r_info);
-        std::cout << "before\n";
+        
         r_info->room->AddToWorld(this->world_string);
-        std::cout << "after\n";
+
     }
 
     // add all rooms to the world 
@@ -49,13 +49,15 @@ WorldHandler::WorldHandler(){
 
 void WorldHandler::LoadParams(){
 
+    //TODO: fix error handelling 
+
     int argc = 0;
     char **argv = NULL;
     ros::init(argc, argv, "WorldHandler");
     ros::NodeHandle nh;
 
 
-   //create list of plugins based on yaml file 
+    /// READ PLUGIN INFO
     
     std::vector<std::string> plugin_names;
     if (!nh.getParam("plugin_names", plugin_names)){
@@ -83,8 +85,9 @@ void WorldHandler::LoadParams(){
             plugin->AddSubtag(it->first, info[it->first]);
         }
         this->vehicle_plugins[name] = plugin;
-        //std::cout <<  name << std::endl;
     }
+
+    /// READ ANIMATION INFO
 
     std::vector<std::string> animation_names;
     if (!nh.getParam("animation_names", animation_names)){
@@ -107,6 +110,8 @@ void WorldHandler::LoadParams(){
        
     }
 
+    /// READ MODEL INFO
+
     std::vector<std::string> model_names;
     if (!nh.getParam("model_names", model_names)){
         std::cout << "ERROR READING PARAMS\n";
@@ -121,11 +126,34 @@ void WorldHandler::LoadParams(){
             std::cout << "ERROR READING PARAMS\n";
             return;
         }
-        //std::cout << "before " << info["width"] << " " << info["length"] << std::endl;
+
         std::shared_ptr<ModelInfo> m_info = std::make_shared<ModelInfo>(name, info["filename"], std::stod(info["width"]), std::stod(info["length"]));
-        //std::cout << "after\n";
         this->model_info[name] = m_info;
     }
+
+    /// READ TABLE INFO
+
+    std::vector<std::string> table_group_names;
+    if (!nh.getParam("table_group_names", table_group_names)){
+        std::cout << "ERROR READING TABLE GROUP NAME PARAMS\n";
+        return;
+    }
+
+    for (auto name: table_group_names){
+        std::map<std::string, std::string> info;
+        std::cout << name << std::endl;
+
+        if (!nh.getParam(name,info)){
+            std::cout << "ERROR READING TABLE GROUP PARAMS\n";
+            return;
+        }
+
+        std::shared_ptr<TableInfo> t_info = std::make_shared<TableInfo>(name, info["table"], info["chair"]);
+        this->table_info[name] = t_info;
+    }
+
+
+    /// READ ACTOR INFO 
 
     std::vector<std::string> actor_names;
     if (!nh.getParam("actor_names", actor_names)){
@@ -134,7 +162,6 @@ void WorldHandler::LoadParams(){
     }
 
     for (auto name: actor_names){
-        //std::cout << name << std::endl;
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
@@ -147,6 +174,8 @@ void WorldHandler::LoadParams(){
         this->actor_info[name] = a_info;
     }
 
+    /// READ SCENARIO INFO
+
     std::vector<std::string> scenario_names;
     if (!nh.getParam("scenario_names", scenario_names)){
         std::cout << "ERROR READING PARAMS\n";
@@ -154,14 +183,14 @@ void WorldHandler::LoadParams(){
     }
 
     for (auto name: scenario_names){
-      //std::cout << name << std::endl;
+
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
             std::cout << "ERROR READING PARAMS\n";
             return;
         }
-        //std::cout << info["pop_density"] << " " << info["table_percentage"] << std::endl;
+
         std::shared_ptr<Scenario> scenario = std::make_shared<Scenario>(std::stod(info["pop_density"]), std::stod(info["table_percentage"]), info["actor"]);
 
         std::vector<std::string> model_list; 
@@ -176,9 +205,24 @@ void WorldHandler::LoadParams(){
             scenario->AddModel(this->model_info[model_name]);
         }
 
+
+        std::vector<std::string> table_group_list; 
+
+        if (!nh.getParam(info["table_group_list"], table_group_list)){
+            std::cout << "ERROR READING TABLE GROUP LIST PARAMS\n";
+            return;
+        }
+
+
+        for (auto table_group_name: table_group_list){
+            scenario->AddTable(this->table_info[table_group_name]);
+        }
+
         this->scenarios[name] = scenario;
-         //std::cout << "scenario names " << name << std::endl;
     }
+
+
+    /// READ ROOM INFO
 
     std::vector<std::string> room_names;
     if (!nh.getParam("room_names", room_names)){
@@ -219,11 +263,7 @@ void WorldHandler::LoadParams(){
         auto r_info = std::make_shared<RoomInfo>(room, info["scenario"], positions);
         this->rooms.push_back(r_info);
         
-        //this->rooms[name] = room;
-        
     }
-
-    //std::cout << "done\n";
 }
 
 void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
@@ -235,12 +275,24 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
     std::random_shuffle(room_info->positions.begin(), room_info->positions.end());
     
     for (int i = 0; i < num_models; ++i){
-        auto m_info = scenario->GetRandomModel();
-       
+        //auto m_info = scenario->GetRandomModel();
+
+        auto t_info = scenario->GetRandomTable();
+
         auto random_pose = ignition::math::Pose3d(room_info->positions[i][0], room_info->positions[i][1], 0, 0, 0, 0); //TODO: specify randomization parameters in yaml
-        if (m_info){
-            auto new_model = std::make_shared<myhal::IncludeModel>(m_info->name, random_pose, m_info->filename, m_info->width, m_info->length);
-            room_info->room->AddModel(new_model);
+        if (t_info){
+            //auto new_model = std::make_shared<myhal::IncludeModel>(m_info->name, random_pose, m_info->filename, m_info->width, m_info->length);
+            auto t_model_info = this->model_info[t_info->table_name];
+            auto c_model_info = this->model_info[t_info->chair_name];
+            auto table_model = std::make_shared<myhal::IncludeModel>(t_model_info->name, random_pose, t_model_info->filename, t_model_info->width, t_model_info->length);
+            auto chair_model = std::make_shared<myhal::IncludeModel>(c_model_info->name, random_pose, c_model_info->filename, c_model_info->width, c_model_info->length);
+
+            auto table_group = std::make_shared<myhal::TableGroup>(table_model, chair_model, ignition::math::Rand::IntUniform(0,4), 0); 
+            room_info->room->AddModel(table_group->table_model);
+            for (auto chair: table_group->chairs){
+                room_info->room->AddModel(chair);
+            }
+            
         } 
     }
 
@@ -322,6 +374,11 @@ Scenario::Scenario(double _pop_density, double _model_percentage, std::string _a
 void Scenario::AddModel(std::shared_ptr<ModelInfo> model){
     this->models.push_back(model);
 }
+
+void Scenario::AddTable(std::shared_ptr<TableInfo> table){
+    this->tables.push_back(table);
+}
+
 std::shared_ptr<ModelInfo> Scenario::GetRandomModel(){
     if (this->models.size() <= 0){
         std::cout << "ERROR NO MODEL FOUND" << std::endl;
@@ -331,4 +388,15 @@ std::shared_ptr<ModelInfo> Scenario::GetRandomModel(){
     int i = ignition::math::Rand::IntUniform(0, this->models.size()-1);
 
     return this->models[i];
+}
+
+std::shared_ptr<TableInfo> Scenario::GetRandomTable(){
+    if (this->tables.size() <= 0){
+        std::cout << "ERROR NO TABLE FOUND" << std::endl;
+        return nullptr;
+    }
+   
+    int i = ignition::math::Rand::IntUniform(0, this->tables.size()-1);
+
+    return this->tables[i];
 }

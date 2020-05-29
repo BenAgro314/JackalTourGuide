@@ -40,9 +40,11 @@ add_library(sdfstring src/sdfstring.cpp)
 target_link_libraries(sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(world_entities src/world_entities.cpp)
-target_link_libraries(world_entities sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(world_entities sdfstring utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_executable(world_factory src/world_factory.cpp) 
 target_link_libraries(world_factory world_entities ${catkin_LIBRARIES})
 
+add_executable(entities_test src/entities_test.cpp) 
+target_link_libraries(entities_test world_entities ${catkin_LIBRARIES})
 

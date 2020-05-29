@@ -9,26 +9,34 @@ basic_crowd:
   table_percentage: "0"
   actor: actor_basic_boid
   model_list: model_list1
+  table_group_list: group_list1
 
 basic_study_area:
   pop_density: "0.1"
   table_percentage: "0.8"
   actor: actor_basic_random_walker
   model_list: model_list1
+  table_group_list: group_list1
 
 basic_social_meeting:
   pop_density: "0.15"
   table_percentage: "0.5"
   actor: actor_basic_stander
   model_list: model_list1
+  table_group_list: group_list1
 
 basic_no_people:
   pop_density: "0"
   table_percentage: "1"
   actor: actor_basic_boid
   model_list: model_list1
+  table_group_list: group_list1
 
 model_list1:
   - table1
   - table2
   - table3
+
+group_list1:
+  - table_group_1
+  - table_group_2
