@@ -65,10 +65,6 @@ add_executable(navigation_goals src/navigation_goals.cpp)
 add_dependencies(navigation_goals navigation_goals_messages_cpp)
 target_link_libraries(navigation_goals ${catkin_LIBRARIES})
 
-add_executable(worldgen2 src/worldgen2.cpp)
-add_dependencies(worldgen2 worldgen2_messages_cpp)
-target_link_libraries(worldgen2 ${catkin_LIBRARIES})
-
 add_executable(worldgen3 src/worldgen3.cpp)
 add_dependencies(worldgen3 worldgen3_messages_cpp)
 target_link_libraries(worldgen3 ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})

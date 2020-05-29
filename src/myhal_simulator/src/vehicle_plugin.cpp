@@ -55,7 +55,7 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
         this->vehicle = std::make_unique<RandomWalker>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
         mass, 
         max_force, 
-        max_speed, 
+        this->max_speed, 
         _parent->WorldPose(), 
         ignition::math::Vector3d(0,0,0), 
         this->building);
@@ -116,6 +116,7 @@ void ModelHandler::ReadSDF(sdf::ElementPtr _sdf){
 
     if (_sdf->HasElement("max_speed")){
         this->max_speed =_sdf->GetElement("max_speed")->Get<double>();
+        
     }
 
     if (_sdf->HasElement("walking_duration")){

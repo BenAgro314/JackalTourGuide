@@ -80,7 +80,15 @@ void WorldHandler::LoadParams(){
             if (it->first == "name"){
                 continue;
             }
-            plugin->AddSubtag(it->first, info[it->first]);
+
+            if (it->first == "max_speed"){
+                double speed = std::stod(info[it->first]);
+                speed += ignition::math::Rand::DblUniform(-speed/5, speed/5);
+                plugin->AddSubtag(it->first, std::to_string(speed));
+            } else{
+                plugin->AddSubtag(it->first, info[it->first]);
+            }
+            
         }
         this->vehicle_plugins[name] = plugin;
     }
