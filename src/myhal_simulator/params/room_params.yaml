@@ -1,6 +1,8 @@
 room_names:
   - main_atrium
   - lower_middle
+  - upper_middle
+  - mid_right
 
 main_atrium: 
   geometry: geo1
@@ -49,3 +51,45 @@ pos2:
   - -16
   - 1
   - -16
+
+upper_middle:
+  geometry: geo3
+  positions: pos3
+  enclosed: "0"
+  scenario: sparse_study_area
+
+geo3:
+  x_min: -8
+  y_min: 9.5
+  x_max: 8
+  y_max: 19.5
+
+pos3:
+  - -5
+  - 17
+  - 0
+  - 17
+  - -5
+  - 12
+  - 5
+  - 17
+  - 0
+  - 12
+  - 5
+  - 12
+
+mid_right:
+  geometry: geo4
+  positions: pos4
+  enclosed: "1"
+  scenario: basic_crowd
+
+geo4:
+  x_min: 9.5
+  y_min: -5
+  x_max: 14
+  y_max: 2
+
+pos4:
+  - 12
+  - -1

@@ -6,16 +6,17 @@ model_names:
   - table3
   - chair1
   - chair2
+  - chair3
 
 table1:
   filename: model://table_conference_1
-  width: "4"
-  length: "2"
+  width: "3.3"
+  length: "1.3"
 
 table2:
   filename: model://table_conference_2
   width: "3"
-  length: "2.5"
+  length: "1.5"
 
 table3:
   filename: model://table_conference_3
@@ -29,6 +30,11 @@ chair1:
 
 chair2:
   filename: model://chair_2
+  width: "0.5"
+  length: "0.5"
+
+chair3:
+  filename: model://chair_3
   width: "0.5"
   length: "0.5"
 
@@ -65,6 +71,7 @@ actor_basic_random_walker:
 table_group_names:
   - table_group_1
   - table_group_2
+  - table_group_3
 
 table_group_1:
   table: table2
@@ -73,3 +80,7 @@ table_group_1:
 table_group_2:
   table: table1
   chair: chair2
+
+table_group_3:
+  table: table3
+  chair: chair3

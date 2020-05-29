@@ -141,7 +141,7 @@ void WorldHandler::LoadParams(){
 
     for (auto name: table_group_names){
         std::map<std::string, std::string> info;
-        std::cout << name << std::endl;
+    
 
         if (!nh.getParam(name,info)){
             std::cout << "ERROR READING TABLE GROUP PARAMS\n";
@@ -287,7 +287,8 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
             auto table_model = std::make_shared<myhal::IncludeModel>(t_model_info->name, random_pose, t_model_info->filename, t_model_info->width, t_model_info->length);
             auto chair_model = std::make_shared<myhal::IncludeModel>(c_model_info->name, random_pose, c_model_info->filename, c_model_info->width, c_model_info->length);
 
-            auto table_group = std::make_shared<myhal::TableGroup>(table_model, chair_model, ignition::math::Rand::IntUniform(0,4), 0); 
+            double rotation = 1.5707 * ignition::math::Rand::IntUniform(0,1);
+            auto table_group = std::make_shared<myhal::TableGroup>(table_model, chair_model, ignition::math::Rand::IntUniform(0,4), rotation); 
             room_info->room->AddModel(table_group->table_model);
             for (auto chair: table_group->chairs){
                 room_info->room->AddModel(chair);
@@ -296,19 +297,10 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
         } 
     }
 
-    
 
     int num_actors = (int) ((scenario->pop_density)*(room_info->room->Area()));
-    
-   
-
     auto a_info = this->actor_info[scenario->actor];
-
-  
-    
     auto plugin = this->vehicle_plugins[a_info->plugin];
-
-   
 
     for (int i =0; i<num_actors; i++){
         auto new_actor = std::make_shared<myhal::Actor>(a_info->name, ignition::math::Pose3d(0,0,1,0,0,0), a_info->filename, a_info->width, a_info->length); //TODO randomize initial Rot
@@ -325,7 +317,6 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
         room_info->room->AddModelRandomly(new_actor);
     }
 
-    std::cout << "Added models and actors" << std::endl;
 }
 
 

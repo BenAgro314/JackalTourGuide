@@ -3,11 +3,12 @@ scenario_names:
   - basic_study_area
   - basic_social_meeting
   - basic_no_people
+  - sparse_study_area
 
 basic_crowd:
-  pop_density: "0.25"
+  pop_density: "0.4"
   table_percentage: "0"
-  actor: actor_basic_boid
+  actor: actor_basic_wanderer
   model_list: model_list1
   table_group_list: group_list1
 
@@ -32,6 +33,13 @@ basic_no_people:
   model_list: model_list1
   table_group_list: group_list1
 
+sparse_study_area:
+  pop_density: "0.02"
+  table_percentage: "0.7"
+  actor: actor_basic_stander
+  model_list: model_list1
+  table_group_list: group_list1
+
 model_list1:
   - table1
   - table2
@@ -40,3 +48,4 @@ model_list1:
 group_list1:
   - table_group_1
   - table_group_2
+  - table_group_3

@@ -293,7 +293,7 @@ TableGroup::TableGroup(std::shared_ptr<Model> _table_model, std::shared_ptr<Mode
             normal*=-1;
             auto res_pos = pos+normal;
             normal.Normalize();
-            normal*= std::sqrt(std::pow(new_chair->GetWidth(),2) + std::pow(new_chair->GetLength(),2)); //TODO: fix this
+            normal*= (new_chair->GetWidth()/1.5); //TODO: fix this
             res_pos+=normal;
             new_chair->Reposition(res_pos.X(), res_pos.Y());
             this->chairs.push_back(new_chair);
@@ -324,10 +324,17 @@ Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclose
     }
 }
 
-void Room::AddModel(std::shared_ptr<Model> model)
+bool Room::AddModel(std::shared_ptr<Model> model)
 {
-    //std::printf("(%f, %f) (%f, %f)\n", model->box.Min().X(), model->box.Min().Y(), model->box.Max().X(), model->box.Max().Y());
+    for (auto other : this->models)
+    {
+        if (model->DoesCollide(other))
+        {
+            return false;
+        }
+    }
     this->models.push_back(model);
+    return true;
 }
 
 bool Room::AddModelRandomly(std::shared_ptr<Model> model)

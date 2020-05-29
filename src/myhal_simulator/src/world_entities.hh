@@ -118,7 +118,7 @@ namespace myhal{
 
             Room(double x_min, double y_min, double x_max, double y_max, bool _enclosed);
 
-            void AddModel(std::shared_ptr<Model> model);
+            bool AddModel(std::shared_ptr<Model> model);
 
             bool AddModelRandomly(std::shared_ptr<Model> model); 
 
