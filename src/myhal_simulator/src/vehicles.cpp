@@ -802,7 +802,13 @@ void Follower::AvoidActors(){
 
 void Follower::SetNextTarget(double dt){
     auto leader_dir = (this->leader->WorldPose().Pos() - this->last_leader_pose.Pos())/dt;
-    
+
+    if (leader_dir.Length() < 10e-6){
+        auto yaw = leader->WorldPose().Rot().Yaw(); // check this 
+        auto rotation = ignition::math::Quaterniond(0,0,yaw);
+
+        leader_dir = rotation.RotateVector(ignition::math::Vector3d(1,0,0));
+    }
     leader_dir.Normalize();
 
     // if we find ourselves in front of the leader, steer laterally away from the leaders path 
@@ -824,7 +830,7 @@ void Follower::SetNextTarget(double dt){
         }
     }
 
-    this->curr_target = this->leader->WorldPose().Pos() - leader_dir;
+    this->curr_target = this->leader->WorldPose().Pos() - leader_dir/2;
 
     this->last_leader_pose = this->leader->WorldPose();
 }
@@ -841,7 +847,7 @@ void Follower::OnUpdate(const gazebo::common::UpdateInfo &_inf){
     this->SetNextTarget(dt);
     this->Arrival(this->curr_target);
     
-    std::printf("(%f, %f, %f)\n", this->acceleration.X(), this->acceleration.Y(), this->acceleration.Z());
+    //std::printf("(%f, %f, %f)\n", this->acceleration.X(), this->acceleration.Y(), this->acceleration.Z());
     this->AvoidActors();
     this->AvoidObstacles();
     

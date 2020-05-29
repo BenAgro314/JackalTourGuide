@@ -146,7 +146,7 @@
     </link>
 </model-->
 
-<!--actor name="randomguy1">
+<actor name="randomguy1">
 
       <pose>2 2 1 0 0 0</pose>
       <skin>
@@ -190,6 +190,8 @@
         <max_speed>1</max_speed>
         <path_point>4 0 0</path_point>
         <path_point>-4 0 0</path_point>
+        <path_point>-4 5 0</path_point>
+        <path_point>4 5 0</path_point>
 
       </plugin>
 </actor>
@@ -209,7 +211,7 @@
         <vehicle_type>follower</vehicle_type>
         <building>building</building>
         <max_speed>1</max_speed>
-        <leader>leader</leader>
+        <leader>randomguy1</leader>
       </plugin>
 </actor>
 
