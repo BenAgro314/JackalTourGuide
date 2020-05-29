@@ -24,7 +24,7 @@ basic_social_meeting:
   table_percentage: "0.5"
   actor: actor_basic_stander
   model_list: model_list1
-  table_group_list: group_list1
+  table_group_list: group_casual
 
 basic_no_people:
   pop_density: "0"
@@ -49,3 +49,7 @@ group_list1:
   - table_group_1
   - table_group_2
   - table_group_3
+
+group_casual:
+  - table_group_4
+  - table_group_5
