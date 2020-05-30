@@ -114,12 +114,6 @@
 <include>
   <uri>model://table_conference_2</uri> 
   <name> "table_2" </name> 
-
-  <plugin name="placement" filename="librandom_place_plugin.so">
-        <building>box</building>
-        <obstacle_margin>1.5</obstacle_margin>
-        <z_pos>0</z_pos>
-  </plugin>
 </include>
 
 <include>
@@ -146,11 +140,17 @@
     </link>
 </model-->
 
-<!--actor name="randomguy1">
+<!--include>
+  <uri>model://chair_3</uri> 
+  <pose>5 5 0 0 0 1.57</pose>
+  <name>chair_2</name> 
+</include>
 
-      <pose>2 2 1 0 0 0</pose>
+<actor name="randomguy1">
+
+      <pose>0 0 0.3 0 0 0</pose>
       <skin>
-      <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+      <filename>sitting.dae</filename>
       </skin>
       <animation name="walking"> 
         <filename>walk.dae</filename>
@@ -159,21 +159,52 @@
       <animation name="talking"> 
         <filename>talk_a.dae</filename>
       </animation>
-      <animation name="standing"> 
-        <filename>stand.dae</filename>
+      <animation name="sitting"> 
+        <filename>sitting.dae</filename>
       </animation>
 
       <plugin name="steering" filename="libvehicle_plugin.so">
-        <vehicle_type>stander</vehicle_type>
-        <building>box</building>
-        <max_speed>1</max_speed>
-        <standing_duration>1</standing_duration>
-        <walking_duration>-1</walking_duration>
+        <vehicle_type>sitter</vehicle_type>
+        <chair>chair_2</chair>
         
       </plugin>
 </actor-->
 
-<actor name="leader">
+
+			<include>
+				<name>chair_7</name>
+				<pose>1.170477 -0.000113 0.000000 0.000000 -0.000000 -1.887171</pose>
+				<uri>model://chair_1</uri>
+			</include>
+
+		<actor name="sitter_9">
+			<pose>1.170477 -0.000113 0.000000 0.000000 -0.000000 -1.887171</pose>
+			<skin>
+				<filename>sitting.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>walk.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>talk_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>stand.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="sitter_plugin" filename="libvehicle_plugin.so">
+				<vehicle_type>sitter</vehicle_type>
+				<chair>chair_7</chair>
+			</plugin>
+		</actor>
+
+<!--actor name="leader">
 
       <pose>0 0 1 0 0 0</pose>
       <skin>
@@ -194,7 +225,7 @@
         <path_point>4 5 0</path_point>
 
       </plugin>
-</actor>
+</actor-->
 
 <!--actor name="follower">
 
@@ -216,7 +247,7 @@
 </actor-->
 
 
-<actor name="leader2">
+<!--actor name="leader2">
       <pose>-1 0 1 0 0 0</pose>
       <skin>
       <filename>walk.dae</filename>
@@ -231,7 +262,7 @@
         <building>box</building>
         <max_speed>1</max_speed>
       </plugin>
-</actor>
+</actor-->
 
   <!--actor name="randomguy2">
 
@@ -281,20 +312,6 @@
       <plugin name="placement" filename="librandom_place_plugin.so">
         <building>box</building>
         <obstacle_margin>0.7</obstacle_margin>
-      </plugin>
-
-      <plugin name="trajectory" filename="librandomwalk_plugin.so">
-
-        <target_point>
-        3
-        3
-        0
-        </target_point>
-        
-        <building>box</building>
-
-        <max_speed>0.866189</max_speed>
-        <obstacle_margin>0.5</obstacle_margin>
       </plugin>
 
       

@@ -504,7 +504,7 @@ void Boid::Cohesion(){
     }
 }
 
-//RANDOM WALKER CLASS (depreciated, should use wanderer)
+//RANDOM WALKER CLASS
 
 void RandomWalker::OnUpdate(const gazebo::common::UpdateInfo &_inf){
 
@@ -856,4 +856,46 @@ void Follower::OnUpdate(const gazebo::common::UpdateInfo &_inf){
     
     this->UpdatePosition(dt);
     this->UpdateModel();
+}
+
+
+Sitter::Sitter(gazebo::physics::ActorPtr _actor, std::string _chair_name)
+: Vehicle(_actor, 1, 1, 1, ignition::math::Pose3d(100,100,0.5,0,0,0), ignition::math::Vector3d(0,0,0), ""){
+    this->chair_name = _chair_name;
+    bool found = false;
+    for (auto model: this->objects){
+        if (model->GetName() == this->chair_name){
+            this->chair = model;
+            found = true;
+        }
+    }
+    if (!found){
+
+    } else {
+    
+        this->pose = this->chair->WorldPose();
+        this->pose.Pos().Z()= 0.65;
+        this->pose.Rot() = ignition::math::Quaterniond(1.15, 0, this->chair->WorldPose().Rot().Yaw());
+        this->actor->SetCustomTrajectory(this->trajectories["sitting"]);
+        this->actor->SetWorldPose(this->pose, true, true);
+        this->actor->SetScriptTime(this->actor->ScriptTime());
+    }
+}
+
+void Sitter::OnUpdate(const gazebo::common::UpdateInfo &_inf){
+    double dt = (_inf.simTime - this->last_update).Double();
+
+    if (dt < 1/this->update_freq){
+        return;
+    }
+
+    this->last_update = _inf.simTime;
+    this->UpdateModel(dt);
+}
+
+void Sitter::UpdateModel(double dt){
+
+    this->actor->SetWorldPose(this->pose, true, true);
+	this->actor->SetScriptTime(this->actor->ScriptTime() + dt*this->animation_factor);
+    
 }

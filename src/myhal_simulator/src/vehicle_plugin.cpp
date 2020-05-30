@@ -97,6 +97,11 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
         this->building,
         this->leader);
         
+    } else if (this->vehicle_type == "sitter"){
+       
+        this->vehicle = std::make_unique<Sitter>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
+        this->chair);
+        
     } else {
         //wanderer
         
@@ -140,6 +145,10 @@ void ModelHandler::ReadSDF(sdf::ElementPtr _sdf){
 
     if (_sdf->HasElement("leader")){
         this->leader =_sdf->GetElement("leader")->Get<std::string>();
+    }
+
+    if (_sdf->HasElement("chair")){
+        this->chair =_sdf->GetElement("chair")->Get<std::string>();
     }
   
 }

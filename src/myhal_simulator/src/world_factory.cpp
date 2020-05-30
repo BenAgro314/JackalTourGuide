@@ -298,6 +298,20 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
             room_info->room->AddModel(table_group->table_model);
             for (auto chair: table_group->chairs){
                 room_info->room->AddModel(chair);
+                // 50% chance of someone sitting on the chair 
+                if (ignition::math::Rand::IntUniform(0,1) == 1){
+                   
+                    std::shared_ptr<SDFPlugin> plugin = std::make_shared<SDFPlugin>("sitter_plugin", "libvehicle_plugin.so");
+                    plugin->AddSubtag("vehicle_type", "sitter");
+                    plugin->AddSubtag("chair", chair->name);
+                    auto sitter = std::make_shared<myhal::Actor>("sitter", chair->pose, "sitting.dae", 0.5, 0.5);
+                    for (auto animation: this->animation_list){
+                        sitter->AddAnimation(animation);
+                    }
+                    sitter->AddPlugin(plugin);
+                    room_info->room->models.push_back(sitter); 
+                }
+
             }
             
         } 

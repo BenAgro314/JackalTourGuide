@@ -143,12 +143,12 @@ void Model::RotateClockwise(double angle)
 std::string IncludeModel::CreateSDF()
 {
 
-    std::shared_ptr<HeaderTag> model = std::make_shared<HeaderTag>("model");
-    model->AddAttribute("name", this->name);
+    //std::shared_ptr<HeaderTag> model = std::make_shared<HeaderTag>("model");
+    //model->AddAttribute("name", this->name);
 
     std::shared_ptr<HeaderTag> include = std::make_shared<HeaderTag>("include");
 
-    std::shared_ptr<DataTag> name = std::make_shared<DataTag>("name", this->name + "_include");
+    std::shared_ptr<DataTag> name = std::make_shared<DataTag>("name", this->name); //+ "_include");
 
     std::string pose_string = std::to_string(this->pose.Pos().X()) + " " + std::to_string(this->pose.Pos().Y()) + " " + std::to_string(this->pose.Pos().Z()) + " " + std::to_string(this->pose.Rot().Roll()) + " " + std::to_string(this->pose.Rot().Pitch()) + " " + std::to_string(this->pose.Rot().Yaw());
     std::shared_ptr<DataTag> pose_tag = std::make_shared<DataTag>("pose", pose_string);
@@ -159,11 +159,11 @@ std::string IncludeModel::CreateSDF()
     include->AddSubtag(pose_tag);
     include->AddSubtag(uri);
 
-    model->AddSubtag(include);
+    //model->AddSubtag(include);
 
     std::stringstream sdf;
 
-    sdf << model->WriteTag(2);
+    sdf << include->WriteTag(2);
 
     return sdf.str();
 }
@@ -279,6 +279,11 @@ TableGroup::TableGroup(std::shared_ptr<Model> _table_model, std::shared_ptr<Mode
 
     int start = ignition::math::Rand::IntUniform(0,3);
 
+    // make sitter plugin:
+
+    
+
+
     for (int i = start; i < start+num_chairs; i++){
         std::shared_ptr<Model> new_chair = std::make_shared<IncludeModel>("chair", table_model->pose, this->chair_model->model_file, this->chair_model->GetWidth(), this->chair_model->GetWidth());
         new_chair->RotateClockwise(ignition::math::Rand::DblUniform(0,6.28));
@@ -296,6 +301,7 @@ TableGroup::TableGroup(std::shared_ptr<Model> _table_model, std::shared_ptr<Mode
             normal*= (new_chair->GetWidth()/1.5); //TODO: fix this
             res_pos+=normal;
             new_chair->Reposition(res_pos.X(), res_pos.Y());
+
             this->chairs.push_back(new_chair);
         }
     }

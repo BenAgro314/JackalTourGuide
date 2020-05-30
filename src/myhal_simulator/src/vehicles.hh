@@ -11,6 +11,9 @@
 #define COH 1
 #define SEP 2
 
+
+
+
 class Vehicle{
 
     protected: 
@@ -251,6 +254,22 @@ class Follower: public Vehicle{
          ignition::math::Vector3d initial_velocity, 
          std::string _building_name, 
          std::string _leader_name);
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+
+};
+
+class Sitter: public Vehicle{
+
+    protected:
+        void UpdateModel(double dt);
+        std::string chair_name;
+        gazebo::physics::EntityPtr chair;
+
+
+    public:
+        
+        Sitter(gazebo::physics::ActorPtr _actor, std::string chair_name);
 
         void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 

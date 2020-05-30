@@ -2,6 +2,7 @@ animation_names:
   - walking 
   - talking 
   - standing 
+  - sitting
 
 walking:
   filename: walk.dae
@@ -11,3 +12,6 @@ talking:
 
 standing:
   filename: stand.dae
+
+sitting:
+  filename: sitting.dae

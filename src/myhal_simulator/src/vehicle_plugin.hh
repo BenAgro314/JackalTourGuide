@@ -50,6 +50,10 @@ class ModelHandler : public ModelPlugin{
     //for follower
 
     private: std::string leader;
+
+    //for sitter
+
+    private: std::string chair;
 	
 };
 
