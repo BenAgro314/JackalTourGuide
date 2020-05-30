@@ -647,11 +647,11 @@ void PathFollower::FollowPath(){
             ignition::math::Vector3d start = end;
             ignition::math::Vector3d end = path->points[(i+2)%(path->points.size())];;
 
-            ignition::math::Vector3d line_vec = end-start;
-            line_vec*=0.05;
+            //ignition::math::Vector3d line_vec = end-start;
+            //line_vec*=0.05;
 
 
-            normal_point = start+line_vec;
+            normal_point = start;//+line_vec;
         }
 
         double dist = (normal_point-predicted_loc).Length();
@@ -722,7 +722,6 @@ void Stander::OnUpdate(const gazebo::common::UpdateInfo &_inf){
 
     this->last_update = _inf.simTime;
 
-
     if (this->standing){
 
         if(!this->never_walk && (_inf.simTime - this->standing_start).Double() >= this->standing_duration){
@@ -777,49 +776,20 @@ std::string _leader_name)
     this->last_leader_pose = this->leader->WorldPose();
 }
 
-void Follower::AvoidActors(){
-    ignition::math::Vector3d steer = ignition::math::Vector3d(0,0,0);
-
-    for (gazebo::physics::ActorPtr other: this->actors){
-        if (other->GetName() == this->leader_name){
-            continue;
-        }
-        ignition::math::Vector3d this_pos = this->pose.Pos();
-		this_pos.Z() = 0;
-		ignition::math::Vector3d other_pos = other->WorldPose().Pos();
-		other_pos.Z() = 0;
-		ignition::math::Vector3d rad = this_pos-other_pos;
-		double dist = rad.Length();
-		
-		if (dist<this->obstacle_margin){
-			rad.Normalize();	
-			rad/=dist;
-			steer += rad;
-		}
-    }
-
-    if (steer.Length() >0){
-		steer.Normalize();
-		steer*=this->max_speed;
-		steer-=this->velocity;
-		if (steer.Length()>this->max_force){
-			steer.Normalize();
-			steer*=this->max_force;
-		}
-	}
-
-    this->ApplyForce(steer);
-}
 
 void Follower::SetNextTarget(double dt){
     auto leader_dir = (this->leader->WorldPose().Pos() - this->last_leader_pose.Pos())/dt;
 
     if (leader_dir.Length() < 10e-6){
-        auto yaw = leader->WorldPose().Rot().Yaw(); // check this 
-        auto rotation = ignition::math::Quaterniond(0,0,yaw);
-
-        leader_dir = rotation.RotateVector(ignition::math::Vector3d(1,0,0));
+    
+        auto rotation = ignition::math::Quaterniond(0,0,this->rand_angle);
+        auto offset = rotation.RotateVector(ignition::math::Vector3d(1,0,0));
+        this->curr_target = this->leader->WorldPose().Pos() - offset;
+        this->last_leader_pose = this->leader->WorldPose();
+       
+        return;
     }
+
     leader_dir.Normalize();
 
     // if we find ourselves in front of the leader, steer laterally away from the leaders path 
@@ -846,6 +816,7 @@ void Follower::SetNextTarget(double dt){
     this->last_leader_pose = this->leader->WorldPose();
 }
 
+
 void Follower::OnUpdate(const gazebo::common::UpdateInfo &_inf){
     double dt = (_inf.simTime - this->last_update).Double();
 
@@ -858,7 +829,8 @@ void Follower::OnUpdate(const gazebo::common::UpdateInfo &_inf){
     this->SetNextTarget(dt);
     this->Arrival(this->curr_target);
     
-    //std::printf("(%f, %f, %f)\n", this->acceleration.X(), this->acceleration.Y(), this->acceleration.Z());
+    //std::printf("acc: (%f, %f, %f)\n", this->acceleration.X(), this->acceleration.Y(), this->acceleration.Z());
+    //std::printf("tar: (%f, %f, %f)\n", this->curr_target.X(), this->curr_target.Y(), this->curr_target.Z());
     this->AvoidActors();
     this->AvoidObstacles();
     

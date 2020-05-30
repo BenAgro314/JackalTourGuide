@@ -227,12 +227,13 @@ class Follower: public Vehicle{
 
     protected:
 
+        double rand_angle = ignition::math::Rand::DblUniform(0,6.28);
         std::string leader_name;
         ignition::math::Pose3d last_leader_pose;
         gazebo::physics::ActorPtr leader;
 
         void SetNextTarget(double dt);
-        void AvoidActors(); 
+      
 
     public:
 

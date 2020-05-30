@@ -2,9 +2,9 @@ room_names:
   #- main_atrium
   #- lower_middle
   #- upper_middle
-  # - mid_right
+  #- mid_right
   #- long_right
-  # - upper_hallway
+  #- upper_hallway
   - test_box
 
 test_box:
@@ -137,11 +137,11 @@ pos5:
   - 18
   - -14
 
-upper_hallway:
-  geometry: geo6
-  positions: pos6
-  enclosed: "0"
-  scenario: hallway1
+#upper_hallway:
+#  geometry: geo6
+#  positions: pos6
+#  enclosed: "0"
+#  scenario: hallway1
 
 geo6:
   x_min: -12
