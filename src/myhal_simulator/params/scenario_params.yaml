@@ -9,8 +9,8 @@ scenario_names:
 
 basic_crowd:
   pop_density: "0.4"
-  table_percentage: "0"
-  actor: actor_basic_wanderer
+  table_percentage: "1"
+  actor: actor_basic_random_walker
   model_list: model_list1
   table_group_list: group_list1
 

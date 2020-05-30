@@ -1,10 +1,27 @@
 room_names:
-  - main_atrium
-  - lower_middle
-  - upper_middle
-  - mid_right
-  - long_right
+  #- main_atrium
+  #- lower_middle
+  #- upper_middle
+  # - mid_right
+  #- long_right
   # - upper_hallway
+  - test_box
+
+test_box:
+  geometry: box
+  positions: pos0
+  enclosed: "1"
+  scenario: basic_crowd 
+
+box:
+  x_min: -5
+  y_min: -5
+  x_max: 5
+  y_max: 5
+
+pos0:
+  - 0
+  - 0
 
 main_atrium: 
   geometry: geo1

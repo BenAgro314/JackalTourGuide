@@ -93,15 +93,20 @@ void Vehicle::AvoidObstacles(){
 		}
     }
 
+    /*
     if (boundary_force.Length() >0){
 		boundary_force.Normalize();
 		boundary_force*=this->max_speed;
 		boundary_force-=this->velocity;
+        
 		if (boundary_force.Length()>this->max_force){
 			boundary_force.Normalize();
 			boundary_force*=this->max_force;
 		}
+        
+        
 	}
+    */
 
     this->ApplyForce(boundary_force);
 }
@@ -125,15 +130,20 @@ void Vehicle::AvoidActors(){
 		}
     }
 
+    if (steer.Length()>this->max_force){
+			steer.Normalize();
+			steer*=this->max_force;
+	}
+    /*
     if (steer.Length() >0){
 		steer.Normalize();
 		steer*=this->max_speed;
 		steer-=this->velocity;
-		if (steer.Length()>this->max_force){
-			steer.Normalize();
-			steer*=this->max_force;
-		}
+        
+		
+        
 	}
+    */
 
     this->ApplyForce(steer);
 }
@@ -227,7 +237,7 @@ void Vehicle::UpdatePosition(double dt){
     this->pose.Pos() += this->velocity*dt;
     //TODO: fix oscillation
     this->pose.Rot() = ignition::math::Quaterniond(IGN_PI_2, 0, current_yaw + yaw_diff.Radian()*0.1);
-    
+    this->acceleration = 0;
 
 }
 
@@ -346,7 +356,8 @@ void Boid::Separation(){
 			steer += rad;
 		}
     }
-
+    
+    /*
     if (steer.Length() >0){
 		steer.Normalize();
 		steer*=this->max_speed;
@@ -356,7 +367,7 @@ void Boid::Separation(){
 			steer*=this->max_force;
 		}
 	}
-
+    */
     if ((steer*this->weights[SEP]).Length() > this->max_force){
         steer.Normalize();
         steer*=this->max_force;
