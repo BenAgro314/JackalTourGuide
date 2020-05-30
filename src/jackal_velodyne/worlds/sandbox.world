@@ -146,7 +146,7 @@
     </link>
 </model-->
 
-<actor name="randomguy1">
+<!--actor name="randomguy1">
 
       <pose>2 2 1 0 0 0</pose>
       <skin>
@@ -171,9 +171,9 @@
         <walking_duration>-1</walking_duration>
         
       </plugin>
-</actor>
+</actor-->
 
-<!--actor name="leader">
+<actor name="leader">
 
       <pose>0 0 1 0 0 0</pose>
       <skin>
@@ -194,9 +194,9 @@
         <path_point>4 5 0</path_point>
 
       </plugin>
-</actor-->
+</actor>
 
-<actor name="follower">
+<!--actor name="follower">
 
       <pose>-3 0 1 0 0 0</pose>
       <skin>
@@ -213,7 +213,7 @@
         <max_speed>1</max_speed>
         <leader>randomguy1</leader>
       </plugin>
-</actor>
+</actor-->
 
 
 <actor name="leader2">

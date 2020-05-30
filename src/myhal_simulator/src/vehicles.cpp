@@ -79,9 +79,10 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
 
 void Vehicle::AvoidObstacles(){
     gazebo::physics::WorldPtr world = this->actor->GetWorld();
-    if (world->ModelCount() > this->initial_model_count){
+    int count = world->ModelCount();
+    if (count > this->initial_model_count){
         this->objects.push_back(world->ModelByIndex(this->initial_model_count++));
-    }
+    } 
     
     ignition::math::Vector3d boundary_force = ignition::math::Vector3d(0,0,0);
     for (gazebo::physics::EntityPtr object: this->objects){
@@ -89,6 +90,7 @@ void Vehicle::AvoidObstacles(){
 
         if (utilities::inside_box(box, this->pose.Pos())){
             this->Reset();
+            //std::printf("%f %f , %f %f \n", box.Min().X(), box.Min().Y(), box.Max().X(), box.Max().Y());
             return; 
         }
         double min_z = std::min(box.Min().Z(), box.Max().Z());
