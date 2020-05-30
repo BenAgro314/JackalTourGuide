@@ -38,6 +38,9 @@ class Vehicle{
         std::vector<gazebo::physics::ActorPtr> actors;
         int initial_model_count;
 
+        ignition::math::Pose3d reset_pose;
+        ignition::math::Vector3d reset_vel;
+
     public:
 
         Vehicle(gazebo::physics::ActorPtr _actor, 
@@ -51,6 +54,9 @@ class Vehicle{
         virtual void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 
     protected:
+
+
+        void Reset();
 
         void ApplyForce(ignition::math::Vector3d force);
 

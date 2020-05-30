@@ -16,7 +16,13 @@ Vehicle::Vehicle(gazebo::physics::ActorPtr _actor,
         this->max_force = _max_force;
         this->max_speed = _max_speed;
         this->pose = initial_pose;
+        
+        this->reset_pose = initial_pose;
+
         this->velocity = initial_velocity;
+
+        this->reset_vel = initial_velocity;
+
         this->acceleration = ignition::math::Vector3d(0,0,0);
         this->curr_target = initial_pose.Pos();
         
@@ -80,6 +86,11 @@ void Vehicle::AvoidObstacles(){
     ignition::math::Vector3d boundary_force = ignition::math::Vector3d(0,0,0);
     for (gazebo::physics::EntityPtr object: this->objects){
         ignition::math::Box box = object->BoundingBox();
+
+        if (utilities::inside_box(box, this->pose.Pos())){
+            this->Reset();
+            return; 
+        }
         double min_z = std::min(box.Min().Z(), box.Max().Z());
         if (min_z > 1.5){
             continue;
@@ -109,6 +120,13 @@ void Vehicle::AvoidObstacles(){
     */
 
     this->ApplyForce(boundary_force);
+}
+
+void Vehicle::Reset(){
+    this->pose = this->reset_pose;
+    this->velocity = this->reset_vel;
+    this->acceleration = 0;
+    this->curr_target = this->reset_pose.Pos();
 }
 
 void Vehicle::AvoidActors(){

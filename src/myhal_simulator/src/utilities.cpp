@@ -55,6 +55,18 @@ bool utilities::get_normal_to_edge(ignition::math::Vector3d pos, ignition::math:
     }
 }
 
+bool utilities::inside_box(ignition::math::Box box, ignition::math::Vector3d point){
+	ignition::math::Vector3d min_corner = box.Min();
+	ignition::math::Vector3d max_corner = box.Max();
+
+	
+	return (point.X() < std::max(min_corner.X(), max_corner.X())
+	&& point.X() > std::min(min_corner.X(), max_corner.X())
+	&& point.Y() < std::max(min_corner.Y(), max_corner.Y())
+	&& point.Y() > std::min(min_corner.Y(), max_corner.Y()));
+}
+
+
 //returns the shortest normal vector between pos and one of the edges on the bounding box of entity
 // will return the shortest corner distance if the normal does not exist 
 
