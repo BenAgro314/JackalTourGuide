@@ -29,21 +29,24 @@ table3:
   filename: model://table_conference_3
   width: "2.5"
   length: "4"
-
+ 
 cafe_table:
   filename: model://cafe_table
   width: "1"
   length: "1"
+  
 
 coffee_table_1:
   filename: model://coffee_table_1
   width: "1.2"
   length: "1.2"
+ 
 
 coffee_table_set_1:
   filename: model://coffee_table_set_1
   width: "1.2"
   length: "1.2"
+  
 
 coffee_table_set_2:
   filename: model://coffee_table_set_2
@@ -59,28 +62,32 @@ chair1:
   filename: model://chair_1
   width: "0.5"
   length: "0.5"
+  height: "0.65"
 
 chair2:
   filename: model://chair_2
   width: "0.5"
   length: "0.5"
+  height: "0.65"
 
 chair3:
   filename: model://chair_3
   width: "0.5"
   length: "0.5"
+  height: "0.65"
 
 
 kitchen_chair:
   filename: model://kitchen_chair
   width: "0.9"
   length: "0.9"
-
+  height: "1"
 
 office_chair:
   filename: model://office_chair
   width: "0.9"
   length: "0.9"
+  height: "0.7"
 
 #actors parameters 
 
@@ -149,7 +156,7 @@ table_group_5:
 
 table_group_6:
   table: coffee_table_set_2
-  chair: office_chair
+  chair: kitchen_chair
 
 table_group_7:
   table: table

@@ -37,8 +37,9 @@ class ModelInfo{
         std::string filename;
         double width;
         double length;
+        double height;
 
-        ModelInfo(std::string _name, std::string _filename, double _width, double _length) : name(_name), filename(_filename), width(_width), length(_length)
+        ModelInfo(std::string _name, std::string _filename, double _width, double _length, double _height = -1) : name(_name), filename(_filename), width(_width), length(_length), height(_height)
         {}
 };
 

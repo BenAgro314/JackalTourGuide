@@ -859,7 +859,7 @@ void Follower::OnUpdate(const gazebo::common::UpdateInfo &_inf){
 }
 
 
-Sitter::Sitter(gazebo::physics::ActorPtr _actor, std::string _chair_name)
+Sitter::Sitter(gazebo::physics::ActorPtr _actor, std::string _chair_name, double height = 0.65)
 : Vehicle(_actor, 1, 1, 1, ignition::math::Pose3d(100,100,0.5,0,0,0), ignition::math::Vector3d(0,0,0), ""){
     this->chair_name = _chair_name;
     bool found = false;
@@ -874,7 +874,7 @@ Sitter::Sitter(gazebo::physics::ActorPtr _actor, std::string _chair_name)
     } else {
     
         this->pose = this->chair->WorldPose();
-        this->pose.Pos().Z()= 0.65;
+        this->pose.Pos().Z()= height;
         this->pose.Rot() = ignition::math::Quaterniond(1.15, 0, this->chair->WorldPose().Rot().Yaw());
         this->actor->SetCustomTrajectory(this->trajectories["sitting"]);
         this->actor->SetWorldPose(this->pose, true, true);

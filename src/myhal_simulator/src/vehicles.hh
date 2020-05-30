@@ -269,7 +269,7 @@ class Sitter: public Vehicle{
 
     public:
         
-        Sitter(gazebo::physics::ActorPtr _actor, std::string chair_name);
+        Sitter(gazebo::physics::ActorPtr _actor, std::string chair_name, double height);
 
         void OnUpdate(const gazebo::common::UpdateInfo &_inf);
 

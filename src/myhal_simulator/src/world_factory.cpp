@@ -132,8 +132,12 @@ void WorldHandler::LoadParams(){
             ROS_ERROR("ERROR READING MODEL PARAMS");
             return;
         }
-
-        std::shared_ptr<ModelInfo> m_info = std::make_shared<ModelInfo>(name, info["filename"], std::stod(info["width"]), std::stod(info["length"]));
+        std::shared_ptr<ModelInfo> m_info;
+        if (info.find("height") != info.end()){
+            m_info = std::make_shared<ModelInfo>(name, info["filename"], std::stod(info["width"]), std::stod(info["length"]), std::stod(info["height"]));
+        } else{
+            m_info = std::make_shared<ModelInfo>(name, info["filename"], std::stod(info["width"]), std::stod(info["length"]));
+        }
         this->model_info[name] = m_info;
     }
 
@@ -304,7 +308,9 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
                     std::shared_ptr<SDFPlugin> plugin = std::make_shared<SDFPlugin>("sitter_plugin", "libvehicle_plugin.so");
                     plugin->AddSubtag("vehicle_type", "sitter");
                     plugin->AddSubtag("chair", chair->name);
-                    auto sitter = std::make_shared<myhal::Actor>("sitter", chair->pose, "sitting.dae", 0.5, 0.5);
+                    auto sit_pose = chair->pose;
+                    sit_pose.Pos().Z() = c_model_info->height;
+                    auto sitter = std::make_shared<myhal::Actor>("sitter", sit_pose, "sitting.dae", 0.5, 0.5);
                     for (auto animation: this->animation_list){
                         sitter->AddAnimation(animation);
                     }

@@ -100,7 +100,7 @@ void ModelHandler::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf){
     } else if (this->vehicle_type == "sitter"){
        
         this->vehicle = std::make_unique<Sitter>(boost::dynamic_pointer_cast<physics::Actor>(_parent), 
-        this->chair);
+        this->chair, _parent->WorldPose().Pos().Z());
         
     } else {
         //wanderer
