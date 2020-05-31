@@ -39,6 +39,23 @@ std::vector<ignition::math::Vector3d> utilities::get_corners(gazebo::physics::En
 	return corners;
 }
 
+std::vector<ignition::math::Vector3d> utilities::get_box_corners(ignition::math::Box box){
+	ignition::math::Vector3d min_corner = box.Min();
+	ignition::math::Vector3d max_corner = box.Max();
+	min_corner.Z() = 0;
+	max_corner.Z() = 0;
+
+	//TODO: ensure that these methods work using Line3d
+	ignition::math::Vector3d bot_l = min_corner;
+	ignition::math::Vector3d bot_r = ignition::math::Vector3d(max_corner.X(),min_corner.Y(),0);
+	ignition::math::Vector3d top_l = ignition::math::Vector3d(min_corner.X(),max_corner.Y(),0);
+	ignition::math::Vector3d top_r = max_corner;
+				
+	std::vector<ignition::math::Vector3d> corners = {bot_l, bot_r, top_l, top_r}; // store all edges of link bounding box
+
+	return corners;
+}
+
 //returns true if the projection of pos falls within the bounds of edge. If it does, it stores the normal vector between the edge and pos in normal (pointing from edge to point)
 
 bool utilities::get_normal_to_edge(ignition::math::Vector3d pos, ignition::math::Line3d edge, ignition::math::Vector3d &normal){
@@ -114,6 +131,30 @@ ignition::math::Vector3d utilities::min_repulsive_vector(ignition::math::Vector3
 
 	return min_normal;
 }
+
+
+bool utilities::contains(ignition::math::Box b1, ignition::math::Box b2){
+
+	ignition::math::Vector3d min_corner = b2.Min();
+	ignition::math::Vector3d max_corner = b2.Max();
+	min_corner.Z() = 0;
+	max_corner.Z() = 0;
+
+	ignition::math::Vector3d bot_l = min_corner;
+	ignition::math::Vector3d bot_r = ignition::math::Vector3d(max_corner.X(),min_corner.Y(),0);
+	ignition::math::Vector3d top_l = ignition::math::Vector3d(min_corner.X(),max_corner.Y(),0);
+	ignition::math::Vector3d top_r = max_corner;
+
+	// check if each point lies within b1:
+
+	if (utilities::inside_box(b1, bot_l) && utilities::inside_box(b1, bot_r) && utilities::inside_box(b1, top_l) && utilities::inside_box(b1, top_r)){
+		return true;
+	}
+
+	return false;
+
+}
+
 
 utilities::Path::Path(){
 	this->radius = 0.5;

@@ -11,7 +11,7 @@ test_box:
   geometry: box
   positions: pos0
   enclosed: "1"
-  scenario: basic_no_people 
+  scenario: basic_crowd 
 
 box:
   x_min: -5

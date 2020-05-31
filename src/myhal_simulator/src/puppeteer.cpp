@@ -15,6 +15,16 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     this->ReadParams();
 
+    auto building = this->world->ModelByName(this->building_name);
+
+    this->building_box = building->BoundingBox();
+    this->building_box.Min().X()-=1;
+    this->building_box.Min().Y()-=1;
+    this->building_box.Max().X()+=1;
+    this->building_box.Max().Y()+=1;
+    this->static_quadtree = boost::make_shared<QuadTree>(this->building_box);
+    this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
+
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
         auto model = world->ModelByIndex(i);
         //std::cout << model->GetName() << std::endl;
@@ -24,25 +34,41 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         if (act){
             //std::string prefix = "";
             //std::cout << act->GetSDF()->ToString(prefix) << std::endl;
-            this->vehicles.push_back(this->CreateVehicle(act));
+            auto new_vehicle = this->CreateVehicle(act);
+            this->vehicles.push_back(new_vehicle);
+            // check this bounding box
+            auto min = ignition::math::Vector3d(new_vehicle->GetPose().Pos().X() - 0.4, new_vehicle->GetPose().Pos().Y() - 0.4, 0);
+            auto max = ignition::math::Vector3d(new_vehicle->GetPose().Pos().X() + 0.4, new_vehicle->GetPose().Pos().Y() + 0.4, 0);
+            auto box = ignition::math::Box(min,max);
+            auto new_node = QTData(box, new_vehicle, vehicle_type);
+            this->vehicle_quadtree->Insert(new_node);
             continue;
         } 
-
+      
         if (model->GetName() == this->building_name){
             auto links = model->GetLinks();
             for (gazebo::physics::LinkPtr link: links){
                 std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
                 for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
                     this->collision_entities.push_back(collision_box); //TODO: check if this is correct (maybe do dynamic pointer cast )
+                    auto new_node = QTData(collision_box->BoundingBox(), collision_box, entity_type);
+                    this->static_quadtree->Insert(new_node);
                 }
                     
             }
         } else if (model->GetName() != "ground_plane"){
             this->collision_entities.push_back(model);
+            auto box = model->BoundingBox();
+            box.Min().Z() = 0;
+            box.Max().Z() = 0;
+            auto new_node = QTData(box, model, entity_type);
+            this->static_quadtree->Insert(new_node);
         }
+        
     }
 
-
+    //this->static_quadtree->Print();
+    //this->vehicle_quadtree->Print();
 }
 
 void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
@@ -54,8 +80,39 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
 
     this->last_update = _info.simTime;
 
+    // reconstruct vehicle_quad tree
+
+    this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
+
     for (auto vehicle: this->vehicles){
-        vehicle->OnUpdate(_info, dt, this->vehicles, this->collision_entities);
+        auto min = ignition::math::Vector3d(vehicle->GetPose().Pos().X() - 0.4, vehicle->GetPose().Pos().Y() - 0.4, 0);
+        auto max = ignition::math::Vector3d(vehicle->GetPose().Pos().X() + 0.4, vehicle->GetPose().Pos().Y() + 0.4, 0);
+        auto box = ignition::math::Box(min,max);
+        auto new_node = QTData(box, vehicle, vehicle_type);
+        this->vehicle_quadtree->Insert(new_node);
+    }
+
+    for (auto vehicle: this->vehicles){
+        // query quad tree
+        std::vector<boost::shared_ptr<Vehicle>> near_vehicles;
+
+        std::vector<gazebo::physics::EntityPtr> near_objects;
+
+        auto min = ignition::math::Vector3d(vehicle->GetPose().Pos().X() - 2, vehicle->GetPose().Pos().Y() - 2, 0);
+        auto max = ignition::math::Vector3d(vehicle->GetPose().Pos().X() + 2, vehicle->GetPose().Pos().Y() + 2, 0);
+        auto query_range = ignition::math::Box(min,max);
+
+        std::vector<QTData> nearby_objects = this->static_quadtree->QueryRange(query_range);
+        for (auto n: nearby_objects){
+            near_objects.push_back(boost::static_pointer_cast<gazebo::physics::Entity>(n.data));
+            
+        }
+        std::vector<QTData> nearby_vehicles = this->vehicle_quadtree->QueryRange(query_range);
+        for (auto n: nearby_vehicles){
+            near_vehicles.push_back(boost::static_pointer_cast<Vehicle>(n.data));
+        }
+
+        vehicle->OnUpdate(_info, dt, near_vehicles, near_objects);
     }
 }
 
@@ -65,9 +122,9 @@ void Puppeteer::ReadSDF(){
     }
 }
 
-std::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr actor){
+boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr actor){
 
-    std::shared_ptr<Vehicle> res;
+    boost::shared_ptr<Vehicle> res;
    
     auto sdf = actor->GetSDF();
 
@@ -93,16 +150,16 @@ std::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr acto
     if (actor_info.find("vehicle_type")!=actor_info.end()){
         if (actor_info["vehicle_type"] == "wanderer"){
 
-            res = std::make_shared<Wanderer>(actor, this->vehicle_params["mass"], this->vehicle_params["max_force"], max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities);
+            res = boost::make_shared<Wanderer>(actor, this->vehicle_params["mass"], this->vehicle_params["max_force"], max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities);
         
         } else if (actor_info["vehicle_type"] == "random_walker"){
-            res = std::make_shared<RandomWalker>(actor, this->vehicle_params["mass"], this->vehicle_params["max_force"], max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities);
+            res = boost::make_shared<RandomWalker>(actor, this->vehicle_params["mass"], this->vehicle_params["max_force"], max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities);
             
         } else if (actor_info["vehicle_type"] == "boid"){
             auto random_vel = ignition::math::Vector3d(ignition::math::Rand::DblUniform(-1,1),ignition::math::Rand::DblUniform(-1,1),0);
             random_vel.Normalize(); 
             random_vel*=2;
-            res = std::make_shared<Boid>(actor, this->vehicle_params["mass"], this->vehicle_params["max_force"], max_speed, actor->WorldPose(), random_vel, this->collision_entities, this->boid_params["alignement"], this->boid_params["cohesion"], this->boid_params["separation"], this->boid_params["FOV_angle"], this->boid_params["FOV_radius"]); // read in as params 
+            res = boost::make_shared<Boid>(actor, this->vehicle_params["mass"], this->vehicle_params["max_force"], max_speed, actor->WorldPose(), random_vel, this->collision_entities, this->boid_params["alignement"], this->boid_params["cohesion"], this->boid_params["separation"], this->boid_params["FOV_angle"], this->boid_params["FOV_radius"]); // read in as params 
             
         } else if (actor_info["vehicle_type"] == "stander"){
             
@@ -125,7 +182,7 @@ std::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr acto
                 }
             }
 
-            res = std::make_shared<Stander>(actor, 1, 10, max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities, standing_duration, walking_duration); // read in as params 
+            res = boost::make_shared<Stander>(actor, 1, 10, max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities, standing_duration, walking_duration); // read in as params 
             
         } else if (actor_info["vehicle_type"] == "sitter"){
 
@@ -135,9 +192,20 @@ std::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr acto
                 chair = actor_info["chair"];
             }
 
-            res = std::make_shared<Sitter>(actor, chair, this->collision_entities, actor->WorldPose().Pos().Z());
+            res = boost::make_shared<Sitter>(actor, chair, this->collision_entities, actor->WorldPose().Pos().Z());
 
-        }
+        } /*else if (actor_info["vehicle_type"] == "follower"){
+
+            std::string leader_name = "";
+            std::cout << actor_info["vehicle_type"] << std::endl;
+            if (actor_info.find("leader") != actor_info.end()){
+                leader_name = actor_info["leader"];
+                std::cout << actor_info["leader"] << std::endl;;
+                res = boost::make_shared<Follower>(actor, 1, 10, max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities, this->vehicles, leader_name); // read in as params 
+            } else{
+                std::cout << "leader name not found\n";
+            }
+        }*/
     }
     
 
@@ -201,7 +269,7 @@ std::vector<gazebo::physics::EntityPtr> objects){
     this->actor->SetCustomTrajectory(this->trajectories["walking"]);
 }
 
-void Vehicle::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<std::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
+void Vehicle::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
     this->Seek(this->curr_target);
     this->UpdateModel();
     this->UpdatePosition(dt);
@@ -318,7 +386,7 @@ void Vehicle::AvoidObstacles(std::vector<gazebo::physics::EntityPtr> objects){
     this->ApplyForce(boundary_force);
 }
 
-void Vehicle::AvoidActors(std::vector<std::shared_ptr<Vehicle>> vehicles){
+void Vehicle::AvoidActors(std::vector<boost::shared_ptr<Vehicle>> vehicles){
 
     ignition::math::Vector3d steer = ignition::math::Vector3d(0,0,0);
     for (int i =0; i<(int) vehicles.size(); i++){
@@ -366,7 +434,7 @@ std::string Vehicle::GetName(){
 
 // WANDERER
 
-void Wanderer::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<std::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
+void Wanderer::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
 
     this->SetNextTarget();
     this->Seek(this->curr_target);
@@ -398,7 +466,7 @@ void Wanderer::SetNextTarget(){
 
 // RANDOM WALKER
 
-void RandomWalker::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<std::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
+void RandomWalker::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
 
 
     if ((this->pose.Pos() - this->curr_target).Length()<this->arrival_distance){
@@ -503,7 +571,7 @@ double radius)
     this->FOV_radius = radius;
 }
 
-void Boid::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<std::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
+void Boid::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
 
 
     this->Alignement(dt, vehicles);
@@ -515,7 +583,7 @@ void Boid::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::ve
     this->UpdateModel();
 }
 
-void Boid::Separation(std::vector<std::shared_ptr<Vehicle>> vehicles){
+void Boid::Separation(std::vector<boost::shared_ptr<Vehicle>> vehicles){
     ignition::math::Vector3d steer = ignition::math::Vector3d(0,0,0);
     for (auto other: vehicles){
         if (other->GetName() == this->GetName()){
@@ -550,7 +618,7 @@ void Boid::Separation(std::vector<std::shared_ptr<Vehicle>> vehicles){
     this->ApplyForce(steer);
 }
 
-void Boid::Alignement(double dt, std::vector<std::shared_ptr<Vehicle>> vehicles){
+void Boid::Alignement(double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles){
     auto vel_sum = ignition::math::Vector3d(0,0,0);
     int count = 0;
 
@@ -598,7 +666,7 @@ void Boid::Alignement(double dt, std::vector<std::shared_ptr<Vehicle>> vehicles)
 	}
 }
 
-void Boid::Cohesion(std::vector<std::shared_ptr<Vehicle>> vehicles){
+void Boid::Cohesion(std::vector<boost::shared_ptr<Vehicle>> vehicles){
     auto sum_pos = ignition::math::Vector3d(0,0,0);
     int count = 0;
     auto this_pos = this->pose.Pos();
@@ -671,7 +739,7 @@ void Stander::UpdateModel(double dt){
     
 }
 
-void Stander::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<std::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
+void Stander::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
 
     if (this->standing){
 
@@ -730,7 +798,7 @@ Sitter::Sitter(gazebo::physics::ActorPtr _actor, std::string _chair_name, std::v
     }
 }
 
-void Sitter::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<std::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
+void Sitter::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
     this->UpdateModel(dt);
 }
 
@@ -740,3 +808,78 @@ void Sitter::UpdateModel(double dt){
 	this->actor->SetScriptTime(this->actor->ScriptTime() + dt*this->animation_factor);
     
 }
+
+
+Follower::Follower(gazebo::physics::ActorPtr _actor,
+double _mass,
+double _max_force, 
+double _max_speed, 
+ignition::math::Pose3d initial_pose, 
+ignition::math::Vector3d initial_velocity, 
+std::vector<gazebo::physics::EntityPtr> objects,
+std::vector<boost::shared_ptr<Vehicle>> vehicles, 
+std::string _leader_name)
+: Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, objects){
+
+    this->leader_name = _leader_name;
+    for (auto other: vehicles){
+        if (other->GetName() == this->leader_name){
+            this->leader = other;
+            std::cout << "YAY\n";
+        }
+    }
+
+}
+
+
+void Follower::SetNextTarget(double dt){
+    auto leader_dir = this->leader->GetVelocity();
+
+    if (leader_dir.Length() < 10e-6){
+    
+        auto rotation = ignition::math::Quaterniond(0,0,this->rand_angle);
+        auto offset = rotation.RotateVector(ignition::math::Vector3d(1,0,0));
+        this->curr_target = this->leader->GetPose().Pos() - offset;
+       
+        return;
+    }
+
+    leader_dir.Normalize();
+
+    // if we find ourselves in front of the leader, steer laterally away from the leaders path 
+
+    auto front_edge = ignition::math::Line3d(this->leader->GetPose().Pos(), this->leader->GetPose().Pos() + leader_dir);
+
+    ignition::math::Vector3d normal;
+
+    if (utilities::get_normal_to_edge(this->pose.Pos(), front_edge, normal)){
+        if (normal.Length() < this->obstacle_margin){
+            auto mag = normal.Length();
+            normal.Normalize();
+            normal *= 1/(mag*mag);
+            if (normal.Length() > this->max_force){
+                normal.Normalize();
+                normal*=this->max_force;
+            }
+            this->ApplyForce(normal);
+        }
+    }
+
+    this->curr_target = this->leader->GetPose().Pos() - leader_dir/2;
+
+}
+
+
+void Follower::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
+
+    
+    this->SetNextTarget(dt);
+    this->Arrival(this->curr_target);
+    
+    this->AvoidActors(vehicles);
+    this->AvoidObstacles(objects);
+    
+    this->UpdatePosition(dt);
+    this->UpdateModel();
+}
+

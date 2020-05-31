@@ -43,7 +43,7 @@ add_library(world_entities src/world_entities.cpp)
 target_link_libraries(world_entities sdfstring utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(quadtree src/quadtree.cpp)
-target_link_libraries(quadtree ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(quadtree utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(puppeteer src/puppeteer.cpp)
 target_link_libraries(puppeteer utilities quadtree ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
@@ -51,6 +51,6 @@ target_link_libraries(puppeteer utilities quadtree ${catkin_LIBRARIES} ${GAZEBO_
 add_executable(world_factory src/world_factory.cpp) 
 target_link_libraries(world_factory world_entities ${catkin_LIBRARIES})
 
-add_executable(entities_test src/entities_test.cpp) 
-target_link_libraries(entities_test world_entities ${catkin_LIBRARIES})
+add_executable(test_file src/tests.cpp) 
+target_link_libraries(test_file world_entities quadtree ${catkin_LIBRARIES})
 
