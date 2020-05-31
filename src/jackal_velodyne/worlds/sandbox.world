@@ -91,14 +91,47 @@
         <projection_type>perspective</projection_type>
       </camera>
     </gui>
+
+    <plugin name = "puppeteer" filename = "libpuppeteer.so">
+      <building_name>building</building_name>
+    </plugin>
  
     <!--plugin name="factory" filename="libworld_plugin.so"/-->
     <!-- insert stuff below -->
-    <!--include>
+    <include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>
       <uri>model://10x10Box</uri>
-	  </include-->
+	  </include>
+
+    <actor name="actor_1,wanderer">
+
+      <pose>0 0 1 0 0 0</pose>
+      <skin>
+      <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+      </skin>
+      <animation name="walking"> 
+        <filename>walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <plugin name = "vehicle_type" filename = "wanderer"/>
+      
+  </actor>
+
+  <actor name="actor_2,wanderer">
+
+      <pose>2 2 1 0 0 0</pose>
+      <skin>
+      <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+      </skin>
+      <animation name="walking"> 
+        <filename>walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <plugin name = "vehicle_type" filename = "wanderer"/>
+      
+
+  </actor>
 
     
 <!--include>
@@ -171,7 +204,7 @@
 </actor-->
 
 
-			<include>
+			<!--include>
 				<name>chair_7</name>
 				<pose>1.170477 -0.000113 0.000000 0.000000 -0.000000 -1.887171</pose>
 				<uri>model://chair_1</uri>
@@ -202,7 +235,7 @@
 				<vehicle_type>sitter</vehicle_type>
 				<chair>chair_7</chair>
 			</plugin>
-		</actor>
+		</actor-->
 
 <!--actor name="leader">
 
@@ -227,24 +260,7 @@
       </plugin>
 </actor-->
 
-<!--actor name="follower">
 
-      <pose>-3 0 1 0 0 0</pose>
-      <skin>
-      <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-      </skin>
-      <animation name="walking"> 
-        <filename>walk.dae</filename>
-        <interpolate_x>true</interpolate_x>
-      </animation>
-
-      <plugin name="steering" filename="libvehicle_plugin.so">
-        <vehicle_type>follower</vehicle_type>
-        <building>building</building>
-        <max_speed>1</max_speed>
-        <leader>randomguy1</leader>
-      </plugin>
-</actor-->
 
 
 <!--actor name="leader2">
@@ -316,10 +332,10 @@
 
       
 	
-  </actor>
+  </actor-->
 
 
-<actor name="randomguy4">
+<!--actor name="randomguy4">
 
 
       <skin>

@@ -148,7 +148,7 @@ table_group_3:
 
 table_group_4:
   table: cafe_table
-  chair: office_chair
+  chair: kitchen_chair
 
 table_group_5:
   table: coffee_table_set_1
