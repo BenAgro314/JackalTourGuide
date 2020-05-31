@@ -9,7 +9,7 @@
 #include "gazebo/physics/physics.hh"
 #include "gazebo/common/common.hh"
 
-enum types {vehicle_type, entity_type, string_type, int_type};
+enum types {vehicle_type, entity_type};
 
 
 struct QTData{

@@ -18,6 +18,7 @@
 #define SEP 2
 
 class Vehicle;
+class Follower;
 
 class Puppeteer: public gazebo::WorldPlugin{
 
@@ -49,6 +50,8 @@ class Puppeteer: public gazebo::WorldPlugin{
         boost::shared_ptr<QuadTree> vehicle_quadtree; 
 
         ignition::math::Box building_box; 
+
+        std::vector<boost::shared_ptr<Follower>> follower_queue;
 
     public: 
         
@@ -273,12 +276,15 @@ class Follower: public Vehicle{
          ignition::math::Pose3d initial_pose, 
          ignition::math::Vector3d initial_velocity, 
          std::vector<gazebo::physics::EntityPtr> objects, 
-         std::vector<boost::shared_ptr<Vehicle>> vehicles, 
          std::string _leader_name);
 
         void OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
 
-
+        void LoadLeader(std::vector<boost::shared_ptr<Vehicle>> vehicles);
 };
+
+
+
+
 
 #endif
