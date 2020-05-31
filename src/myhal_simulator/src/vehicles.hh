@@ -1,48 +1,68 @@
 #ifndef VEHICLES_HH
 #define VEHICLES_HH
-
-#include <gazebo/gazebo.hh>
-#include <gazebo/physics/physics.hh>
-#include "utilities.hh"
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Vector3.hh>
+#include <ignition/math/Box.hh>
+#include "gazebo/physics/physics.hh"
+#include "gazebo/common/common.hh"
+#include "gazebo/gazebo.hh"
 #include <vector>
 #include <map>
+#include <utility>
+#include <string>
+#include "utilities.hh"
 
 #define ALI 0 
 #define COH 1
 #define SEP 2
 
 
-
-
 class Vehicle{
 
-    protected: 
+    protected:
 
-        //Simple Vehicle Parameters 
         double mass;
+
         double max_force;
+
         double max_speed;
+
         ignition::math::Pose3d pose;
+
         ignition::math::Vector3d velocity;
+
         ignition::math::Vector3d acceleration;
+
         gazebo::physics::ActorPtr actor;
-        
-        double update_freq = 60;
-        gazebo::common::Time last_update;
-        double animation_factor{5.1};
 
-        double slowing_distance = 2;
-        double arrival_distance = 0.5;
+        ignition::math::Vector3d curr_target;
+
+        std::map<std::string, std::shared_ptr<gazebo::physics::TrajectoryInfo>> trajectories; 
+
+        double animation_factor = 5.1; //TODO: read these in as common vehicle parameters 
+
         double obstacle_margin = 0.5;
-        
-        std::string building_name;
 
-        std::vector<gazebo::physics::EntityPtr> objects;
-        std::vector<gazebo::physics::ActorPtr> actors;
-        int initial_model_count;
+        double slowing_distance = 1;
 
-        ignition::math::Pose3d reset_pose;
-        ignition::math::Vector3d reset_vel;
+        double arrival_distance  = 0.5;
+
+        std::vector<gazebo::physics::EntityPtr> all_objects;
+
+        void UpdateModel();
+
+        void ApplyForce(ignition::math::Vector3d force);
+
+        void Seek(ignition::math::Vector3d target, double weight = 1);
+
+        void Arrival(ignition::math::Vector3d target, double weight = 1);
+
+        void UpdatePosition(double dt);
+
+        void AvoidActors(std::vector<boost::shared_ptr<Vehicle>> vehicles); 
+
+        void AvoidObstacles(std::vector<gazebo::physics::EntityPtr> objects);
+
 
     public:
 
@@ -51,103 +71,69 @@ class Vehicle{
         double _max_force, 
         double _max_speed, 
         ignition::math::Pose3d initial_pose, 
-        ignition::math::Vector3d initial_velocity, 
-        std::string _building_name);
+        ignition::math::Vector3d initial_velocity,
+        std::vector<gazebo::physics::EntityPtr> all_objects);
 
-        virtual void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+        virtual void OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects); //to be made virtual
 
-    protected:
+        gazebo::physics::ActorPtr GetActor();
 
+        void SetAllObjects(std::vector<gazebo::physics::EntityPtr> objects);
 
-        void Reset();
+        ignition::math::Pose3d GetPose();
 
-        void ApplyForce(ignition::math::Vector3d force);
+        ignition::math::Vector3d GetVelocity();
 
-        void Seek(ignition::math::Vector3d target);
-
-        void Arrival(ignition::math::Vector3d target);
-
-        void UpdatePosition(double dt);
-
-        void UpdateModel();
-
-        void AvoidActors(); 
-
-        void AvoidObstacles();
-
-        ignition::math::Vector3d curr_target;
-
-        std::map<std::string, std::shared_ptr<gazebo::physics::TrajectoryInfo>> trajectories; 
-
-        std::string last_trajectory; 
-
-    public: 
-
-        void SetSlowingDistance(double _slowing_distance){
-            this->slowing_distance = _slowing_distance;
-        }
-
-        void SetArrivalDistance(double _arrival_distance){
-            this->arrival_distance = _arrival_distance;
-        }
-
-        void SetObstacleMargin(double _obstacle_margin){
-            this->obstacle_margin = _obstacle_margin;
-        }
+        std::string GetName();
 };
 
 class Wanderer: public Vehicle{
 
-    private:
+    protected:
 
         double curr_theta =0;
+
         double rand_amp = 0.4;
 
-    protected:
         void SetNextTarget(); 
 
     public:
         using Vehicle::Vehicle;
 
-        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
-
-        void SetRandAmplitude(double angle){
-            this->rand_amp = angle;
-        }
+        void OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
 
 };
-
 
 class RandomWalker: public Vehicle{
 
 
     protected:
 
-        void SetNextTarget(); 
+        void SetNextTarget(std::vector<gazebo::physics::EntityPtr> objects); 
 
     public:
 
         using Vehicle::Vehicle;
 
-        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+        void OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
 
 };
-
 
 class Boid: public Vehicle{
 
     protected:
 
-        void Separation();
-        void Alignement(double dt);
-        void Cohesion();
-
         double weights[3];
 
         double FOV_angle = 4;
+
         double FOV_radius = 3;
 
-        std::map<gazebo::physics::ActorPtr, ignition::math::Vector3d> last_pos;
+        void Separation(std::vector<boost::shared_ptr<Vehicle>> vehicles);
+
+        void Alignement(double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles);
+        
+        void Cohesion(std::vector<boost::shared_ptr<Vehicle>> vehicles);
         
 
     public:
@@ -158,77 +144,67 @@ class Boid: public Vehicle{
          double _max_speed, 
          ignition::math::Pose3d initial_pose, 
          ignition::math::Vector3d initial_velocity, 
-         std::string _building_name, 
+         std::vector<gazebo::physics::EntityPtr> objects, 
          double _alignement, 
          double _cohesion, 
          double _separation, 
          double angle, 
          double radius);
 
-        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
-
-        void SetWeights(double _alignement, double _cohesion, double _separation){
-            this->weights[ALI] = _alignement;
-            this->weights[COH] = _cohesion;
-            this->weights[SEP] = _separation;
-        }
-
-        void SetFOV(double _angle, double _radius){
-            this->FOV_angle = _angle;
-            this->FOV_radius = _radius;
-        }
-};
-
-class PathFollower: public Vehicle{
-
-    protected:
-        std::shared_ptr<utilities::Path> path;
-        void FollowPath();
-
-    public: 
-
-        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
-
-        PathFollower(gazebo::physics::ActorPtr _actor,
-         double _mass,
-         double _max_force, 
-         double _max_speed, 
-         ignition::math::Pose3d initial_pose, 
-         ignition::math::Vector3d initial_velocity, 
-         std::string _building_name, 
-         std::shared_ptr<utilities::Path> _path);
-
-
+        void OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
 };
 
 class Stander: public Wanderer{
 
     protected: 
-    
-
-        void UpdateModel(double dt);
 
         bool standing = true;
+
         bool never_walk = false;
+
         double standing_duration;
+
         double walking_duration;
 
         gazebo::common::Time standing_start;
+
         gazebo::common::Time walking_start;
 
-    public:
+        void UpdateModel(double dt);
 
-        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+    public:
 
         Stander(gazebo::physics::ActorPtr _actor,
          double _mass,
          double _max_force, 
          double _max_speed, 
          ignition::math::Pose3d initial_pose, 
-         ignition::math::Vector3d initial_velocity, 
-         std::string _building_name, 
+         ignition::math::Vector3d initial_velocity,  
+         std::vector<gazebo::physics::EntityPtr> objects, 
          double _standing_duration,
          double _walking_duration);
+
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
+
+};
+
+class Sitter: public Vehicle{
+
+    protected:
+        
+        std::string chair_name;
+
+        gazebo::physics::EntityPtr chair;
+
+        void UpdateModel(double dt);
+
+
+    public:
+        
+        Sitter(gazebo::physics::ActorPtr _actor, std::string chair_name, std::vector<gazebo::physics::EntityPtr> objects, double height = 0.65);
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
 
 };
 
@@ -238,11 +214,8 @@ class Follower: public Vehicle{
 
         double rand_angle = ignition::math::Rand::DblUniform(0,6.28);
         std::string leader_name;
-        ignition::math::Pose3d last_leader_pose;
-        gazebo::physics::ActorPtr leader;
-
+        boost::shared_ptr<Vehicle> leader;
         void SetNextTarget(double dt);
-      
 
     public:
 
@@ -252,27 +225,16 @@ class Follower: public Vehicle{
          double _max_speed, 
          ignition::math::Pose3d initial_pose, 
          ignition::math::Vector3d initial_velocity, 
-         std::string _building_name, 
+         std::vector<gazebo::physics::EntityPtr> objects, 
          std::string _leader_name);
 
-        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
+        void OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
 
+        void LoadLeader(std::vector<boost::shared_ptr<Vehicle>> vehicles);
 };
 
-class Sitter: public Vehicle{
-
-    protected:
-        void UpdateModel(double dt);
-        std::string chair_name;
-        gazebo::physics::EntityPtr chair;
 
 
-    public:
-        
-        Sitter(gazebo::physics::ActorPtr _actor, std::string chair_name, double height);
 
-        void OnUpdate(const gazebo::common::UpdateInfo &_inf);
-
-};
 
 #endif

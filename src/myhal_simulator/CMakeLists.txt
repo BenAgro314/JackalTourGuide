@@ -30,14 +30,11 @@ include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE
 add_library(utilities src/utilities.cpp)
 target_link_libraries(utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
-add_library(vehicles src/vehicles.cpp)
-target_link_libraries(vehicles utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
-add_library(vehicle_plugin src/vehicle_plugin.cpp)
-target_link_libraries(vehicle_plugin vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
 add_library(sdfstring src/sdfstring.cpp)
 target_link_libraries(sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
+add_library(vehicles src/vehicles.cpp)
+target_link_libraries(vehicles utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(world_entities src/world_entities.cpp)
 target_link_libraries(world_entities sdfstring utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
@@ -46,7 +43,7 @@ add_library(quadtree src/quadtree.cpp)
 target_link_libraries(quadtree utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(puppeteer src/puppeteer.cpp)
-target_link_libraries(puppeteer utilities quadtree ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(puppeteer utilities quadtree vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_executable(world_factory src/world_factory.cpp) 
 target_link_libraries(world_factory world_entities ${catkin_LIBRARIES})

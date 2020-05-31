@@ -104,11 +104,11 @@
       <uri>model://10x10Box</uri>
 	  </include>
 
-    <include>
+    <!--include>
 			<name>table3_4</name>
 			<pose>0.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://table_conference_3</uri>
-		</include>
+		</include-->
     
    <actor name="actor_1">
 
@@ -124,9 +124,13 @@
         <filename>sitting.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-      <plugin name = "vehicle_type" filename = "follower"/>
-      <plugin name = "max_speed" filename = "1.1"/>
-      <plugin name = "leader" filename = "actor_2"/>
+      <animation name="standing"> 
+        <filename>talk_a.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <plugin name = "vehicle_type" filename = "stander"/>
+      <plugin name = "standing_duration" filename = "5"/>
+      <plugin name = "walking_duration" filename = "-1"/>
   </actor>
 
 
@@ -144,8 +148,9 @@
         <filename>talk_a.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-      <plugin name = "vehicle_type" filename = "wanderer"/>
+      <plugin name = "vehicle_type" filename = "follower"/>
       <plugin name = "max_speed" filename = "1.1"/>
+      <plugin name = "leader" filename = "actor_1"/>
   </actor>
 
  
