@@ -510,6 +510,7 @@ void Stander::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std:
             this->standing = false;
             this->walking_start = _info.simTime;
             this->actor->SetCustomTrajectory(this->trajectories["walking"]);
+            this->velocity = 0;
             this->standing_duration += ignition::math::Rand::DblUniform(-0.5,0.5);
             if (this->standing_duration <= 0){
                 this->standing_duration = 0;
@@ -602,12 +603,12 @@ void Follower::LoadLeader(std::vector<boost::shared_ptr<Vehicle>> vehicles){
 
 void Follower::SetNextTarget(double dt){
     auto leader_dir = this->leader->GetVelocity();
-
     if (leader_dir.Length() < 10e-6){
-    
-        auto rotation = ignition::math::Quaterniond(0,0,this->rand_angle);
+        
+        auto rotation = ignition::math::Quaterniond(0,0,this->leader->GetPose().Rot().Yaw());
+
         auto offset = rotation.RotateVector(ignition::math::Vector3d(1,0,0));
-        this->curr_target = this->leader->GetPose().Pos() - offset;
+        this->curr_target = this->leader->GetPose().Pos() - offset*2;
        
         return;
     }

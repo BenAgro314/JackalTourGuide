@@ -130,7 +130,7 @@
       </animation>
       <plugin name = "vehicle_type" filename = "stander"/>
       <plugin name = "standing_duration" filename = "5"/>
-      <plugin name = "walking_duration" filename = "-1"/>
+      <plugin name = "walking_duration" filename = "3"/>
   </actor>
 
 
