@@ -72,15 +72,20 @@ void WorldHandler::LoadParams(){
             return;
         }
 
-        std::shared_ptr<SDFPlugin> plugin = std::make_shared<SDFPlugin>(info["name"], info["filename"]);
+        //std::shared_ptr<SDFPlugin> plugin = std::make_shared<SDFPlugin>(info["name"], info["filename"]);
 
         std::map<std::string, std::string>::iterator it;
 
         for ( it = info.begin(); it != info.end(); it++ ){
+            /*
             if (it->first == "name"){
                 continue;
             }
+            */
 
+            auto new_plugin = std::make_shared<SDFPlugin>(it->first, it->second);
+            
+            /*
             if (it->first == "max_speed"){
                 double speed = std::stod(info[it->first]);
                 speed += ignition::math::Rand::DblUniform(-speed/5, speed/5);
@@ -88,9 +93,12 @@ void WorldHandler::LoadParams(){
             } else{
                 plugin->AddSubtag(it->first, info[it->first]);
             }
+            */
+
+           this->vehicle_plugins[name].push_back(new_plugin);
             
         }
-        this->vehicle_plugins[name] = plugin;
+        //this->vehicle_plugins[name] = plugin;
     }
 
     /// READ ANIMATION INFO
@@ -305,16 +313,20 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
                 // 50% chance of someone sitting on the chair 
                 if (ignition::math::Rand::IntUniform(0,1) == 1){
                    
-                    std::shared_ptr<SDFPlugin> plugin = std::make_shared<SDFPlugin>("sitter_plugin", "libvehicle_plugin.so");
-                    plugin->AddSubtag("vehicle_type", "sitter");
-                    plugin->AddSubtag("chair", chair->name);
+                    //std::shared_ptr<SDFPlugin> plugin = std::make_shared<SDFPlugin>("sitter_plugin", "libvehicle_plugin.so");
+                    auto sitter_plugin = std::make_shared<SDFPlugin>("vehicle_type", "sitter");
+                    auto chair_plugin = std::make_shared<SDFPlugin>("chair", chair->name);
+                    //plugin->AddSubtag("vehicle_type", "sitter");
+                    //plugin->AddSubtag("chair", chair->name);
                     auto sit_pose = chair->pose;
                     sit_pose.Pos().Z() = c_model_info->height;
                     auto sitter = std::make_shared<myhal::Actor>("sitter", sit_pose, "sitting.dae", 0.5, 0.5);
                     for (auto animation: this->animation_list){
                         sitter->AddAnimation(animation);
                     }
-                    sitter->AddPlugin(plugin);
+                    //sitter->AddPlugin(plugin);
+                    sitter->AddPlugin(sitter_plugin);
+                    sitter->AddPlugin(chair_plugin);
                     room_info->room->models.push_back(sitter); 
                 }
 
@@ -326,7 +338,7 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
 
     int num_actors = (int) ((scenario->pop_density)*(room_info->room->Area()));
     auto a_info = this->actor_info[scenario->actor];
-    auto plugin = this->vehicle_plugins[a_info->plugin];
+    //auto plugin = this->vehicle_plugins[a_info->plugin];
 
     for (int i =0; i<num_actors; i++){
         auto new_actor = std::make_shared<myhal::Actor>(a_info->name, ignition::math::Pose3d(0,0,1,0,0,ignition::math::Rand::DblUniform(0,6.28)), a_info->filename, a_info->width, a_info->length); //TODO randomize initial Rot
@@ -335,8 +347,14 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
             new_actor->AddAnimation(animation);
             
         }
+        auto plugin_list = this->vehicle_plugins[a_info->plugin];
+       
+        for (auto plugin: plugin_list){
+            new_actor->AddPlugin(plugin);
+        }
         
-        new_actor->AddPlugin(plugin);
+        
+        //new_actor->AddPlugin(plugin);
         
         
        
@@ -366,7 +384,7 @@ void WorldHandler::WriteToFile(std::string out_name){
 		in.getline(str, 255);  // delim defaults to '\n'
 		if(in) {
 			
-			if (line == 102){
+			if (line == 106){
 				// insert writing people and furnature here
 				
 				out << this->world_string;

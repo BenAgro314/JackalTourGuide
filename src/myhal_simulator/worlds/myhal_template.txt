@@ -92,6 +92,10 @@
       </camera>
     </gui>
 
+    <plugin name = "puppeteer" filename = "libpuppeteer.so">
+      <building_name>building</building_name>
+    </plugin>
+
     <include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>

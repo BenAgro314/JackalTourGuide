@@ -96,7 +96,10 @@ class WorldHandler{
 
 
         //TODO: change these to not be pointers
-        std::map<std::string, std::shared_ptr<SDFPlugin>> vehicle_plugins; //one per actor
+        //std::map<std::string, std::shared_ptr<SDFPlugin>> vehicle_plugins; //one per actor
+
+        std::map<std::string, std::vector<std::shared_ptr<SDFPlugin>>> vehicle_plugins; //one per actor
+
         std::vector<std::shared_ptr<SDFAnimation>> animation_list; //added to all actors 
         std::map<std::string, std::shared_ptr<ModelInfo>> model_info;
         std::map<std::string, std::shared_ptr<Scenario>> scenarios;

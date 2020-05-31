@@ -134,7 +134,7 @@ void ModelHandler::ReadSDF(sdf::ElementPtr _sdf){
         this->max_speed =_sdf->GetElement("max_speed")->Get<double>();
         
     }
-
+    
     if (_sdf->HasElement("walking_duration")){
         this->walking_duration =_sdf->GetElement("walking_duration")->Get<double>();
     }

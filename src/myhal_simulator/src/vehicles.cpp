@@ -185,7 +185,7 @@ void Vehicle::Seek(ignition::math::Vector3d target){
     ApplyForce(steer);
 }
 
-void Vehicle::Arrival(ignition::math::Vector3d target){ //TODO: fix arrival to stop properly
+void Vehicle::Arrival(ignition::math::Vector3d target){ 
 
     ignition::math::Vector3d desired_v = target-this->pose.Pos();
     double dist = desired_v.Length();
