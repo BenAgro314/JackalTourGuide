@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <utility>
+#include "quadtree.hh"
 
 class Vehicle;
 
