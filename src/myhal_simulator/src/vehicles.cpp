@@ -602,9 +602,17 @@ void Follower::LoadLeader(std::vector<boost::shared_ptr<Vehicle>> vehicles){
          std::cout << "leader name not found\n";
     }
 }
+/*
+void Follower::LoadLeader(gazebo::physics::EntityPtr leader){
+    this->leader = leader;
+    this->last_leader_pos = this->leader->WorldPose();
+}
+*/
 
 void Follower::SetNextTarget(double dt){
     auto leader_dir = this->leader->GetVelocity();
+
+    //auto leader_dir = this->leader->WorldPose.Pos() - this->last_leader_pose.Pos();
     
     if (leader_dir.Length() < 10e-6){
         

@@ -216,6 +216,8 @@ class Follower: public Vehicle{
         double rand_angle = ignition::math::Rand::DblUniform(0,6.28);
         std::string leader_name;
         boost::shared_ptr<Vehicle> leader;
+        //gazebo::physics::EntityPtr leader;
+        //ignition::math::Vector3d last_leader_pose;
         void SetNextTarget(double dt);
 
     public:
@@ -232,6 +234,7 @@ class Follower: public Vehicle{
         void OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
 
         void LoadLeader(std::vector<boost::shared_ptr<Vehicle>> vehicles);
+        //void LoadLeader(gazebo::physics::EntityPtr leader);
 };
 
 
