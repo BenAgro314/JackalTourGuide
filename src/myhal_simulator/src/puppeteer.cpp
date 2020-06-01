@@ -68,6 +68,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         vehicle->LoadLeader(this->vehicles);
     }
 
+    std::cout << "LOADED ALL VEHICLES\n";
+
 }
 
 void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){

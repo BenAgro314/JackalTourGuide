@@ -129,14 +129,33 @@
         <interpolate_x>true</interpolate_x>
       </animation>
       <plugin name = "vehicle_type" filename = "stander"/>
-      <plugin name = "standing_duration" filename = "5"/>
-      <plugin name = "walking_duration" filename = "3"/>
+      <plugin name = "standing_duration" filename = "10"/>
+      <plugin name = "walking_duration" filename = "1"/>
   </actor>
 
 
   <actor name="actor_2">
 
       <pose>2 2 1 0 0 0</pose>
+      <skin>
+      <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+      </skin>
+      <animation name="walking"> 
+        <filename>walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <animation name="standing"> 
+        <filename>talk_a.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <plugin name = "vehicle_type" filename = "follower"/>
+      <plugin name = "max_speed" filename = "1.1"/>
+      <plugin name = "leader" filename = "actor_1"/>
+  </actor>
+
+  <actor name="actor_3">
+
+      <pose>4 4 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>

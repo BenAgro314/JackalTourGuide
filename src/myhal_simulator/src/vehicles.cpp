@@ -164,7 +164,7 @@ void Vehicle::AvoidActors(std::vector<boost::shared_ptr<Vehicle>> vehicles){
 		ignition::math::Vector3d rad = this_pos-other_pos;
 		double dist = rad.Length();
 		
-		if (dist<this->obstacle_margin){
+		if (dist<this->obstacle_margin && dist > 0){
 			rad.Normalize();	
 			rad/=dist;
 			steer += rad;
@@ -364,7 +364,7 @@ void Boid::Separation(std::vector<boost::shared_ptr<Vehicle>> vehicles){
         rad.Normalize();
         double angle = std::acos(rad.Dot(dir));
 		
-		if (dist<this->obstacle_margin){
+		if (dist<this->obstacle_margin && dist > 0){
 			rad.Normalize();	
 			rad/=dist;
 			steer += rad;
@@ -593,6 +593,7 @@ void Follower::LoadLeader(std::vector<boost::shared_ptr<Vehicle>> vehicles){
     for (auto other: vehicles){
         if (other->GetName() == this->leader_name){
             this->leader = other;
+            
             found = true;
         }
     }
@@ -603,6 +604,7 @@ void Follower::LoadLeader(std::vector<boost::shared_ptr<Vehicle>> vehicles){
 
 void Follower::SetNextTarget(double dt){
     auto leader_dir = this->leader->GetVelocity();
+    
     if (leader_dir.Length() < 10e-6){
         
         auto rotation = ignition::math::Quaterniond(0,0,this->leader->GetPose().Rot().Yaw());
@@ -635,7 +637,7 @@ void Follower::SetNextTarget(double dt){
     }
 
     this->curr_target = this->leader->GetPose().Pos() - leader_dir/2;
-
+   
 }
 
 void Follower::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
