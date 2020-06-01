@@ -626,7 +626,11 @@ void Follower::SetNextTarget(double dt){
     if (utilities::get_normal_to_edge(this->pose.Pos(), front_edge, normal)){
         if (normal.Length() < this->obstacle_margin){
             auto mag = normal.Length();
+            if (mag == 0){
+                mag = 10e-9;
+            }
             normal.Normalize();
+
             normal *= 1/(mag*mag);
             if (normal.Length() > this->max_force){
                 normal.Normalize();
