@@ -195,6 +195,7 @@ std::string Vehicle::GetName(){
     return this->actor->GetName();
 }
 
+
 // WANDERER
 
 void Wanderer::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){

@@ -27,7 +27,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
         auto model = world->ModelByIndex(i);
-
+        std::cout << model->GetName() << std::endl;
         auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
 
         if (act){
@@ -60,7 +60,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
             box.Max().Z() = 0;
             auto new_node = QTData(box, model, entity_type);
             this->static_quadtree->Insert(new_node);
-        }
+        } 
         
     }
 
@@ -77,6 +77,16 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
 
     if (dt < 1/this->update_freq){
         return;
+    }
+
+    if ((this->robot_name != "") && this->robot == nullptr){
+        for (unsigned int i = 0; i < world->ModelCount(); ++i) {
+            auto model = world->ModelByIndex(i);
+            if (model->GetName() == this->robot_name){
+                this->robot = model;
+                ROS_WARN("ADDED ROBOT");
+            }
+        }
     }
 
     this->last_update = _info.simTime;
@@ -99,8 +109,10 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
 
         std::vector<gazebo::physics::EntityPtr> near_objects;
 
-        auto min = ignition::math::Vector3d(vehicle->GetPose().Pos().X() - 2, vehicle->GetPose().Pos().Y() - 2, 0);
-        auto max = ignition::math::Vector3d(vehicle->GetPose().Pos().X() + 2, vehicle->GetPose().Pos().Y() + 2, 0);
+        auto vehicle_pos = vehicle->GetPose();
+
+        auto min = ignition::math::Vector3d(vehicle_pos.Pos().X() - 2, vehicle_pos.Pos().Y() - 2, 0);
+        auto max = ignition::math::Vector3d(vehicle_pos.Pos().X() + 2, vehicle_pos.Pos().Y() + 2, 0);
         auto query_range = ignition::math::Box(min,max);
 
         std::vector<QTData> query_objects = this->static_quadtree->QueryRange(query_range);
@@ -110,6 +122,11 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
             }
             
         }
+
+        if (this->robot != nullptr && (vehicle_pos.Pos() - this->robot->WorldPose().Pos()).Length()<2){
+            near_objects.push_back(this->robot);
+        }
+
         std::vector<QTData> query_vehicles = this->vehicle_quadtree->QueryRange(query_range);
         for (auto n: query_vehicles){
             if (n.type == vehicle_type){
@@ -124,6 +141,11 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
 void Puppeteer::ReadSDF(){
     if (this->sdf->HasElement("building_name")){
         this->building_name =this->sdf->GetElement("building_name")->Get<std::string>();
+    }
+    
+    if (this->sdf->HasElement("robot_name")){
+        this->robot_name = this->sdf->GetElement("robot_name")->Get<std::string>();
+        //std::cout << this->robot_name << std::endl;
     }
 }
 

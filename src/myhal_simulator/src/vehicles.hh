@@ -85,6 +85,7 @@ class Vehicle{
         ignition::math::Vector3d GetVelocity();
 
         std::string GetName();
+
 };
 
 class Wanderer: public Vehicle{

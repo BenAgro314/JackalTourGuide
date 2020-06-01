@@ -31,6 +31,10 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         std::string building_name;
 
+        std::string robot_name = "";
+
+        gazebo::physics::EntityPtr robot = nullptr;
+
         gazebo::physics::EntityPtr building; 
 
         double update_freq = 60;
