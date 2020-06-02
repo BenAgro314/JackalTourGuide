@@ -84,6 +84,24 @@ bool utilities::inside_box(ignition::math::Box box, ignition::math::Vector3d poi
 }
 
 
+
+double utilities::width(ignition::math::Box box){
+	return std::abs(box.Max().X() - box.Min().X());
+}
+
+double utilities::height(ignition::math::Box box){
+	return std::abs(box.Max().Y() - box.Min().Y());
+}
+
+double utilities::map(double val, double from_min, double from_max, double to_min, double to_max){
+	double frac = (val - from_min)/(from_max-from_min);
+	return to_min + frac*(to_max-to_min);
+}
+
+void utilities::print_vector(ignition::math::Vector3d vec){
+	std::printf("(%f, %f, %f)\n", vec.X(), vec.Y(), vec.Z());
+}
+
 //returns the shortest normal vector between pos and one of the edges on the bounding box of entity
 // will return the shortest corner distance if the normal does not exist 
 

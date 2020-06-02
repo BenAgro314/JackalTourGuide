@@ -94,7 +94,6 @@
 
     <plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
-      <robot_name>jackal</robot_name>
     </plugin>
  
     <!--plugin name="factory" filename="libworld_plugin.so"/-->
@@ -129,7 +128,7 @@
         <filename>talk_a.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-      <plugin name = "vehicle_type" filename = "follower"/>
+      <plugin name = "vehicle_type" filename = "flow_follower"/>
       <plugin name = "standing_duration" filename = "10"/>
       <plugin name = "walking_duration" filename = "1"/>
       <plugin name = "leader" filename = "jackal"/>
@@ -150,7 +149,7 @@
         <filename>talk_a.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-      <plugin name = "vehicle_type" filename = "follower"/>
+      <plugin name = "vehicle_type" filename = "flow_follower"/>
       <plugin name = "max_speed" filename = "1.1"/>
       <plugin name = "leader" filename = "jackal"/>
   </actor>
@@ -169,7 +168,7 @@
         <filename>talk_a.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-      <plugin name = "vehicle_type" filename = "follower"/>
+      <plugin name = "vehicle_type" filename = "flow_follower"/>
       <plugin name = "max_speed" filename = "1.1"/>
       <plugin name = "leader" filename = "jackal"/>
   </actor>

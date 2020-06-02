@@ -7,6 +7,11 @@ GZ_REGISTER_WORLD_PLUGIN(Puppeteer);
 
 void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
+    //testing
+
+    this->fields.push_back(FlowField(-10,-10, 20, 20, 1));
+    //testing
+
     this->world = _world;
     this->sdf = _sdf;
     this->update_connection = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&Puppeteer::OnUpdate, this, std::placeholders::_1));
@@ -232,6 +237,12 @@ boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr ac
             } else{
                 std::cout << "leader name not found\n";
             }
+        } else if (actor_info["vehicle_type"] == "flow_follower"){
+
+            res = boost::make_shared<FlowFollower>(actor, this->vehicle_params["mass"], this->vehicle_params["max_force"], max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities, this->fields);
+            
+        } else {
+            std::cout << "INVALID VEHICLE TYPE\n";
         }
     }
     

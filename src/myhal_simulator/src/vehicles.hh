@@ -241,8 +241,48 @@ class Follower: public Vehicle{
         void LoadLeader(gazebo::physics::EntityPtr leader);
 };
 
+class FlowField{
 
+    private:
 
+        std::vector<std::vector<ignition::math::Vector3d>> field;
+
+        int rows;
+
+        int cols;
+
+        int resolution;
+
+        ignition::math::Box rect;
+
+    public:
+
+        FlowField(double min_x, double min_y, double width, double height, int resolution);
+
+        bool Lookup(ignition::math::Vector3d pos, ignition::math::Vector3d &res);
+};
+
+class FlowFollower: public Wanderer{
+
+    protected:
+
+        std::vector<FlowField> fields;
+
+        bool Follow();
+
+    public: 
+        
+        FlowFollower(gazebo::physics::ActorPtr _actor,
+         double _mass,
+         double _max_force, 
+         double _max_speed, 
+         ignition::math::Pose3d initial_pose, 
+         ignition::math::Vector3d initial_velocity, 
+         std::vector<gazebo::physics::EntityPtr> objects, 
+         std::vector<FlowField> _fields);
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
+};
 
 
 #endif

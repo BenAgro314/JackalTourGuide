@@ -666,3 +666,102 @@ void Follower::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std
     this->UpdateModel();
 }
 
+FlowField::FlowField(double min_x, double min_y, double width, double height, int resolution){
+   
+    this->rect = ignition::math::Box(ignition::math::Vector3d(min_x,min_y,0), ignition::math::Vector3d(min_x+width,min_y+height,0));
+    this->resolution = resolution;
+
+    this->cols = (int) width/this->resolution;
+    this->rows = (int) height/this->resolution;
+
+    for (int r = 0; r<this->rows; r++){
+        std::vector<ignition::math::Vector3d> row;
+        
+        for (int c= 0; c<this->cols; c++){
+            double theta = ignition::math::Rand::DblUniform(0,6.28); // come back and use perlin noise
+          
+            auto rot = ignition::math::Quaterniond(0,0,theta);
+            auto dir = ignition::math::Vector3d(1,0,0);
+            dir = rot.RotateVector(dir);
+            row.push_back(dir);
+
+        }
+       
+        this->field.push_back(row);
+    }
+}
+
+bool FlowField::Lookup(ignition::math::Vector3d pos, ignition::math::Vector3d &res){
+    if (!utilities::inside_box(this->rect, pos)){
+        return false;
+    }
+
+    int row_num = (int) (this->rect.Max().Y() - pos.Y())/this->resolution;
+    if (row_num >= this->rows){
+        row_num = this->rows-1;
+    }
+    if (row_num < 0){
+        row_num = 0;
+    }
+    int col_num = (int) (pos.X() -this->rect.Min().X())/this->resolution;
+    if (col_num >= this->cols){
+        col_num = this->cols-1;
+    }
+    if (col_num < 0){
+        col_num = 0;
+    }
+
+    res = this->field[row_num][col_num];
+    
+    return true;
+}
+
+bool FlowFollower::Follow(){
+    ignition::math::Vector3d desired;
+    bool found = false;
+    for (auto field: this->fields){
+        if (field.Lookup(this->pose.Pos(), desired)){
+            
+            found = true;
+            break;
+        }
+    }
+    if (found){
+        desired*=max_speed;
+        auto steer = desired-this->velocity;
+        if (steer.Length() > this->max_force){
+            steer.Normalize();
+            steer*=this->max_force;
+        }
+        
+        this->ApplyForce(steer);
+    }
+    return found;
+}
+
+FlowFollower::FlowFollower(gazebo::physics::ActorPtr _actor,
+double _mass,
+double _max_force, 
+double _max_speed, 
+ignition::math::Pose3d initial_pose, 
+ignition::math::Vector3d initial_velocity, 
+std::vector<gazebo::physics::EntityPtr> objects,
+std::vector<FlowField> _fields)
+: Wanderer(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, objects){
+
+    this->fields = _fields;
+
+}
+
+void FlowFollower::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
+    
+    if (!this->Follow()){
+        this->SetNextTarget();
+        this->Seek(this->curr_target);
+    }
+    this->AvoidActors(vehicles);
+    this->AvoidObstacles(objects);
+    
+    this->UpdatePosition(dt);
+    this->UpdateModel();
+}

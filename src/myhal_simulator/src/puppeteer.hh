@@ -52,6 +52,8 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         std::vector<boost::shared_ptr<Follower>> follower_queue;
 
+        std::vector<FlowField> fields;
+
     public: 
         
         void Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf);
