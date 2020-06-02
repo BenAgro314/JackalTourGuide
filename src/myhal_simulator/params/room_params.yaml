@@ -2,7 +2,7 @@ room_names:
   - main_atrium
   - lower_middle
   - upper_middle
-  - mid_right
+  #- mid_right
   - long_right
   #- upper_hallway
   #- test_box
@@ -36,18 +36,24 @@ geo1:
   y_max: 2
 
 pos1:
-  - -6
+  - -4 
   - 0
-  - -2
-  - 0
-  - 2
-  - 0
-  - -6
+  - -4
   - -3
-  - -2
+  - 3
   - -3
-  - 2
-  - -3
+  # - -6
+  # - 0
+  # - -2
+  # - 0
+  # - 2
+  # - 0
+  # - -6
+  # - -3
+  # - -2
+  # - -3
+  # - 2
+  # - -3
 
 lower_middle:
   geometry: geo2
