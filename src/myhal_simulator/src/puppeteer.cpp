@@ -27,7 +27,6 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
         auto model = world->ModelByIndex(i);
-        std::cout << model->GetName() << std::endl;
         auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
 
         if (act){
@@ -64,9 +63,6 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         
     }
 
-    for (auto vehicle: this->follower_queue){
-        vehicle->LoadLeader(this->vehicles);
-    }
 
     std::cout << "LOADED ALL VEHICLES\n";
 
@@ -84,6 +80,9 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
             auto model = world->ModelByIndex(i);
             if (model->GetName() == this->robot_name){
                 this->robot = model;
+                for (auto vehicle: this->follower_queue){
+                    vehicle->LoadLeader(this->robot);
+                }
                 ROS_WARN("ADDED ROBOT");
             }
         }

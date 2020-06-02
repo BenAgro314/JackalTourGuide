@@ -96,7 +96,7 @@ actor_names:
   - actor_basic_stander
   - actor_basic_boid
   - actor_basic_random_walker
-  #- actor_hallway1
+  - actor_basic_follower
 
 actor_basic_wanderer: 
   filename: model://actor/meshes/SKIN_man_blue_shirt.dae
@@ -118,10 +118,10 @@ actor_basic_random_walker:
   plugin: basic_random_walker
   obstacle_margin: "0.6"
 
-#actor_hallway1:
-#  filename: moonwalk.dae
-#  plugin: basic_path_follower
-#  obstacle_margin: "0.5"
+actor_basic_follower:
+  filename: moonwalk.dae
+  plugin: basic_follower
+  obstacle_margin: "0.5"
 
 # table group parameters 
 

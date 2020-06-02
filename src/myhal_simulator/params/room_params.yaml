@@ -10,8 +10,8 @@ room_names:
 test_box:
   geometry: box
   positions: pos0
-  enclosed: "1"
-  scenario: basic_crowd 
+  enclosed: "0"
+  scenario: basic_box
 
 box:
   x_min: -5

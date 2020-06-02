@@ -589,37 +589,31 @@ std::string _leader_name)
 
 }
 
-void Follower::LoadLeader(std::vector<boost::shared_ptr<Vehicle>> vehicles){
-    bool found  = false;
-    for (auto other: vehicles){
-        if (other->GetName() == this->leader_name){
-            this->leader = other;
-            
-            found = true;
-        }
-    }
-    if (!found){
-         std::cout << "leader name not found\n";
-    }
-}
-/*
+
 void Follower::LoadLeader(gazebo::physics::EntityPtr leader){
     this->leader = leader;
-    this->last_leader_pos = this->leader->WorldPose();
+    this->last_leader_pose = this->leader->WorldPose();
 }
-*/
+
 
 void Follower::SetNextTarget(double dt){
-    auto leader_dir = this->leader->GetVelocity();
 
-    //auto leader_dir = this->leader->WorldPose.Pos() - this->last_leader_pose.Pos();
+    if (this->leader == nullptr){
+        this->curr_target = this->pose.Pos();
+        return;
+    }
+    //auto leader_dir = this->leader->GetVelocity();
+    auto leader_pose = this->leader->WorldPose();
+    auto leader_dir = leader_pose.Pos() - this->last_leader_pose.Pos();
     
+    auto rotation = ignition::math::Quaterniond(0,0,leader_pose.Rot().Yaw()+this->rand_angle_offset);
+
     if (leader_dir.Length() < 10e-6){
         
-        auto rotation = ignition::math::Quaterniond(0,0,this->leader->GetPose().Rot().Yaw());
-
-        auto offset = rotation.RotateVector(ignition::math::Vector3d(1,0,0));
-        this->curr_target = this->leader->GetPose().Pos() - offset*2;
+        auto offset = rotation.RotateVector(ignition::math::Vector3d(this->rand_radius,0,0));
+        this->curr_target = leader_pose.Pos();
+        this->curr_target.Z() = this->pose.Pos().Z();
+        this->curr_target -= offset;
        
         return;
     }
@@ -628,7 +622,7 @@ void Follower::SetNextTarget(double dt){
 
     // if we find ourselves in front of the leader, steer laterally away from the leaders path 
 
-    auto front_edge = ignition::math::Line3d(this->leader->GetPose().Pos(), this->leader->GetPose().Pos() + leader_dir);
+    auto front_edge = ignition::math::Line3d(leader_pose.Pos(), leader_pose.Pos() + leader_dir);
 
     ignition::math::Vector3d normal;
 
@@ -649,8 +643,14 @@ void Follower::SetNextTarget(double dt){
         }
     }
 
-    this->curr_target = this->leader->GetPose().Pos() - leader_dir/2;
+    leader_dir*=this->rand_radius;
+    leader_dir = rotation.RotateVector(leader_dir);
+
+    this->curr_target = leader_pose.Pos();
+    this->curr_target.Z() = this->pose.Pos().Z();
+    this->curr_target-=leader_dir/2;
    
+    this->last_leader_pose = leader_pose;
 }
 
 void Follower::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){

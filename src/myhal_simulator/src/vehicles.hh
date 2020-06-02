@@ -213,11 +213,16 @@ class Follower: public Vehicle{
 
     protected:
 
-        double rand_angle = ignition::math::Rand::DblUniform(0,6.28);
-        std::string leader_name;
-        boost::shared_ptr<Vehicle> leader;
-        //gazebo::physics::EntityPtr leader;
-        //ignition::math::Vector3d last_leader_pose;
+        double rand_angle_offset = ignition::math::Rand::DblUniform(-2.5,2.5);
+
+        double rand_radius = ignition::math::Rand::DblUniform(2,2.5);
+
+        gazebo::physics::EntityPtr leader;
+
+        std::string leader_name; 
+
+        ignition::math::Pose3d last_leader_pose;
+
         void SetNextTarget(double dt);
 
     public:
@@ -233,8 +238,7 @@ class Follower: public Vehicle{
 
         void OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
 
-        void LoadLeader(std::vector<boost::shared_ptr<Vehicle>> vehicles);
-        //void LoadLeader(gazebo::physics::EntityPtr leader);
+        void LoadLeader(gazebo::physics::EntityPtr leader);
 };
 
 

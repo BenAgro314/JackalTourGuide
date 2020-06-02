@@ -5,7 +5,7 @@ scenario_names:
   - basic_no_people
   - sparse_study_area
   - casual_study_area
-#  - hallway1
+  - basic_box
 
 basic_crowd:
   pop_density: "0.4"
@@ -48,6 +48,14 @@ casual_study_area:
   actor: actor_basic_random_walker
   model_list: model_list1
   table_group_list: group_casual
+
+basic_box:
+  pop_density: "0.1"
+  table_percentage: "0"
+  actor: actor_basic_follower
+  model_list: model_list1
+  table_group_list: group_list1
+
 
 #hallway1:
 #  pop_density: "0.1"

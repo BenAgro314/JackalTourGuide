@@ -102,7 +102,7 @@
     <include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>
-      <uri>model://10x10Box</uri>
+      <uri>model://20x20box</uri>
 	  </include>
 
     <!--include>
@@ -129,9 +129,10 @@
         <filename>talk_a.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-      <plugin name = "vehicle_type" filename = "wanderer"/>
+      <plugin name = "vehicle_type" filename = "follower"/>
       <plugin name = "standing_duration" filename = "10"/>
       <plugin name = "walking_duration" filename = "1"/>
+      <plugin name = "leader" filename = "jackal"/>
   </actor>
 
 
@@ -149,9 +150,9 @@
         <filename>talk_a.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-      <plugin name = "vehicle_type" filename = "wanderer"/>
+      <plugin name = "vehicle_type" filename = "follower"/>
       <plugin name = "max_speed" filename = "1.1"/>
-      <plugin name = "leader" filename = "actor_1"/>
+      <plugin name = "leader" filename = "jackal"/>
   </actor>
 
   <actor name="actor_3">
@@ -168,9 +169,9 @@
         <filename>talk_a.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-      <plugin name = "vehicle_type" filename = "wanderer"/>
+      <plugin name = "vehicle_type" filename = "follower"/>
       <plugin name = "max_speed" filename = "1.1"/>
-      <plugin name = "leader" filename = "actor_1"/>
+      <plugin name = "leader" filename = "jackal"/>
   </actor>
 
  
