@@ -19,21 +19,21 @@ find_package(gazebo REQUIRED)
 
 catkin_package(
 	DEPENDS gazebo_ros roscpp rospy std_msgs
-	INCLUDE_DIRS 
+	INCLUDE_DIRS src/include
 )
 
 
 
-link_directories(${GAZEBO_LIBRARY_DIRS})
-include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
+link_directories(src/include ${GAZEBO_LIBRARY_DIRS})
+include_directories(src/include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 
-add_library(Perlin src/Perlin.cpp)
+add_library(Perlin src/include/Perlin.cpp)
 target_link_libraries(Perlin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
-add_library(utilities src/utilities.cpp)
+add_library(utilities src/include/utilities.cpp)
 target_link_libraries(utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
-add_library(sdfstring src/sdfstring.cpp)
+add_library(sdfstring src/include/sdfstring.cpp)
 target_link_libraries(sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(vehicles src/vehicles.cpp)
@@ -42,7 +42,7 @@ target_link_libraries(vehicles utilities Perlin ${catkin_LIBRARIES} ${GAZEBO_LIB
 add_library(world_entities src/world_entities.cpp)
 target_link_libraries(world_entities sdfstring utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
-add_library(quadtree src/quadtree.cpp)
+add_library(quadtree src/include/quadtree.cpp)
 target_link_libraries(quadtree utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(puppeteer src/puppeteer.cpp)
