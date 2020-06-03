@@ -251,13 +251,13 @@ class FlowField{
 
         int cols;
 
-        int resolution;
+        double resolution;
 
         ignition::math::Box rect;
 
     public:
 
-        FlowField(double min_x, double min_y, double width, double height, int resolution);
+        FlowField(double min_x, double min_y, double width, double height, double resolution);
 
         bool Lookup(ignition::math::Vector3d pos, ignition::math::Vector3d &res);
 };

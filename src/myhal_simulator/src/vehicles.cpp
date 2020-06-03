@@ -666,7 +666,7 @@ void Follower::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std
     this->UpdateModel();
 }
 
-FlowField::FlowField(double min_x, double min_y, double width, double height, int resolution){
+FlowField::FlowField(double min_x, double min_y, double width, double height, double resolution){
    
     this->rect = ignition::math::Box(ignition::math::Vector3d(min_x,min_y,0), ignition::math::Vector3d(min_x+width,min_y+height,0));
     this->resolution = resolution;
@@ -674,16 +674,29 @@ FlowField::FlowField(double min_x, double min_y, double width, double height, in
     this->cols = (int) width/this->resolution;
     this->rows = (int) height/this->resolution;
 
+    auto center = (this->rect.Max() - this->rect.Min())/2 + this->rect.Min();
+
+
     for (int r = 0; r<this->rows; r++){
         std::vector<ignition::math::Vector3d> row;
         
         for (int c= 0; c<this->cols; c++){
+
+            // make theta 
             double theta = ignition::math::Rand::DblUniform(0,6.28); // come back and use perlin noise
+
+            auto pos = ignition::math::Vector3d( c*this->resolution - this->resolution/2 + this->rect.Min().X(), this->resolution/2-r*this->resolution + this->rect.Max().Y(), 0);
+
+            // make theta 
           
-            auto rot = ignition::math::Quaterniond(0,0,theta);
-            auto dir = ignition::math::Vector3d(1,0,0);
+            auto rot = ignition::math::Quaterniond(0,0,1.57);
+            //auto dir = ignition::math::Vector3d(1,0,0);
+            
+            auto dir = pos-center;
             dir = rot.RotateVector(dir);
+            dir.Normalize();
             row.push_back(dir);
+            utilities::print_vector(dir);
 
         }
        
