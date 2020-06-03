@@ -1,4 +1,5 @@
 #include "vehicles.hh"
+#include "Perlin.h"
 
 //VEHICLE CLASS
 
@@ -676,27 +677,23 @@ FlowField::FlowField(double min_x, double min_y, double width, double height, do
 
     auto center = (this->rect.Max() - this->rect.Min())/2 + this->rect.Min();
 
-
+    Perlin p;
     for (int r = 0; r<this->rows; r++){
         std::vector<ignition::math::Vector3d> row;
         
         for (int c= 0; c<this->cols; c++){
 
-            // make theta 
-            double theta = ignition::math::Rand::DblUniform(0,6.28); // come back and use perlin noise
-
-            auto pos = ignition::math::Vector3d( c*this->resolution - this->resolution/2 + this->rect.Min().X(), this->resolution/2-r*this->resolution + this->rect.Max().Y(), 0);
-
-            // make theta 
+            auto pos = ignition::math::Vector3d( c*this->resolution + this->rect.Min().X(), -1*r*this->resolution + this->rect.Max().Y(), 0);
+            double x = utilities::map(pos.X(), this->rect.Min().X(),this->rect.Max().X(), 0, 1);
+            double y = utilities::map(pos.Y(), this->rect.Min().Y(),this->rect.Max().Y(), 0, 1);
           
-            auto rot = ignition::math::Quaterniond(0,0,1.57);
-            //auto dir = ignition::math::Vector3d(1,0,0);
             
-            auto dir = pos-center;
+            double theta = utilities::map(p.noise(x, y, 0), -0.5, 0.5, 0, 6.28);
+       
+            auto dir = ignition::math::Vector3d(1,0,0);
+            auto rot = ignition::math::Quaterniond(0,0,theta);
             dir = rot.RotateVector(dir);
-            dir.Normalize();
             row.push_back(dir);
-            utilities::print_vector(dir);
 
         }
        

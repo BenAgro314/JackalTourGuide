@@ -27,6 +27,9 @@ catkin_package(
 link_directories(${GAZEBO_LIBRARY_DIRS})
 include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 
+add_library(Perlin src/Perlin.cpp)
+target_link_libraries(Perlin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 add_library(utilities src/utilities.cpp)
 target_link_libraries(utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
@@ -34,7 +37,7 @@ add_library(sdfstring src/sdfstring.cpp)
 target_link_libraries(sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(vehicles src/vehicles.cpp)
-target_link_libraries(vehicles utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(vehicles utilities Perlin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(world_entities src/world_entities.cpp)
 target_link_libraries(world_entities sdfstring utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
