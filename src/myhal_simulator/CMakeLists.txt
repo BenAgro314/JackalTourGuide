@@ -33,11 +33,14 @@ target_link_libraries(Perlin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 add_library(utilities src/include/utilities.cpp)
 target_link_libraries(utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_library(flowfield src/include/flowfield.cpp)
+target_link_libraries(flowfield utilities Perlin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 add_library(sdfstring src/include/sdfstring.cpp)
 target_link_libraries(sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(vehicles src/vehicles.cpp)
-target_link_libraries(vehicles utilities Perlin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(vehicles utilities Perlin flowfield ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(world_entities src/world_entities.cpp)
 target_link_libraries(world_entities sdfstring utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
@@ -46,11 +49,11 @@ add_library(quadtree src/include/quadtree.cpp)
 target_link_libraries(quadtree utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(puppeteer src/puppeteer.cpp)
-target_link_libraries(puppeteer utilities quadtree vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(puppeteer utilities quadtree vehicles flowfield ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_executable(world_factory src/world_factory.cpp) 
 target_link_libraries(world_factory world_entities ${catkin_LIBRARIES})
 
 add_executable(test_file src/tests.cpp) 
-target_link_libraries(test_file world_entities quadtree ${catkin_LIBRARIES})
+target_link_libraries(test_file world_entities quadtree vehicles ${catkin_LIBRARIES})
 

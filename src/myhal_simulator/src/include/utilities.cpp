@@ -72,15 +72,21 @@ bool utilities::get_normal_to_edge(ignition::math::Vector3d pos, ignition::math:
     }
 }
 
-bool utilities::inside_box(ignition::math::Box box, ignition::math::Vector3d point){
+bool utilities::inside_box(ignition::math::Box box, ignition::math::Vector3d point, bool edge){
 	ignition::math::Vector3d min_corner = box.Min();
 	ignition::math::Vector3d max_corner = box.Max();
 
-	
-	return (point.X() < std::max(min_corner.X(), max_corner.X())
-	&& point.X() > std::min(min_corner.X(), max_corner.X())
-	&& point.Y() < std::max(min_corner.Y(), max_corner.Y())
-	&& point.Y() > std::min(min_corner.Y(), max_corner.Y()));
+	if (edge){
+		return (point.X() <= std::max(min_corner.X(), max_corner.X())
+		&& point.X() >= std::min(min_corner.X(), max_corner.X())
+		&& point.Y() <= std::max(min_corner.Y(), max_corner.Y())
+		&& point.Y() >= std::min(min_corner.Y(), max_corner.Y()));
+	} else{
+		return (point.X() < std::max(min_corner.X(), max_corner.X())
+		&& point.X() > std::min(min_corner.X(), max_corner.X())
+		&& point.Y() < std::max(min_corner.Y(), max_corner.Y())
+		&& point.Y() > std::min(min_corner.Y(), max_corner.Y()));
+	}
 }
 
 
@@ -98,8 +104,11 @@ double utilities::map(double val, double from_min, double from_max, double to_mi
 	return to_min + frac*(to_max-to_min);
 }
 
-void utilities::print_vector(ignition::math::Vector3d vec){
-	std::printf("(%f, %f, %f)\n", vec.X(), vec.Y(), vec.Z());
+void utilities::print_vector(ignition::math::Vector3d vec, bool newline){
+	std::printf("(%.2f, %.2f, %.2f)", vec.X(), vec.Y(), vec.Z());
+	if (newline){
+		std::printf("\n");
+	}
 }
 
 //returns the shortest normal vector between pos and one of the edges on the bounding box of entity

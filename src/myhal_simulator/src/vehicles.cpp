@@ -667,64 +667,6 @@ void Follower::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std
     this->UpdateModel();
 }
 
-FlowField::FlowField(double min_x, double min_y, double width, double height, double resolution){
-   
-    this->rect = ignition::math::Box(ignition::math::Vector3d(min_x,min_y,0), ignition::math::Vector3d(min_x+width,min_y+height,0));
-    this->resolution = resolution;
-
-    this->cols = (int) width/this->resolution;
-    this->rows = (int) height/this->resolution;
-
-    auto center = (this->rect.Max() - this->rect.Min())/2 + this->rect.Min();
-
-    Perlin p;
-    for (int r = 0; r<this->rows; r++){
-        std::vector<ignition::math::Vector3d> row;
-        
-        for (int c= 0; c<this->cols; c++){
-
-            auto pos = ignition::math::Vector3d( c*this->resolution + this->rect.Min().X(), -1*r*this->resolution + this->rect.Max().Y(), 0);
-            double x = utilities::map(pos.X(), this->rect.Min().X(),this->rect.Max().X(), 0, 1);
-            double y = utilities::map(pos.Y(), this->rect.Min().Y(),this->rect.Max().Y(), 0, 1);
-          
-            
-            double theta = utilities::map(p.noise(x, y, 0), -0.5, 0.5, 0, 6.28);
-       
-            auto dir = ignition::math::Vector3d(1,0,0);
-            auto rot = ignition::math::Quaterniond(0,0,theta);
-            dir = rot.RotateVector(dir);
-            row.push_back(dir);
-
-        }
-       
-        this->field.push_back(row);
-    }
-}
-
-bool FlowField::Lookup(ignition::math::Vector3d pos, ignition::math::Vector3d &res){
-    if (!utilities::inside_box(this->rect, pos)){
-        return false;
-    }
-
-    int row_num = (int) (this->rect.Max().Y() - pos.Y())/this->resolution;
-    if (row_num >= this->rows){
-        row_num = this->rows-1;
-    }
-    if (row_num < 0){
-        row_num = 0;
-    }
-    int col_num = (int) (pos.X() -this->rect.Min().X())/this->resolution;
-    if (col_num >= this->cols){
-        col_num = this->cols-1;
-    }
-    if (col_num < 0){
-        col_num = 0;
-    }
-
-    res = this->field[row_num][col_num];
-    
-    return true;
-}
 
 bool FlowFollower::Follow(){
     ignition::math::Vector3d desired;

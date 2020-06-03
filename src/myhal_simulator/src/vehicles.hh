@@ -11,6 +11,7 @@
 #include <utility>
 #include <string>
 #include "utilities.hh"
+#include "flowfield.hh"
 
 #define ALI 0 
 #define COH 1
@@ -241,26 +242,7 @@ class Follower: public Vehicle{
         void LoadLeader(gazebo::physics::EntityPtr leader);
 };
 
-class FlowField{
 
-    private:
-
-        std::vector<std::vector<ignition::math::Vector3d>> field;
-
-        int rows;
-
-        int cols;
-
-        double resolution;
-
-        ignition::math::Box rect;
-
-    public:
-
-        FlowField(double min_x, double min_y, double width, double height, double resolution);
-
-        bool Lookup(ignition::math::Vector3d pos, ignition::math::Vector3d &res);
-};
 
 class FlowFollower: public Wanderer{
 

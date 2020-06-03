@@ -22,7 +22,7 @@ namespace utilities{
 
     double height(ignition::math::Box box);
 
-    bool inside_box(ignition::math::Box box, ignition::math::Vector3d point);
+    bool inside_box(ignition::math::Box box, ignition::math::Vector3d point, bool edge = false);
 
     bool get_normal_to_edge(ignition::math::Vector3d pos, ignition::math::Line3d edge, ignition::math::Vector3d &normal);
 
@@ -30,7 +30,7 @@ namespace utilities{
 
     double map(double val, double from_min, double from_max, double to_min, double to_max);
 
-    void print_vector(ignition::math::Vector3d vec);
+    void print_vector(ignition::math::Vector3d vec, bool newline = true);
 
     bool contains(ignition::math::Box b1, ignition::math::Box b2); // returns true if b1 contains b2 (in a 2d)
 

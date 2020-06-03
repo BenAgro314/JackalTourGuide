@@ -7,30 +7,25 @@
 #include <cstdlib> 
 #include <iostream>
 #include <fstream>
+#include "vehicles.hh"
 
 
 void print_nodes(std::vector<QTData> list);
 
 int main(int argc, char ** argv){
-    /*
 
-    std::cout << "Helloworld\n";
+    std::printf("hello world\n");
 
-    auto test_data = std::make_shared<std::string>("data");
+    FlowField F = FlowField(ignition::math::Vector3d(0,0,0),10,10,1);
 
-    auto n1 = QTData(ignition::math::Box(ignition::math::Vector3d(1,1,0), ignition::math::Vector3d(9,9,0)), test_data, string_type);
-    auto n2 = QTData(ignition::math::Box(ignition::math::Vector3d(1,1,0), ignition::math::Vector3d(2,2,0)), test_data, string_type);
-    auto n3 = QTData(ignition::math::Box(ignition::math::Vector3d(1,1,0), ignition::math::Vector3d(2,9,0)), test_data, string_type);
+    F.PrintField();
 
-    auto Q = std::make_shared<QuadTree>(ignition::math::Box(ignition::math::Vector3d(0,0,0), ignition::math::Vector3d(10,10,0)));
-    Q->Insert(n1);
-    Q->Insert(n2);
-    Q->Insert(n3);
+    int r;
+    int c;
 
-    Q->Print();
-
-    print_nodes(Q->QueryRange(ignition::math::Box(ignition::math::Vector3d(5,0,0), ignition::math::Vector3d(10,10,0))));
-    */
+    F.PosToIndicies(ignition::math::Vector3d(9.5,-9.5,0), r, c );
+    std::printf("%d %d\n", r, c);
+    
     return 0;
 }
 
