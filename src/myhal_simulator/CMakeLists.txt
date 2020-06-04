@@ -8,6 +8,7 @@ add_definitions(-std=c++14)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   gazebo_ros
+  pcl_ros
   roscpp
   rospy
   std_msgs
@@ -18,7 +19,7 @@ find_package(gazebo REQUIRED)
 
 
 catkin_package(
-	DEPENDS gazebo_ros roscpp rospy std_msgs
+	DEPENDS gazebo_ros pcl_ros roscpp rospy std_msgs
 	INCLUDE_DIRS src/include
 )
 
@@ -57,3 +58,5 @@ target_link_libraries(world_factory world_entities ${catkin_LIBRARIES})
 add_executable(test_file src/tests.cpp) 
 target_link_libraries(test_file world_entities quadtree vehicles ${catkin_LIBRARIES})
 
+add_library(lidar_listener src/lidar_listener.cpp)
+target_link_libraries(lidar_listener utilities quadtree ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})

@@ -19,6 +19,8 @@ class FlowField{
 
         std::vector<std::vector<double>> costmap;
 
+        std::vector<std::vector<double>> integration_field;
+
         int rows;
 
         int cols;

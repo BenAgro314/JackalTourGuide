@@ -68,7 +68,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         
     }
     this->fields[0].CostMap(this->collision_entities);
-    this->fields[0].PrintField();
+    //this->fields[0].PrintField();
 
 
     std::cout << "LOADED ALL VEHICLES\n";
@@ -81,6 +81,9 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
     if (dt < 1/this->update_freq){
         return;
     }
+
+    this->last_update = _info.simTime;
+
 
     if ((this->robot_name != "") && this->robot == nullptr){
         for (unsigned int i = 0; i < world->ModelCount(); ++i) {
@@ -95,7 +98,6 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         }
     }
 
-    this->last_update = _info.simTime;
 
     // reconstruct vehicle_quad tree
 

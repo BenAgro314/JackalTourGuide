@@ -95,6 +95,11 @@
     <plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
     </plugin>
+
+    <plugin name = "lidar_listener" filename = "liblidar_listener.so">
+      <robot_name>jackal</robot_name>
+      <building_name>building</building_name>
+    </plugin>
  
     <!--plugin name="factory" filename="libworld_plugin.so"/-->
     <!-- insert stuff below -->
@@ -110,7 +115,7 @@
 			<uri>model://table_conference_2</uri>
 		</include>
     
-   <actor name="actor_1">
+   <!--actor name="actor_1">
 
       <pose>2 -2 1 0 0 0</pose>
       <skin>
@@ -171,7 +176,7 @@
       <plugin name = "vehicle_type" filename = "flow_follower"/>
       <plugin name = "max_speed" filename = "1.1"/>
       <plugin name = "leader" filename = "jackal"/>
-  </actor>
+  </actor-->
 
  
     

@@ -70,7 +70,7 @@ void FlowField::CostMap(std::vector<gazebo::physics::EntityPtr> collision_entiti
 void FlowField::PrintField(){
     for (int r = 0; r < this->rows; r++){
         for (int c = 0; c< this->cols; c++){
-            std::printf("%.1f ", this->costmap[r][c]); 
+            std::printf("%d ", this->costmap[r][c] == 1); 
         }
         std::printf("\n");
     }
