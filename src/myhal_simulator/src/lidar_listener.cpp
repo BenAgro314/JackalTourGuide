@@ -1,4 +1,5 @@
 #include "lidar_listener.hh"
+#include <string>
 
 
 GZ_REGISTER_WORLD_PLUGIN(LidarListener);
@@ -66,8 +67,13 @@ void LidarListener::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf)
     ros::init(argc, argv, "LidarListener");
     
     this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 1, &LidarListener::Callback, this);
+    this->ground_pub = nh.advertise<PointCloud>("ground_points", 1000);
+    this->wall_pub = nh.advertise<PointCloud>("wall_points", 1000);
+    this->actor_pub = nh.advertise<PointCloud>("actor_points", 1000);
+    this->table_pub = nh.advertise<PointCloud>("table_points", 1000);
+    this->chair_pub = nh.advertise<PointCloud>("chair_points", 1000);
     ros::AsyncSpinner spinner(boost::thread::hardware_concurrency());
-    ros::Rate r= 10;
+    ros::Rate r = 10;
     spinner.start();
 }
 
@@ -88,17 +94,14 @@ void LidarListener::OnUpdate(const gazebo::common::UpdateInfo &_info){
                 
                 std::cout << "ADDED ROBOT: " << this->robot->GetName() << std::endl;
                 this->robot_links = this->robot->GetLinks();
-                for (auto link: this->robot_links){
-                    std::cout << link->GetName() << std::endl;
-                }
+              
             }
         }
     } 
 
     if (this->robot != nullptr){
         this->sensor_pose = this->robot_links[0]->WorldPose();
-        this->sensor_pose.Pos().Z() += 0.539;
-        //std::printf("%f %f %f\n", sensor_pose.Pos().X(), sensor_pose.Pos().Y(), sensor_pose.Pos().Z());
+        this->sensor_pose.Pos().Z() += 0.539;//+0.1116;
     }
 
 
@@ -111,8 +114,31 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
         return;
     }
 
-    //std::printf("Cloud: width = %d, height = %d\n", msg->width, msg->height);
+    PointCloud::Ptr ground_msg (new PointCloud);
+    ground_msg->header.frame_id = "velodyne";
+    ground_msg->height = msg->height;
+    ground_msg->width = 0;
 
+    PointCloud::Ptr wall_msg (new PointCloud);
+    wall_msg->header.frame_id = "velodyne";
+    wall_msg->height = msg->height;
+    wall_msg->width = 0;
+    
+    PointCloud::Ptr actor_msg (new PointCloud);
+    actor_msg->header.frame_id = "velodyne";
+    actor_msg->height = msg->height;
+    actor_msg->width = 0;
+
+    PointCloud::Ptr table_msg (new PointCloud);
+    table_msg->header.frame_id = "velodyne";
+    table_msg->height = msg->height;
+    table_msg->width = 0;
+
+    PointCloud::Ptr chair_msg (new PointCloud);
+    chair_msg->header.frame_id = "velodyne";
+    chair_msg->height = msg->height;
+    chair_msg->width = 0;
+    
     // reconstruct vehicle quadtree:
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
     for (auto act: this->actors){
@@ -125,10 +151,11 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
     }
 
     for (auto pt : msg->points){
-
+        
         auto point = ignition::math::Vector3d(pt.x, pt.y, pt.z);
         point+=this->sensor_pose.Pos();
-
+        
+   
         std::vector<gazebo::physics::EntityPtr> near_vehicles;
         std::vector<gazebo::physics::EntityPtr> near_objects;
 
@@ -155,22 +182,45 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
         //std::cout << near_objects.size() << std::endl;
         if (near_objects.size() == 0 && near_vehicles.size() == 0){
             //std::cout << "ground" << std::endl;
-        } else{
-            /*
+            ground_msg->points.push_back(pt);
+            ground_msg->width++;
+        } else {
+            
+
             for (auto n: near_objects){
-                std::cout << n->GetName() << " ";
+                if ((n->GetName()).substr(0,4) == "Wall"){
+                    wall_msg->points.push_back(pt);
+                    wall_msg->width++;
+                } else if ((n->GetName()).substr(0,5) == "table"){
+                    table_msg->points.push_back(pt);
+                    table_msg->width++;
+                } else if ((n->GetName()).substr(0,5) == "chair"){
+                    chair_msg->points.push_back(pt);
+                    chair_msg->width++;
+                }
             }
-            */
+            
             for (auto n: near_vehicles){
-                std::cout << n->GetName() << " ";
+                actor_msg->points.push_back(pt);
+                actor_msg->width++;
             }
-            std::cout <<std::endl;
+           
         }
         //std::printf ("\t(%f, %f, %f)\n", point.X(), point.Y(), point.Z());
     }
 
-    
-    
+    pcl_conversions::toPCL(ros::Time::now(), ground_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), wall_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), actor_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), table_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), chair_msg->header.stamp);
+   
+
+    this->ground_pub.publish(ground_msg);
+    this->wall_pub.publish(wall_msg);
+    this->actor_pub.publish(actor_msg);
+    this->table_pub.publish(table_msg);
+    this->chair_pub.publish(chair_msg);
 }
 
 

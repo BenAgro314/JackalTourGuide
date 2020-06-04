@@ -110,10 +110,90 @@
 	  </include>
 
     <include>
-			<name>table</name>
-			<pose>0 3.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<name>table2_4</name>
+			<pose>-4.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://table_conference_2</uri>
 		</include>
+		<include>
+			<name>chair_6</name>
+			<pose>-5.951461 0.000000 0.000000 0.000000 -0.000000 -1.077317</pose>
+			<uri>model://chair_1</uri>
+		</include>
+
+    <include>
+			<name>table2_1</name>
+			<pose>0 -3.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<uri>model://table_conference_2</uri>
+		</include>
+
+    <include>
+			<name>table3_11</name>
+			<pose>-4.000000 -3.000000 0.000000 0.000000 -0.000000 1.570700</pose>
+			<uri>model://table_conference_3</uri>
+		</include>
+		<include>
+			<name>chair_13</name>
+			<pose>-4.000161 -4.669301 0.000000 0.000000 -0.000000 -2.830899</pose>
+			<uri>model://chair_3</uri>
+		</include>
+		<include>
+			<name>chair_14</name>
+			<pose>-1.562906 -3.000235 0.000000 0.000000 -0.000000 -0.401611</pose>
+			<uri>model://chair_3</uri>
+		</include>
+
+    <actor name="actor_basic_random_walker_25">
+			<pose>4.183624 0.951661 1.000000 0.000000 -0.000000 2.284338</pose>
+			<skin>
+				<filename>moonwalk.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>walk.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>talk_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>stand.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="random_walker">
+			</plugin>
+		</actor>
+		<actor name="actor_basic_random_walker_26">
+			<pose>1.626457 -0.757005 1.000000 0.000000 -0.000000 2.193935</pose>
+			<skin>
+				<filename>moonwalk.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>walk.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>talk_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>stand.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="random_walker">
+			</plugin>
+		</actor>
     
    <actor name="actor_1">
 

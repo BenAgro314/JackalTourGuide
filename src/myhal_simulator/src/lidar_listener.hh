@@ -35,6 +35,16 @@ class LidarListener: public gazebo::WorldPlugin{
 
         ros::Subscriber sub;
 
+        ros::Publisher ground_pub;
+
+        ros::Publisher wall_pub;
+
+        ros::Publisher actor_pub;
+
+        ros::Publisher table_pub;
+
+        ros::Publisher chair_pub;
+
         std::string robot_name = "";
 
         gazebo::physics::ModelPtr robot = nullptr;

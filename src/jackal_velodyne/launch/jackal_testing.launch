@@ -2,7 +2,7 @@
 
   
   <arg name="use_sim_time" default="true" />
-  <arg name="gui" default="true" /> <!-- adjust gui and headless to speed up simulation by removing the gazebo gui -->
+  <arg name="gui" default="false" /> <!-- adjust gui and headless to speed up simulation by removing the gazebo gui -->
   <arg name="headless" default="true" />
   <arg name="world_name" default="$(find jackal_velodyne)/worlds/sandbox.world" />
 
@@ -48,7 +48,7 @@
               args="-urdf -model jackal -param robot_description -x 0 -y 0 -z 1.0" />
 
   <!-- Rviz -->
-  <!--node pkg="rviz" type="rviz" name="rviz" args="-d $(find jackal_velodyne)/launch/include/run.rviz" /-->
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find jackal_velodyne)/launch/include/run.rviz" />
 
 
   <!-- TF -->
