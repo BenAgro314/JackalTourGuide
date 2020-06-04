@@ -14,13 +14,13 @@ void LidarListener::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf)
 
     auto building = this->world->ModelByName(this->building_name);
 
-    auto building_box = building->BoundingBox();
-    building_box.Min().X()-=1;
-    building_box.Min().Y()-=1;
-    building_box.Max().X()+=1;
-    building_box.Max().Y()+=1;
-    this->static_quadtree = boost::make_shared<QuadTree>(building_box);
-    this->vehicle_quadtree = boost::make_shared<QuadTree>(building_box);
+    this->building_box = building->BoundingBox();
+    this->building_box.Min().X()-=1;
+    this->building_box.Min().Y()-=1;
+    this->building_box.Max().X()+=1;
+    this->building_box.Max().Y()+=1;
+    this->static_quadtree = boost::make_shared<QuadTree>(this->building_box);
+    this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
 
     
 
@@ -30,6 +30,12 @@ void LidarListener::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf)
 
         if (act){
             this->actors.push_back(act);
+            auto actor_pos = act->WorldPose().Pos();
+            auto min = ignition::math::Vector3d(actor_pos.X() - 0.25, actor_pos.Y() - 0.25, 0);
+            auto max = ignition::math::Vector3d(actor_pos.X() + 0.25, actor_pos.Y() + 0.25, 0);
+            auto box = ignition::math::Box(min,max);
+            auto new_node = QTData(box, act, entity_type);
+            this->vehicle_quadtree->Insert(new_node);
             continue;
         } 
       
@@ -95,18 +101,8 @@ void LidarListener::OnUpdate(const gazebo::common::UpdateInfo &_info){
         //std::printf("%f %f %f\n", sensor_pose.Pos().X(), sensor_pose.Pos().Y(), sensor_pose.Pos().Z());
     }
 
-    //std::cout << "hi" << std::endl;
 
    
-}
-
-void LidarListener::ReadSDF(){
-    if (this->sdf->HasElement("building_name")){
-        this->building_name =this->sdf->GetElement("building_name")->Get<std::string>();
-    }
-    if (this->sdf->HasElement("robot_name")){
-        this->robot_name = this->sdf->GetElement("robot_name")->Get<std::string>();
-    }
 }
 
 void LidarListener::Callback(const PointCloud::ConstPtr& msg){
@@ -117,18 +113,27 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
 
     //std::printf("Cloud: width = %d, height = %d\n", msg->width, msg->height);
 
-    // const pcl::PointXYZ& pt : msg->point
-    //double min_z = 10000;
+    // reconstruct vehicle quadtree:
+    this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
+    for (auto act: this->actors){
+        auto actor_pos = act->WorldPose().Pos();
+        auto min = ignition::math::Vector3d(actor_pos.X() - 0.25, actor_pos.Y() - 0.25, 0);
+        auto max = ignition::math::Vector3d(actor_pos.X() + 0.25, actor_pos.Y() + 0.25, 0);
+        auto box = ignition::math::Box(min,max);
+        auto new_node = QTData(box, act, entity_type);
+        this->vehicle_quadtree->Insert(new_node);
+    }
+
     for (auto pt : msg->points){
 
-        
         auto point = ignition::math::Vector3d(pt.x, pt.y, pt.z);
         point+=this->sensor_pose.Pos();
-        //min_z = std::min(min_z, point.Z());
 
+        std::vector<gazebo::physics::EntityPtr> near_vehicles;
         std::vector<gazebo::physics::EntityPtr> near_objects;
+
         auto min = ignition::math::Vector3d(point.X() - 0.1, point.Y() - 0.1, 0);
-        auto max = ignition::math::Vector3d(point.X() + 0.1, point.Y()+0.1, 0);
+        auto max = ignition::math::Vector3d(point.X() + 0.1, point.Y() +0.1, 0);
         auto query_range = ignition::math::Box(min,max);
 
         std::vector<QTData> query_objects = this->static_quadtree->QueryRange(query_range);
@@ -138,19 +143,42 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
                 
             }
         }
+
+
+        std::vector<QTData> query_vehicles = this->vehicle_quadtree->QueryRange(query_range);
+        for (auto n: query_vehicles){
+            if (n.type == entity_type){
+                near_vehicles.push_back(boost::static_pointer_cast<gazebo::physics::Entity>(n.data));
+            }
+        }
+
         //std::cout << near_objects.size() << std::endl;
-        if (near_objects.size() == 0){
-            std::cout << "ground" << std::endl;
+        if (near_objects.size() == 0 && near_vehicles.size() == 0){
+            //std::cout << "ground" << std::endl;
         } else{
-            //std::cout << "unknown" << std::endl;
+            /*
             for (auto n: near_objects){
+                std::cout << n->GetName() << " ";
+            }
+            */
+            for (auto n: near_vehicles){
                 std::cout << n->GetName() << " ";
             }
             std::cout <<std::endl;
         }
         //std::printf ("\t(%f, %f, %f)\n", point.X(), point.Y(), point.Z());
     }
-    //std::cout << min_z << std::endl;
+
     
     
+}
+
+
+void LidarListener::ReadSDF(){
+    if (this->sdf->HasElement("building_name")){
+        this->building_name =this->sdf->GetElement("building_name")->Get<std::string>();
+    }
+    if (this->sdf->HasElement("robot_name")){
+        this->robot_name = this->sdf->GetElement("robot_name")->Get<std::string>();
+    }
 }
