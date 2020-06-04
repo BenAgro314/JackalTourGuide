@@ -120,9 +120,34 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
     // const pcl::PointXYZ& pt : msg->point
     //double min_z = 10000;
     for (auto pt : msg->points){
+
+        
         auto point = ignition::math::Vector3d(pt.x, pt.y, pt.z);
         point+=this->sensor_pose.Pos();
-        min_z = std::min(min_z, point.Z());
+        //min_z = std::min(min_z, point.Z());
+
+        std::vector<gazebo::physics::EntityPtr> near_objects;
+        auto min = ignition::math::Vector3d(point.X() - 0.1, point.Y() - 0.1, 0);
+        auto max = ignition::math::Vector3d(point.X() + 0.1, point.Y()+0.1, 0);
+        auto query_range = ignition::math::Box(min,max);
+
+        std::vector<QTData> query_objects = this->static_quadtree->QueryRange(query_range);
+        for (auto n: query_objects){
+            if (n.type == entity_type){
+                near_objects.push_back(boost::static_pointer_cast<gazebo::physics::Entity>(n.data));
+                
+            }
+        }
+        //std::cout << near_objects.size() << std::endl;
+        if (near_objects.size() == 0){
+            std::cout << "ground" << std::endl;
+        } else{
+            //std::cout << "unknown" << std::endl;
+            for (auto n: near_objects){
+                std::cout << n->GetName() << " ";
+            }
+            std::cout <<std::endl;
+        }
         //std::printf ("\t(%f, %f, %f)\n", point.X(), point.Y(), point.Z());
     }
     //std::cout << min_z << std::endl;

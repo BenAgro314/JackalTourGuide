@@ -111,7 +111,7 @@
 
     <include>
 			<name>table</name>
-			<pose>5.000000 5.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>0 3.000000 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://table_conference_2</uri>
 		</include>
     
