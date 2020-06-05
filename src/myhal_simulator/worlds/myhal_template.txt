@@ -97,6 +97,11 @@
       <robot_name>jackal</robot_name>
     </plugin>
 
+    <plugin name = "lidar_listener" filename = "liblidar_listener.so">
+      <robot_name>jackal</robot_name>
+      <building_name>building</building_name>
+    </plugin>
+
     <include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>

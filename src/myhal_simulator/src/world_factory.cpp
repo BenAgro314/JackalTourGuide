@@ -384,7 +384,7 @@ void WorldHandler::WriteToFile(std::string out_name){
 		in.getline(str, 255);  // delim defaults to '\n'
 		if(in) {
 			
-			if (line == 106){
+			if (line == 112){
 				// insert writing people and furnature here
 				
 				out << this->world_string;

@@ -57,7 +57,7 @@ class LidarListener: public gazebo::WorldPlugin{
 
         std::vector<gazebo::physics::EntityPtr> building_collisions;
 
-        std::vector<gazebo::physics::ModelPtr> model_collisions;
+        std::vector<gazebo::physics::LinkPtr> model_collisions;
 
         std::vector<gazebo::physics::ActorPtr> actors;
 
@@ -68,6 +68,7 @@ class LidarListener: public gazebo::WorldPlugin{
         boost::shared_ptr<QuadTree> vehicle_quadtree; 
 
         void Callback(const PointCloud::ConstPtr& msg);
+
 
     public:
 

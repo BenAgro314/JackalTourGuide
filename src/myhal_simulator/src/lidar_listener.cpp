@@ -52,13 +52,19 @@ void LidarListener::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf)
                     
             }
         } else if (model->GetName() != "ground_plane"){
-            this->model_collisions.push_back(model);
-            auto box = model->BoundingBox();
-            box.Min().Z() = 0;
-            box.Max().Z() = 0;
-            auto new_node = QTData(box, model, entity_type);
-            this->static_quadtree->Insert(new_node);
+            auto links = model->GetLinks();
+            for (gazebo::physics::LinkPtr link: links){
+                
+                this->model_collisions.push_back(link); //TODO: check if this is correct (maybe do dynamic pointer cast )
+                auto box = link->BoundingBox();
+                box.Min().Z() = 0;
+                box.Max().Z() = 0;
+                auto new_node = QTData(box, link, entity_type);
+                this->static_quadtree->Insert(new_node);
+            }
+            
         } 
+        
         
     }
 
@@ -100,8 +106,9 @@ void LidarListener::OnUpdate(const gazebo::common::UpdateInfo &_info){
     } 
 
     if (this->robot != nullptr){
+    
         this->sensor_pose = this->robot_links[0]->WorldPose();
-        this->sensor_pose.Pos().Z() += 0.539;//+0.1116;
+        this->sensor_pose.Pos().Z() += 0.5767;
     }
 
 
@@ -151,16 +158,19 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
     }
 
     for (auto pt : msg->points){
-        
-        auto point = ignition::math::Vector3d(pt.x, pt.y, pt.z);
-        point+=this->sensor_pose.Pos();
+
+        auto point = this->sensor_pose.CoordPositionAdd(ignition::math::Vector3d(pt.x, pt.y, pt.z));       
+        //auto point = ignition::math::Vector3d(pt.x, pt.y, pt.z);
+        //point+=this->sensor_pose.Pos();
         
    
         std::vector<gazebo::physics::EntityPtr> near_vehicles;
         std::vector<gazebo::physics::EntityPtr> near_objects;
 
-        auto min = ignition::math::Vector3d(point.X() - 0.1, point.Y() - 0.1, 0);
-        auto max = ignition::math::Vector3d(point.X() + 0.1, point.Y() +0.1, 0);
+
+        double resolution = 0.01;
+        auto min = ignition::math::Vector3d(point.X() - resolution, point.Y() - resolution, 0);
+        auto max = ignition::math::Vector3d(point.X() + resolution, point.Y() + resolution, 0);
         auto query_range = ignition::math::Box(min,max);
 
         std::vector<QTData> query_objects = this->static_quadtree->QueryRange(query_range);
@@ -184,21 +194,59 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
             //std::cout << "ground" << std::endl;
             ground_msg->points.push_back(pt);
             ground_msg->width++;
+            //std::cout << point.Z() << std::endl;
         } else {
+
+            std::string closest_name = "ground_plane"; 
+            double min_dist = std::abs(point.Z());
             
 
+
             for (auto n: near_objects){
+                
+                auto dist = utilities::dist_to_box(point, n->BoundingBox());
+                if (n->GetName().substr(0,4) == "Wall"){
+                    std::cout << dist << std::endl;
+                }
+                if (dist <= min_dist){
+                    min_dist = dist;
+                    closest_name == n->GetName();
+                    if (closest_name.substr(0,4) != "Wall"){
+                        closest_name = n->GetParent()->GetName();
+                    }
+                }
+
+                /*
                 if ((n->GetName()).substr(0,4) == "Wall"){
                     wall_msg->points.push_back(pt);
                     wall_msg->width++;
-                } else if ((n->GetName()).substr(0,5) == "table"){
+                } else if ((n->GetParent()->GetName()).substr(0,5) == "table"){
                     table_msg->points.push_back(pt);
                     table_msg->width++;
-                } else if ((n->GetName()).substr(0,5) == "chair"){
+                } else if ((n->GetParent()->GetName()).substr(0,5) == "chair"){
                     chair_msg->points.push_back(pt);
                     chair_msg->width++;
-                }
+                } 
+                */
+                
             }
+
+            if (closest_name.substr(0,4) == "Wall"){
+                wall_msg->points.push_back(pt);
+                wall_msg->width++;
+            } else if (closest_name.substr(0,5) == "table"){
+                table_msg->points.push_back(pt);
+                table_msg->width++;
+            } else if (closest_name.substr(0,5) == "chair"){
+                chair_msg->points.push_back(pt);
+                chair_msg->width++;
+            } else {
+
+                ground_msg->points.push_back(pt);
+                ground_msg->width++;
+            }
+
+            
             
             for (auto n: near_vehicles){
                 actor_msg->points.push_back(pt);

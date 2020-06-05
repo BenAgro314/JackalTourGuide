@@ -94,6 +94,7 @@
 
     <plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
+      <robot_name>jackal</robot_name>
     </plugin>
 
     <plugin name = "lidar_listener" filename = "liblidar_listener.so">
