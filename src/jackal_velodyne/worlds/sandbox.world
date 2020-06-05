@@ -123,7 +123,7 @@
 
     <include>
 			<name>table2_1</name>
-			<pose>0 -3.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>2 -3.000000 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://table_conference_2</uri>
 		</include>
 

@@ -55,10 +55,6 @@ class LidarListener: public gazebo::WorldPlugin{
 
         std::string building_name;
 
-        std::vector<gazebo::physics::EntityPtr> building_collisions;
-
-        std::vector<gazebo::physics::LinkPtr> model_collisions;
-
         std::vector<gazebo::physics::ActorPtr> actors;
 
         ignition::math::Box building_box;

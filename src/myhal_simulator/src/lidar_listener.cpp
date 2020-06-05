@@ -4,7 +4,6 @@
 
 GZ_REGISTER_WORLD_PLUGIN(LidarListener);
 
-//void Callback(const PointCloud::ConstPtr& msg);
 
 void LidarListener::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->world = _world;
@@ -32,39 +31,36 @@ void LidarListener::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf)
         if (act){
             this->actors.push_back(act);
             auto actor_pos = act->WorldPose().Pos();
-            auto min = ignition::math::Vector3d(actor_pos.X() - 0.25, actor_pos.Y() - 0.25, 0);
-            auto max = ignition::math::Vector3d(actor_pos.X() + 0.25, actor_pos.Y() + 0.25, 0);
+
+            auto min = ignition::math::Vector3d(actor_pos.X() - 0.3, actor_pos.Y() - 0.3, 0);
+            auto max = ignition::math::Vector3d(actor_pos.X() + 0.3, actor_pos.Y() + 0.3, 0);
             auto box = ignition::math::Box(min,max);
             auto new_node = QTData(box, act, entity_type);
             this->vehicle_quadtree->Insert(new_node);
             continue;
         } 
+
+
       
-        if (model->GetName() == this->building_name){
-            auto links = model->GetLinks();
-            for (gazebo::physics::LinkPtr link: links){
-                std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
-                for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
-                    this->building_collisions.push_back(collision_box); //TODO: check if this is correct (maybe do dynamic pointer cast )
-                    auto new_node = QTData(collision_box->BoundingBox(), collision_box, entity_type);
-                    this->static_quadtree->Insert(new_node);
+        auto links = model->GetLinks();
+        for (gazebo::physics::LinkPtr link: links){
+            std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
+            for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
+                auto box = collision_box->BoundingBox();
+                if (model->GetName() == "ground_plane"){
+                    box.Min().X() = building_box.Min().X()+0.5;
+                    box.Min().Y() = building_box.Min().Y()+0.5;
+                    box.Max().X() = building_box.Max().X()-0.5;
+                    box.Max().Y() = building_box.Max().Y()-0.5;
                 }
-                    
-            }
-        } else if (model->GetName() != "ground_plane"){
-            auto links = model->GetLinks();
-            for (gazebo::physics::LinkPtr link: links){
-                
-                this->model_collisions.push_back(link); //TODO: check if this is correct (maybe do dynamic pointer cast )
-                auto box = link->BoundingBox();
-                box.Min().Z() = 0;
                 box.Max().Z() = 0;
-                auto new_node = QTData(box, link, entity_type);
+                box.Min().Z() = 0;
+                auto new_node = QTData(box, collision_box, entity_type);
                 this->static_quadtree->Insert(new_node);
             }
-            
-        } 
-        
+                
+        }
+    
         
     }
 
@@ -150,8 +146,8 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
     for (auto act: this->actors){
         auto actor_pos = act->WorldPose().Pos();
-        auto min = ignition::math::Vector3d(actor_pos.X() - 0.25, actor_pos.Y() - 0.25, 0);
-        auto max = ignition::math::Vector3d(actor_pos.X() + 0.25, actor_pos.Y() + 0.25, 0);
+        auto min = ignition::math::Vector3d(actor_pos.X() - 0.3, actor_pos.Y() - 0.3, 0);
+        auto max = ignition::math::Vector3d(actor_pos.X() + 0.3, actor_pos.Y() + 0.3, 0);
         auto box = ignition::math::Box(min,max);
         auto new_node = QTData(box, act, entity_type);
         this->vehicle_quadtree->Insert(new_node);
@@ -160,13 +156,9 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
     for (auto pt : msg->points){
 
         auto point = this->sensor_pose.CoordPositionAdd(ignition::math::Vector3d(pt.x, pt.y, pt.z));       
-        //auto point = ignition::math::Vector3d(pt.x, pt.y, pt.z);
-        //point+=this->sensor_pose.Pos();
-        
    
         std::vector<gazebo::physics::EntityPtr> near_vehicles;
         std::vector<gazebo::physics::EntityPtr> near_objects;
-
 
         double resolution = 0.01;
         auto min = ignition::math::Vector3d(point.X() - resolution, point.Y() - resolution, 0);
@@ -189,49 +181,28 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
             }
         }
 
-        //std::cout << near_objects.size() << std::endl;
+   
         if (near_objects.size() == 0 && near_vehicles.size() == 0){
-            //std::cout << "ground" << std::endl;
+            
             ground_msg->points.push_back(pt);
             ground_msg->width++;
-            //std::cout << point.Z() << std::endl;
+        
         } else {
 
-            std::string closest_name = "ground_plane"; 
-            double min_dist = std::abs(point.Z());
+            std::string closest_name; 
+            double min_dist = 10e9;
             
-
-
             for (auto n: near_objects){
                 
                 auto dist = utilities::dist_to_box(point, n->BoundingBox());
-                if (n->GetName().substr(0,4) == "Wall"){
-                    std::cout << dist << std::endl;
-                }
+
                 if (dist <= min_dist){
                     min_dist = dist;
-                    closest_name == n->GetName();
-                    if (closest_name.substr(0,4) != "Wall"){
-                        closest_name = n->GetParent()->GetName();
-                    }
+                    closest_name = n->GetParent()->GetParent()->GetName();
                 }
-
-                /*
-                if ((n->GetName()).substr(0,4) == "Wall"){
-                    wall_msg->points.push_back(pt);
-                    wall_msg->width++;
-                } else if ((n->GetParent()->GetName()).substr(0,5) == "table"){
-                    table_msg->points.push_back(pt);
-                    table_msg->width++;
-                } else if ((n->GetParent()->GetName()).substr(0,5) == "chair"){
-                    chair_msg->points.push_back(pt);
-                    chair_msg->width++;
-                } 
-                */
-                
             }
 
-            if (closest_name.substr(0,4) == "Wall"){
+            if (closest_name == this->building_name){
                 wall_msg->points.push_back(pt);
                 wall_msg->width++;
             } else if (closest_name.substr(0,5) == "table"){
@@ -241,7 +212,6 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
                 chair_msg->points.push_back(pt);
                 chair_msg->width++;
             } else {
-
                 ground_msg->points.push_back(pt);
                 ground_msg->width++;
             }
@@ -249,12 +219,17 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
             
             
             for (auto n: near_vehicles){
-                actor_msg->points.push_back(pt);
-                actor_msg->width++;
+                if (point.Z() <=0){
+                    ground_msg->points.push_back(pt);
+                    ground_msg->width++;
+                } else{
+                    actor_msg->points.push_back(pt);
+                    actor_msg->width++;
+                }
             }
            
         }
-        //std::printf ("\t(%f, %f, %f)\n", point.X(), point.Y(), point.Z());
+        
     }
 
     pcl_conversions::toPCL(ros::Time::now(), ground_msg->header.stamp);
