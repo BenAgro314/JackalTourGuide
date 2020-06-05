@@ -27,7 +27,7 @@ class LidarListener: public gazebo::WorldPlugin{
 
         sdf::ElementPtr sdf;
 
-        double update_freq = 10;
+        double update_freq = 30;
 
         gazebo::common::Time last_update;
 
@@ -39,7 +39,9 @@ class LidarListener: public gazebo::WorldPlugin{
 
         ros::Publisher wall_pub;
 
-        ros::Publisher actor_pub;
+        ros::Publisher moving_actor_pub;
+
+        ros::Publisher still_actor_pub;
 
         ros::Publisher table_pub;
 
@@ -62,6 +64,10 @@ class LidarListener: public gazebo::WorldPlugin{
         boost::shared_ptr<QuadTree> static_quadtree; 
 
         boost::shared_ptr<QuadTree> vehicle_quadtree; 
+
+        std::map<std::string, ignition::math::Vector3d> last_actor_pos;
+
+        std::map<std::string, double> actor_speed;
 
         void Callback(const PointCloud::ConstPtr& msg);
 

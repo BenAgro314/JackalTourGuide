@@ -31,9 +31,13 @@ void LidarListener::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf)
         if (act){
             this->actors.push_back(act);
             auto actor_pos = act->WorldPose().Pos();
+            this->last_actor_pos[act->GetName()] = actor_pos;
 
-            auto min = ignition::math::Vector3d(actor_pos.X() - 0.3, actor_pos.Y() - 0.3, 0);
-            auto max = ignition::math::Vector3d(actor_pos.X() + 0.3, actor_pos.Y() + 0.3, 0);
+            ignition::math::Vector3d min, max;
+            
+            min = ignition::math::Vector3d(actor_pos.X() - 0.3, actor_pos.Y() - 0.3, 0);
+            max = ignition::math::Vector3d(actor_pos.X() + 0.3, actor_pos.Y() + 0.3, 0);
+            
             auto box = ignition::math::Box(min,max);
             auto new_node = QTData(box, act, entity_type);
             this->vehicle_quadtree->Insert(new_node);
@@ -69,13 +73,14 @@ void LidarListener::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf)
     ros::init(argc, argv, "LidarListener");
     
     this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 1, &LidarListener::Callback, this);
-    this->ground_pub = nh.advertise<PointCloud>("ground_points", 1000);
-    this->wall_pub = nh.advertise<PointCloud>("wall_points", 1000);
-    this->actor_pub = nh.advertise<PointCloud>("actor_points", 1000);
-    this->table_pub = nh.advertise<PointCloud>("table_points", 1000);
-    this->chair_pub = nh.advertise<PointCloud>("chair_points", 1000);
+    this->ground_pub = nh.advertise<PointCloud>("ground_points", 1);
+    this->wall_pub = nh.advertise<PointCloud>("wall_points", 1);
+    this->moving_actor_pub = nh.advertise<PointCloud>("moving_actor_points", 1);
+    this->still_actor_pub = nh.advertise<PointCloud>("still_actor_points", 1);
+    this->table_pub = nh.advertise<PointCloud>("table_points", 1);
+    this->chair_pub = nh.advertise<PointCloud>("chair_points", 1);
     ros::AsyncSpinner spinner(boost::thread::hardware_concurrency());
-    ros::Rate r = 10;
+    ros::Rate r = (ros::Rate) this->update_freq;
     spinner.start();
 }
 
@@ -127,10 +132,15 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
     wall_msg->height = msg->height;
     wall_msg->width = 0;
     
-    PointCloud::Ptr actor_msg (new PointCloud);
-    actor_msg->header.frame_id = "velodyne";
-    actor_msg->height = msg->height;
-    actor_msg->width = 0;
+    PointCloud::Ptr moving_actor_msg (new PointCloud);
+    moving_actor_msg->header.frame_id = "velodyne";
+    moving_actor_msg->height = msg->height;
+    moving_actor_msg->width = 0;
+
+    PointCloud::Ptr still_actor_msg (new PointCloud);
+    still_actor_msg->header.frame_id = "velodyne";
+    still_actor_msg->height = msg->height;
+    still_actor_msg->width = 0;
 
     PointCloud::Ptr table_msg (new PointCloud);
     table_msg->header.frame_id = "velodyne";
@@ -145,7 +155,14 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
     // reconstruct vehicle quadtree:
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
     for (auto act: this->actors){
+
         auto actor_pos = act->WorldPose().Pos();
+
+        double dt = 1/this->update_freq;
+        double speed = ((actor_pos-this->last_actor_pos[act->GetName()]).Length())/dt;
+        this->actor_speed[act->GetName()] = speed;
+
+        this->last_actor_pos[act->GetName()] = actor_pos;
         auto min = ignition::math::Vector3d(actor_pos.X() - 0.3, actor_pos.Y() - 0.3, 0);
         auto max = ignition::math::Vector3d(actor_pos.X() + 0.3, actor_pos.Y() + 0.3, 0);
         auto box = ignition::math::Box(min,max);
@@ -208,10 +225,10 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
             } else if (closest_name.substr(0,5) == "table"){
                 table_msg->points.push_back(pt);
                 table_msg->width++;
-            } else if (closest_name.substr(0,5) == "chair"){
+            } else if (closest_name.substr(0,5) == "chair" && near_vehicles.size() == 0){
                 chair_msg->points.push_back(pt);
                 chair_msg->width++;
-            } else {
+            } else if (near_vehicles.size() == 0) {
                 ground_msg->points.push_back(pt);
                 ground_msg->width++;
             }
@@ -219,12 +236,19 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
             
             
             for (auto n: near_vehicles){
+                
                 if (point.Z() <=0){
                     ground_msg->points.push_back(pt);
                     ground_msg->width++;
                 } else{
-                    actor_msg->points.push_back(pt);
-                    actor_msg->width++;
+                    if (this->actor_speed[n->GetName()] < 10e-3){
+                        still_actor_msg->points.push_back(pt);
+                        still_actor_msg->width++;
+                    } else{
+                        moving_actor_msg->points.push_back(pt);
+                        moving_actor_msg->width++;
+                    }
+                    
                 }
             }
            
@@ -234,14 +258,16 @@ void LidarListener::Callback(const PointCloud::ConstPtr& msg){
 
     pcl_conversions::toPCL(ros::Time::now(), ground_msg->header.stamp);
     pcl_conversions::toPCL(ros::Time::now(), wall_msg->header.stamp);
-    pcl_conversions::toPCL(ros::Time::now(), actor_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), moving_actor_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), still_actor_msg->header.stamp);
     pcl_conversions::toPCL(ros::Time::now(), table_msg->header.stamp);
     pcl_conversions::toPCL(ros::Time::now(), chair_msg->header.stamp);
    
 
     this->ground_pub.publish(ground_msg);
     this->wall_pub.publish(wall_msg);
-    this->actor_pub.publish(actor_msg);
+    this->moving_actor_pub.publish(moving_actor_msg);
+    this->still_actor_pub.publish(still_actor_msg);
     this->table_pub.publish(table_msg);
     this->chair_pub.publish(chair_msg);
 }

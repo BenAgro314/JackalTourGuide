@@ -561,6 +561,7 @@ Sitter::Sitter(gazebo::physics::ActorPtr _actor, std::string _chair_name, std::v
         this->actor->SetCustomTrajectory(this->trajectories["sitting"]);
         this->actor->SetWorldPose(this->pose, true, true);
         this->actor->SetScriptTime(this->actor->ScriptTime());
+        
     }
 }
 
