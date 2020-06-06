@@ -10,6 +10,7 @@
 #include <vector>
 #include "utilities.hh"
 #include "Perlin.h"
+#include <algorithm>
 
 class FlowField{
 
@@ -29,25 +30,30 @@ class FlowField{
 
         ignition::math::Box rect;
 
+        std::vector<std::vector<int>> GetNeighbours(std::vector<int> curr_ind, bool diag = false);
+
         void PerlinInit();
 
-        
+        void Init();
 
-    
+        void IntegrationField(double x, double y);
+
+        void CostMap(std::vector<gazebo::physics::EntityPtr> collision_entities);
 
     public:
 
-        void CostMap(std::vector<gazebo::physics::EntityPtr> collision_entities);
+        FlowField(ignition::math::Vector3d top_left, double width, double height, double resolution);
+
+        void TargetInit(std::vector<gazebo::physics::EntityPtr> collision_entities, ignition::math::Vector3d target);
+
+        void SetTarget(ignition::math::Vector3d target);
 
         ignition::math::Vector3d IndiciesToPos(int r, int c);
 
         bool PosToIndicies(ignition::math::Vector3d pos, int &r, int &c);
 
-        FlowField(ignition::math::Vector3d top_left, double width, double height, double resolution);
-
         bool Lookup(ignition::math::Vector3d pos, ignition::math::Vector3d &res);
 
-        void PrintField();
 };
 
 #endif

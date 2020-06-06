@@ -673,13 +673,23 @@ bool FlowFollower::Follow(){
     ignition::math::Vector3d desired;
     bool found = false;
     for (auto field: this->fields){
-        if (field.Lookup(this->pose.Pos(), desired)){
+        
+        if (field->Lookup(this->pose.Pos(), desired)){
             
             found = true;
             break;
         }
     }
     if (found){
+        desired.Normalize();
+        desired*=max_speed;
+        if(desired.Length() > this->max_force){
+            desired.Normalize();
+            desired*=this->max_force;
+        }
+        
+        //this->ApplyForce(desired);
+        
         desired*=max_speed;
         auto steer = desired-this->velocity;
         if (steer.Length() > this->max_force){
@@ -688,6 +698,7 @@ bool FlowFollower::Follow(){
         }
         
         this->ApplyForce(steer);
+        
     }
     return found;
 }
@@ -699,7 +710,7 @@ double _max_speed,
 ignition::math::Pose3d initial_pose, 
 ignition::math::Vector3d initial_velocity, 
 std::vector<gazebo::physics::EntityPtr> objects,
-std::vector<FlowField> _fields)
+std::vector<boost::shared_ptr<FlowField>>_fields)
 : Wanderer(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, objects){
 
     this->fields = _fields;

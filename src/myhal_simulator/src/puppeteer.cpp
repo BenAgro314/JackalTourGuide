@@ -9,7 +9,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     //testing
 
-    this->fields.push_back(FlowField(ignition::math::Vector3d(-10,10,0), 20, 20, 1));
+    this->fields.push_back(boost::make_shared<FlowField>(ignition::math::Vector3d(-10,10,0), 20, 20, 1));
     //testing
 
     this->world = _world;
@@ -67,9 +67,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         } 
         
     }
-    this->fields[0].CostMap(this->collision_entities);
-    //this->fields[0].PrintField();
 
+    this->fields[0]->TargetInit(this->collision_entities, ignition::math::Vector3d(-5,-5,0));
 
     std::cout << "LOADED ALL VEHICLES\n";
 

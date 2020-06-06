@@ -248,7 +248,7 @@ class FlowFollower: public Wanderer{
 
     protected:
 
-        std::vector<FlowField> fields;
+        std::vector<boost::shared_ptr<FlowField>> fields;
 
         bool Follow();
 
@@ -261,7 +261,7 @@ class FlowFollower: public Wanderer{
          ignition::math::Pose3d initial_pose, 
          ignition::math::Vector3d initial_velocity, 
          std::vector<gazebo::physics::EntityPtr> objects, 
-         std::vector<FlowField> _fields);
+         std::vector<boost::shared_ptr<FlowField>> _fields);
 
         void OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
 };

@@ -97,13 +97,12 @@
       <robot_name>jackal</robot_name>
     </plugin>
 
-    <plugin name = "lidar_listener" filename = "liblidar_listener.so">
+    <!--plugin name = "lidar_listener" filename = "liblidar_listener.so">
       <robot_name>jackal</robot_name>
       <building_name>building</building_name>
-    </plugin>
+    </plugin-->
  
-    <!--plugin name="factory" filename="libworld_plugin.so"/-->
-    <!-- insert stuff below -->
+ 
     <include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>
@@ -115,11 +114,7 @@
 			<pose>-4.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://table_conference_2</uri>
 		</include>
-		<include>
-			<name>chair_6</name>
-			<pose>-5.951461 0.000000 0.000000 0.000000 -0.000000 -1.077317</pose>
-			<uri>model://chair_1</uri>
-		</include>
+
 
     <include>
 			<name>table2_1</name>
@@ -132,7 +127,7 @@
 			<pose>-4.000000 -3.000000 0.000000 0.000000 -0.000000 1.570700</pose>
 			<uri>model://table_conference_3</uri>
 		</include>
-		<include>
+		<!--include>
 			<name>chair_13</name>
 			<pose>-4.000161 -4.669301 0.000000 0.000000 -0.000000 -2.830899</pose>
 			<uri>model://chair_3</uri>
@@ -222,10 +217,42 @@
       <plugin name = "standing_duration" filename = "10"/>
       <plugin name = "walking_duration" filename = "1"/>
       <plugin name = "leader" filename = "jackal"/>
-  </actor>
+  </actor-->
+
+  <!--include>
+			<name>chair_29</name>
+			<pose>0 2 0.000000 0.000000 -0.000000 1.203678</pose>
+			<uri>model://kitchen_chair</uri>
+		</include>
+		<actor name="sitter_33">
+			<pose>0 2 1.000000 0.000000 -0.000000 1.203678</pose>
+			<skin>
+				<filename>sitting.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>walk.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>talk_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>stand.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="vehicle_type" filename="sitter">
+			</plugin>
+			<plugin name="chair" filename="chair_29">
+			</plugin>
+		</actor-->
 
 
-  <!--actor name="actor_2">
+  <actor name="actor_2">
 
       <pose>2 2 1 0 0 0</pose>
       <skin>
@@ -261,7 +288,7 @@
       <plugin name = "vehicle_type" filename = "flow_follower"/>
       <plugin name = "max_speed" filename = "1.1"/>
       <plugin name = "leader" filename = "jackal"/>
-  </actor-->
+  </actor>
 
  
     
