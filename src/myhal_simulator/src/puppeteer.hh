@@ -11,9 +11,13 @@
 #include <utility>
 #include "quadtree.hh"
 #include <string>
+#include <pcl_ros/point_cloud.h>
+#include <pcl/point_types.h>
 #include <ros/ros.h>
+#include <boost/thread.hpp>
 #include "vehicles.hh"
 
+typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
 class Puppeteer: public gazebo::WorldPlugin{
 
@@ -33,7 +37,7 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         std::string robot_name = "";
 
-        gazebo::physics::EntityPtr robot = nullptr;
+        gazebo::physics::ModelPtr robot = nullptr;
 
         gazebo::physics::EntityPtr building; 
 
@@ -46,13 +50,40 @@ class Puppeteer: public gazebo::WorldPlugin{
         std::map<std::string, double> boid_params;
         
         boost::shared_ptr<QuadTree> static_quadtree; 
+
         boost::shared_ptr<QuadTree> vehicle_quadtree; 
+
+        boost::shared_ptr<QuadTree> vehicle_quadtree2; 
 
         ignition::math::Box building_box; 
 
         std::vector<boost::shared_ptr<Follower>> follower_queue;
 
         std::vector<boost::shared_ptr<FlowField>> fields;
+
+        std::vector<gazebo::physics::LinkPtr> robot_links;
+
+        ignition::math::Pose3d sensor_pose;
+        
+        bool lidar_listener = false;
+
+        ros::NodeHandle nh;
+
+        ros::Subscriber sub;
+
+        ros::Publisher ground_pub;
+
+        ros::Publisher wall_pub;
+
+        ros::Publisher moving_actor_pub;
+
+        ros::Publisher still_actor_pub;
+
+        ros::Publisher table_pub;
+
+        ros::Publisher chair_pub;
+
+        void Callback(const PointCloud::ConstPtr& msg);
 
     public: 
         

@@ -46,7 +46,26 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
             this->vehicle_quadtree->Insert(new_node);
             continue;
         } 
-      
+
+        
+        if (model->GetName() != "ground_plane"){
+            auto links = model->GetLinks();
+            for (gazebo::physics::LinkPtr link: links){
+                std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
+                for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
+                    this->collision_entities.push_back(collision_box);
+                    auto box = collision_box->BoundingBox();
+                    box.Max().Z() = 0;
+                    box.Min().Z() = 0;
+                    auto new_node = QTData(box, collision_box, entity_type);
+                    this->static_quadtree->Insert(new_node);
+                }
+                    
+            }
+        }
+        
+
+       /*
         if (model->GetName() == this->building_name){
             auto links = model->GetLinks();
             for (gazebo::physics::LinkPtr link: links){
@@ -66,12 +85,32 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
             auto new_node = QTData(box, model, entity_type);
             this->static_quadtree->Insert(new_node);
         } 
-        
+        */
+       
     }
 
     this->fields[0]->TargetInit(this->collision_entities, ignition::math::Vector3d(5,5,0));
 
     std::cout << "LOADED ALL VEHICLES\n";
+
+    if (this->lidar_listener){
+        int argc = 0;
+        char **argv = NULL;
+        ros::init(argc, argv, "LidarListener");
+        
+        this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 1, &Puppeteer::Callback, this);
+        this->ground_pub = nh.advertise<PointCloud>("ground_points", 1);
+        this->wall_pub = nh.advertise<PointCloud>("wall_points", 1);
+        this->moving_actor_pub = nh.advertise<PointCloud>("moving_actor_points", 1);
+        this->still_actor_pub = nh.advertise<PointCloud>("still_actor_points", 1);
+        this->table_pub = nh.advertise<PointCloud>("table_points", 1);
+        this->chair_pub = nh.advertise<PointCloud>("chair_points", 1);
+        ros::AsyncSpinner spinner(boost::thread::hardware_concurrency());
+        ros::Rate r = (ros::Rate) this->update_freq;
+        std::cout << "Advertising Lidar Points\n";
+        spinner.start();
+
+    }
 
 }
 
@@ -93,9 +132,15 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
                 for (auto vehicle: this->follower_queue){
                     vehicle->LoadLeader(this->robot);
                 }
-                ROS_WARN("ADDED ROBOT");
+                this->robot_links = this->robot->GetLinks();
+                std::cout << "ADDED ROBOT: " << this->robot->GetName() << std::endl;
             }
         }
+    }
+
+    if (this->robot != nullptr){
+        this->sensor_pose = this->robot_links[0]->WorldPose();
+        this->sensor_pose.Pos().Z() += 0.5767;
     }
 
 
@@ -154,6 +199,10 @@ void Puppeteer::ReadSDF(){
     if (this->sdf->HasElement("robot_name")){
         this->robot_name = this->sdf->GetElement("robot_name")->Get<std::string>();
         //std::cout << this->robot_name << std::endl;
+    }
+
+    if (this->sdf->HasElement("lidar_listener")){
+        this->lidar_listener = this->sdf->GetElement("lidar_listener")->Get<bool>();
     }
 }
 
@@ -277,4 +326,155 @@ void Puppeteer::ReadParams(){
         boid_params["FOV_angle"] =  4;
         boid_params["FOV_radius"] =  3;
     }
+}
+
+void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
+
+    if (this->robot == nullptr){
+        return;
+    }
+
+    PointCloud::Ptr ground_msg (new PointCloud);
+    ground_msg->header.frame_id = "velodyne";
+    ground_msg->height = msg->height;
+    ground_msg->width = 0;
+
+    PointCloud::Ptr wall_msg (new PointCloud);
+    wall_msg->header.frame_id = "velodyne";
+    wall_msg->height = msg->height;
+    wall_msg->width = 0;
+    
+    PointCloud::Ptr moving_actor_msg (new PointCloud);
+    moving_actor_msg->header.frame_id = "velodyne";
+    moving_actor_msg->height = msg->height;
+    moving_actor_msg->width = 0;
+
+    PointCloud::Ptr still_actor_msg (new PointCloud);
+    still_actor_msg->header.frame_id = "velodyne";
+    still_actor_msg->height = msg->height;
+    still_actor_msg->width = 0;
+
+    PointCloud::Ptr table_msg (new PointCloud);
+    table_msg->header.frame_id = "velodyne";
+    table_msg->height = msg->height;
+    table_msg->width = 0;
+
+    PointCloud::Ptr chair_msg (new PointCloud);
+    chair_msg->header.frame_id = "velodyne";
+    chair_msg->height = msg->height;
+    chair_msg->width = 0;
+
+    this->vehicle_quadtree2 = boost::make_shared<QuadTree>(this->building_box);
+
+    for (auto vehicle: this->vehicles){
+        auto min = ignition::math::Vector3d(vehicle->GetPose().Pos().X() - 0.3, vehicle->GetPose().Pos().Y() - 0.3, 0);
+        auto max = ignition::math::Vector3d(vehicle->GetPose().Pos().X() + 0.3, vehicle->GetPose().Pos().Y() + 0.3, 0);
+        auto box = ignition::math::Box(min,max);
+        auto new_node = QTData(box, vehicle, vehicle_type);
+        this->vehicle_quadtree2->Insert(new_node);
+    }
+    
+
+    for (auto pt : msg->points){
+
+        auto point = this->sensor_pose.CoordPositionAdd(ignition::math::Vector3d(pt.x, pt.y, pt.z));       
+   
+        std::vector<boost::shared_ptr<Vehicle>> near_vehicles;
+        std::vector<gazebo::physics::EntityPtr> near_objects;
+
+        double resolution = 0.01;
+        auto min = ignition::math::Vector3d(point.X() - resolution, point.Y() - resolution, 0);
+        auto max = ignition::math::Vector3d(point.X() + resolution, point.Y() + resolution, 0);
+        auto query_range = ignition::math::Box(min,max);
+
+        std::vector<QTData> query_objects = this->static_quadtree->QueryRange(query_range);
+        for (auto n: query_objects){
+            if (n.type == entity_type){
+                near_objects.push_back(boost::static_pointer_cast<gazebo::physics::Entity>(n.data));
+                
+            }
+        }
+
+        std::vector<QTData> query_vehicles = this->vehicle_quadtree2->QueryRange(query_range);
+        for (auto n: query_vehicles){
+            if (n.type == vehicle_type){
+                near_vehicles.push_back(boost::static_pointer_cast<Vehicle>(n.data));
+            }
+        }
+
+   
+        if (near_objects.size() == 0 && near_vehicles.size() == 0){
+            
+            ground_msg->points.push_back(pt);
+            ground_msg->width++;
+        
+        } else {
+            
+            std::string closest_name = "ground_plane";
+            double min_dist = point.Z();
+            
+            for (auto n: near_objects){
+                
+                auto dist = utilities::dist_to_box(point, n->BoundingBox());
+
+                if (dist <= min_dist){
+                    min_dist = dist;
+                    closest_name = n->GetParent()->GetParent()->GetName();
+                }
+            }
+ 
+            if (closest_name == this->building_name){
+                wall_msg->points.push_back(pt);
+                wall_msg->width++;
+            } else if (closest_name.substr(0,5) == "table"){
+                table_msg->points.push_back(pt);
+                table_msg->width++;
+            } else if (closest_name.substr(0,5) == "chair" && near_vehicles.size() == 0){
+                chair_msg->points.push_back(pt);
+                chair_msg->width++;
+            } else if (near_vehicles.size() == 0) {
+                ground_msg->points.push_back(pt);
+                ground_msg->width++;
+            }
+  
+
+            
+            
+            for (auto n: near_vehicles){
+                
+                if (point.Z() <=0){
+                    ground_msg->points.push_back(pt);
+                    ground_msg->width++;
+                } else{
+                  
+                    if (n->IsStill()){
+                        still_actor_msg->points.push_back(pt);
+                        still_actor_msg->width++;
+                    } else{
+                        moving_actor_msg->points.push_back(pt);
+                        moving_actor_msg->width++;
+                    }
+                    
+                }
+            }
+
+           
+        }
+        
+    }
+
+    pcl_conversions::toPCL(ros::Time::now(), ground_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), wall_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), moving_actor_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), still_actor_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), table_msg->header.stamp);
+    pcl_conversions::toPCL(ros::Time::now(), chair_msg->header.stamp);
+   
+
+    this->ground_pub.publish(ground_msg);
+    this->wall_pub.publish(wall_msg);
+    this->moving_actor_pub.publish(moving_actor_msg);
+    this->still_actor_pub.publish(still_actor_msg);
+    this->table_pub.publish(table_msg);
+    this->chair_pub.publish(chair_msg);
 }

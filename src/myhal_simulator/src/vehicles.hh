@@ -50,6 +50,8 @@ class Vehicle{
 
         std::vector<gazebo::physics::EntityPtr> all_objects;
 
+        bool still = false;
+
         void UpdateModel();
 
         void ApplyForce(ignition::math::Vector3d force);
@@ -86,6 +88,8 @@ class Vehicle{
         ignition::math::Vector3d GetVelocity();
 
         std::string GetName();
+
+        bool IsStill();
 
 };
 

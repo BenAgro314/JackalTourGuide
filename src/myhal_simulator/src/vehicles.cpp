@@ -196,6 +196,9 @@ std::string Vehicle::GetName(){
     return this->actor->GetName();
 }
 
+bool Vehicle::IsStill(){
+    return this->still;
+}
 
 // WANDERER
 
@@ -266,9 +269,13 @@ void RandomWalker::SetNextTarget(std::vector<gazebo::physics::EntityPtr> objects
 		double min_dist = 100000;
 
         for (auto object: objects){
-            std::vector<ignition::math::Line3d> edges = utilities::get_edges(object);
+           
+            auto box = object->BoundingBox();
+
+            std::vector<ignition::math::Line3d> edges = utilities::get_box_edges(box);
 
             for (ignition::math::Line3d edge: edges){
+    
 				ignition::math::Vector3d test_intersection;
 
 				if (ray.Intersect(edge, test_intersection)){ //if the ray intersects the boundary
@@ -294,6 +301,7 @@ void RandomWalker::SetNextTarget(std::vector<gazebo::physics::EntityPtr> objects
         ignition::math::Vector3d normal;
         if (utilities::get_normal_to_edge(this->pose.Pos(), closest_edge, normal) && (normal.Length() < this->obstacle_margin)){
             continue;
+      
         } 
 
         if ((final_ray-v_to_add).Length() < (this->obstacle_margin)){ 
@@ -307,6 +315,7 @@ void RandomWalker::SetNextTarget(std::vector<gazebo::physics::EntityPtr> objects
 		
 		this->curr_target = v_to_add + this->pose.Pos();
 		target_found = true;
+        
 
     }
 
@@ -507,7 +516,7 @@ void Stander::UpdateModel(double dt){
 void Stander::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
 
     if (this->standing){
-
+        this->still = true;
         if(!this->never_walk && (_info.simTime - this->standing_start).Double() >= this->standing_duration){
             this->standing = false;
             this->walking_start = _info.simTime;
@@ -519,7 +528,7 @@ void Stander::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std:
             }
         }
     } else{
-
+        this->still = false;
         this->SetNextTarget();
         this->Seek(this->curr_target);
         this->AvoidActors(vehicles);
@@ -546,6 +555,7 @@ Sitter::Sitter(gazebo::physics::ActorPtr _actor, std::string _chair_name, std::v
 : Vehicle(_actor, 1, 1, 1, ignition::math::Pose3d(100,100,0.5,0,0,0), ignition::math::Vector3d(0,0,0), objects){
     this->chair_name = _chair_name;
     bool found = false;
+    this->still = true;
     for (auto model: this->all_objects){
         if (model->GetName() == this->chair_name){
             this->chair = model;

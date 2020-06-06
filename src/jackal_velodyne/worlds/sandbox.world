@@ -95,12 +95,13 @@
     <plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
       <robot_name>jackal</robot_name>
+      <lidar_listener>false</lidar_listener>
     </plugin>
 
-    <plugin name = "lidar_listener" filename = "liblidar_listener.so">
+    <!--plugin name = "lidar_listener" filename = "liblidar_listener.so">
       <robot_name>jackal</robot_name>
       <building_name>building</building_name>
-    </plugin>
+    </plugin-->
  
     <include>
       <name>building</name>
@@ -126,7 +127,7 @@
 			<pose>-4.000000 -3.000000 0.000000 0.000000 -0.000000 1.570700</pose>
 			<uri>model://table_conference_3</uri>
 		</include>
-		<!--include>
+		<include>
 			<name>chair_13</name>
 			<pose>-4.000161 -4.669301 0.000000 0.000000 -0.000000 -2.830899</pose>
 			<uri>model://chair_3</uri>
@@ -196,7 +197,7 @@
     
    <actor name="actor_1">
 
-      <pose>2 -2 1 0 0 0</pose>
+      <pose>-3 -2 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
@@ -216,7 +217,7 @@
       <plugin name = "standing_duration" filename = "10"/>
       <plugin name = "walking_duration" filename = "1"/>
       <plugin name = "leader" filename = "jackal"/>
-  </actor-->
+  </actor>
 
   <!--include>
 			<name>chair_29</name>
@@ -251,7 +252,7 @@
 		</actor-->
 
 
-  <actor name="actor_2">
+  <!--actor name="actor_2">
 
       <pose>4 0 1 0 0 0</pose>
       <skin>
@@ -287,7 +288,7 @@
       <plugin name = "vehicle_type" filename = "flow_follower"/>
       <plugin name = "max_speed" filename = "1.1"/>
       <plugin name = "leader" filename = "jackal"/>
-  </actor>
+  </actor-->
 
   <!--actor name="actor_4">
 
