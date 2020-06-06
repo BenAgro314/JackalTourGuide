@@ -69,7 +69,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         
     }
 
-    this->fields[0]->TargetInit(this->collision_entities, ignition::math::Vector3d(0,13,0));
+    this->fields[0]->TargetInit(this->collision_entities, ignition::math::Vector3d(5,5,0));
 
     std::cout << "LOADED ALL VEHICLES\n";
 

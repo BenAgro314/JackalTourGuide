@@ -97,16 +97,15 @@
       <robot_name>jackal</robot_name>
     </plugin>
 
-    <!--plugin name = "lidar_listener" filename = "liblidar_listener.so">
+    <plugin name = "lidar_listener" filename = "liblidar_listener.so">
       <robot_name>jackal</robot_name>
       <building_name>building</building_name>
-    </plugin-->
- 
+    </plugin>
  
     <include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>
-      <uri>model://myhal_V3</uri>
+      <uri>model://20x20box</uri>
 	  </include>
 
     <include>
@@ -254,7 +253,7 @@
 
   <actor name="actor_2">
 
-      <pose>2 2 1 0 0 0</pose>
+      <pose>4 0 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
@@ -273,7 +272,7 @@
 
   <actor name="actor_3">
 
-      <pose>4 0 1 0 0 0</pose>
+      <pose>0 0 1 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
@@ -290,7 +289,43 @@
       <plugin name = "leader" filename = "jackal"/>
   </actor>
 
- 
+  <!--actor name="actor_4">
+
+      <pose>-10 0 1 0 0</pose>
+      <skin>
+      <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+      </skin>
+      <animation name="walking"> 
+        <filename>walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <animation name="standing"> 
+        <filename>talk_a.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <plugin name = "vehicle_type" filename = "flow_follower"/>
+      <plugin name = "max_speed" filename = "1.1"/>
+      <plugin name = "leader" filename = "jackal"/>
+  </actor>
+
+  <actor name="actor_5">
+
+      <pose>-10 -18 1 0 0</pose>
+      <skin>
+      <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+      </skin>
+      <animation name="walking"> 
+        <filename>walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <animation name="standing"> 
+        <filename>talk_a.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <plugin name = "vehicle_type" filename = "flow_follower"/>
+      <plugin name = "max_speed" filename = "1.1"/>
+      <plugin name = "leader" filename = "jackal"/>
+  </actor-->
     
 <!--include>
   <uri>model://table_conference_2</uri> 
