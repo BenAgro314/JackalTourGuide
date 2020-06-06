@@ -68,11 +68,11 @@ std::vector<std::vector<int>> FlowField::GetNeighbours(std::vector<int> curr_ind
             res.push_back({curr_ind[0]-1,curr_ind[1]+1});
         }
 
-        if (curr_ind[0] < this->cols-1 && curr_ind[1] > 0){ // we can return top right
+        if (curr_ind[0] < this->rows-1 && curr_ind[1] > 0){ // we can return top right
             res.push_back({curr_ind[0]+1,curr_ind[1]-1});
         }
 
-        if (curr_ind[0] < this->cols-1 && curr_ind[1] < this->rows-1){ // we can return bottom right
+        if (curr_ind[0] < this->rows-1 && curr_ind[1] < this->cols-1){ // we can return bottom right
             res.push_back({curr_ind[0]+1,curr_ind[1]+1});
         }
     }
@@ -92,7 +92,13 @@ void FlowField::CostMap(std::vector<gazebo::physics::EntityPtr> collision_entiti
     }
 
     for (auto object: collision_entities){
+       
         auto box = object->BoundingBox();
+
+        double min_z = std::min(box.Min().Z(), box.Max().Z());
+        if (min_z > 1.5){
+            continue;
+        }
 
         int min_col, min_row;
         this->PosToIndicies(ignition::math::Vector3d(box.Min().X(), box.Max().Y(), 0), min_row, min_col);
@@ -111,6 +117,7 @@ void FlowField::CostMap(std::vector<gazebo::physics::EntityPtr> collision_entiti
 }
 
 void FlowField::IntegrationField(double x, double y){
+
     for (int r = 0; r < this->rows; r++){
         std::vector<double> new_row;
         this->integration_field.push_back(new_row);
@@ -118,7 +125,7 @@ void FlowField::IntegrationField(double x, double y){
             this->integration_field[r].push_back(10e9);
         }
     }
-
+  
     int t_row, t_col;
 
     this->PosToIndicies(ignition::math::Vector3d(x,y,0), t_row, t_col);
@@ -148,12 +155,12 @@ void FlowField::IntegrationField(double x, double y){
 
     }
 
-
 }
 
 void FlowField::TargetInit(std::vector<gazebo::physics::EntityPtr> collision_entities, ignition::math::Vector3d target){
     this->CostMap(collision_entities);
     this->SetTarget(target);
+    
 }
 
 void FlowField::SetTarget(ignition::math::Vector3d target){
@@ -161,24 +168,28 @@ void FlowField::SetTarget(ignition::math::Vector3d target){
 
     for (int r = 0; r<this->rows; r++){
         for (int c= 0; c<this->cols; c++){
+            
             auto curr_ind = {r, c};
             auto neighbours = this->GetNeighbours(curr_ind, true);
 
             std::vector<int> min_n;
             double min_val = 10e9;
-
+            
             bool found = false;
             for (auto n : neighbours){
-                auto val = this->integration_field[n[0]][n[1]];
+               
+                double val = this->integration_field[n[0]][n[1]];
+            
                 if (val != 10e9){
                     found = true;
                 }
+              
                 if (val < min_val){
                     min_val = val;
                     min_n = n;
                 }
             }
-
+       
             ignition::math::Vector3d dir, this_pos, n_pos;
 
             if (!found){
@@ -191,10 +202,12 @@ void FlowField::SetTarget(ignition::math::Vector3d target){
                 dir = dir.Normalize();
             }
             this->field[r][c] = dir;
-
+       
         }
 
     }
+
+
 }
 
 void FlowField::PerlinInit(){

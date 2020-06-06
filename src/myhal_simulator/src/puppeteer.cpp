@@ -7,10 +7,6 @@ GZ_REGISTER_WORLD_PLUGIN(Puppeteer);
 
 void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
-    //testing
-
-    this->fields.push_back(boost::make_shared<FlowField>(ignition::math::Vector3d(-10,10,0), 20, 20, 1));
-    //testing
 
     this->world = _world;
     this->sdf = _sdf;
@@ -19,6 +15,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->ReadSDF();
 
     this->ReadParams();
+
+    
 
     auto building = this->world->ModelByName(this->building_name);
 
@@ -29,7 +27,10 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->building_box.Max().Y()+=1;
     this->static_quadtree = boost::make_shared<QuadTree>(this->building_box);
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
-
+    
+    
+    this->fields.push_back(boost::make_shared<FlowField>(ignition::math::Vector3d(building_box.Min().X(),building_box.Max().Y(),0), building_box.Max().X() - building_box.Min().X(), building_box.Max().Y() - building_box.Min().Y(), 0.2));
+    
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
         auto model = world->ModelByIndex(i);
         auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
@@ -68,7 +69,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         
     }
 
-    this->fields[0]->TargetInit(this->collision_entities, ignition::math::Vector3d(-5,-5,0));
+    this->fields[0]->TargetInit(this->collision_entities, ignition::math::Vector3d(0,13,0));
 
     std::cout << "LOADED ALL VEHICLES\n";
 
