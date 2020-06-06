@@ -98,10 +98,6 @@
       <lidar_listener>false</lidar_listener>
     </plugin>
 
-    <!--plugin name = "lidar_listener" filename = "liblidar_listener.so">
-      <robot_name>jackal</robot_name>
-      <building_name>building</building_name>
-    </plugin-->
  
     <include>
       <name>building</name>

@@ -57,6 +57,3 @@ target_link_libraries(world_factory world_entities ${catkin_LIBRARIES})
 
 add_executable(test_file src/tests.cpp) 
 target_link_libraries(test_file world_entities quadtree vehicles ${catkin_LIBRARIES})
-
-add_library(lidar_listener src/lidar_listener.cpp)
-target_link_libraries(lidar_listener utilities quadtree ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
