@@ -109,17 +109,17 @@ actor_basic_stander:
   obstacle_margin: "0.6"
 
 actor_basic_boid: 
-  filename: walk.dae
+  filename: model://actor/meshes/SKIN_man_blue_shirt.dae
   plugin: basic_boid
   obstacle_margin: "0.6"
 
 actor_basic_random_walker:
-  filename: moonwalk.dae
+  filename: model://actor/meshes/SKIN_man_blue_shirt.dae
   plugin: basic_random_walker
   obstacle_margin: "0.6"
 
 actor_basic_follower:
-  filename: moonwalk.dae
+  filename: model://actor/meshes/SKIN_man_blue_shirt.dae
   plugin: basic_follower
   obstacle_margin: "0.5"
 

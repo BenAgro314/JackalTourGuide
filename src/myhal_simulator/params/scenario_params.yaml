@@ -15,8 +15,8 @@ basic_crowd:
   table_group_list: group_list1
 
 basic_study_area:
-  pop_density: "0.1"
-  table_percentage: "1"
+  pop_density: "0.05"
+  table_percentage: "0.8"
   actor: actor_basic_random_walker
   model_list: model_list1
   table_group_list: group_list1

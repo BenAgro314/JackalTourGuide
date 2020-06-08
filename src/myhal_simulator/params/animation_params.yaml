@@ -5,13 +5,13 @@ animation_names:
   - sitting
 
 walking:
-  filename: walk.dae
+  filename: model://actor/meshes/ANIMATION_walking.dae
 
 talking:
-  filename: talk_a.dae
+  filename: model://actor/meshes/ANIMATION_talking_a.dae
 
 standing:
-  filename: stand.dae
+  filename: model://actor/meshes/ANIMATION_talking_a.dae
 
 sitting:
-  filename: sitting.dae
+  filename: model://actor/meshes/ANIMATION_sitting.dae

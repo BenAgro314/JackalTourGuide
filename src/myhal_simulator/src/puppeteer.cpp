@@ -89,7 +89,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
        
     }
 
-    this->fields[0]->TargetInit(this->collision_entities, ignition::math::Vector3d(5,5,0));
+    auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
+    //std::printf("(%f, %f)\n", new_target.X(), new_target.Y());
+    this->fields[0]->TargetInit(this->collision_entities, new_target);
 
     std::cout << "LOADED ALL VEHICLES\n";
 
@@ -122,6 +124,13 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
     }
 
     this->last_update = _info.simTime;
+
+    if ((_info.simTime - this->last_retarget).Double() > this->retarget_time){
+        auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
+        this->fields[0]->SetTarget(new_target);
+        //std::printf("(%f, %f)\n", new_target.X(), new_target.Y());
+        this->last_retarget = _info.simTime;
+    }
 
 
     if ((this->robot_name != "") && this->robot == nullptr){

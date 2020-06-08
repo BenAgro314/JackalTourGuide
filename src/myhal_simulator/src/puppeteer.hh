@@ -45,6 +45,10 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         gazebo::common::Time last_update;
 
+        gazebo::common::Time last_retarget;
+
+        double retarget_time = 10;
+
         std::map<std::string, double> vehicle_params;
 
         std::map<std::string, double> boid_params;

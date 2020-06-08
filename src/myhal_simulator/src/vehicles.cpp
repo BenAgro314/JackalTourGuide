@@ -557,9 +557,10 @@ Sitter::Sitter(gazebo::physics::ActorPtr _actor, std::string _chair_name, std::v
     bool found = false;
     this->still = true;
     for (auto model: this->all_objects){
-        if (model->GetName() == this->chair_name){
-            this->chair = model;
+        if (model->GetParent()->GetParent()->GetName() == this->chair_name){
+            this->chair = boost::static_pointer_cast<gazebo::physics::Entity>(model->GetParent()->GetParent());
             found = true;
+            break;
         }
     }
 

@@ -105,6 +105,38 @@
       <uri>model://20x20box</uri>
 	  </include>
 
+    	<include>
+			<name>chair_8</name>
+			<pose>2.999798 -5.100227 0.000000 0.000000 -0.000000 1.086186</pose>
+			<uri>model://chair_2</uri>
+		</include>
+		<actor name="sitter_11">
+			<pose>2.999798 -5.100227 0.650000 0.000000 -0.000000 1.086186</pose>
+			<skin>
+				<filename>sitting.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>walk.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>talk_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="vehicle_type" filename="sitter">
+			</plugin>
+			<plugin name="chair" filename="chair_8">
+			</plugin>
+		</actor>
+
     <include>
 			<name>table2_4</name>
 			<pose>-4.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
@@ -159,7 +191,7 @@
 			</plugin>
 			<plugin name="standing_duration" filename="5">
 			</plugin>
-			<plugin name="vehicle_type" filename="stander">
+			<plugin name="vehicle_type" filename="flow_follower">
 			</plugin>
 			<plugin name="walking_duration" filename="-5">
 			</plugin>
@@ -178,7 +210,7 @@
 				<interpolate_x>true</interpolate_x>
 			</animation>
 			<animation name="standing">
-				<filename>stand.dae</filename>
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
 				<interpolate_x>true</interpolate_x>
 			</animation>
 			<animation name="sitting">
@@ -187,7 +219,7 @@
 			</animation>
 			<plugin name="max_speed" filename="1">
 			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
+			<plugin name="vehicle_type" filename="stander">
 			</plugin>
 		</actor>
     
@@ -209,7 +241,7 @@
         <filename>talk_a.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-      <plugin name = "vehicle_type" filename = "wanderer"/>
+      <plugin name = "vehicle_type" filename = "flow_follower"/>
       <plugin name = "standing_duration" filename = "10"/>
       <plugin name = "walking_duration" filename = "1"/>
       <plugin name = "leader" filename = "jackal"/>
