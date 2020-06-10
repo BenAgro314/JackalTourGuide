@@ -83,6 +83,13 @@
       <elevation>0</elevation>
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
+
+    <physics type="ode">
+      <!--adjust max_step size to throttle the simulation (0.001 is realtime)-->
+      <max_step_size>0.0005</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
     
     <gui fullscreen='0'>
       <camera name='user_camera'>

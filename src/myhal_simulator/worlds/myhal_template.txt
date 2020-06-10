@@ -98,10 +98,12 @@
       <lidar_listener>false</lidar_listener>
     </plugin>
 
-
-
-
-
+    <physics type="ode">
+      <!--adjust max_step size to throttle the simulation (0.001 is realtime)-->
+      <max_step_size>0.0005</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
     <include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>
