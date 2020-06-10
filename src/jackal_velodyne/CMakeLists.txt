@@ -69,3 +69,7 @@ target_link_libraries(navigation_goals ${catkin_LIBRARIES})
 add_executable(tour_maker src/tour_maker.cpp)
 add_dependencies(tour_maker tour_maker_messages_cpp)
 target_link_libraries(tour_maker ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
+add_executable(data_processing src/data_processing)
+add_dependencies(data_processing data_processing_messages_cpp)
+target_link_libraries(data_processing ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
