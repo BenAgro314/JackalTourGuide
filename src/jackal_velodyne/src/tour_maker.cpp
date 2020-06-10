@@ -9,6 +9,7 @@
 #include "sensor_msgs/PointCloud2.h"
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -43,8 +44,15 @@ int main(int argc, char** argv){
 
     ROS_WARN("Writing to tour: %s\n", bag_name.c_str());
 
-    std::string file_name ="/home/default/catkin_ws/src/jackal_velodyne/src/include/tours/" + bag_name + "_tour.bag";
-    tour.open(file_name,rosbag::bagmode::Write);
+    std::string filename;
+    if (const char * user = std::getenv("USER")){
+      std::string name(user);
+      filename ="/home/" + name + "/catkin_ws/src/jackal_velodyne/src/include/tours/" + bag_name + "_tour.bag";
+    } else{
+      std::cout << "USER NAME NOT FOUND\n";
+      filename ="/home/default/catkin_ws/src/jackal_velodyne/src/include/tours/" + bag_name + "_tour.bag";
+    }
+    tour.open(filename,rosbag::bagmode::Write);
   
     ros::Subscriber target_sub = nh.subscribe("move_base_simple/goal", 1000, TargetCallback);
     ros::Rate r(10);

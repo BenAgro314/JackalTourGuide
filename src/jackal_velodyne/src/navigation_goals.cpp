@@ -12,6 +12,7 @@
 #include "sensor_msgs/Image.h"
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -70,8 +71,19 @@ int main(int argc, char** argv){
       ROS_INFO("Waiting for the move_base action server to come up");
     }
 
-    std::string file_name ="/home/default/catkin_ws/src/jackal_velodyne/src/include/tours/" + bag_name;
-    tour.open(file_name);
+    std::string filename;
+    std::string shutdown_file = "/home/default/catkin_ws/shutdown.sh";
+    if (const char * user = std::getenv("USER")){
+      std::string name(user);
+      filename ="/home/" + name + "/catkin_ws/src/jackal_velodyne/src/include/tours/" + bag_name;
+      shutdown_file = "/home/"+name+"/catkin_ws/shutdown.sh";
+    } else{
+      std::cout << "USER NAME NOT FOUND\n";
+      filename ="/home/default/catkin_ws/src/jackal_velodyne/src/include/tours/" + bag_name;
+    }
+
+    
+    tour.open(filename);
     
     
     move_base_msgs::MoveBaseGoal goal;
@@ -100,7 +112,8 @@ int main(int argc, char** argv){
     }
     
     tour.close();
-    system("/home/default/catkin_ws/shutdown.sh");
+    const char *cstr = shutdown_file.c_str();
+    system(cstr);
     
     return 0;
 }
