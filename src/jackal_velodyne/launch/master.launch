@@ -51,7 +51,7 @@
               args="-urdf -model jackal -param robot_description -x 0 -y 0 -z 1.0" />
 
   <!-- Rviz -->
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find jackal_velodyne)/launch/include/run.rviz" />
+  <!--node pkg="rviz" type="rviz" name="rviz" args="-d $(find jackal_velodyne)/launch/include/run.rviz" /-->
 
 
   <!-- TF -->

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-sudo killall gzserver
-sudo killall gzclient
-sudo killall rviz
+killall gzserver
+killall gzclient
+killall rviz
 
 roslaunch jackal_velodyne sandbox.launch

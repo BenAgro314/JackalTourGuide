@@ -1,10 +1,10 @@
 #!/bin/bash
 
-sudo killall gzserver
-sudo killall gzclient
-sudo killall rviz
-sudo killall roscore
-sudo killall rosmaster
+killall gzserver
+killall gzclient
+killall rviz
+killall roscore
+killall rosmaster
 
 #1. launch roscore
 #2. load parameters 
@@ -28,9 +28,8 @@ sleep 0.1
 rosrun myhal_simulator world_factory
 
 roslaunch jackal_velodyne master.launch &
-rosbag record -o "data/" -a -x "(.*)/compressedDepth(.*)" #compressed depth images cannot be recorded to rosbag
-#rosrun jackal_velodyne points_and_pose 
-#rosbag record -o "data/" -a -x "(.*)/compressedDepth(.*)" #compressed depth images cannot be recorded to rosbag
+rosbag record -o "/home/$USER/Myhal_Simulation/raw_bag_files/" -a -x "/kinect_V2(.*)" # Limiting data to remain under rosbag buffer
+
 
 
 
