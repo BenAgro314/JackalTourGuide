@@ -47,10 +47,10 @@ int main(int argc, char** argv){
     std::string filename;
     if (const char * user = std::getenv("USER")){
       std::string name(user);
-      filename ="/home/" + name + "/catkin_ws/src/jackal_velodyne/src/tours/" + bag_name + "_tour.bag";
+      filename ="/home/" + name + "/catkin_ws/src/jackal_velodyne/tours/" + bag_name + "_tour.bag";
     } else{
       std::cout << "USER NAME NOT FOUND\n";
-      filename ="/home/default/catkin_ws/src/jackal_velodyne/src/tours/" + bag_name + "_tour.bag";
+      filename ="/home/default/catkin_ws/src/jackal_velodyne/tours/" + bag_name + "_tour.bag";
     }
     tour.open(filename,rosbag::bagmode::Write);
   

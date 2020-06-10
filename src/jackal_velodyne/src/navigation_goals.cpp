@@ -75,11 +75,11 @@ int main(int argc, char** argv){
     std::string shutdown_file = "/home/default/catkin_ws/shutdown.sh";
     if (const char * user = std::getenv("USER")){
       std::string name(user);
-      filename ="/home/" + name + "/catkin_ws/src/jackal_velodyne/src/tours/" + bag_name;
+      filename ="/home/" + name + "/catkin_ws/src/jackal_velodyne/tours/" + bag_name;
       shutdown_file = "/home/"+name+"/catkin_ws/shutdown.sh";
     } else{
       std::cout << "USER NAME NOT FOUND\n";
-      filename ="/home/default/catkin_ws/src/jackal_velodyne/src/tours/" + bag_name;
+      filename ="/home/default/catkin_ws/src/jackal_velodyne/tours/" + bag_name;
     }
 
     
