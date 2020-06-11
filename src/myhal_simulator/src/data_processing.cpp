@@ -23,13 +23,15 @@
 #include "frame.hh"
 
 
+
+
 #define NUM_TOPICS 6
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
 int main(int argc, char** argv){
-    if (argc == 1){
-        std::cout << "must input bag name\n";
+    if (argc ==1){
+        std::cout << "must input bag name and true/false\n";
         return 0;
     }
 
@@ -39,6 +41,17 @@ int main(int argc, char** argv){
     } 
 
     std::string time_name = argv[1];
+    bool classify = false;
+    if (argc>2){
+        std::string arg = argv[2];
+        classify = (arg == "true");
+    }
+    
+    if (classify){
+        std::cout << "Clasifying points\n";
+    } else{
+        std::cout << "Not classifying points\n";
+    }
 
     rosbag::Bag bag;
     
@@ -51,7 +64,13 @@ int main(int argc, char** argv){
     system(command.c_str());
     
     // extract topic: /ground_truth/state type: nav_msgs/Odometry    
-    std::vector<std::string> topics = {"/ground_truth/state", "/ground_points", "/chair_points", "/moving_actor_points", "/still_actor_points","/table_points", "/wall_points"};
+    std::vector<std::string> topics;
+    
+    if (classify){
+        topics = {"/ground_truth/state", "/ground_points", "/chair_points", "/moving_actor_points", "/still_actor_points","/table_points", "/wall_points"};
+    } else{
+        topics = {"/ground_truth/state", "/velodyne_points"};
+    }
     rosbag::View view(bag, rosbag::TopicQuery(topics));
 
     gt_file << "time, pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, rot.w\n";
@@ -72,23 +91,8 @@ int main(int argc, char** argv){
                 gt_file << pose->header.stamp.toSec() << ", " << pose->pose.pose.position.x << ", " << pose->pose.pose.position.y << ", " << pose->pose.pose.position.z << ", " << pose->pose.pose.orientation.x << ", " << pose->pose.pose.orientation.y << ", " << pose->pose.pose.orientation.z << ", " << pose->pose.pose.orientation.w << std::endl;
             continue;
         } 
-        int cat;
         count ++;
-        if (msg.getTopic() == "/ground_points"){
-            cat = 0;
-        } else if (msg.getTopic() == "/chair_points"){
-            cat = 1;
-        } else if (msg.getTopic() == "/moving_actor_points"){
-            cat = 2;
-        } else if (msg.getTopic() == "/still_actor_points"){
-            cat = 3;
-        } else if (msg.getTopic() == "/table_points"){
-            cat = 4;
-        } else if (msg.getTopic() == "/wall_points"){
-            cat = 5;
-        }
 
-        
 
         sensor_msgs::PointCloud2::ConstPtr cloud = msg.instantiate<sensor_msgs::PointCloud2>();
         
@@ -97,23 +101,49 @@ int main(int argc, char** argv){
             continue;
         }
     
-        
         pcl::PCLPointCloud2 pcl_pc2;
         pcl_conversions::toPCL(*cloud,pcl_pc2);
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
         pcl::fromPCLPointCloud2(pcl_pc2,*cloud_ptr);
 
-        if (count % NUM_TOPICS== 1 && count > 1){
-            id++;
-        }
-       
-        if (id >= F.size()){
-            F.push_back(Frame(false));
-            F[id].SetTime(cloud->header.stamp.toSec());
-        }
+        if (classify){
+            int cat;
+            
+            if (msg.getTopic() == "/ground_points"){
+                cat = 0;
+            } else if (msg.getTopic() == "/chair_points"){
+                cat = 1;
+            } else if (msg.getTopic() == "/moving_actor_points"){
+                cat = 2;
+            } else if (msg.getTopic() == "/still_actor_points"){
+                cat = 3;
+            } else if (msg.getTopic() == "/table_points"){
+                cat = 4;
+            } else if (msg.getTopic() == "/wall_points"){
+                cat = 5;
+            }
+
+            if (count % NUM_TOPICS== 1 && count > 1){
+                id++;
+            }
         
-        for (auto point: cloud_ptr->points){
-            F[id].AddPoint(ignition::math::Vector3d(point.x, point.y, point.z), cat);
+            if (id >= F.size()){
+                F.push_back(Frame(false));
+                F[id].SetTime(cloud->header.stamp.toSec());
+            }
+            
+            for (auto point: cloud_ptr->points){
+                F[id].AddPoint(ignition::math::Vector3d(point.x, point.y, point.z), cat);
+            }
+        } else{
+
+            auto frame = Frame(false);
+            frame.SetTime(cloud->header.stamp.toSec());
+            for (auto point: cloud_ptr->points){
+                frame.AddPoint(ignition::math::Vector3d(point.x, point.y, point.z), -1);
+            }
+            
+            F.push_back(frame);
         }
         
         
