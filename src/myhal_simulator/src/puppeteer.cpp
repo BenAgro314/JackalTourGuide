@@ -68,34 +68,12 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                     
             }
         }
-        
 
-       /*
-        if (model->GetName() == this->building_name){
-            auto links = model->GetLinks();
-            for (gazebo::physics::LinkPtr link: links){
-                std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
-                for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
-                    this->collision_entities.push_back(collision_box); //TODO: check if this is correct (maybe do dynamic pointer cast )
-                    auto new_node = QTData(collision_box->BoundingBox(), collision_box, entity_type);
-                    this->static_quadtree->Insert(new_node);
-                }
-                    
-            }
-        } else if (model->GetName() != "ground_plane"){
-            this->collision_entities.push_back(model);
-            auto box = model->BoundingBox();
-            box.Min().Z() = 0;
-            box.Max().Z() = 0;
-            auto new_node = QTData(box, model, entity_type);
-            this->static_quadtree->Insert(new_node);
-        } 
-        */
        
     }
 
     auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
-    //std::printf("(%f, %f)\n", new_target.X(), new_target.Y());
+  
     this->fields[0]->TargetInit(this->collision_entities, new_target);
 
     std::cout << "LOADED ALL VEHICLES\n";
@@ -105,15 +83,17 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         char **argv = NULL;
         ros::init(argc, argv, "LidarListener");
         
-        this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 1, &Puppeteer::Callback, this);
-        this->ground_pub = nh.advertise<PointCloud>("ground_points", 1);
-        this->wall_pub = nh.advertise<PointCloud>("wall_points", 1);
-        this->moving_actor_pub = nh.advertise<PointCloud>("moving_actor_points", 1);
-        this->still_actor_pub = nh.advertise<PointCloud>("still_actor_points", 1);
-        this->table_pub = nh.advertise<PointCloud>("table_points", 1);
-        this->chair_pub = nh.advertise<PointCloud>("chair_points", 1);
+        this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 10, &Puppeteer::Callback, this);
+        if (this->pub){
+            this->ground_pub = nh.advertise<PointCloud>("ground_points", 10);
+            this->wall_pub = nh.advertise<PointCloud>("wall_points", 10);
+            this->moving_actor_pub = nh.advertise<PointCloud>("moving_actor_points", 10);
+            this->still_actor_pub = nh.advertise<PointCloud>("still_actor_points", 10);
+            this->table_pub = nh.advertise<PointCloud>("table_points", 10);
+            this->chair_pub = nh.advertise<PointCloud>("chair_points", 10);
+        }
         ros::AsyncSpinner spinner(boost::thread::hardware_concurrency());
-        ros::Rate r = (ros::Rate) this->update_freq;
+        ros::Rate r = (ros::Rate) 10;
         std::cout << "Advertising Lidar Points\n";
         spinner.start();
 
@@ -349,6 +329,7 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         return;
     }
 
+    
     PointCloud::Ptr ground_msg (new PointCloud);
     ground_msg->header.frame_id = "velodyne";
     ground_msg->height = msg->height;
@@ -378,6 +359,7 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
     chair_msg->header.frame_id = "velodyne";
     chair_msg->height = msg->height;
     chair_msg->width = 0;
+    
 
     this->vehicle_quadtree2 = boost::make_shared<QuadTree>(this->building_box);
 
@@ -429,9 +411,10 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
 
    
         if (near_objects.size() == 0 && near_vehicles.size() == 0){
-            
-            ground_msg->points.push_back(pt);
-            ground_msg->width++;
+            if (this->pub){
+                ground_msg->points.push_back(pt);
+                ground_msg->width++;
+            }
             cat = 'g';
         
         } else {
@@ -450,20 +433,28 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
             }
  
             if (closest_name == this->building_name){
-                wall_msg->points.push_back(pt);
-                wall_msg->width++;
+                if (this->pub){
+                    wall_msg->points.push_back(pt);
+                    wall_msg->width++;
+                }
                 cat = 'w';
             } else if (closest_name.substr(0,5) == "table"){
-                table_msg->points.push_back(pt);
-                table_msg->width++;
+                if (this->pub){
+                    table_msg->points.push_back(pt);
+                    table_msg->width++;
+                }
                 cat = 't';
             } else if (closest_name.substr(0,5) == "chair" && near_vehicles.size() == 0){
-                chair_msg->points.push_back(pt);
-                chair_msg->width++;
+                if (this->pub){
+                    chair_msg->points.push_back(pt);
+                    chair_msg->width++;
+                }
                 cat = 'c';
             } else if (near_vehicles.size() == 0) {
-                ground_msg->points.push_back(pt);
-                ground_msg->width++;
+                if (this->pub){
+                    ground_msg->points.push_back(pt);
+                    ground_msg->width++;
+                }
                 cat = 'g';
             }
   
@@ -473,18 +464,24 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
             for (auto n: near_vehicles){
                 
                 if (point.Z() <=0){
-                    ground_msg->points.push_back(pt);
-                    ground_msg->width++;
+                    if (this->pub){
+                        ground_msg->points.push_back(pt);
+                        ground_msg->width++;
+                    }
                     cat = 'g';
                 } else{
                   
                     if (n->IsStill()){
-                        still_actor_msg->points.push_back(pt);
-                        still_actor_msg->width++;
+                        if (this->pub){
+                            still_actor_msg->points.push_back(pt);
+                            still_actor_msg->width++;
+                        }
                         cat = 's';
                     } else{
-                        moving_actor_msg->points.push_back(pt);
-                        moving_actor_msg->width++;
+                        if (this->pub){
+                            moving_actor_msg->points.push_back(pt);
+                            moving_actor_msg->width++;
+                        }
                         cat = 'm';
                     }
                     
@@ -500,20 +497,20 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
     }
     frame.WriteToFile("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/frames/");
 
-    
-    pcl_conversions::toPCL(ros::Time::now(), ground_msg->header.stamp);
-    pcl_conversions::toPCL(ros::Time::now(), wall_msg->header.stamp);
-    pcl_conversions::toPCL(ros::Time::now(), moving_actor_msg->header.stamp);
-    pcl_conversions::toPCL(ros::Time::now(), still_actor_msg->header.stamp);
-    pcl_conversions::toPCL(ros::Time::now(), table_msg->header.stamp);
-    pcl_conversions::toPCL(ros::Time::now(), chair_msg->header.stamp);
-   
+    if (this->pub){
+        pcl_conversions::toPCL(ros::Time::now(), ground_msg->header.stamp);
+        pcl_conversions::toPCL(ros::Time::now(), wall_msg->header.stamp);
+        pcl_conversions::toPCL(ros::Time::now(), moving_actor_msg->header.stamp);
+        pcl_conversions::toPCL(ros::Time::now(), still_actor_msg->header.stamp);
+        pcl_conversions::toPCL(ros::Time::now(), table_msg->header.stamp);
+        pcl_conversions::toPCL(ros::Time::now(), chair_msg->header.stamp);
 
-    this->ground_pub.publish(ground_msg);
-    this->wall_pub.publish(wall_msg);
-    this->moving_actor_pub.publish(moving_actor_msg);
-    this->still_actor_pub.publish(still_actor_msg);
-    this->table_pub.publish(table_msg);
-    this->chair_pub.publish(chair_msg);
+        this->ground_pub.publish(ground_msg);
+        this->wall_pub.publish(wall_msg);
+        this->moving_actor_pub.publish(moving_actor_msg);
+        this->still_actor_pub.publish(still_actor_msg);
+        this->table_pub.publish(table_msg);
+        this->chair_pub.publish(chair_msg);
+    }
     
 }

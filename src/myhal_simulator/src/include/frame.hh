@@ -45,30 +45,30 @@ void addPoints(happly::PLYData &plyOut, std::vector<Point>& vertexPositions){
     }
 
     // De-interleave
-    std::vector<double> xPos(N);
-    std::vector<double> yPos(N);
-    std::vector<double> zPos(N);
+    std::vector<float> xPos(N);
+    std::vector<float> yPos(N);
+    std::vector<float> zPos(N);
     std::vector<char> cat(N);
     for (size_t i = 0; i < vertexPositions.size(); i++) {
-    xPos[i] = vertexPositions[i].X();
-    yPos[i] = vertexPositions[i].Y();
-    zPos[i] = vertexPositions[i].Z();
+    xPos[i] = (float) vertexPositions[i].X();
+    yPos[i] = (float) vertexPositions[i].Y();
+    zPos[i] = (float) vertexPositions[i].Z();
     cat[i] = vertexPositions[i].Cat();
     }
 
     // Store
-    plyOut.getElement(vertexName).addProperty<double>("x", xPos);
-    plyOut.getElement(vertexName).addProperty<double>("y", yPos);
-    plyOut.getElement(vertexName).addProperty<double>("z", zPos);
-    plyOut.getElement(vertexName).addProperty<char>("catagory", cat);
+    plyOut.getElement(vertexName).addProperty<float>("x", xPos);
+    plyOut.getElement(vertexName).addProperty<float>("y", yPos);
+    plyOut.getElement(vertexName).addProperty<float>("z", zPos);
+    plyOut.getElement(vertexName).addProperty<char>("category", cat);
 }
 
 void addPose(happly::PLYData &plyOut, ignition::math::Pose3d pose){
 
     plyOut.addElement("gt_pose", 1);
-    plyOut.getElement("gt_pose").addProperty<double>("pos.x", {pose.Pos().X()});
-    plyOut.getElement("gt_pose").addProperty<double>("pos.y", {pose.Pos().Y()});
-    plyOut.getElement("gt_pose").addProperty<double>("pos.z", {pose.Pos().Z()});
+    plyOut.getElement("gt_pose").addProperty<float>("pos.x", {(float) pose.Pos().X()});
+    plyOut.getElement("gt_pose").addProperty<float>("pos.y", {(float) pose.Pos().Y()});
+    plyOut.getElement("gt_pose").addProperty<float>("pos.z", {(float) pose.Pos().Z()});
     plyOut.getElement("gt_pose").addProperty<double>("rot.x", {pose.Rot().X()});
     plyOut.getElement("gt_pose").addProperty<double>("rot.y", {pose.Rot().Y()});
     plyOut.getElement("gt_pose").addProperty<double>("rot.z", {pose.Rot().Z()});

@@ -24,6 +24,8 @@ class Puppeteer: public gazebo::WorldPlugin{
 
     private:
 
+        bool pub = false;
+
         gazebo::event::ConnectionPtr update_connection;
 
         gazebo::physics::WorldPtr world;

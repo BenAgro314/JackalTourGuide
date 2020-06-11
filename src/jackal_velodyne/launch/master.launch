@@ -1,7 +1,5 @@
 <launch>
 
-  <!--rosparam file="$(find jackal_velodyne)/params/jackal_extras.yaml" command="load" /-->
-
   <!--node pkg="jackal_velodyne" type="worldgen3" name="worldgen3"/-->
   
   <arg name="use_sim_time" default="true" />

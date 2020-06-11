@@ -151,7 +151,7 @@
 		</include>
 
 
-    <include>
+    <!--include>
 			<name>table2_1</name>
 			<pose>2 -3.000000 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://table_conference_2</uri>
@@ -171,9 +171,9 @@
 			<name>chair_14</name>
 			<pose>-1.562906 -3.000235 0.000000 0.000000 -0.000000 -0.401611</pose>
 			<uri>model://chair_3</uri>
-		</include>
+		</include-->
 
-    <actor name="actor_basic_random_walker_25">
+    <!--actor name="actor_basic_random_walker_25">
 			<pose>4.183624 0.951661 1.000000 0.000000 -0.000000 2.284338</pose>
 			<skin>
 				<filename>moonwalk.dae</filename>
@@ -252,7 +252,7 @@
       <plugin name = "standing_duration" filename = "10"/>
       <plugin name = "walking_duration" filename = "1"/>
       <plugin name = "leader" filename = "jackal"/>
-  </actor>
+  </actor-->
 
   <!--include>
 			<name>chair_29</name>
