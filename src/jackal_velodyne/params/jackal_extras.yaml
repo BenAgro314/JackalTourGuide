@@ -1,0 +1,17 @@
+pid_gains:
+    front_left_wheel:
+        p: 100.0
+        i: 0.01
+        d: 10.0
+    front_right_wheel:
+        p: 100.0
+        i: 0.01
+        d: 10.0
+    rear_left_wheel:
+        p: 100.0
+        i: 0.01
+        d: 10.0
+    rear_right_wheel:
+        p: 100.0
+        i: 0.01
+        d: 10.0

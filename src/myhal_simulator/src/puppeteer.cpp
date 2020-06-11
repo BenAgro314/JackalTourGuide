@@ -152,11 +152,6 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         }
     }
 
-    if (this->robot != nullptr){
-        this->sensor_pose = this->robot_links[0]->WorldPose();
-        this->sensor_pose.Pos().Z() += 0.5767;
-    }
-
 
     // reconstruct vehicle_quad tree
 
@@ -394,7 +389,13 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         this->vehicle_quadtree2->Insert(new_node);
     }
 
-    Frame frame = Frame(this->robot_links[0]->WorldPose(), ros::Time::now().toSec());
+    auto robot_pose = this->robot_links[0]->WorldPose();
+    if (this->robot != nullptr){
+        this->sensor_pose = robot_pose;
+        this->sensor_pose.Pos().Z() += 0.5767;
+    }
+
+    Frame frame = Frame(robot_pose, ros::Time::now().toSec());
     
 
     for (auto pt : msg->points){

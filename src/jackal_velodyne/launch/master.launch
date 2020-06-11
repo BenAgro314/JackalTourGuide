@@ -1,6 +1,6 @@
 <launch>
 
-  <!--rosparam file="$(find jackal_velodyne)/params/simulation_params.yaml" command="load" /-->
+  <rosparam file="$(find jackal_velodyne)/params/jackal_extras.yaml" command="load" />
 
   <!--node pkg="jackal_velodyne" type="worldgen3" name="worldgen3"/-->
   
@@ -40,9 +40,9 @@
 
   <!-- Control -->
   <include file="$(find jackal_control)/launch/control.launch" />
-  <include file="$(find jackal_control)/launch/teleop.launch">
+  <!--include file="$(find jackal_control)/launch/teleop.launch">
     <arg name="joystick" value="false"/>
-  </include>
+  </include-->
 
   <include file="$(find jackal_velodyne)/launch/include/pointcloud2laser.launch" />
 
