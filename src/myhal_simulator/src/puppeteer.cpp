@@ -96,7 +96,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
             this->chair_pub = nh.advertise<PointCloud>("chair_points", 10);
         #endif
         ros::AsyncSpinner spinner(boost::thread::hardware_concurrency());
-        ros::Rate r = (ros::Rate) 10;
+        ros::Rate r = (ros::Rate) this->update_freq;
         std::cout << "Advertising Lidar Points\n";
         spinner.start();
 

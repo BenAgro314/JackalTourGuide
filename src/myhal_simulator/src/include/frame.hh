@@ -100,7 +100,7 @@ class Frame{
                 addPose(plyOut, this->gt_pose);
             }
             addPoints(plyOut, this->points);
-            plyOut.write(path + std::to_string(this->time) + ".ply", happly::DataFormat::ASCII);
+            plyOut.write(path + std::to_string(this->time) + ".ply", happly::DataFormat::Binary);
         }
 
         void SetPose(ignition::math::Pose3d gt_pose){
