@@ -3,7 +3,8 @@
 #include "frame.hh"
 #include "boost/date_time/posix_time/posix_time.hpp"
 
-#define PUB false
+#define PUB true
+#define PLY false
 
 GZ_REGISTER_WORLD_PLUGIN(Puppeteer);
 
@@ -379,12 +380,14 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         this->sensor_pose.Pos().Z() += 0.5767;
     }
 
-    Frame frame = Frame(robot_pose, ros::Time::now().toSec());
-    
+    #if PLY
+        Frame frame = Frame(robot_pose, ros::Time::now().toSec());
+    #endif
 
     for (auto pt : msg->points){
-
-        char cat;
+        #if PLY
+            int cat;
+        #endif
 
         auto point = this->sensor_pose.CoordPositionAdd(ignition::math::Vector3d(pt.x, pt.y, pt.z));       
    
@@ -417,7 +420,9 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
                 ground_msg->points.push_back(pt);
                 ground_msg->width++;
             #endif
-            cat = 'g';
+            #if PLY
+                cat = 0;
+            #endif
         
         } else {
             
@@ -439,25 +444,33 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
                     wall_msg->points.push_back(pt);
                     wall_msg->width++;
                 #endif
-                cat = 'w';
+                #if PLY
+                    cat = 5;
+                #endif
             } else if (closest_name.substr(0,5) == "table"){
                 #if PUB
                     table_msg->points.push_back(pt);
                     table_msg->width++;
                 #endif
-                cat = 't';
+                #if PLY
+                    cat = 4;
+                #endif
             } else if (closest_name.substr(0,5) == "chair" && near_vehicles.size() == 0){
                 #if PUB
                     chair_msg->points.push_back(pt);
                     chair_msg->width++;
                 #endif
-                cat = 'c';
+                #if PLY
+                    cat = 1;
+                #endif
             } else if (near_vehicles.size() == 0) {
                 #if PUB
                     ground_msg->points.push_back(pt);
                     ground_msg->width++;
                 #endif
-                cat = 'g';
+                #if PLY
+                    cat = 0;
+                #endif
             }
   
 
@@ -470,7 +483,9 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
                         ground_msg->points.push_back(pt);
                         ground_msg->width++;
                     #endif
-                    cat = 'g';
+                    #if PLY
+                        cat = 0;
+                    #endif
                 } else{
                   
                     if (n->IsStill()){
@@ -478,13 +493,17 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
                             still_actor_msg->points.push_back(pt);
                             still_actor_msg->width++;
                         #endif
-                        cat = 's';
+                        #if PLY
+                            cat = 3;
+                        #endif
                     } else{
                         #if PUB
                             moving_actor_msg->points.push_back(pt);
                             moving_actor_msg->width++;
                         #endif
-                        cat = 'm';
+                        #if PLY
+                            cat = 2;
+                        #endif
                     }
                     
                 }
@@ -493,12 +512,14 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
             
            
         }
-
-        frame.AddPoint(ignition::math::Vector3d(pt.x, pt.y, pt.z), cat);
+        #if PLY
+            frame.AddPoint(ignition::math::Vector3d(pt.x, pt.y, pt.z), cat);
+        #endif
         
     }
-    frame.WriteToFile("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/frames/");
-
+    #if PLY
+        frame.WriteToFile("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/frames/");
+    #endif
     #if PUB
         pcl_conversions::toPCL(ros::Time::now(), ground_msg->header.stamp);
         pcl_conversions::toPCL(ros::Time::now(), wall_msg->header.stamp);

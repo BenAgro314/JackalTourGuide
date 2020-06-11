@@ -58,9 +58,6 @@ int main(int argc, char** argv){
 
     std::vector<Frame> F;
    
-
-    // vector where the ith index is the ith lidar frame (pair of the time, and vector of the points and their catagory)
-    std::vector<std::pair<double,std::vector<std::vector<std::array<double, 3>>>>> frames;
     
     int count = 0;
     int id = 0;
@@ -75,20 +72,20 @@ int main(int argc, char** argv){
                 gt_file << pose->header.stamp.toSec() << ", " << pose->pose.pose.position.x << ", " << pose->pose.pose.position.y << ", " << pose->pose.pose.position.z << ", " << pose->pose.pose.orientation.x << ", " << pose->pose.pose.orientation.y << ", " << pose->pose.pose.orientation.z << ", " << pose->pose.pose.orientation.w << std::endl;
             continue;
         } 
-        char cat;
+        int cat;
         count ++;
         if (msg.getTopic() == "/ground_points"){
-            cat = 'g';
+            cat = 0;
         } else if (msg.getTopic() == "/chair_points"){
-            cat = 'c';
+            cat = 1;
         } else if (msg.getTopic() == "/moving_actor_points"){
-            cat = 'm';
+            cat = 2;
         } else if (msg.getTopic() == "/still_actor_points"){
-            cat = 's';
+            cat = 3;
         } else if (msg.getTopic() == "/table_points"){
-            cat = 't';
+            cat = 4;
         } else if (msg.getTopic() == "/wall_points"){
-            cat = 'w';
+            cat = 5;
         }
 
         

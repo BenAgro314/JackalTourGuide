@@ -11,7 +11,7 @@ class Point{
     private:
 
         ignition::math::Vector3d pos;
-        char cat;
+        int cat;
 
     public:
 
@@ -27,11 +27,11 @@ class Point{
             return this->pos.Z();
         }
 
-        char Cat(){
+        int Cat(){
             return this->cat;
         }
 
-        Point(ignition::math::Vector3d pos, char cat): pos(pos), cat(cat){};
+        Point(ignition::math::Vector3d pos, int cat): pos(pos), cat(cat){};
 };
 
 void addPoints(happly::PLYData &plyOut, std::vector<Point>& vertexPositions){
@@ -48,7 +48,7 @@ void addPoints(happly::PLYData &plyOut, std::vector<Point>& vertexPositions){
     std::vector<float> xPos(N);
     std::vector<float> yPos(N);
     std::vector<float> zPos(N);
-    std::vector<char> cat(N);
+    std::vector<int> cat(N);
     for (size_t i = 0; i < vertexPositions.size(); i++) {
     xPos[i] = (float) vertexPositions[i].X();
     yPos[i] = (float) vertexPositions[i].Y();
@@ -60,7 +60,7 @@ void addPoints(happly::PLYData &plyOut, std::vector<Point>& vertexPositions){
     plyOut.getElement(vertexName).addProperty<float>("x", xPos);
     plyOut.getElement(vertexName).addProperty<float>("y", yPos);
     plyOut.getElement(vertexName).addProperty<float>("z", zPos);
-    plyOut.getElement(vertexName).addProperty<char>("category", cat);
+    plyOut.getElement(vertexName).addProperty<int>("category", cat);
 }
 
 void addPose(happly::PLYData &plyOut, ignition::math::Pose3d pose){
@@ -90,7 +90,7 @@ class Frame{
 
         Frame(ignition::math::Pose3d gt_pose, double time): gt_pose(gt_pose), time(time){};
 
-        void AddPoint(ignition::math::Vector3d pos, char cat){
+        void AddPoint(ignition::math::Vector3d pos, int cat){
             this->points.push_back(Point(pos,cat));
         }
 
