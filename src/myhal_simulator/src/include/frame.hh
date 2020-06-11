@@ -82,8 +82,11 @@ class Frame{
         std::vector<Point> points;
         ignition::math::Pose3d gt_pose;
         double time;
+        bool pose = true;
 
     public:
+
+        Frame(bool pose): pose(pose) {};
 
         Frame(ignition::math::Pose3d gt_pose, double time): gt_pose(gt_pose), time(time){};
 
@@ -93,9 +96,19 @@ class Frame{
 
         void WriteToFile(std::string path){
             happly::PLYData plyOut;
-            addPose(plyOut, this->gt_pose);
+            if (this->pose){
+                addPose(plyOut, this->gt_pose);
+            }
             addPoints(plyOut, this->points);
-            plyOut.write(path + std::to_string(this->time) + ".ply", happly::DataFormat::Binary);
+            plyOut.write(path + std::to_string(this->time) + ".ply", happly::DataFormat::ASCII);
+        }
+
+        void SetPose(ignition::math::Pose3d gt_pose){
+            this->gt_pose = gt_pose;
+        }
+
+        void SetTime(double time){
+            this->time = time;
         }
     
 };

@@ -20,6 +20,7 @@
 #include "happily.h"
 #include <map>
 #include <utility>  
+#include "frame.hh"
 
 
 #define NUM_TOPICS 6
@@ -37,39 +38,36 @@ int main(int argc, char** argv){
       user_name = user;
     } 
 
-    std::string bag_name = argv[1];
-    std::string filename = bag_name;
-    if (bag_name.size() > 5){
-        
-        filename = bag_name.substr(1,bag_name.size()-5);
-    }
+    std::string time_name = argv[1];
+
     rosbag::Bag bag;
     
-    bag.open("/home/" + user_name + "/Myhal_Simulation/raw_bag_files/" + bag_name, rosbag::bagmode::Read);
-    std::string command = "mkdir /home/" + user_name + "/Myhal_Simulation/simulated_runs/" + filename;
-    system(command.c_str());
+    bag.open("/home/" + user_name + "/Myhal_Simulation/simulated_runs/" + time_name + "/raw_data.bag", rosbag::bagmode::Read);
     std::ofstream gt_file;
-    gt_file.open("/home/" + user_name + "/Myhal_Simulation/simulated_runs/" +  filename + "/gt_pose.csv");
+    gt_file.open("/home/" + user_name + "/Myhal_Simulation/simulated_runs/" +  time_name + "/gt_pose.csv");
 
 
-    command = "mkdir /home/" + user_name + "/Myhal_Simulation/simulated_runs/" + filename + "/frames";
+    std::string command = "mkdir /home/" + user_name + "/Myhal_Simulation/simulated_runs/" + time_name + "/bag_frames";
     system(command.c_str());
     
-
     // extract topic: /ground_truth/state type: nav_msgs/Odometry    
     std::vector<std::string> topics = {"/ground_truth/state", "/ground_points", "/chair_points", "/moving_actor_points", "/still_actor_points","/table_points", "/wall_points"};
     rosbag::View view(bag, rosbag::TopicQuery(topics));
 
     gt_file << "time, pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, rot.w\n";
 
+    std::vector<Frame> F;
+   
 
     // vector where the ith index is the ith lidar frame (pair of the time, and vector of the points and their catagory)
     std::vector<std::pair<double,std::vector<std::vector<std::array<double, 3>>>>> frames;
     
     int count = 0;
     int id = 0;
+  
     for (auto msg: view){
-        
+
+       
         if (msg.getTopic() == "/ground_truth/state"){
         
             auto pose = msg.instantiate<nav_msgs::Odometry>();
@@ -77,20 +75,20 @@ int main(int argc, char** argv){
                 gt_file << pose->header.stamp.toSec() << ", " << pose->pose.pose.position.x << ", " << pose->pose.pose.position.y << ", " << pose->pose.pose.position.z << ", " << pose->pose.pose.orientation.x << ", " << pose->pose.pose.orientation.y << ", " << pose->pose.pose.orientation.z << ", " << pose->pose.pose.orientation.w << std::endl;
             continue;
         } 
-        std::array<double, 3> color;
+        char cat;
         count ++;
         if (msg.getTopic() == "/ground_points"){
-            color = {0,0,0}; //black
+            cat = 'g';
         } else if (msg.getTopic() == "/chair_points"){
-            color = {1,0,1}; //purple
+            cat = 'c';
         } else if (msg.getTopic() == "/moving_actor_points"){
-            color = {1,0,0}; //red
+            cat = 'm';
         } else if (msg.getTopic() == "/still_actor_points"){
-            color = {1,0.5,0}; //orange
+            cat = 's';
         } else if (msg.getTopic() == "/table_points"){
-            color = {0,1,0};  //green
+            cat = 't';
         } else if (msg.getTopic() == "/wall_points"){
-            color = {0,1,1}; //cyan
+            cat = 'w';
         }
 
         
@@ -110,25 +108,15 @@ int main(int argc, char** argv){
 
         if (count % NUM_TOPICS== 1 && count > 1){
             id++;
-            //std::cout << std::endl; 
         }
-        //std::cout << cloud->header.stamp.toSec() << " " << msg.getTopic() << std::endl;
        
-        if (id >= frames.size()){
-            std::vector<std::array<double, 3>> pts;
-            std::vector<std::array<double, 3>> colors;
-            std::vector<std::vector<std::array<double, 3>>> points;
-            points.push_back(pts);
-            points.push_back(colors);
-            std::pair<double,std::vector<std::vector<std::array<double, 3>>>> frame;
-            frame.first = cloud->header.stamp.toSec();
-            frame.second = points;
-            frames.push_back(frame);
+        if (id >= F.size()){
+            F.push_back(Frame(false));
+            F[id].SetTime(cloud->header.stamp.toSec());
         }
         
         for (auto point: cloud_ptr->points){
-            frames[id].second[0].push_back({point.x, point.y, point.z});
-            frames[id].second[1].push_back(color);
+            F[id].AddPoint(ignition::math::Vector3d(point.x, point.y, point.z), cat);
         }
         
         
@@ -137,24 +125,9 @@ int main(int argc, char** argv){
     gt_file.close();
     bag.close();
 
-    
-    for (auto frame: frames){
-        
-        happly::PLYData plyOut;
-        std::vector<std::array<double, 3>> points = frame.second[0];
-        std::vector<std::array<double, 3>> colors = frame.second[1];
-        double time = frame.first;
-
-        // Add mesh data (elements are created automatically)
-        plyOut.addVertexPositions(points);
-        plyOut.addVertexColors(colors);
-        // Write the object to file
-        
-
-        plyOut.write("/home/" + user_name + "/Myhal_Simulation/simulated_runs/" +  filename + "/frames/" + std::to_string(time) + ".ply", happly::DataFormat::ASCII);
-      
+    for (auto frame: F){
+        frame.WriteToFile("/home/" + user_name + "/Myhal_Simulation/simulated_runs/" +  time_name + "/bag_frames/");
     }
-
 
     
 }

@@ -12,6 +12,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  pcl_conversions
+  sensor_msgs
+  rosbag
+  nav_msgs
+  geometry_msgs
 )
 
 
@@ -19,7 +24,7 @@ find_package(gazebo REQUIRED)
 
 
 catkin_package(
-	DEPENDS gazebo_ros pcl_ros roscpp rospy std_msgs
+	DEPENDS gazebo_ros pcl_ros roscpp rospy std_msgs rosbag sensor_msgs pcl_conversions nav_msgs geometry_msgs
 	INCLUDE_DIRS src/include
 )
 
@@ -57,3 +62,6 @@ target_link_libraries(world_factory world_entities ${catkin_LIBRARIES})
 
 add_executable(test_file src/tests.cpp) 
 target_link_libraries(test_file world_entities quadtree vehicles ${catkin_LIBRARIES})
+
+add_executable(data_processing src/data_processing.cpp) 
+target_link_libraries(data_processing ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
