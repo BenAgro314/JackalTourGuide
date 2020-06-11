@@ -17,6 +17,7 @@
 #include <boost/thread.hpp>
 #include "vehicles.hh"
 
+
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
 class Puppeteer: public gazebo::WorldPlugin{
@@ -66,6 +67,10 @@ class Puppeteer: public gazebo::WorldPlugin{
         std::vector<boost::shared_ptr<FlowField>> fields;
 
         std::vector<gazebo::physics::LinkPtr> robot_links;
+
+        std::string user_name;
+
+        std::string start_time;
 
         ignition::math::Pose3d sensor_pose;
         

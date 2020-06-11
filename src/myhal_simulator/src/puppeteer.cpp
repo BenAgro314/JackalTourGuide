@@ -1,5 +1,7 @@
 #include "puppeteer.hh"
 #include "utilities.hh"
+#include "frame.hh"
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 GZ_REGISTER_WORLD_PLUGIN(Puppeteer);
 
@@ -16,7 +18,10 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     this->ReadParams();
 
-    
+    this->user_name = "default";
+    if (const char * user = std::getenv("USER")){
+        this->user_name = user;
+    } 
 
     auto building = this->world->ModelByName(this->building_name);
 
@@ -335,9 +340,15 @@ void Puppeteer::ReadParams(){
         boid_params["FOV_angle"] =  4;
         boid_params["FOV_radius"] =  3;
     }
+
+    if (!nh.getParam("start_time", this->start_time)){
+        std::cout << "ERROR SETTING START TIME\n";
+        this->start_time = "ERROR SETTING START TIME";
+    }
 }
 
 void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
+
 
     if (this->robot == nullptr){
         return;
@@ -382,9 +393,13 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         auto new_node = QTData(box, vehicle, vehicle_type);
         this->vehicle_quadtree2->Insert(new_node);
     }
+
+    Frame frame = Frame(this->robot_links[0]->WorldPose(), ros::Time::now().toSec());
     
 
     for (auto pt : msg->points){
+
+        char cat;
 
         auto point = this->sensor_pose.CoordPositionAdd(ignition::math::Vector3d(pt.x, pt.y, pt.z));       
    
@@ -416,6 +431,7 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
             
             ground_msg->points.push_back(pt);
             ground_msg->width++;
+            cat = 'g';
         
         } else {
             
@@ -435,15 +451,19 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
             if (closest_name == this->building_name){
                 wall_msg->points.push_back(pt);
                 wall_msg->width++;
+                cat = 'w';
             } else if (closest_name.substr(0,5) == "table"){
                 table_msg->points.push_back(pt);
                 table_msg->width++;
+                cat = 't';
             } else if (closest_name.substr(0,5) == "chair" && near_vehicles.size() == 0){
                 chair_msg->points.push_back(pt);
                 chair_msg->width++;
+                cat = 'c';
             } else if (near_vehicles.size() == 0) {
                 ground_msg->points.push_back(pt);
                 ground_msg->width++;
+                cat = 'g';
             }
   
 
@@ -454,24 +474,32 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
                 if (point.Z() <=0){
                     ground_msg->points.push_back(pt);
                     ground_msg->width++;
+                    cat = 'g';
                 } else{
                   
                     if (n->IsStill()){
                         still_actor_msg->points.push_back(pt);
                         still_actor_msg->width++;
+                        cat = 's';
                     } else{
                         moving_actor_msg->points.push_back(pt);
                         moving_actor_msg->width++;
+                        cat = 'm';
                     }
                     
                 }
             }
 
+            
            
         }
+
+        frame.AddPoint(ignition::math::Vector3d(pt.x, pt.y, pt.z), cat);
         
     }
+    frame.WriteToFile("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/frames/");
 
+    
     pcl_conversions::toPCL(ros::Time::now(), ground_msg->header.stamp);
     pcl_conversions::toPCL(ros::Time::now(), wall_msg->header.stamp);
     pcl_conversions::toPCL(ros::Time::now(), moving_actor_msg->header.stamp);
@@ -486,4 +514,5 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
     this->still_actor_pub.publish(still_actor_msg);
     this->table_pub.publish(table_msg);
     this->chair_pub.publish(chair_msg);
+    
 }

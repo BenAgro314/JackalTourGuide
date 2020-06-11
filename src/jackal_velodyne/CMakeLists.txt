@@ -16,6 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
   move_base_msgs
   geometry_msgs
   message_generation
+  pcl_ros
+  pcl_conversions
 )
 
 find_package(gazebo REQUIRED)
