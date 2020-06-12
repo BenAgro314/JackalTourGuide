@@ -1,8 +1,8 @@
-#ifndef FRAME_HH
-#define FRAME_HH
+#pragma once 
 
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
+#include <ignition/math/Box.hh>
 #include <vector>
 #include "happily.h"
 
@@ -44,23 +44,33 @@ void addPoints(happly::PLYData &plyOut, std::vector<Point>& vertexPositions){
     plyOut.addElement(vertexName, N);
     }
 
+    bool catagory = true;
+
     // De-interleave
     std::vector<float> xPos(N);
     std::vector<float> yPos(N);
     std::vector<float> zPos(N);
     std::vector<int> cat(N);
     for (size_t i = 0; i < vertexPositions.size(); i++) {
-    xPos[i] = (float) vertexPositions[i].X();
-    yPos[i] = (float) vertexPositions[i].Y();
-    zPos[i] = (float) vertexPositions[i].Z();
-    cat[i] = vertexPositions[i].Cat();
+        xPos[i] = (float) vertexPositions[i].X();
+        yPos[i] = (float) vertexPositions[i].Y();
+        zPos[i] = (float) vertexPositions[i].Z();
+        if (catagory){
+            cat[i] = vertexPositions[i].Cat();
+            if (cat[i] < 0){
+                catagory = false;
+            }
+        }
+        
     }
 
     // Store
     plyOut.getElement(vertexName).addProperty<float>("x", xPos);
     plyOut.getElement(vertexName).addProperty<float>("y", yPos);
     plyOut.getElement(vertexName).addProperty<float>("z", zPos);
-    plyOut.getElement(vertexName).addProperty<int>("category", cat);
+    if (catagory){
+        plyOut.getElement(vertexName).addProperty<int>("category", cat);
+    }
 }
 
 void addPose(happly::PLYData &plyOut, ignition::math::Pose3d pose){
@@ -113,4 +123,147 @@ class Frame{
     
 };
 
-#endif
+
+class BoxObject{
+
+    private:
+
+        ignition::math::Box box;
+
+        int cat;
+
+    public:
+
+        BoxObject(ignition::math::Box box, int cat): box(box), cat(cat) {};
+
+        double MinX(){
+            return this->box.Min().X();
+        }
+
+        double MinY(){
+            return this->box.Min().Y();
+        }
+
+        double MinZ(){
+            return this->box.Min().Z();
+        }
+
+        double MaxX(){
+            return this->box.Max().X();
+        }
+
+        double MaxY(){
+            return this->box.Max().Y();
+        }
+
+        double MaxZ(){
+            return this->box.Max().Z();
+        }
+
+        int Cat(){
+            return this->cat;
+        }
+
+};
+
+void AddBoxes(happly::PLYData &plyOut, std::vector<BoxObject> boxes){
+   
+    size_t N = boxes.size();
+
+    // Create the element
+    if (!plyOut.hasElement("box")) {
+        plyOut.addElement("box", N);
+    }
+
+    std::vector<double> min_x(N);
+    std::vector<double> min_y(N);
+    std::vector<double> min_z(N);
+    std::vector<double> max_x(N);
+    std::vector<double> max_y(N);
+    std::vector<double> max_z(N);
+    std::vector<int> cat(N);
+    for (size_t i = 0; i < boxes.size(); i++) {
+        min_x[i] = boxes[i].MinX();
+        min_y[i] = boxes[i].MinY();
+        min_z[i] = boxes[i].MinZ();
+        max_x[i] = boxes[i].MaxX();
+        max_y[i] = boxes[i].MaxY();
+        max_z[i] = boxes[i].MaxZ();
+        cat[i] = boxes[i].Cat();
+    }
+
+    // Store
+    plyOut.getElement("box").addProperty<double>("min_x", min_x);
+    plyOut.getElement("box").addProperty<double>("min_y", min_y);
+    plyOut.getElement("box").addProperty<double>("min_z", min_z);
+    plyOut.getElement("box").addProperty<double>("max_x", max_x);
+    plyOut.getElement("box").addProperty<double>("max_y", max_y);
+    plyOut.getElement("box").addProperty<double>("max_z", max_z);
+    plyOut.getElement("box").addProperty<int>("category", cat);
+}
+
+struct TrajPoint{
+
+    ignition::math::Pose3d pose;
+    double time;
+
+    TrajPoint(ignition::math::Pose3d pose, double time): pose(pose), time(time){};
+};
+
+std::vector<TrajPoint> ReadTrajectory(happly::PLYData &plyIn, std::string element_name = "trajectory"){
+
+    std::vector<double> pos_x = plyIn.getElement(element_name).getProperty<double>("pos_x");
+    std::vector<double> pos_y = plyIn.getElement(element_name).getProperty<double>("pos_y");
+    std::vector<double> pos_z = plyIn.getElement(element_name).getProperty<double>("pos_z");
+    std::vector<double> rot_x = plyIn.getElement(element_name).getProperty<double>("rot_x");
+    std::vector<double> rot_y = plyIn.getElement(element_name).getProperty<double>("rot_y");
+    std::vector<double> rot_z = plyIn.getElement(element_name).getProperty<double>("rot_z");
+    std::vector<double> rot_w = plyIn.getElement(element_name).getProperty<double>("rot_w");
+    std::vector<double> time = plyIn.getElement(element_name).getProperty<double>("time");
+
+    std::vector<TrajPoint> trajectory;
+
+    for (int i = 0; i< pos_x.size(); i++){
+        trajectory.push_back(TrajPoint(ignition::math::Pose3d(pos_x[i], pos_y[i], pos_z[i], rot_x[i], rot_y[i], rot_z[i], rot_w[i]), time[i]));
+    }
+
+    return trajectory;
+}
+
+void AddTrajectory(happly::PLYData &plyOut, std::vector<TrajPoint> trajectory){
+       
+    size_t N = trajectory.size();
+
+    // Create the element
+    if (!plyOut.hasElement("trajectory")) {
+        plyOut.addElement("trajectory", N);
+    }
+    std::vector<double> pos_x(N);
+    std::vector<double> pos_y(N);
+    std::vector<double> pos_z(N);
+    std::vector<double> rot_x(N);
+    std::vector<double> rot_y(N);
+    std::vector<double> rot_z(N);
+    std::vector<double> rot_w(N);
+    std::vector<double> time(N);
+
+    for (size_t i = 0; i < trajectory.size(); i++) {
+        pos_x[i] = trajectory[i].pose.Pos().X();
+        pos_y[i] = trajectory[i].pose.Pos().Y();
+        pos_z[i] = trajectory[i].pose.Pos().Z();
+        rot_x[i] = trajectory[i].pose.Rot().X();
+        rot_y[i] = trajectory[i].pose.Rot().Y();
+        rot_z[i] = trajectory[i].pose.Rot().Z();
+        rot_w[i] = trajectory[i].pose.Rot().W();
+        time[i] = trajectory[i].time;
+    }
+
+    plyOut.getElement("trajectory").addProperty<double>("pos_x", pos_x);
+    plyOut.getElement("trajectory").addProperty<double>("pos_y", pos_y);
+    plyOut.getElement("trajectory").addProperty<double>("pos_z", pos_z);
+    plyOut.getElement("trajectory").addProperty<double>("rot_x", rot_x);
+    plyOut.getElement("trajectory").addProperty<double>("rot_y", rot_y);
+    plyOut.getElement("trajectory").addProperty<double>("rot_z", rot_z);
+    plyOut.getElement("trajectory").addProperty<double>("rot_w", rot_w);
+    plyOut.getElement("trajectory").addProperty<double>("time", time);
+}

@@ -68,7 +68,7 @@
 
     <physics name='default_physics' default='0' type='ode'>
       <!--adjust max_step size to throttle the simulation (0.001 is realtime)-->
-      <max_step_size>0.0001</max_step_size>
+      <max_step_size>0.001</max_step_size>
       <real_time_factor>1</real_time_factor>
       <real_time_update_rate>1000</real_time_update_rate>
     </physics>
@@ -100,7 +100,7 @@
     <plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
       <robot_name>jackal</robot_name>
-      <lidar_listener>true</lidar_listener>
+      <lidar_listener>false</lidar_listener>
     </plugin>
 
  

@@ -278,3 +278,16 @@ utilities::Path::Path(double _radius){
 void utilities::Path::AddPoint(ignition::math::Vector3d _point){
 	this->points.push_back(_point);
 }
+
+ignition::math::Pose3d utilities::InterpolatePose(double target_time, double t1, double t2, ignition::math::Pose3d pose1, ignition::math::Pose3d pose2){
+	double alpha = 0;
+	if (t2 != t1){
+		alpha = (target_time-t1)/(t2-t1);
+	}
+
+	ignition::math::Pose3d res;
+	res.Pos() = (1-alpha)*(pose1.Pos())+(alpha*(pose2.Pos()));
+	res.Rot() = ignition::math::Quaterniond::Slerp(alpha, pose1.Rot(), pose2.Rot());
+
+	return res;
+}

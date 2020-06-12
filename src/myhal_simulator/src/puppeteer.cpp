@@ -5,6 +5,7 @@
 
 #define PUB true
 #define PLY true
+#define RECORD true
 
 GZ_REGISTER_WORLD_PLUGIN(Puppeteer);
 
@@ -38,10 +39,16 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     
     
     this->fields.push_back(boost::make_shared<FlowField>(ignition::math::Vector3d(building_box.Min().X(),building_box.Max().Y(),0), building_box.Max().X() - building_box.Min().X(), building_box.Max().Y() - building_box.Min().Y(), 0.2));
-    
+    #if RECORD
+        happly::PLYData static_objects;
+        std::vector<BoxObject> ply_boxes;
+    #endif
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
         auto model = world->ModelByIndex(i);
         auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
+
+       
+        
 
         if (act){
             
@@ -55,7 +62,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
             continue;
         } 
 
-        
+       
         if (model->GetName() != "ground_plane"){
             auto links = model->GetLinks();
             for (gazebo::physics::LinkPtr link: links){
@@ -63,17 +70,41 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                 for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
                     this->collision_entities.push_back(collision_box);
                     auto box = collision_box->BoundingBox();
+                    #if RECORD
+                        int cat;
+                        
+                        std::string name = model->GetName();
+    
+                        if (name == this->building_name){
+                            cat = 5;
+                        } else if (name.substr(0,5) == "table"){
+                            cat = 4;
+ 
+                        } else if (name.substr(0,5) == "chair"){
+                            cat = 1;
+                        } 
+                        ply_boxes.push_back(BoxObject(box, cat));
+                    #endif
                     box.Max().Z() = 0;
                     box.Min().Z() = 0;
                     auto new_node = QTData(box, collision_box, entity_type);
                     this->static_quadtree->Insert(new_node);
+                    
                 }
                     
             }
         }
 
+        
+
        
     }
+
+
+    #if RECORD
+        AddBoxes(static_objects, ply_boxes);
+        static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/static_objects.ply", happly::DataFormat::ASCII);
+    #endif
 
     auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
   
