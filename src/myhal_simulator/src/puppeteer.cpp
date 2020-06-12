@@ -1,11 +1,10 @@
 #include "puppeteer.hh"
 #include "utilities.hh"
 #include "frame.hh"
-#include "boost/date_time/posix_time/posix_time.hpp"
-#include <thread>
+#include <ros/forwards.h>
 
 #define PUB true
-#define PLY false
+#define PLY true
 
 GZ_REGISTER_WORLD_PLUGIN(Puppeteer);
 
@@ -87,7 +86,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         char **argv = NULL;
         ros::init(argc, argv, "LidarListener");
         
-        this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 10, &Puppeteer::Callback, this);
+        //this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 10, &Puppeteer::Callback, this);
+        this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 10, std::bind(&Puppeteer::Callback, this, std::placeholders::_1), ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
         this->pauseGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
         this->playGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
         #if PUB
