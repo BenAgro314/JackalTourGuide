@@ -16,6 +16,7 @@
 #include <ros/ros.h>
 #include <boost/thread.hpp>
 #include "vehicles.hh"
+#include <std_srvs/Empty.h>
 
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
@@ -96,6 +97,12 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         void Callback(const PointCloud::ConstPtr& msg);
 
+        ros::ServiceClient pauseGazebo;
+
+        ros::ServiceClient playGazebo;
+
+        std_srvs::Empty emptySrv;
+        
     public: 
         
         void Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf);

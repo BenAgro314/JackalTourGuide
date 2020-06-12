@@ -68,8 +68,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 2.2342143058776855
-        Min Value: -0.42923736572265625
+        Max Value: 2.2378029823303223
+        Min Value: -0.38897818326950073
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -387,7 +387,7 @@ Visualization Manager:
       Axis: Z
       Channel Name: intensity
       Class: rviz/PointCloud2
-      Color: 85; 87; 83
+      Color: 136; 138; 133
       Color Transformer: FlatColor
       Decay Time: 0
       Enabled: true

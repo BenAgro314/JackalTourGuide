@@ -65,11 +65,14 @@
     <gravity>0 0 -9.8</gravity>
     <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
     <atmosphere type='adiabatic'/>
+
     <physics name='default_physics' default='0' type='ode'>
-      <max_step_size>0.001</max_step_size>
+      <!--adjust max_step size to throttle the simulation (0.001 is realtime)-->
+      <max_step_size>0.0001</max_step_size>
       <real_time_factor>1</real_time_factor>
       <real_time_update_rate>1000</real_time_update_rate>
     </physics>
+
     <scene>
       <ambient>0.4 0.4 0.4 1</ambient>
       <background>0.7 0.7 0.7 1</background>
@@ -84,12 +87,7 @@
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
 
-    <physics type="ode">
-      <!--adjust max_step size to throttle the simulation (0.001 is realtime)-->
-      <max_step_size>0.0005</max_step_size>
-      <real_time_factor>1</real_time_factor>
-      <real_time_update_rate>1000</real_time_update_rate>
-    </physics>
+    
     
     <gui fullscreen='0'>
       <camera name='user_camera'>
@@ -117,7 +115,7 @@
 			<pose>2.999798 -5.100227 0.000000 0.000000 -0.000000 1.086186</pose>
 			<uri>model://chair_2</uri>
 		</include>
-		<actor name="sitter_11">
+		<!--actor name="sitter_11">
 			<pose>2.999798 -5.100227 0.650000 0.000000 -0.000000 1.086186</pose>
 			<skin>
 				<filename>sitting.dae</filename>
@@ -142,7 +140,7 @@
 			</plugin>
 			<plugin name="chair" filename="chair_8">
 			</plugin>
-		</actor>
+		</actor-->
 
     <include>
 			<name>table2_4</name>
@@ -173,7 +171,7 @@
 			<uri>model://chair_3</uri>
 		</include-->
 
-    <!--actor name="actor_basic_random_walker_25">
+    <actor name="actor_basic_random_walker_25">
 			<pose>4.183624 0.951661 1.000000 0.000000 -0.000000 2.284338</pose>
 			<skin>
 				<filename>moonwalk.dae</filename>
@@ -198,12 +196,12 @@
 			</plugin>
 			<plugin name="standing_duration" filename="5">
 			</plugin>
-			<plugin name="vehicle_type" filename="flow_follower">
+			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 			<plugin name="walking_duration" filename="-5">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_random_walker_26">
+		<!--actor name="actor_basic_random_walker_26">
 			<pose>1.626457 -0.757005 1.000000 0.000000 -0.000000 2.193935</pose>
 			<skin>
 				<filename>moonwalk.dae</filename>

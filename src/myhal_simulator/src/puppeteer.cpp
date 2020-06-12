@@ -2,6 +2,7 @@
 #include "utilities.hh"
 #include "frame.hh"
 #include "boost/date_time/posix_time/posix_time.hpp"
+#include <thread>
 
 #define PUB true
 #define PLY false
@@ -87,6 +88,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         ros::init(argc, argv, "LidarListener");
         
         this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 10, &Puppeteer::Callback, this);
+        this->pauseGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
+        this->playGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
         #if PUB
             this->ground_pub = nh.advertise<PointCloud>("ground_points", 10);
             this->wall_pub = nh.advertise<PointCloud>("wall_points", 10);
@@ -95,8 +98,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
             this->table_pub = nh.advertise<PointCloud>("table_points", 10);
             this->chair_pub = nh.advertise<PointCloud>("chair_points", 10);
         #endif
+        
+        
         ros::AsyncSpinner spinner(boost::thread::hardware_concurrency());
-        ros::Rate r = (ros::Rate) this->update_freq;
         std::cout << "Advertising Lidar Points\n";
         spinner.start();
 
@@ -110,6 +114,7 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
     if (dt < 1/this->update_freq){
         return;
     }
+
 
     this->last_update = _info.simTime;
 
@@ -181,6 +186,7 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
 
         vehicle->OnUpdate(_info, dt, near_vehicles, near_objects);
     }
+
 }
 
 void Puppeteer::ReadSDF(){
@@ -326,6 +332,8 @@ void Puppeteer::ReadParams(){
 }
 
 void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
+  
+    this->pauseGazebo.call(this->emptySrv);
 
 
     if (this->robot == nullptr){
@@ -364,6 +372,7 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         chair_msg->width = 0;
     #endif
 
+    
     this->vehicle_quadtree2 = boost::make_shared<QuadTree>(this->building_box);
 
     for (auto vehicle: this->vehicles){
@@ -373,7 +382,7 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         auto new_node = QTData(box, vehicle, vehicle_type);
         this->vehicle_quadtree2->Insert(new_node);
     }
-
+    
     auto robot_pose = this->robot_links[0]->WorldPose();
     if (this->robot != nullptr){
         this->sensor_pose = robot_pose;
@@ -383,7 +392,7 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
     #if PLY
         Frame frame = Frame(robot_pose, ros::Time::now().toSec());
     #endif
-
+    
     for (auto pt : msg->points){
         #if PLY
             int cat;
@@ -394,7 +403,7 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         std::vector<boost::shared_ptr<Vehicle>> near_vehicles;
         std::vector<gazebo::physics::EntityPtr> near_objects;
 
-        double resolution = 0.01;
+        double resolution = 0.05;
         auto min = ignition::math::Vector3d(point.X() - resolution, point.Y() - resolution, 0);
         auto max = ignition::math::Vector3d(point.X() + resolution, point.Y() + resolution, 0);
         auto query_range = ignition::math::Box(min,max);
@@ -517,6 +526,7 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         #endif
         
     }
+   
     #if PLY
         frame.WriteToFile("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/frames/");
     #endif
@@ -535,5 +545,8 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         this->table_pub.publish(table_msg);
         this->chair_pub.publish(chair_msg);
     #endif
+
+    this->playGazebo.call(this->emptySrv);
     
 }
+
