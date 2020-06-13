@@ -8,6 +8,7 @@
 #include <ignition/math/Rand.hh>
 #include <ignition/math/Line3.hh>
 #include <ignition/math/Plane.hh>
+#include <ignition/math/Matrix4.hh>   
 #include <vector>
 #include <string>
 
@@ -42,7 +43,7 @@ namespace utilities{
 
     double dist_to_box(ignition::math::Vector3d pos, ignition::math::Box box);
 
-    ignition::math::Pose3d InterpolatePose(double target_time, double t1, double t2, ignition::math::Pose3d pose1, ignition::math::Pose3d pose2);
+    ignition::math::Matrix4d InterpolatePose(double target_time, double t1, double t2, ignition::math::Matrix4d aff1, ignition::math::Matrix4d aff2);
 
 
     class Path{

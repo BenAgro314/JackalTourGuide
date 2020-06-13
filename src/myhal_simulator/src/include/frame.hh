@@ -92,21 +92,21 @@ class Frame{
         std::vector<Point> points;
         ignition::math::Pose3d gt_pose;
         double time;
-        bool pose = true;
+        bool has_pose = true;
 
     public:
 
-        Frame(bool pose): pose(pose) {};
+        Frame(bool has_pose): has_pose(has_pose) {};
 
         Frame(ignition::math::Pose3d gt_pose, double time): gt_pose(gt_pose), time(time){};
 
-        void AddPoint(ignition::math::Vector3d pos, int cat){
+        void AddPoint(ignition::math::Vector3d pos, int cat = -1){
             this->points.push_back(Point(pos,cat));
         }
 
         void WriteToFile(std::string path){
             happly::PLYData plyOut;
-            if (this->pose){
+            if (this->has_pose){
                 addPose(plyOut, this->gt_pose);
             }
             addPoints(plyOut, this->points);
@@ -114,11 +114,20 @@ class Frame{
         }
 
         void SetPose(ignition::math::Pose3d gt_pose){
+            this->has_pose = true;
             this->gt_pose = gt_pose;
         }
 
         void SetTime(double time){
             this->time = time;
+        }
+
+        double Time(){
+            return this->time;
+        }
+
+        std::vector<Point> Points(){
+            return this->points;
         }
     
 };
