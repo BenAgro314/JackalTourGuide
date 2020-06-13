@@ -34,7 +34,7 @@ class Point{
         Point(ignition::math::Vector3d pos, int cat): pos(pos), cat(cat){};
 };
 
-void addPoints(happly::PLYData &plyOut, std::vector<Point>& vertexPositions){
+void addPoints(happly::PLYData &plyOut, std::vector<Point>& vertexPositions, bool color = false){
 
     std::string vertexName = "vertex";
     size_t N = vertexPositions.size();
@@ -51,13 +51,44 @@ void addPoints(happly::PLYData &plyOut, std::vector<Point>& vertexPositions){
     std::vector<float> yPos(N);
     std::vector<float> zPos(N);
     std::vector<int> cat(N);
+    std::vector<int> r(N);
+    std::vector<int> g(N);
+    std::vector<int> b(N);
     for (size_t i = 0; i < vertexPositions.size(); i++) {
         xPos[i] = (float) vertexPositions[i].X();
         yPos[i] = (float) vertexPositions[i].Y();
         zPos[i] = (float) vertexPositions[i].Z();
         if (catagory){
             cat[i] = vertexPositions[i].Cat();
+            if (color){
+                if (cat[i] == 0){ //ground
+                    r[i] = 244;
+                    g[i] = 244;
+                    b[i] = 237;
+                } else if (cat[i] == 1){ // chair
+                    r[i] = 0;
+                    g[i] = 240;
+                    b[i] = 181;
+                } else if (cat[i] == 2){ // mover
+                    r[i] = 255;
+                    g[i] = 189;
+                    b[i] = 0;
+                } else if (cat[i] == 3){ // sitter
+                    r[i] = 246;
+                    g[i] = 16;
+                    b[i] = 103;
+                } else if (cat[i] == 4){ // table
+                    r[i] = 94;
+                    g[i] = 35;   
+                    b[i] = 157;
+                } else if (cat[i] == 5){ // wall
+                    r[i] = 196;
+                    g[i] = 215;
+                    b[i] = 242;
+                }
+            }
             if (cat[i] < 0){
+
                 catagory = false;
             }
         }
@@ -69,7 +100,14 @@ void addPoints(happly::PLYData &plyOut, std::vector<Point>& vertexPositions){
     plyOut.getElement(vertexName).addProperty<float>("y", yPos);
     plyOut.getElement(vertexName).addProperty<float>("z", zPos);
     if (catagory){
-        plyOut.getElement(vertexName).addProperty<int>("category", cat);
+        if (color){
+            plyOut.getElement(vertexName).addProperty<int>("red", r);
+            plyOut.getElement(vertexName).addProperty<int>("green", g);
+            plyOut.getElement(vertexName).addProperty<int>("blue", b);
+        } else{
+            plyOut.getElement(vertexName).addProperty<int>("category", cat);
+        }
+        
     }
 }
 
@@ -104,12 +142,12 @@ class Frame{
             this->points.push_back(Point(pos,cat));
         }
 
-        void WriteToFile(std::string path){
+        void WriteToFile(std::string path, bool color = false){
             happly::PLYData plyOut;
             if (this->has_pose){
                 addPose(plyOut, this->gt_pose);
             }
-            addPoints(plyOut, this->points);
+            addPoints(plyOut, this->points, color);
             plyOut.write(path + std::to_string(this->time) + ".ply", happly::DataFormat::Binary);
         }
 
@@ -173,6 +211,10 @@ class BoxObject{
             return this->cat;
         }
 
+        ignition::math::Box Box(){
+            return this->box;
+        }
+
 };
 
 void AddBoxes(happly::PLYData &plyOut, std::vector<BoxObject> boxes){
@@ -209,6 +251,25 @@ void AddBoxes(happly::PLYData &plyOut, std::vector<BoxObject> boxes){
     plyOut.getElement("box").addProperty<double>("max_y", max_y);
     plyOut.getElement("box").addProperty<double>("max_z", max_z);
     plyOut.getElement("box").addProperty<int>("category", cat);
+}
+
+std::vector<BoxObject> ReadObjects(happly::PLYData &plyIn, std::string element_name = "box"){
+
+    std::vector<double> min_x = plyIn.getElement(element_name).getProperty<double>("min_x");
+    std::vector<double> min_y = plyIn.getElement(element_name).getProperty<double>("min_y");
+    std::vector<double> min_z = plyIn.getElement(element_name).getProperty<double>("min_z");
+    std::vector<double> max_x = plyIn.getElement(element_name).getProperty<double>("max_x");
+    std::vector<double> max_y = plyIn.getElement(element_name).getProperty<double>("max_y");
+    std::vector<double> max_z = plyIn.getElement(element_name).getProperty<double>("max_z");
+    std::vector<int> cat = plyIn.getElement(element_name).getProperty<int>("category");
+   
+    std::vector<BoxObject> boxes;
+
+    for (int i = 0; i< min_x.size(); i++){
+        boxes.push_back(BoxObject(ignition::math::Box(min_x[i], min_y[i], min_z[i], max_x[i], max_y[i], max_z[i]), cat[i]));
+    }
+
+    return boxes;
 }
 
 struct TrajPoint{

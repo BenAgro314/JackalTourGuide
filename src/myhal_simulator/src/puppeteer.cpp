@@ -1,11 +1,9 @@
 #include "puppeteer.hh"
 #include "utilities.hh"
-#include "frame.hh"
+
 #include <ros/forwards.h>
 
-#define PUB true
-#define PLY true
-#define RECORD true
+
 
 GZ_REGISTER_WORLD_PLUGIN(Puppeteer);
 
@@ -41,7 +39,6 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->fields.push_back(boost::make_shared<FlowField>(ignition::math::Vector3d(building_box.Min().X(),building_box.Max().Y(),0), building_box.Max().X() - building_box.Min().X(), building_box.Max().Y() - building_box.Min().Y(), 0.2));
     #if RECORD
         happly::PLYData static_objects;
-        std::vector<BoxObject> ply_boxes;
     #endif
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
         auto model = world->ModelByIndex(i);
@@ -83,7 +80,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                         } else if (name.substr(0,5) == "chair"){
                             cat = 1;
                         } 
-                        ply_boxes.push_back(BoxObject(box, cat));
+                        this->ply_boxes.push_back(BoxObject(box, cat));
                     #endif
                     box.Max().Z() = 0;
                     box.Min().Z() = 0;
@@ -102,8 +99,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
 
     #if RECORD
-        AddBoxes(static_objects, ply_boxes);
-        static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/static_objects.ply", happly::DataFormat::ASCII);
+        AddBoxes(static_objects, this->ply_boxes);
+        static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/static_objects.ply", happly::DataFormat::Binary);
     #endif
 
     auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
@@ -307,6 +304,17 @@ boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr ac
 
             res = boost::make_shared<Sitter>(actor, chair, this->collision_entities, actor->WorldPose().Pos().Z());
 
+            #if RECORD
+                auto min = ignition::math::Vector3d(actor->WorldPose().Pos().X() - 0.4, actor->WorldPose().Pos().Y() - 0.4, 0.3);
+                auto max = ignition::math::Vector3d(actor->WorldPose().Pos().X() + 0.4, actor->WorldPose().Pos().Y() + 0.4, 1);
+                auto box = ignition::math::Box(min,max);
+                auto min2 = ignition::math::Vector3d(actor->WorldPose().Pos().X() - 0.2, actor->WorldPose().Pos().Y() - 0.2, 0.3);
+                auto max2 = ignition::math::Vector3d(actor->WorldPose().Pos().X() + 0.2, actor->WorldPose().Pos().Y() + 0.2, 1);
+                auto box2 = ignition::math::Box(min2,max2);
+                this->ply_boxes.push_back(BoxObject(box, 3));
+                this->ply_boxes.push_back(BoxObject(box2, 3));
+            #endif
+
         } else if (actor_info["vehicle_type"] == "follower"){
 
             std::string leader_name = "";
@@ -415,6 +423,7 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
     }
     
     auto robot_pose = this->robot_links[0]->WorldPose();
+    std::cout << robot_pose.Pos().Z() << std::endl;
     if (this->robot != nullptr){
         this->sensor_pose = robot_pose;
         this->sensor_pose.Pos().Z() += 0.5767;

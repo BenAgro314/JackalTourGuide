@@ -17,6 +17,11 @@
 #include <boost/thread.hpp>
 #include "vehicles.hh"
 #include <std_srvs/Empty.h>
+#include "frame.hh"
+
+#define PUB true
+#define PLY true
+#define RECORD true
 
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
@@ -102,6 +107,10 @@ class Puppeteer: public gazebo::WorldPlugin{
         ros::ServiceClient playGazebo;
 
         std_srvs::Empty emptySrv;
+
+        #if RECORD
+            std::vector<BoxObject> ply_boxes;
+        #endif
         
     public: 
         

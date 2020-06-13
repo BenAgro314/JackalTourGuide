@@ -43,7 +43,7 @@ namespace utilities{
 
     double dist_to_box(ignition::math::Vector3d pos, ignition::math::Box box);
 
-    ignition::math::Matrix4d InterpolatePose(double target_time, double t1, double t2, ignition::math::Matrix4d aff1, ignition::math::Matrix4d aff2);
+    ignition::math::Pose3d InterpolatePose(double target_time, double t1, double t2, ignition::math::Pose3d pose1, ignition::math::Pose3d pose2);
 
 
     class Path{

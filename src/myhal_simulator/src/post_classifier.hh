@@ -6,6 +6,7 @@
 #include <vector>
 #include "data_processing.hh"
 #include "utilities.hh"
+#include <utility>
 
 
 class Classifier{
@@ -24,14 +25,19 @@ class Classifier{
 
         std::vector<TrajPoint> robot_trajectory;
 
+        std::vector<BoxObject> static_objects;
 
+        boost::shared_ptr<QuadTree> static_quadtree;
+
+        bool colorize;
 
     public:
 
-        Classifier(std::string filename, std::string username);
+        Classifier(std::string filename, std::string username, bool colorize);
 
         void Load();
 
         void WriteToPLY();
+
 };
 

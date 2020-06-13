@@ -280,21 +280,19 @@ void utilities::Path::AddPoint(ignition::math::Vector3d _point){
 	this->points.push_back(_point);
 }
 
-ignition::math::Matrix4d utilities::InterpolatePose(double target_time, double t1, double t2, ignition::math::Matrix4d aff1, ignition::math::Matrix4d aff2){
+ignition::math::Pose3d utilities::InterpolatePose(double target_time, double t1, double t2, ignition::math::Pose3d pose1, ignition::math::Pose3d pose2){
 	double alpha = 0;
 	if (t2 != t1){
 		alpha = (target_time-t1)/(t2-t1);
 	}
 
-	auto rot1 = aff1.Rotation();
-	auto rot2 = aff2.Rotation();
+	auto rot1 = pose1.Rot();
+	auto rot2 = pose2.Rot();
 
-	auto trans1 = aff1.Translation();
-	auto trans2 = aff2.Translation();
 
-	ignition::math::Matrix4d res;	
-	res.SetTranslation((1-alpha)*(trans1)+(alpha*(trans2)));
-	res.Rotation() = ignition::math::Quaterniond::Slerp(alpha, rot1, rot2);
+	ignition::math::Pose3d res;	
+	res.Pos() = ((pose2.Pos() - pose1.Pos())/(t2-t1))*(target_time-t1)+pose1.Pos();
+	res.Rot() = ignition::math::Quaterniond::Slerp(alpha, rot1, rot2);
 
 	return res;
 }
