@@ -1,6 +1,6 @@
 #include "post_classifier.hh"
 
-
+#define TRANSLATE true
 
 int main(int argc, char ** argv){
 
@@ -172,7 +172,11 @@ void Classifier::Load(){
             if (trans_pt.Z() <= 0){
                 cat = 0; // ground
                 
-                translated_frame.AddPoint(trans_pt, cat);
+                #if TRANSLATE
+                    translated_frame.AddPoint(trans_pt, cat);
+                #else
+                    translate_frame.AddPoint(ignition::math::Vector3d(point.X(), point.Y(), point.Z()), cat);
+                #endif
                 continue;
             }
 
@@ -194,7 +198,11 @@ void Classifier::Load(){
             if (near_objects.size() == 0){
                 cat = 2; //moving_actor
                 
-                translated_frame.AddPoint(trans_pt, cat);
+                #if TRANSLATE
+                    translated_frame.AddPoint(trans_pt, cat);
+                #else
+                    translate_frame.AddPoint(ignition::math::Vector3d(point.X(), point.Y(), point.Z()), cat);
+                #endif
                 continue;
             }
 
@@ -216,7 +224,11 @@ void Classifier::Load(){
             
             //std::cout << cat << std::endl;
             
-            translated_frame.AddPoint(trans_pt, cat);
+            #if TRANSLATE
+                translated_frame.AddPoint(trans_pt, cat);
+            #else
+                translate_frame.AddPoint(ignition::math::Vector3d(point.X(), point.Y(), point.Z()), cat);
+            #endif
             
         }
 
