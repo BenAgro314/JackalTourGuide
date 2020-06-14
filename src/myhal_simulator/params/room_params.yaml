@@ -2,10 +2,11 @@ room_names:
   - main_atrium
   - lower_middle
   - upper_middle
-  #- mid_right
+  - mid_right
   - long_right
   #- upper_hallway
   #- test_box
+
 
 test_box:
   geometry: box
@@ -31,7 +32,7 @@ main_atrium:
 
 geo1:
   x_min: -8
-  y_min: -5
+  y_min: -7
   x_max: 7
   y_max: 2
 

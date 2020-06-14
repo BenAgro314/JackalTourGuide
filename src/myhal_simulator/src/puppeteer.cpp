@@ -37,9 +37,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     
     
     this->fields.push_back(boost::make_shared<FlowField>(ignition::math::Vector3d(building_box.Min().X(),building_box.Max().Y(),0), building_box.Max().X() - building_box.Min().X(), building_box.Max().Y() - building_box.Min().Y(), 0.2));
-    #if RECORD
-        happly::PLYData static_objects;
-    #endif
+    
+    happly::PLYData static_objects;
+    
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
         auto model = world->ModelByIndex(i);
         auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
@@ -67,7 +67,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                 for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
                     this->collision_entities.push_back(collision_box);
                     auto box = collision_box->BoundingBox();
-                    #if RECORD
+                    if (this->record_objects){
                         int cat;
                         
                         std::string name = model->GetName();
@@ -81,7 +81,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                             cat = 1;
                         } 
                         this->ply_boxes.push_back(BoxObject(box, cat));
-                    #endif
+                    }
                     box.Max().Z() = 0;
                     box.Min().Z() = 0;
                     auto new_node = QTData(box, collision_box, entity_type);
@@ -92,16 +92,15 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
             }
         }
 
-        
-
+    
        
     }
 
 
-    #if RECORD
+    if (this->record_objects){
         AddBoxes(static_objects, this->ply_boxes);
         static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/static_objects.ply", happly::DataFormat::Binary);
-    #endif
+    }
 
     auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
   
@@ -110,6 +109,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     std::cout << "LOADED ALL VEHICLES\n";
 
     if (this->lidar_listener){
+        
         int argc = 0;
         char **argv = NULL;
         ros::init(argc, argv, "LidarListener");
@@ -118,15 +118,22 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 10, std::bind(&Puppeteer::Callback, this, std::placeholders::_1), ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
         this->pauseGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
         this->playGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
-        #if PUB
+        if (this->publish_points){
             this->ground_pub = nh.advertise<PointCloud>("ground_points", 10);
             this->wall_pub = nh.advertise<PointCloud>("wall_points", 10);
             this->moving_actor_pub = nh.advertise<PointCloud>("moving_actor_points", 10);
             this->still_actor_pub = nh.advertise<PointCloud>("still_actor_points", 10);
             this->table_pub = nh.advertise<PointCloud>("table_points", 10);
             this->chair_pub = nh.advertise<PointCloud>("chair_points", 10);
-        #endif
-        
+            
+        }
+        if (this->publish_navigation){
+            this->nav_pub = nh.advertise<PointCloud>("nav_points", 10);
+        }
+        if (this->record_objects){
+            
+            this->standing_actors = nh.advertise<PointCloud>("standing_actors", 10);
+        }
         
         ros::AsyncSpinner spinner(boost::thread::hardware_concurrency());
         std::cout << "Advertising Lidar Points\n";
@@ -142,7 +149,6 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
     if (dt < 1/this->update_freq){
         return;
     }
-
 
     this->last_update = _info.simTime;
 
@@ -179,6 +185,7 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         auto box = ignition::math::Box(min,max);
         auto new_node = QTData(box, vehicle, vehicle_type);
         this->vehicle_quadtree->Insert(new_node);
+        
     }
 
     for (auto vehicle: this->vehicles){
@@ -304,7 +311,7 @@ boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr ac
 
             res = boost::make_shared<Sitter>(actor, chair, this->collision_entities, actor->WorldPose().Pos().Z());
 
-            #if RECORD
+            if (this->record_objects){
                 auto min = ignition::math::Vector3d(actor->WorldPose().Pos().X() - 0.4, actor->WorldPose().Pos().Y() - 0.4, 0.3);
                 auto max = ignition::math::Vector3d(actor->WorldPose().Pos().X() + 0.4, actor->WorldPose().Pos().Y() + 0.4, 1);
                 auto box = ignition::math::Box(min,max);
@@ -313,7 +320,7 @@ boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr ac
                 auto box2 = ignition::math::Box(min2,max2);
                 this->ply_boxes.push_back(BoxObject(box, 3));
                 this->ply_boxes.push_back(BoxObject(box2, 3));
-            #endif
+            }
 
         } else if (actor_info["vehicle_type"] == "follower"){
 
@@ -368,6 +375,46 @@ void Puppeteer::ReadParams(){
         std::cout << "ERROR SETTING START TIME\n";
         this->start_time = "ERROR SETTING START TIME";
     }
+
+    if (!nh.getParam("publish_points", this->publish_points)){
+        std::cout << "Not publishing catagorized lidar points to ROS\n";
+    } else{
+        if (this->publish_points){
+            std::cout << "Publishing catagorized lidar points to ROS\n";
+        } else{
+            std::cout << "Not publishing catagorized lidar points to ROS\n";
+        }
+    }
+
+    if (!nh.getParam("publish_ply", this->publish_ply)){
+        std::cout << "Not publishing catagorized lidar points to .ply\n";
+    } else{
+        if (this->publish_ply){
+            std::cout << "Publishing catagorized lidar points to .ply\n";
+        } else{
+            std::cout << "Not publishing catagorized lidar points to .ply\n";
+        }
+    }
+
+    if (!nh.getParam("record_objects", this->record_objects)){
+        std::cout << "Not recording object positions to .ply\n";
+    } else{
+        if (this->record_objects){
+            std::cout << "Recording object positions to .ply\n";
+        } else{
+            std::cout << "Not recording object positions to .ply\n";
+        }
+    }
+
+    if (!nh.getParam("publish_navigation", this->publish_navigation)){
+        std::cout << "Not publishing reduced pointcloud for naviation\n";
+    } else{
+        if (this->publish_navigation){
+            std::cout << "Publishing reduced pointcloud for navigation\n";
+        } else{
+            std::cout << "Not publishing reduced pointcloud for naviation\n";
+        }
+    }
 }
 
 void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
@@ -379,64 +426,95 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         return;
     }
 
-    # if PUB
-        PointCloud::Ptr ground_msg (new PointCloud);
+    PointCloud::Ptr ground_msg;
+    PointCloud::Ptr wall_msg;
+    PointCloud::Ptr moving_actor_msg;
+    PointCloud::Ptr still_actor_msg;
+    PointCloud::Ptr table_msg;
+    PointCloud::Ptr chair_msg;
+
+    if (this->publish_points){
+        ground_msg  = boost::make_shared<PointCloud>();
         ground_msg->header.frame_id = "velodyne";
         ground_msg->height = msg->height;
         ground_msg->width = 0;
 
-        PointCloud::Ptr wall_msg (new PointCloud);
+        wall_msg = boost::make_shared<PointCloud>();
         wall_msg->header.frame_id = "velodyne";
         wall_msg->height = msg->height;
         wall_msg->width = 0;
         
-        PointCloud::Ptr moving_actor_msg (new PointCloud);
+        moving_actor_msg = boost::make_shared<PointCloud>();
         moving_actor_msg->header.frame_id = "velodyne";
         moving_actor_msg->height = msg->height;
         moving_actor_msg->width = 0;
 
-        PointCloud::Ptr still_actor_msg (new PointCloud);
+        still_actor_msg = boost::make_shared<PointCloud>();
         still_actor_msg->header.frame_id = "velodyne";
         still_actor_msg->height = msg->height;
         still_actor_msg->width = 0;
 
-        PointCloud::Ptr table_msg (new PointCloud);
+        table_msg = boost::make_shared<PointCloud>();
         table_msg->header.frame_id = "velodyne";
         table_msg->height = msg->height;
         table_msg->width = 0;
 
-        PointCloud::Ptr chair_msg (new PointCloud);
+        chair_msg = boost::make_shared<PointCloud>();
         chair_msg->header.frame_id = "velodyne";
         chair_msg->height = msg->height;
         chair_msg->width = 0;
-    #endif
+    }
 
+    PointCloud::Ptr nav_msg;
+    if (this->publish_navigation){
+        nav_msg = boost::make_shared<PointCloud>();
+        nav_msg->header.frame_id = "velodyne";
+        nav_msg->height = msg->height;
+        nav_msg->width = 0;
+    }
+
+    PointCloud::Ptr standing_msg;
+    if (this->record_objects){
+        standing_msg = boost::make_shared<PointCloud>();
+        standing_msg->header.frame_id = "velodyne";
+        standing_msg->height = msg->height;
+        standing_msg->width = 0;
+    }
     
     this->vehicle_quadtree2 = boost::make_shared<QuadTree>(this->building_box);
 
     for (auto vehicle: this->vehicles){
+        
         auto min = ignition::math::Vector3d(vehicle->GetPose().Pos().X() - 0.3, vehicle->GetPose().Pos().Y() - 0.3, 0);
         auto max = ignition::math::Vector3d(vehicle->GetPose().Pos().X() + 0.3, vehicle->GetPose().Pos().Y() + 0.3, 0);
         auto box = ignition::math::Box(min,max);
         auto new_node = QTData(box, vehicle, vehicle_type);
         this->vehicle_quadtree2->Insert(new_node);
+
+        if (this->record_objects){
+            if (vehicle->IsStill()){
+                auto pt = pcl::PointXYZ(vehicle->GetPose().Pos().X(), vehicle->GetPose().Pos().Y(), vehicle->GetPose().Pos().Z());
+                standing_msg->points.push_back(pt);
+                standing_msg->width++;
+            }
+        }
     }
     
     auto robot_pose = this->robot_links[0]->WorldPose();
-    std::cout << robot_pose.Pos().Z() << std::endl;
+    
     if (this->robot != nullptr){
         this->sensor_pose = robot_pose;
         this->sensor_pose.Pos().Z() += 0.5767;
     }
-
-    #if PLY
-        Frame frame = Frame(robot_pose, ros::Time::now().toSec());
-    #endif
+ 
+    
+    Frame frame = Frame(robot_pose, ros::Time::now().toSec());
+    
     
     for (auto pt : msg->points){
-        #if PLY
-            int cat;
-        #endif
+        
+        int cat;
+        
 
         auto point = this->sensor_pose.CoordPositionAdd(ignition::math::Vector3d(pt.x, pt.y, pt.z));       
    
@@ -465,13 +543,17 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
 
    
         if (near_objects.size() == 0 && near_vehicles.size() == 0){
-            #if PUB
+            if (this->publish_points){
                 ground_msg->points.push_back(pt);
                 ground_msg->width++;
-            #endif
-            #if PLY
+            }
+            if (this->publish_ply){
                 cat = 0;
-            #endif
+            }
+            if (this->publish_navigation){
+                nav_msg->points.push_back(pt);
+                nav_msg->width++;
+            }
         
         } else {
             
@@ -489,37 +571,53 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
             }
  
             if (closest_name == this->building_name){
-                #if PUB
+                if (this->publish_points){
                     wall_msg->points.push_back(pt);
                     wall_msg->width++;
-                #endif
-                #if PLY
+                }
+                if (this->publish_ply){
                     cat = 5;
-                #endif
+                }
+                if (this->publish_navigation){
+                    nav_msg->points.push_back(pt);
+                    nav_msg->width++;
+                }
             } else if (closest_name.substr(0,5) == "table"){
-                #if PUB
+                if (this->publish_points){
                     table_msg->points.push_back(pt);
                     table_msg->width++;
-                #endif
-                #if PLY
+                }
+                if (this->publish_ply){
                     cat = 4;
-                #endif
+                }
+                if (this->publish_navigation){
+                    nav_msg->points.push_back(pt);
+                    nav_msg->width++;
+                }
             } else if (closest_name.substr(0,5) == "chair" && near_vehicles.size() == 0){
-                #if PUB
+                if (this->publish_points){
                     chair_msg->points.push_back(pt);
                     chair_msg->width++;
-                #endif
-                #if PLY
+                }
+                if (this->publish_ply){
                     cat = 1;
-                #endif
+                }
+                if (this->publish_navigation){
+                    nav_msg->points.push_back(pt);
+                    nav_msg->width++;
+                }
             } else if (near_vehicles.size() == 0) {
-                #if PUB
+                if (this->publish_points){
                     ground_msg->points.push_back(pt);
                     ground_msg->width++;
-                #endif
-                #if PLY
+                }
+                if (this->publish_ply){
                     cat = 0;
-                #endif
+                }
+                if (this->publish_navigation){
+                    nav_msg->points.push_back(pt);
+                    nav_msg->width++;
+                }
             }
   
 
@@ -528,31 +626,39 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
             for (auto n: near_vehicles){
                 
                 if (point.Z() <=0){
-                    #if PUB
+                    if (this->publish_points){
                         ground_msg->points.push_back(pt);
                         ground_msg->width++;
-                    #endif
-                    #if PLY
+                    }
+                    if (this->publish_ply){
                         cat = 0;
-                    #endif
+                    }
+                    if (this->publish_navigation){
+                        nav_msg->points.push_back(pt);
+                        nav_msg->width++;
+                    }
                 } else{
                   
                     if (n->IsStill()){
-                        #if PUB
+                        if (this->publish_points){
                             still_actor_msg->points.push_back(pt);
                             still_actor_msg->width++;
-                        #endif
-                        #if PLY
+                        }
+                        if (this->publish_ply){
                             cat = 3;
-                        #endif
+                        }
+                        if (this->publish_navigation){
+                            nav_msg->points.push_back(pt);
+                            nav_msg->width++;
+                        }
                     } else{
-                        #if PUB
+                        if (this->publish_points){
                             moving_actor_msg->points.push_back(pt);
                             moving_actor_msg->width++;
-                        #endif
-                        #if PLY
+                        }
+                        if (this->publish_ply){
                             cat = 2;
-                        #endif
+                        }
                     }
                     
                 }
@@ -561,16 +667,16 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
             
            
         }
-        #if PLY
+        if (this->publish_ply){
             frame.AddPoint(ignition::math::Vector3d(pt.x, pt.y, pt.z), cat);
-        #endif
+        }
         
     }
    
-    #if PLY
+    if (this->publish_ply){
         frame.WriteToFile("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/frames/");
-    #endif
-    #if PUB
+    }
+    if (this->publish_points){
         pcl_conversions::toPCL(ros::Time::now(), ground_msg->header.stamp);
         pcl_conversions::toPCL(ros::Time::now(), wall_msg->header.stamp);
         pcl_conversions::toPCL(ros::Time::now(), moving_actor_msg->header.stamp);
@@ -584,7 +690,15 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         this->still_actor_pub.publish(still_actor_msg);
         this->table_pub.publish(table_msg);
         this->chair_pub.publish(chair_msg);
-    #endif
+    }
+    if (this->publish_navigation){
+        pcl_conversions::toPCL(ros::Time::now(), nav_msg->header.stamp);
+        this->nav_pub.publish(nav_msg);           
+    }
+    if (this->record_objects){
+        pcl_conversions::toPCL(ros::Time::now(), standing_msg->header.stamp);
+        this->standing_actors.publish(standing_msg);
+    }
 
     this->playGazebo.call(this->emptySrv);
     

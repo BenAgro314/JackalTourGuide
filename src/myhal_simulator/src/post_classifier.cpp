@@ -14,15 +14,15 @@ int main(int argc, char ** argv){
       user_name = user;
     } 
 
-    bool colorize = false;
+    bool translate = false;
     if (argc > 2){
-        colorize = true;
-        std::cout << "colorizing points\n";
+        translate = true;
+        std::cout << "Outputing single file for visualization of points\n";
     }
 
     std::string time_name = argv[1];
 
-    Classifier classifier = Classifier(time_name, user_name, colorize);
+    Classifier classifier = Classifier(time_name, user_name, translate);
 
     classifier.Load();
 
@@ -31,11 +31,11 @@ int main(int argc, char ** argv){
     return 0;
 }
 
-Classifier::Classifier(std::string filename, std::string username, bool colorize){
+Classifier::Classifier(std::string filename, std::string username, bool translate){
     this->filename = filename;
     this->username = username;
     this->filepath = "/home/" + this->username + "/Myhal_Simulation/simulated_runs/" + this->filename + "/";
-    this->colorize = colorize;
+    this->translate = translate;
     
 }
 
@@ -43,17 +43,19 @@ void Classifier::Load(){
     std::cout << "Classifying files in: " << this->filepath << std::endl;
     std::string command = "mkdir " + this->filepath + "classified_frames/";
     system(command.c_str());
+ 
 
     // read trajectory and frames
 
     DataProcessor processor = DataProcessor(this->filename, false);
 
-    processor.SetTopics("/ground_truth/state", {"/velodyne_points"});
+    processor.SetTopics("/ground_truth/state", {"/velodyne_points"}, "/standing_actors");
 
     FramesAndTraj data = processor.GetData();
 
     this->robot_trajectory = data.trajectory;
     this->input_frames = data.frames;
+    this->stander_frames = data.actor_frames;
 
     // read static objects 
 
@@ -75,9 +77,10 @@ void Classifier::Load(){
         max_y = std::max(obj.MaxY(), max_y);
     }
 
-    auto qt_box = ignition::math::Box(min_x-1, min_y-1, 0, max_x+1, max_y+1, 0);
+    this->qt_box = ignition::math::Box(min_x-1, min_y-1, 0, max_x+1, max_y+1, 0);
     //std::printf("(%f, %f) -> (%f, %f)\n", min_x, min_y, max_x, max_y);
-    this->static_quadtree = boost::make_shared<QuadTree>(qt_box);
+    this->static_quadtree = boost::make_shared<QuadTree>(this->qt_box);
+    
 
     for (auto obj: static_objects){
         auto new_ptr = boost::make_shared<BoxObject>(obj);
@@ -87,13 +90,6 @@ void Classifier::Load(){
         auto new_node = QTData(box, new_ptr, box_type);
         this->static_quadtree->Insert(new_node);
     }
-
-    // auto t_box = ignition::math::Box(ignition::math::Vector3d(-10,-10,0), ignition::math::Vector3d(10,-9,0));
-    // auto new_ptr = boost::make_shared<BoxObject>(t_box, 2);
-    // auto new_node = QTData(t_box, new_ptr, box_type);
-    // this->static_quadtree->Insert(new_node);
-
-    // interpolate trajectory and offset frames 
 
     double min_traj_time;
     double max_traj_time;
@@ -106,18 +102,15 @@ void Classifier::Load(){
     min_traj_time = this->robot_trajectory[0].time;
     max_traj_time = this->robot_trajectory[this->robot_trajectory.size()-1].time;
 
-
     int last = 0;
+    int last_standing_index = 0;
 
     std::cout << "Classifying Frames\n";
-
-    
 
     for (auto frame: this->input_frames){
         double time = frame.Time();
         auto points = frame.Points();
 
-        // find neighbouring pose measurments
 
         if (time < min_traj_time || time > max_traj_time){
             std::cout << "Dropping frame at time " << time << " because it is out of range of the trajectory times\n";
@@ -153,8 +146,36 @@ void Classifier::Load(){
     
         auto translation = utilities::InterpolatePose(time, t1, t2, pose1, pose2);
 
-        Frame translated_frame = Frame(false); // no pose specified
-        translated_frame.SetTime(time);
+
+        // find nearest standing frame
+        double last_diff = 10e9;
+        for (int i = last_standing_index; i< this->stander_frames.size(); i++){
+            double t = this->stander_frames[i].Time();
+            if (std::abs(time - t) > last_diff){
+                break;
+            }
+            last_diff = std::abs(time - t);
+            last_standing_index = i;
+        }
+        
+        auto standing_frame = this->stander_frames[last_standing_index];
+        //std::printf("frame: %f, standing frame %f\n", time, standing_frame.Time());
+        // insert all standing points into active quadtree
+
+        this->active_quadtree = boost::make_shared<QuadTree>(this->qt_box);
+
+        for (auto point: standing_frame.Points()){
+            auto box = ignition::math::Box(ignition::math::Vector3d(point.X()-0.4, point.Y()-0.4,0), ignition::math::Vector3d(point.X()+0.4, point.Y()+0.4, 1));
+            auto new_ptr = boost::make_shared<BoxObject>(box, 3);
+            box.Min().Z() = 0;
+            box.Max().Z() = 0;
+            auto new_node = QTData(box, new_ptr, box_type);
+            this->active_quadtree->Insert(new_node);
+        }
+
+
+        Frame local_frame = Frame(false); // no pose specified
+        local_frame.SetTime(time);
         bool first =true;
 
         ignition::math::Vector3d min_p;
@@ -162,21 +183,17 @@ void Classifier::Load(){
             
             auto trans_pt = translation.CoordPositionAdd(ignition::math::Vector3d(point.X(), point.Y(), point.Z()));
 
-       
-            
-
             //check point collisions;
 
             int cat =0;
 
             if (trans_pt.Z() <= 0){
                 cat = 0; // ground
-                
-                #if TRANSLATE
-                    translated_frame.AddPoint(trans_pt, cat);
-                #else
-                    translate_frame.AddPoint(ignition::math::Vector3d(point.X(), point.Y(), point.Z()), cat);
-                #endif
+                if (this->translate){
+                    local_frame.AddPoint(trans_pt, cat);
+                } else {
+                    local_frame.AddPoint(ignition::math::Vector3d(point.X(), point.Y(), point.Z()), cat);
+                }
                 continue;
             }
 
@@ -195,15 +212,34 @@ void Classifier::Load(){
                 }
             }
 
+            
+
             if (near_objects.size() == 0){
-                cat = 2; //moving_actor
-                
-                #if TRANSLATE
-                    translated_frame.AddPoint(trans_pt, cat);
-                #else
-                    translate_frame.AddPoint(ignition::math::Vector3d(point.X(), point.Y(), point.Z()), cat);
-                #endif
-                continue;
+                // query the active quadtree 
+
+                std::vector<boost::shared_ptr<BoxObject>> near_standers;
+                std::vector<QTData> query_standers = this->active_quadtree->QueryRange(query_range);
+                for (auto n: query_standers){
+                    if (n.type == box_type){
+                        near_standers.push_back(boost::static_pointer_cast<BoxObject>(n.data));
+                    }
+                }
+
+                if (near_standers.size() == 0){
+                    cat = 2; //moving_actor
+                    if (this->translate){
+                        local_frame.AddPoint(trans_pt, cat);
+                    } else {
+                        local_frame.AddPoint(ignition::math::Vector3d(point.X(), point.Y(), point.Z()), cat);
+                    }
+                } else {
+                    cat = 3; //stationary_actor
+                    if (this->translate){
+                        local_frame.AddPoint(trans_pt, cat);
+                    } else {
+                        local_frame.AddPoint(ignition::math::Vector3d(point.X(), point.Y(), point.Z()), cat);
+                    }
+                }
             }
 
             double min_dist = trans_pt.Z();
@@ -223,25 +259,28 @@ void Classifier::Load(){
             
             
             //std::cout << cat << std::endl;
+        
+            if (this->translate){
+                local_frame.AddPoint(trans_pt, cat);
+            } else {
+                local_frame.AddPoint(ignition::math::Vector3d(point.X(), point.Y(), point.Z()), cat);
+            }
             
-            #if TRANSLATE
-                translated_frame.AddPoint(trans_pt, cat);
-            #else
-                translate_frame.AddPoint(ignition::math::Vector3d(point.X(), point.Y(), point.Z()), cat);
-            #endif
             
         }
 
-        this->output_frames.push_back(translated_frame);
+        this->output_frames.push_back(local_frame);
         
     }
 
-    std::cout << "Translated and classified points\n";
+    std::cout << "Classified points\n";
 }
 
 void Classifier::WriteToPLY(){
     std::cout << "Writing data to .ply files\n";
+    
     for (auto frame: this->output_frames){
-        frame.WriteToFile(this->filepath + "classified_frames/", this->colorize);
+        frame.WriteToFile(this->filepath + "classified_frames/");
     }
+    
 }

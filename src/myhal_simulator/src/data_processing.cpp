@@ -25,13 +25,16 @@ int main(int argc, char** argv){
 
     std::string command = "mkdir /home/" + user_name + "/Myhal_Simulation/simulated_runs/" + time_name + "/bag_frames";
     system(command.c_str());
+    
 
     DataProcessor processor = DataProcessor(time_name, classify);
 
     if (classify){
         processor.SetTopics("/ground_truth/state", {"/ground_points", "/chair_points", "/moving_actor_points", "/still_actor_points","/table_points", "/wall_points"});
     } else{
-        processor.SetTopics("/ground_truth/state", {"/velodyne_points"});
+        command = "mkdir /home/" + user_name + "/Myhal_Simulation/simulated_runs/" + time_name + "/stander_pose";
+        system(command.c_str());
+        processor.SetTopics("/ground_truth/state", {"/velodyne_points"}, "/standing_actors");
     }
     
     processor.GetData();

@@ -360,6 +360,11 @@
   <VLP-16 parent="support_link3" name="velodyne" topic="/velodyne_points" hz="10" samples="1024" gpu="true" lasers="33" max_range="30">
     <origin xyz="0 0 0" rpy="0 0 0" />
   </VLP-16>
+
+  <!--xacro:include filename="$(find jackal_velodyne)/urdf/VLP-16.urdf.xacro"/>
+  <VLP-16 parent="support_link3" name="no_gpu_velodyne" topic="/no_gpu_points" hz="10" samples="1024" gpu="false" lasers="33" max_range="30">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </VLP-16-->
   
   <xacro:include filename="$(find kinect_v2)/urdf/kinect_v2.urdf.xacro" />
     <xacro:kinect_v2  parent="support_link3">

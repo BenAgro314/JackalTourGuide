@@ -100,7 +100,7 @@
     <plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
       <robot_name>jackal</robot_name>
-      <lidar_listener>false</lidar_listener>
+      <lidar_listener>true</lidar_listener>
     </plugin>
 
  
@@ -155,13 +155,74 @@
 			<uri>model://table_conference_2</uri>
 		</include>
 
+    <actor name="actor_basic_stander_34">
+			<pose>-2.333548 -5 1.000000 0.000000 -0.000000 1.552967</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="standing_duration" filename="5">
+			</plugin>
+			<plugin name="vehicle_type" filename="stander">
+			</plugin>
+			<plugin name="walking_duration" filename="5">
+			</plugin>
+		</actor>
+
+    <actor name="actor_basic_stander_35">
+			<pose>-2.333548 5 1.000000 0.000000 -0.000000 1.552967</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="standing_duration" filename="5">
+			</plugin>
+			<plugin name="vehicle_type" filename="stander">
+			</plugin>
+			<plugin name="walking_duration" filename="3">
+			</plugin>
+		</actor>
+
 
     <!--include>
 			<name>table2_1</name>
 			<pose>2 -3.000000 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://table_conference_2</uri>
 		</include>
-
     <include>
 			<name>table3_11</name>
 			<pose>-4.000000 -3.000000 0.000000 0.000000 -0.000000 1.570700</pose>
@@ -236,7 +297,6 @@
 		</actor>
     
    <actor name="actor_1">
-
       <pose>-3 -2 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
@@ -293,7 +353,6 @@
 
 
   <!--actor name="actor_2">
-
       <pose>4 0 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
@@ -310,9 +369,7 @@
       <plugin name = "max_speed" filename = "1.1"/>
       <plugin name = "leader" filename = "jackal"/>
   </actor>
-
   <actor name="actor_3">
-
       <pose>0 0 1 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
@@ -331,7 +388,6 @@
   </actor-->
 
   <!--actor name="actor_4">
-
       <pose>-10 0 1 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
@@ -348,9 +404,7 @@
       <plugin name = "max_speed" filename = "1.1"/>
       <plugin name = "leader" filename = "jackal"/>
   </actor>
-
   <actor name="actor_5">
-
       <pose>-10 -18 1 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
@@ -377,16 +431,13 @@
         <z_pos>0</z_pos>
   </plugin>
 </include>
-
 <include>
   <uri>model://table_conference_2</uri> 
   <name> "table_2" </name> 
 </include>
-
 <include>
   <uri>model://table_conference_2</uri> 
   <name> "table_3" </name> 
-
   <plugin name="placement" filename="librandom_place_plugin.so">
         <building>box</building>
         <obstacle_margin>1.5</obstacle_margin>
@@ -412,9 +463,7 @@
   <pose>5 5 0 0 0 1.57</pose>
   <name>chair_2</name> 
 </include>
-
 <actor name="randomguy1">
-
       <pose>0 0 0.3 0 0 0</pose>
       <skin>
       <filename>sitting.dae</filename>
@@ -429,7 +478,6 @@
       <animation name="sitting"> 
         <filename>sitting.dae</filename>
       </animation>
-
       <plugin name="steering" filename="libvehicle_plugin.so">
         <vehicle_type>sitter</vehicle_type>
         <chair>chair_2</chair>
@@ -443,7 +491,6 @@
 				<pose>1.170477 -0.000113 0.000000 0.000000 -0.000000 -1.887171</pose>
 				<uri>model://chair_1</uri>
 			</include>
-
 		<actor name="sitter_9">
 			<pose>1.170477 -0.000113 0.000000 0.000000 -0.000000 -1.887171</pose>
 			<skin>
@@ -472,7 +519,6 @@
 		</actor-->
 
 <!--actor name="leader">
-
       <pose>0 0 1 0 0 0</pose>
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
@@ -481,7 +527,6 @@
         <filename>walk.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-
       <plugin name="steering" filename="libvehicle_plugin.so">
         <vehicle_type>path_follower</vehicle_type>
         <building>building</building>
@@ -490,7 +535,6 @@
         <path_point>-4 0 0</path_point>
         <path_point>-4 5 0</path_point>
         <path_point>4 5 0</path_point>
-
       </plugin>
 </actor-->
 
@@ -506,7 +550,6 @@
         <filename>walk.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-
       <plugin name="steering" filename="libvehicle_plugin.so">
         <vehicle_type>wanderer</vehicle_type>
         <building>box</building>
@@ -515,8 +558,6 @@
 </actor-->
 
   <!--actor name="randomguy2">
-
-
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
@@ -524,14 +565,11 @@
         <filename>model://actor/meshes/ANIMATION_walking.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-
       <plugin name="placement" filename="librandom_place_plugin.so">
         <building>box</building>
         <obstacle_margin>0.7</obstacle_margin>
       </plugin>
-
       <plugin name="trajectory" filename="librandomwalk_plugin.so">
-
         <target_point>
         3
         3
@@ -539,18 +577,13 @@
         </target_point>
         
         <building>box</building>
-
         <max_speed>0.866189</max_speed>
         <obstacle_margin>0.5</obstacle_margin>
       </plugin>
-
       
 	
   </actor>
-
 <actor name="randomguy3">
-
-
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
@@ -558,20 +591,16 @@
         <filename>model://actor/meshes/ANIMATION_walking.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-
       <plugin name="placement" filename="librandom_place_plugin.so">
         <building>box</building>
         <obstacle_margin>0.7</obstacle_margin>
       </plugin>
-
       
 	
   </actor-->
 
 
 <!--actor name="randomguy4">
-
-
       <skin>
       <filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
       </skin>
@@ -579,14 +608,11 @@
         <filename>model://actor/meshes/ANIMATION_walking.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
-
       <plugin name="placement" filename="librandom_place_plugin.so">
         <building>box</building>
         <obstacle_margin>0.7</obstacle_margin>
       </plugin>
-
       <plugin name="trajectory" filename="librandomwalk_plugin.so">
-
         <target_point>
         3
         3
@@ -594,11 +620,9 @@
         </target_point>
         
         <building>box</building>
-
         <max_speed>0.866189</max_speed>
         <obstacle_margin>0.5</obstacle_margin>
       </plugin>
-
       
 	
   </actor-->
@@ -608,3 +632,5 @@
  
   </world>
 </sdf>
+
+

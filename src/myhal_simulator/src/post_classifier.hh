@@ -17,6 +17,8 @@ class Classifier{
 
         std::vector<Frame> output_frames;
 
+        std::vector<Frame> stander_frames;
+
         std::string filename;
 
         std::string username;
@@ -29,11 +31,15 @@ class Classifier{
 
         boost::shared_ptr<QuadTree> static_quadtree;
 
-        bool colorize;
+        boost::shared_ptr<QuadTree> active_quadtree;
+
+        ignition::math::Box qt_box;
+
+        bool translate;
 
     public:
 
-        Classifier(std::string filename, std::string username, bool colorize);
+        Classifier(std::string filename, std::string username, bool translate);
 
         void Load();
 

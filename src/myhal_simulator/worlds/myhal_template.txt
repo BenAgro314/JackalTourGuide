@@ -96,12 +96,8 @@
     <plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
       <robot_name>jackal</robot_name>
-      <lidar_listener>false</lidar_listener>
+      <lidar_listener>true</lidar_listener>
     </plugin>
-
-
-
-
 
 
     <include>
@@ -111,6 +107,12 @@
 	  </include>
 
   <!-- insert stuff below -->
+
+ 
+
+
+
+
 
  
   </world>

@@ -29,6 +29,7 @@ typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 struct FramesAndTraj{
     std::vector<Frame> frames;
     std::vector<TrajPoint> trajectory;
+    std::vector<Frame> actor_frames;
 };
 
 class DataProcessor{
@@ -47,15 +48,18 @@ class DataProcessor{
 
         std::string gt_topic;
 
+        std::string actor_topic;
+
         FramesAndTraj data;
 
     public:
 
         DataProcessor(std::string filename, bool classify);
 
-        void SetTopics(std::string gt_topic, std::vector<std::string> lidar_topics){
+        void SetTopics(std::string gt_topic, std::vector<std::string> lidar_topics, std::string actor_topic = ""){
             this->gt_topic = gt_topic;
             this->lidar_topics = lidar_topics;
+            this->actor_topic = actor_topic;
         }
 
         FramesAndTraj GetData();
@@ -86,12 +90,12 @@ FramesAndTraj DataProcessor::GetData(){
 
     auto query_topics = this->lidar_topics;
     query_topics.push_back(this->gt_topic);
-
+    query_topics.push_back(this->actor_topic);
     rosbag::View view(this->bag, rosbag::TopicQuery(query_topics));
 
     std::vector<Frame> frames;
     std::vector<TrajPoint> trajectory;
-   
+    std::vector<Frame> actor_frames;
     
     int count = 0;
     int id = 0;
@@ -104,6 +108,27 @@ FramesAndTraj DataProcessor::GetData(){
                 trajectory.push_back(TrajPoint(ignition::math::Pose3d(pose->pose.pose.position.x, pose->pose.pose.position.y, pose->pose.pose.position.z, pose->pose.pose.orientation.w, pose->pose.pose.orientation.x, pose->pose.pose.orientation.y, pose->pose.pose.orientation.z), pose->header.stamp.toSec()));
             continue;
         } 
+
+        if (msg.getTopic() == this->actor_topic){
+            
+            sensor_msgs::PointCloud2::ConstPtr cloud = msg.instantiate<sensor_msgs::PointCloud2>();
+            if (cloud == nullptr){
+                std::cout << "invalid cloud\n";
+                continue;
+            }
+    
+            pcl::PCLPointCloud2 pcl_pc2;
+            pcl_conversions::toPCL(*cloud,pcl_pc2);
+            pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+            pcl::fromPCLPointCloud2(pcl_pc2,*cloud_ptr);
+
+            actor_frames.push_back(Frame(false));
+            actor_frames.back().SetTime(cloud->header.stamp.toSec());
+            for (auto point: cloud_ptr->points){
+                actor_frames.back().AddPoint(ignition::math::Vector3d(point.x, point.y, point.z),-1);
+            }
+            continue;
+        }
 
         count ++;
 
@@ -152,6 +177,7 @@ FramesAndTraj DataProcessor::GetData(){
 
     this->data.frames = frames;
     this->data.trajectory = trajectory;
+    this->data.actor_frames = actor_frames;
     std::cout << "Successfully processed " << frames.size() << " lidar frames and " << trajectory.size() << " trajectory data points\n";
     return this->data;
 }
@@ -159,10 +185,17 @@ FramesAndTraj DataProcessor::GetData(){
 void DataProcessor::WriteToPLY(){
 
     std::cout << "Writing data to .ply files\n";
-     for (auto frame: this->data.frames){
+   
+    for (auto frame: this->data.frames){
+       
         frame.WriteToFile(this->bag_path + "bag_frames/");
     }
 
+    if (this->actor_topic != ""){
+        for (auto frame: this->data.actor_frames){
+            frame.WriteToFile(this->bag_path + "stander_pose/");
+        }
+    }
 
     happly::PLYData plyOut;
     AddTrajectory(plyOut, this->data.trajectory);

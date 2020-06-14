@@ -19,10 +19,10 @@
 #include <std_srvs/Empty.h>
 #include "frame.hh"
 
-#define PUB true
-#define PLY true
-#define RECORD true
-
+#define PUB false // publish catagorized point clouds?
+#define PLY false // publish catagorized ply files?
+#define RECORD true // record the model poses to a PLY file?
+#define NAV true // publish a reduced pointcloud for navigation?
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
@@ -30,8 +30,7 @@ class Puppeteer: public gazebo::WorldPlugin{
 
     private:
 
-        
-
+    
         gazebo::event::ConnectionPtr update_connection;
 
         gazebo::physics::WorldPtr world;
@@ -53,6 +52,8 @@ class Puppeteer: public gazebo::WorldPlugin{
         double update_freq = 60;
 
         gazebo::common::Time last_update;
+
+        gazebo::common::Time last_pub;
 
         gazebo::common::Time last_retarget;
 
@@ -100,7 +101,9 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ros::Publisher chair_pub;
 
-        void Callback(const PointCloud::ConstPtr& msg);
+        ros::Publisher nav_pub;
+
+        ros::Publisher standing_actors;
 
         ros::ServiceClient pauseGazebo;
 
@@ -108,9 +111,18 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         std_srvs::Empty emptySrv;
 
-        #if RECORD
-            std::vector<BoxObject> ply_boxes;
-        #endif
+        bool publish_points = false;
+
+        bool publish_ply = false;
+
+        bool record_objects = false;
+
+        bool publish_navigation = false;
+
+        std::vector<BoxObject> ply_boxes;
+
+        void Callback(const PointCloud::ConstPtr& msg);
+
         
     public: 
         
