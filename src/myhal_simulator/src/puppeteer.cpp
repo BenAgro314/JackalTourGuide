@@ -16,14 +16,18 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->sdf = _sdf;
     this->update_connection = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&Puppeteer::OnUpdate, this, std::placeholders::_1));
 
-    this->ReadSDF();
+   
 
-    this->ReadParams();
+    
 
     this->user_name = "default";
     if (const char * user = std::getenv("USER")){
         this->user_name = user;
     } 
+
+    this->ReadSDF();
+
+    this->ReadParams();
 
     auto building = this->world->ModelByName(this->building_name);
 
@@ -390,6 +394,8 @@ void Puppeteer::ReadParams(){
         std::cout << "Not publishing catagorized lidar points to .ply\n";
     } else{
         if (this->publish_ply){
+            std::string command = "/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/frames/";
+            system(command.c_str());
             std::cout << "Publishing catagorized lidar points to .ply\n";
         } else{
             std::cout << "Not publishing catagorized lidar points to .ply\n";

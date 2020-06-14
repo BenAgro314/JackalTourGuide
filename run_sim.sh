@@ -13,14 +13,13 @@ until rostopic list; do sleep 0.5; done #wait until rosmaster has started
 
 rosparam load src/myhal_simulator/params/common_vehicle_params.yaml
 rosparam set use_sim_time true
-rosparam set publish_points false # activly catagorize lidar points?
+rosparam set publish_points true # activly catagorize lidar points?
 rosparam set publish_ply false # activly catagorize lidar points and publish to .ply?
-rosparam set record_objects true # recording model positions to .ply for post processing?
+rosparam set record_objects false # recording model positions to .ply for post processing?
 rosparam set publish_navigation false # republish lidar points with actors removed for navigation?
 t=$(date +'%Y-%m-%d-%s')
 rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
-mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/frames"
 
 sleep 0.1
 

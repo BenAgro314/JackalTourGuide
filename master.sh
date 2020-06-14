@@ -30,7 +30,6 @@ rosparam set publish_navigation false # republish lidar points with actors remov
 t=$(date +'%Y-%m-%d-%s')
 rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
-mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/frames"
 
 sleep 0.1
 
