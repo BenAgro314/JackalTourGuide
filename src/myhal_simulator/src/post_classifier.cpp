@@ -40,9 +40,16 @@ Classifier::Classifier(std::string filename, std::string username, bool translat
 }
 
 void Classifier::Load(){
-    std::cout << "Classifying files in: " << this->filepath << std::endl;
-    std::string command = "mkdir " + this->filepath + "classified_frames/";
-    system(command.c_str());
+    
+    if (this->translate){
+        std::cout << "Classifying and transforming files in: " << this->filepath << std::endl;
+        std::string command = "mkdir " + this->filepath + "transformed_classified_frames/";
+        system(command.c_str());
+    } else {
+        std::cout << "Classifying files in: " << this->filepath << std::endl;
+        std::string command = "mkdir " + this->filepath + "classified_frames/";
+        system(command.c_str());
+    }
  
 
     // read trajectory and frames
@@ -186,8 +193,8 @@ void Classifier::Load(){
             //check point collisions;
 
             int cat =0;
-
-            if (trans_pt.Z() <= 0){
+            double resolution = 0.05;
+            if (trans_pt.Z() <= resolution){
                 cat = 0; // ground
                 if (this->translate){
                     local_frame.AddPoint(trans_pt, cat);
@@ -199,7 +206,7 @@ void Classifier::Load(){
 
             std::vector<boost::shared_ptr<BoxObject>> near_objects;
 
-            double resolution = 0.05;
+           
             auto min = ignition::math::Vector3d(trans_pt.X() - resolution, trans_pt.Y() - resolution, 0);
             auto max = ignition::math::Vector3d(trans_pt.X() + resolution, trans_pt.Y() + resolution, 0);
             auto query_range = ignition::math::Box(min,max);

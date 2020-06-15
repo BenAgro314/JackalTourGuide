@@ -68,7 +68,7 @@
 
     <physics name='default_physics' default='0' type='ode'>
       <!--adjust max_step size to throttle the simulation (0.001 is realtime)-->
-      <max_step_size>0.0001</max_step_size>
+      <max_step_size>0.001</max_step_size>
       <real_time_factor>1</real_time_factor>
       <real_time_update_rate>1000</real_time_update_rate>
     </physics>
@@ -112,7 +112,7 @@
 
     	<include>
 			<name>chair_8</name>
-			<pose>2.999798 -5.100227 0.000000 0.000000 -0.000000 1.086186</pose>
+			<pose>3 0 0.000000 0.000000 0.000000 0</pose>
 			<uri>model://chair_2</uri>
 		</include>
 
@@ -149,7 +149,7 @@
 			</plugin>
 		</actor>
 
-    <include>
+    <!--include>
 			<name>table2_4</name>
 			<pose>-4.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://table_conference_2</uri>
@@ -215,7 +215,7 @@
 			</plugin>
 			<plugin name="walking_duration" filename="3">
 			</plugin>
-		</actor>
+		</actor-->
 
 
     <!--include>
@@ -239,7 +239,7 @@
 			<uri>model://chair_3</uri>
 		</include-->
 
-    <actor name="actor_basic_random_walker_25">
+    <!--actor name="actor_basic_random_walker_25">
 			<pose>4.183624 0.951661 1.000000 0.000000 -0.000000 2.284338</pose>
 			<skin>
 				<filename>moonwalk.dae</filename>
@@ -268,7 +268,7 @@
 			</plugin>
 			<plugin name="walking_duration" filename="-5">
 			</plugin>
-		</actor>
+		</actor-->
 		<!--actor name="actor_basic_random_walker_26">
 			<pose>1.626457 -0.757005 1.000000 0.000000 -0.000000 2.193935</pose>
 			<skin>

@@ -78,6 +78,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                             cat = 4;
  
                         } else if (name.substr(0,5) == "chair"){
+                            
                             cat = 1;
                         } 
                         this->ply_boxes.push_back(BoxObject(box, cat));
@@ -99,7 +100,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     if (this->record_objects){
         AddBoxes(static_objects, this->ply_boxes);
-        static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/static_objects.ply", happly::DataFormat::Binary);
+        static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/static_objects.ply", happly::DataFormat::ASCII);
     }
 
     auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
