@@ -17,7 +17,6 @@ int main(int argc, char ** argv){
     bool translate = false;
     if (argc > 2){
         translate = true;
-        std::cout << "Outputing single file for visualization of points\n";
     }
 
     std::string time_name = argv[1];
@@ -193,8 +192,8 @@ void Classifier::Load(){
             //check point collisions;
 
             int cat =0;
-            double resolution = 0.2;
-            if (trans_pt.Z() <= resolution){
+            double resolution = 0.4;
+            if (trans_pt.Z() <= 0.05){
                 cat = 0; // ground
                 if (this->translate){
                     local_frame.AddPoint(trans_pt, cat);
