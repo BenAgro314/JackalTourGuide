@@ -55,7 +55,7 @@ int main(int argc, char** argv){
     ROS_WARN("USING TOUR %s\n", bag_name.c_str());
   
     ros::Subscriber lidar_sub = nh.subscribe("velodyne_points", 1000, LidarCallback);
-    ros::Subscriber camera_sub = nh.subscribe("kinect_V2/depth/image_raw", 1000, ImageCallback);
+    ros::Subscriber camera_sub = nh.subscribe("kinect_V2/depth/image_raw", 1000, ImageCallback); //nh.subscribe("no_gpu_points", 1000, LidarCallback);
     ros::Rate r(10);
     while (!lidar || !camera){ // wait until both lidar and camera have been recieved 
       

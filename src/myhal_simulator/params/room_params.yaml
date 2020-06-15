@@ -28,7 +28,7 @@ main_atrium:
   geometry: geo1
   positions: pos1
   enclosed: "0"
-  scenario: basic_study_area
+  scenario: basic_study_area #basic_study_area
 
 geo1:
   x_min: -8
@@ -60,7 +60,7 @@ lower_middle:
   geometry: geo2
   positions: pos2
   enclosed: "1"
-  scenario: basic_social_meeting
+  scenario: basic_social_meeting #basic_social_meeting
 
 geo2:
   x_min: -8

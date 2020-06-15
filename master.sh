@@ -27,6 +27,7 @@ rosparam set publish_points false # activly catagorize lidar points and publish 
 rosparam set publish_ply false # activly catagorize lidar points and publish to .ply?
 rosparam set record_objects true # recording model positions to .ply for post processing?
 rosparam set publish_navigation false # republish lidar points with actors removed for navigation?
+rosparam set bag_name "out_and_back_tour.bag"
 t=$(date +'%Y-%m-%d-%s')
 rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
