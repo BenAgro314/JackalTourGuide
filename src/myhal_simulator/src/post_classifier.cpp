@@ -193,7 +193,7 @@ void Classifier::Load(){
             //check point collisions;
 
             int cat =0;
-            double resolution = 0.05;
+            double resolution = 0.2;
             if (trans_pt.Z() <= resolution){
                 cat = 0; // ground
                 if (this->translate){
@@ -287,7 +287,12 @@ void Classifier::WriteToPLY(){
     std::cout << "Writing data to .ply files\n";
     
     for (auto frame: this->output_frames){
-        frame.WriteToFile(this->filepath + "classified_frames/");
+        if (this->translate){
+            frame.WriteToFile(this->filepath + "transformed_classified_frames/");
+        } else {
+            frame.WriteToFile(this->filepath + "classified_frames/");
+        }
+        
     }
     
 }

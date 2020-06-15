@@ -18,6 +18,7 @@
 #include "vehicles.hh"
 #include <std_srvs/Empty.h>
 #include "frame.hh"
+#include "gazebo/msgs/msgs.hh"
 
 #define PUB false // publish catagorized point clouds?
 #define PLY false // publish catagorized ply files?

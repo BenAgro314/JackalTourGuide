@@ -67,6 +67,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                 for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
                     this->collision_entities.push_back(collision_box);
                     auto box = collision_box->BoundingBox();
+
+                    
+                    
                     if (this->record_objects){
                         int cat;
                         
