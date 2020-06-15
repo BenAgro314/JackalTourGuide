@@ -1,10 +1,5 @@
 #include "data_processing.hh"
 
-
-
-
-#define NUM_TOPICS 6
-
 int main(int argc, char** argv){
     if (argc ==1){
         std::cout << "must input folder name and true/false\n";

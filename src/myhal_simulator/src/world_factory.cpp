@@ -365,7 +365,16 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
 
 
 void WorldHandler::WriteToFile(std::string out_name){
-    std::ifstream in = std::ifstream("/home/default/catkin_ws/src/myhal_simulator/worlds/myhal_template.txt");
+
+    std::string user_name = "default";
+    if (const char * user = std::getenv("USER")){
+        user_name = user;
+    } 
+
+    std::string in_string = "/home/" + user_name + "/catkin_ws/src/myhal_simulator/worlds/myhal_template.txt";
+    std::string out_string = "/home/" + user_name + "/catkin_ws/src/myhal_simulator/worlds/" + out_name;
+
+    std::ifstream in = std::ifstream(in_string);
 
     if (in){
         ROS_INFO("TEMPLATE FILE FOUND");
@@ -375,7 +384,7 @@ void WorldHandler::WriteToFile(std::string out_name){
 	}
 
     std::ofstream out;
-    out.open("/home/default/catkin_ws/src/myhal_simulator/worlds/" + out_name);
+    out.open(out_string);
 
     char str[255];
 	int line =0;
