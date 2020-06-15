@@ -1,8 +1,11 @@
 #include "post_classifier.hh"
+#include <chrono> 
 
 #define TRANSLATE true
 
 int main(int argc, char ** argv){
+
+    
 
     if (argc ==1){
         std::cout << "must input bag name\n";
@@ -23,7 +26,15 @@ int main(int argc, char ** argv){
 
     Classifier classifier = Classifier(time_name, user_name, translate);
 
+    auto start = std::chrono::high_resolution_clock::now(); 
+
     classifier.Load();
+
+    auto stop = std::chrono::high_resolution_clock::now(); 
+
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start); 
+
+    std::cout << "Took " << duration.count() << " seconds to load and classify data\n";
 
     classifier.WriteToPLY();
 
@@ -343,5 +354,10 @@ void Classifier::WriteToPLY(){
         }
         
     }
+
+    happly::PLYData plyOut;
+    AddTrajectory(plyOut, this->robot_trajectory);
+    plyOut.write(this->filepath + "gt_pose.ply", happly::DataFormat::Binary);
+    std::cout << "Sucessfully written data to .ply files\n";
     
 }
