@@ -55,13 +55,14 @@ void Classifier::Load(){
 
     DataProcessor processor = DataProcessor(this->filename, false);
 
-    processor.SetTopics("/ground_truth/state", {"/velodyne_points"}, "/standing_actors");
+    processor.SetTopics("/ground_truth/state", {"/velodyne_points"}, "/standing_actors", "/moving_actors");
 
     FramesAndTraj data = processor.GetData();
 
     this->robot_trajectory = data.trajectory;
     this->input_frames = data.frames;
-    this->stander_frames = data.actor_frames;
+    this->stander_frames = data.stander_frames;
+    this->moving_frames = data.moving_frames;
 
     // read static objects 
 
@@ -110,6 +111,7 @@ void Classifier::Load(){
 
     int last = 0;
     int last_standing_index = 0;
+    int last_moving_index = 0;
 
     std::cout << "Classifying Frames\n";
 
@@ -163,8 +165,21 @@ void Classifier::Load(){
             last_diff = std::abs(time - t);
             last_standing_index = i;
         }
+
+        // find nearest moving frame
+
+        last_diff = 10e9;
+        for (int i = last_moving_index; i< this->moving_frames.size(); i++){
+            double t = this->moving_frames[i].Time();
+            if (std::abs(time - t) > last_diff){
+                break;
+            }
+            last_diff = std::abs(time - t);
+            last_moving_index = i;
+        }
         
         auto standing_frame = this->stander_frames[last_standing_index];
+        auto moving_frame = this->moving_frames[last_moving_index];
         //std::printf("frame: %f, standing frame %f\n", time, standing_frame.Time());
         // insert all standing points into active quadtree
 
@@ -173,6 +188,15 @@ void Classifier::Load(){
         for (auto point: standing_frame.Points()){
             auto box = ignition::math::Box(ignition::math::Vector3d(point.X()-0.4, point.Y()-0.4,0), ignition::math::Vector3d(point.X()+0.4, point.Y()+0.4, 1));
             auto new_ptr = boost::make_shared<BoxObject>(box, 3);
+            box.Min().Z() = 0;
+            box.Max().Z() = 0;
+            auto new_node = QTData(box, new_ptr, box_type);
+            this->active_quadtree->Insert(new_node);
+        }
+
+        for (auto point: moving_frame.Points()){
+            auto box = ignition::math::Box(ignition::math::Vector3d(point.X()-0.4, point.Y()-0.4,0), ignition::math::Vector3d(point.X()+0.4, point.Y()+0.4, 1));
+            auto new_ptr = boost::make_shared<BoxObject>(box, 2);
             box.Min().Z() = 0;
             box.Max().Z() = 0;
             auto new_node = QTData(box, new_ptr, box_type);
@@ -218,8 +242,32 @@ void Classifier::Load(){
                 }
             }
 
-            
+            std::vector<QTData> query_standers = this->active_quadtree->QueryRange(query_range);
+            for (auto n: query_standers){
+                if (n.type == box_type){
+                    near_objects.push_back(boost::static_pointer_cast<BoxObject>(n.data));
+                }
+            }
 
+            if (near_objects.size() == 0){
+                cat = 5;
+            } else{
+
+                cat = 0;
+                double min_dist = trans_pt.Z();
+
+                for (auto n: near_objects){
+                    
+                    auto dist = utilities::dist_to_box(trans_pt, n->Box());
+                    if (dist <= min_dist){
+                        min_dist = dist;
+                        cat = n->Cat();
+                    }
+                }
+            }
+
+            
+            /*
             if (near_objects.size() == 0){
                 // query the active quadtree 
 
@@ -255,6 +303,7 @@ void Classifier::Load(){
                 auto dist = utilities::dist_to_box(trans_pt, n->Box());
                 if (n->Cat() == 3){
                     cat = n->Cat();
+                    
                     break;
                 }
                 if (dist <= min_dist){
@@ -262,6 +311,7 @@ void Classifier::Load(){
                     cat = n->Cat();
                 }
             }
+            */
             
             
             //std::cout << cat << std::endl;

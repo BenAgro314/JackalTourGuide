@@ -149,7 +149,7 @@
 			</plugin>
 		</actor>
 
-    <!--include>
+    <include>
 			<name>table2_4</name>
 			<pose>-4.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://table_conference_2</uri>
@@ -215,7 +215,7 @@
 			</plugin>
 			<plugin name="walking_duration" filename="3">
 			</plugin>
-		</actor-->
+		</actor>
 
 
     <!--include>

@@ -137,6 +137,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         if (this->record_objects){
             
             this->standing_actors = nh.advertise<PointCloud>("standing_actors", 10);
+            this->moving_actors = nh.advertise<PointCloud>("moving_actors", 10);
         }
         
         ros::AsyncSpinner spinner(boost::thread::hardware_concurrency());
@@ -480,11 +481,16 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
     }
 
     PointCloud::Ptr standing_msg;
+    PointCloud::Ptr moving_msg;
     if (this->record_objects){
         standing_msg = boost::make_shared<PointCloud>();
         standing_msg->header.frame_id = "velodyne";
         standing_msg->height = msg->height;
         standing_msg->width = 0;
+        moving_msg = boost::make_shared<PointCloud>();
+        moving_msg->header.frame_id = "velodyne";
+        moving_msg->height = msg->height;
+        moving_msg->width = 0;
     }
     
     this->vehicle_quadtree2 = boost::make_shared<QuadTree>(this->building_box);
@@ -498,10 +504,13 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
         this->vehicle_quadtree2->Insert(new_node);
 
         if (this->record_objects){
+            auto pt = pcl::PointXYZ(vehicle->GetPose().Pos().X(), vehicle->GetPose().Pos().Y(), vehicle->GetPose().Pos().Z());
             if (vehicle->IsStill()){
-                auto pt = pcl::PointXYZ(vehicle->GetPose().Pos().X(), vehicle->GetPose().Pos().Y(), vehicle->GetPose().Pos().Z());
                 standing_msg->points.push_back(pt);
                 standing_msg->width++;
+            } else{
+                moving_msg->points.push_back(pt);
+                moving_msg->width++;
             }
         }
     }
@@ -704,6 +713,8 @@ void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
     if (this->record_objects){
         pcl_conversions::toPCL(ros::Time::now(), standing_msg->header.stamp);
         this->standing_actors.publish(standing_msg);
+        pcl_conversions::toPCL(ros::Time::now(), moving_msg->header.stamp);
+        this->moving_actors.publish(moving_msg);
     }
 
     this->playGazebo.call(this->emptySrv);

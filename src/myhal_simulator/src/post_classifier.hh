@@ -19,6 +19,8 @@ class Classifier{
 
         std::vector<Frame> stander_frames;
 
+        std::vector<Frame> moving_frames;
+
         std::string filename;
 
         std::string username;

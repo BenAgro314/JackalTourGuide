@@ -106,6 +106,8 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ros::Publisher standing_actors;
 
+        ros::Publisher moving_actors;
+
         ros::ServiceClient pauseGazebo;
 
         ros::ServiceClient playGazebo;
