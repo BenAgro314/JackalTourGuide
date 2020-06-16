@@ -18,7 +18,7 @@ until rostopic list; do sleep 0.5; done #wait until rosmaster has started
 rosparam load src/jackal_velodyne/params/simulation_params.yaml
 rosparam load src/myhal_simulator/params/common_vehicle_params.yaml
 rosparam load src/myhal_simulator/params/animation_params.yaml
-rosparam load src/myhal_simulator/params/room_params.yaml
+rosparam load src/myhal_simulator/params/room_params_V2.yaml
 rosparam load src/myhal_simulator/params/scenario_params.yaml
 rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
@@ -27,7 +27,7 @@ rosparam set publish_points false # activly catagorize lidar points and publish 
 rosparam set publish_ply false # activly catagorize lidar points and publish to .ply?
 rosparam set record_objects false # recording model positions to .ply for post processing?
 rosparam set publish_navigation false # republish lidar points with actors removed for navigation?
-rosparam set bag_name "out_and_back_tour.bag"
+rosparam set bag_name "V2_tour.bag"
 t=$(date +'%Y-%m-%d-%H-%M-%S')
 rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"

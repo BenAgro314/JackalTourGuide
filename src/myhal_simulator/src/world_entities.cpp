@@ -332,12 +332,36 @@ Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclose
 
 bool Room::AddModel(std::shared_ptr<Model> model)
 {   
+    double x_min = this->boundary.Min().X();
+    double y_min = this->boundary.Min().Y();
+    double x_max = this->boundary.Max().X();
+    double y_max = this->boundary.Max().Y();
+    double width = model->GetWidth();
+    double length = model->GetLength();
     
     for (auto other : this->models)
     {
         if (model->DoesCollide(other))
         {
             return false;
+        }
+
+        if (this->enclosed){
+            if (model->pose.Pos().X() < (x_min+(width/2))){
+                return false;
+            }
+
+            if (model->pose.Pos().X() > (x_max-(width/2))){
+                return false;
+            }
+
+            if (model->pose.Pos().Y() > (y_max-(length/2))){
+                return false;
+            }
+
+            if (model->pose.Pos().Y() < (y_min+(length/2))){
+                return false;
+            }
         }
     }
     
