@@ -1,0 +1,94 @@
+scenario_names:
+  - no_tables_wanderer_crowd
+  - big_tables_random_walker_study
+  - small_tables_stander_meeting
+  - mixed_tables_no_people
+  - big_tables_no_people
+  - small_tables_no_people
+  - small_tables_random_walker_study
+  - mixed_tables_follower_tour
+  - mixed_tables_wanderer_study
+
+no_tables_wanderer_crowd:
+  pop_density: "0.15"
+  table_percentage: "0"
+  actor: actor_basic_wanderer
+  model_list: big_tables
+  table_group_list: big_table_group
+
+big_tables_random_walker_study:
+  pop_density: "0.08"
+  table_percentage: "0.8"
+  actor: actor_basic_random_walker
+  model_list: big_tables
+  table_group_list: big_table_group
+
+small_tables_stander_meeting:
+  pop_density: "0.15"
+  table_percentage: "0.5"
+  actor: actor_basic_stander
+  model_list: big_tables
+  table_group_list: small_table_group
+
+mixed_tables_no_people:
+  pop_density: "0"
+  table_percentage: "1"
+  actor: actor_basic_boid
+  model_list: big_tables
+  table_group_list: mixed_group
+
+big_tables_no_people:
+  pop_density: "0"
+  table_percentage: "1"
+  actor: actor_basic_boid
+  model_list: big_tables
+  table_group_list: big_table_group
+
+small_tables_no_people:
+  pop_density: "0"
+  table_percentage: "1"
+  actor: actor_basic_boid
+  model_list: big_tables
+  table_group_list: small_table_group
+
+small_tables_random_walker_study:
+  pop_density: "0.1"
+  table_percentage: "0.7"
+  actor: actor_basic_random_walker
+  model_list: big_tables
+  table_group_list: small_table_group
+
+mixed_tables_follower_tour:
+  pop_density: "0.07"
+  table_percentage: "0.3"
+  actor: actor_basic_follower
+  model_list: big_tables
+  table_group_list: mixed_group
+
+mixed_tables_wanderer_study:
+  pop_density: "0.08"
+  table_percentage: "0.8"
+  actor: actor_basic_wanderer
+  model_list: big_tables
+  table_group_list: mixed_group
+
+big_tables:
+  - table1
+  - table2
+  - table3
+
+big_table_group:
+  - table_group_1
+  - table_group_2
+  - table_group_3
+
+small_table_group:
+  - table_group_4
+  - table_group_5
+  - table_group_6
+
+mixed_group:
+  - table_group_4
+  - table_group_5
+  - table_group_1
+  - table_group_2
