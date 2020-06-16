@@ -333,8 +333,9 @@ boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr ac
             
             if (actor_info.find("leader") != actor_info.end()){
                 leader_name = actor_info["leader"];
+                
                
-                res = boost::make_shared<Follower>(actor, 1, 10, max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities, leader_name); // read in as params 
+                res = boost::make_shared<Follower>(actor, 1, 10, max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities, leader_name, false); // read in as params 
                 this->follower_queue.push_back(boost::dynamic_pointer_cast<Follower>(res));
             } else{
                 std::cout << "leader name not found\n";

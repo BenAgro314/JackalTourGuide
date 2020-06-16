@@ -595,10 +595,16 @@ double _max_speed,
 ignition::math::Pose3d initial_pose, 
 ignition::math::Vector3d initial_velocity, 
 std::vector<gazebo::physics::EntityPtr> objects,
-std::string _leader_name)
+std::string _leader_name, bool blocking)
 : Vehicle(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, objects){
 
     this->leader_name = _leader_name;
+    this->blocking = blocking;
+    if (this->blocking){
+        this->rand_angle_offset = ignition::math::Rand::DblUniform(-1,1);
+    } else{
+        this->rand_angle_offset = ignition::math::Rand::DblUniform(-2.5,2.5);
+    }
 
 }
 
@@ -625,8 +631,15 @@ void Follower::SetNextTarget(double dt){
         
         auto offset = rotation.RotateVector(ignition::math::Vector3d(this->rand_radius,0,0));
         this->curr_target = leader_pose.Pos();
+    
+        if (this->blocking){
+            this->curr_target += offset;
+        } else{
+            this->curr_target -= offset;
+        }
+
         this->curr_target.Z() = this->pose.Pos().Z();
-        this->curr_target -= offset;
+        
        
         return;
     }
@@ -635,34 +648,41 @@ void Follower::SetNextTarget(double dt){
 
     // if we find ourselves in front of the leader, steer laterally away from the leaders path 
 
-    auto front_edge = ignition::math::Line3d(leader_pose.Pos(), leader_pose.Pos() + leader_dir);
+    if (!this->blocking){
+        auto front_edge = ignition::math::Line3d(leader_pose.Pos(), leader_pose.Pos() + leader_dir);
 
-    ignition::math::Vector3d normal;
+        ignition::math::Vector3d normal;
 
-    if (utilities::get_normal_to_edge(this->pose.Pos(), front_edge, normal)){
-        if (normal.Length() < this->obstacle_margin){
-            auto mag = normal.Length();
-            if (mag == 0){
-                mag = 10e-9;
-            }
-            normal.Normalize();
-
-            normal *= 1/(mag*mag);
-            if (normal.Length() > this->max_force){
+        if (utilities::get_normal_to_edge(this->pose.Pos(), front_edge, normal)){
+            if (normal.Length() < this->obstacle_margin){
+                auto mag = normal.Length();
+                if (mag == 0){
+                    mag = 10e-9;
+                }
                 normal.Normalize();
-                normal*=this->max_force;
+
+                normal *= 1/(mag*mag);
+                if (normal.Length() > this->max_force){
+                    normal.Normalize();
+                    normal*=this->max_force;
+                }
+                this->ApplyForce(normal);
             }
-            this->ApplyForce(normal);
         }
     }
 
     leader_dir*=this->rand_radius;
+    rotation = ignition::math::Quaterniond(0,0,this->rand_angle_offset);
     leader_dir = rotation.RotateVector(leader_dir);
-
     this->curr_target = leader_pose.Pos();
+
+    if (this->blocking){
+        this->curr_target+=leader_dir/2;
+    }else{
+        this->curr_target-=leader_dir/2;
+    }
+
     this->curr_target.Z() = this->pose.Pos().Z();
-    this->curr_target-=leader_dir/2;
-   
     this->last_leader_pose = leader_pose;
 }
 

@@ -6,6 +6,7 @@ scenario_names:
   - sparse_study_area
   - casual_study_area
   - basic_box
+  - follower_scenario
 
 basic_crowd:
   pop_density: "0.15"
@@ -55,6 +56,13 @@ basic_box:
   actor: actor_basic_follower
   model_list: model_list1
   table_group_list: group_list1
+
+follower_scenario:
+  pop_density: "0.3"
+  table_percentage: "0"
+  actor: actor_basic_follower
+  model_list: model_list1
+  table_group_list: group_casual
 
 
 #hallway1:

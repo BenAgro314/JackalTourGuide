@@ -1,6 +1,7 @@
 <launch>
     <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
       <remap from="cloud_in" to="/velodyne_points"/>
+      <!--remap from="cloud_in" to="/no_gpu_points"/-->
       <remap from="scan" to="/points_to_laser" />
       <rosparam>
         target_frame: base_link
