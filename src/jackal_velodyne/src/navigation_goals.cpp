@@ -133,7 +133,7 @@ int main(int argc, char** argv){
 
 		int count = 0;
 
-		log_file << "Tour diagnostics: " << std::endl;
+		log_file << "\nTour diagnostics: " << std::endl;
 		for (auto i: targets){
 			count++;
 			ROS_WARN("Sending Command (%d/%ld):", count, (long) targets.size());

@@ -111,17 +111,17 @@
  
 
 		<include>
-			<name>coffee_table_set_1_0</name>
+			<name>coffee_table_set_2_0</name>
 			<pose>-4.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
-			<uri>model://coffee_table_set_1</uri>
+			<uri>model://coffee_table_set_2</uri>
 		</include>
 		<include>
 			<name>chair_2</name>
-			<pose>-4.000000 1.056225 0.000000 0.000000 -0.000000 -2.101734</pose>
-			<uri>model://chair_1</uri>
+			<pose>-4.000000 -1.320217 0.000000 0.000000 -0.000000 1.342514</pose>
+			<uri>model://kitchen_chair</uri>
 		</include>
-		<actor name="sitter_5">
-			<pose>-4.000000 1.056225 0.650000 0.000000 -0.000000 -2.101734</pose>
+		<actor name="sitter_4">
+			<pose>-4.000000 -1.320217 1.000000 0.000000 -0.000000 1.342514</pose>
 			<skin>
 				<filename>sitting.dae</filename>
 			</skin>
@@ -148,11 +148,11 @@
 		</actor>
 		<include>
 			<name>chair_3</name>
-			<pose>-5.071388 0.000000 0.000000 0.000000 -0.000000 2.364632</pose>
-			<uri>model://chair_1</uri>
+			<pose>-2.577525 0.000000 0.000000 0.000000 -0.000000 2.107749</pose>
+			<uri>model://kitchen_chair</uri>
 		</include>
-		<actor name="sitter_6">
-			<pose>-5.071388 0.000000 0.650000 0.000000 -0.000000 2.364632</pose>
+		<actor name="sitter_5">
+			<pose>-2.577525 0.000000 1.000000 0.000000 -0.000000 2.107749</pose>
 			<skin>
 				<filename>sitting.dae</filename>
 			</skin>
@@ -178,22 +178,17 @@
 			</plugin>
 		</actor>
 		<include>
-			<name>chair_4</name>
-			<pose>-4.000000 -1.054652 0.000000 0.000000 -0.000000 -2.623591</pose>
+			<name>coffee_table_set_1_6</name>
+			<pose>3.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<uri>model://coffee_table_set_1</uri>
+		</include>
+		<include>
+			<name>chair_8</name>
+			<pose>3.000000 -1.067459 0.000000 0.000000 -0.000000 -0.655931</pose>
 			<uri>model://chair_1</uri>
 		</include>
-		<include>
-			<name>coffee_table_set_2_7</name>
-			<pose>3.000000 0.000000 0.000000 0.000000 -0.000000 1.570700</pose>
-			<uri>model://coffee_table_set_2</uri>
-		</include>
-		<include>
-			<name>chair_9</name>
-			<pose>3.000138 1.430683 0.000000 0.000000 -0.000000 0.990753</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<actor name="sitter_10">
-			<pose>3.000138 1.430683 1.000000 0.000000 -0.000000 0.990753</pose>
+		<actor name="sitter_9">
+			<pose>3.000000 -1.067459 0.650000 0.000000 -0.000000 -0.655931</pose>
 			<skin>
 				<filename>sitting.dae</filename>
 			</skin>
@@ -215,47 +210,31 @@
 			</animation>
 			<plugin name="vehicle_type" filename="sitter">
 			</plugin>
-			<plugin name="chair" filename="chair_9">
+			<plugin name="chair" filename="chair_8">
 			</plugin>
 		</actor>
 		<include>
-			<name>coffee_table_set_2_11</name>
+			<name>cafe_table_10</name>
 			<pose>-4.000000 -3.000000 0.000000 0.000000 -0.000000 1.570700</pose>
-			<uri>model://coffee_table_set_2</uri>
+			<uri>model://cafe_table</uri>
 		</include>
-		<actor name="sitter_15">
-			<pose>-3.999873 -1.677790 1.000000 0.000000 -0.000000 2.908754</pose>
-			<skin>
-				<filename>sitting.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="vehicle_type" filename="sitter">
-			</plugin>
-			<plugin name="chair" filename="chair_13">
-			</plugin>
-		</actor>
 		<include>
-			<name>chair_14</name>
-			<pose>-5.436442 -2.999862 0.000000 0.000000 -0.000000 -2.187310</pose>
+			<name>chair_13</name>
+			<pose>-5.307138 -2.999874 0.000000 0.000000 -0.000000 0.471674</pose>
 			<uri>model://kitchen_chair</uri>
 		</include>
-		<actor name="sitter_16">
-			<pose>-5.436442 -2.999862 1.000000 0.000000 -0.000000 -2.187310</pose>
+		<include>
+			<name>cafe_table_14</name>
+			<pose>3.000000 -3.000000 0.000000 0.000000 -0.000000 1.570700</pose>
+			<uri>model://cafe_table</uri>
+		</include>
+		<include>
+			<name>chair_16</name>
+			<pose>4.341380 -3.000129 0.000000 0.000000 -0.000000 -2.226400</pose>
+			<uri>model://kitchen_chair</uri>
+		</include>
+		<actor name="sitter_20">
+			<pose>4.341380 -3.000129 1.000000 0.000000 -0.000000 -2.226400</pose>
 			<skin>
 				<filename>sitting.dae</filename>
 			</skin>
@@ -277,14 +256,76 @@
 			</animation>
 			<plugin name="vehicle_type" filename="sitter">
 			</plugin>
-			<plugin name="chair" filename="chair_14">
+			<plugin name="chair" filename="chair_16">
 			</plugin>
 		</actor>
 		<include>
-			<name>coffee_table_set_2_17</name>
-			<pose>3.000000 -3.000000 0.000000 0.000000 -0.000000 1.570700</pose>
-			<uri>model://coffee_table_set_2</uri>
+			<name>chair_17</name>
+			<pose>3.000108 -1.883758 0.000000 0.000000 -0.000000 -1.598343</pose>
+			<uri>model://kitchen_chair</uri>
 		</include>
+		<include>
+			<name>chair_18</name>
+			<pose>1.707017 -2.999875 0.000000 0.000000 -0.000000 1.149135</pose>
+			<uri>model://kitchen_chair</uri>
+		</include>
+		<actor name="sitter_21">
+			<pose>1.707017 -2.999875 1.000000 0.000000 -0.000000 1.149135</pose>
+			<skin>
+				<filename>sitting.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="vehicle_type" filename="sitter">
+			</plugin>
+			<plugin name="chair" filename="chair_18">
+			</plugin>
+		</actor>
+		<include>
+			<name>chair_19</name>
+			<pose>2.999870 -4.344699 0.000000 0.000000 -0.000000 2.261059</pose>
+			<uri>model://kitchen_chair</uri>
+		</include>
+		<actor name="sitter_22">
+			<pose>2.999870 -4.344699 1.000000 0.000000 -0.000000 2.261059</pose>
+			<skin>
+				<filename>sitting.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="vehicle_type" filename="sitter">
+			</plugin>
+			<plugin name="chair" filename="chair_19">
+			</plugin>
+		</actor>
 
 
 
