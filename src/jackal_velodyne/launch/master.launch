@@ -70,5 +70,6 @@
  
 
   <node pkg="jackal_velodyne" type="navigation_goals" name="navigation_goals"/>
+
   
 </launch>

@@ -38,6 +38,8 @@ class Doctor{
 
         std::string filepath;
 
+        std::string shutdown_file;
+
         ignition::math::Pose3d last_pose;
 
         ignition::math::Vector3d lin_vel;
@@ -53,6 +55,10 @@ class Doctor{
         void GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg);
 
         double last_status_update =0;
+
+        std::vector<double> dists;
+
+        std::ofstream log_file;
 
     public:
 
@@ -70,6 +76,8 @@ Doctor::Doctor(){
         this->username = user;
     } 
 
+    this->shutdown_file = "/home/" + this->username + "/catkin_ws/shutdown.sh";
+
     int argc = 0;
     char **argv = NULL;
     
@@ -83,11 +91,14 @@ Doctor::Doctor(){
 
     this->filepath = "/home/" + this->username + "/Myhal_Simulation/simulated_runs/" + start_time + "/";
 
+    
+
     std::cout << "JACKAL DIAGNOSTICS RUNNING. OUTPUT CAN BE FOUND AT: " << this->filepath << "notes.txt\n";
 
     this->sub = this->nh.subscribe<nav_msgs::Odometry>("ground_truth/state", 1000, std::bind(&Doctor::GroundTruthCallback, this, std::placeholders::_1), ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
 
     ros::spin();
+
 
 }
 
@@ -120,10 +131,46 @@ void Doctor::GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg){
         this->snapshots.pop();
     }
     this->last_pose = curr_pose;
-
+    //std::cout << "hi\n";
     if ((time-this->last_status_update) >= this->duration){
-        std::printf("\nCurrent simulation time: %fs\nCurrent robot pos: (%fm, %fm, %fm)\nDisplacement over last %fs: %fm\n%fs average magnitude of velocity: %fm/s\n\n", time, curr_pose.Pos().X(), curr_pose.Pos().Y(), curr_pose.Pos().Z(), this->duration, (this->snapshots.front().pose.Pos()-curr_pose.Pos()).Length(), this->duration, this->running_sum/this->snapshots.size());
+        auto dist = (this->snapshots.front().pose.Pos()-curr_pose.Pos()).Length();
+
+        auto speed = this->running_sum/this->snapshots.size();
+        ROS_INFO("\nCurrent robot pos: (%.1fm, %.1fm, %.1fm)\nDisplacement over last %.1fs: %.1fm\n%.1fs average magnitude of velocity: %.1fm/s\n\n",curr_pose.Pos().X(), curr_pose.Pos().Y(), curr_pose.Pos().Z(), this->duration, dist, this->duration, speed);
+        
         this->last_status_update = time;
+     
+        if (this->dists.size() == 3){
+            this->dists.erase(this->dists.begin(), this->dists.begin()+1);
+        }
+        this->dists.push_back(dist);
+
+        double sum =0;
+        for (double d: this->dists){
+            sum+=d;
+        }
+        
+        if (sum < 2 && sum > 1 && this->dists.size() == 3){
+            this->log_file.open(this->filepath + "log.txt");
+            ROS_WARN("\nROBOT MAY BE STUCK\n");
+        }
+
+        if (sum < 1 && this->dists.size() == 3){
+            ROS_WARN("\nROBOT STUCK, STOPPING TOUR\n");
+            if (!this->log_file.is_open()){
+                this->log_file.open(this->filepath + "log.txt");
+            }
+
+            this->log_file << "Tour failed: robot got stuck\n";
+
+            this->log_file.close();
+            const char *cstr = this->shutdown_file.c_str();
+            system(cstr);
+        }
+       
+        
     }
+
+    
 
 }
