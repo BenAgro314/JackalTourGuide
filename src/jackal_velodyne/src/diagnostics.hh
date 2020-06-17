@@ -52,7 +52,7 @@ class Doctor{
 
         std::queue<Stamp> snapshots; // stores last this->duration seconds of pose 
 
-        double running_sum;
+        double running_sum = 0;
 
         double last_update;
 
@@ -147,23 +147,25 @@ void Doctor::GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg){
         ROS_INFO("\nCurrent robot pos: (%.1fm, %.1fm, %.1fm)\nDisplacement over last %.1fs: %.1fm\n%.1fs average speed: %.1fm/s\n\n",curr_pose.Pos().X(), curr_pose.Pos().Y(), curr_pose.Pos().Z(), this->duration, dist, this->duration, speed);
         
         this->last_status_update = time;
+
+        int num_checks = 6;
      
-        if (this->dists.size() == 3){
+        if (this->dists.size() == num_checks){
             this->dists.erase(this->dists.begin(), this->dists.begin()+1);
         }
-        this->dists.push_back(dist);
+        this->dists.push_back(dist);    
 
         double sum =0;
         for (double d: this->dists){
             sum+=d;
         }
         
-        if (sum < 2 && sum > 1 && this->dists.size() == 3){
+        if (sum < 2 && sum > 1 && this->dists.size() == num_checks){
             
             ROS_WARN("\nROBOT MAY BE STUCK\n");
         }
 
-        if (sum < 1 && this->dists.size() == 3){
+        if (sum < 1 && this->dists.size() == num_checks){
             ROS_WARN("\nROBOT STUCK, STOPPING TOUR\n");
 
             this->log_file << "Tour failed: robot got stuck\n";
