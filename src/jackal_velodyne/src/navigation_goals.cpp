@@ -14,6 +14,7 @@
 #include <fstream>
 #include <cstdlib>
 
+
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
 //int cycles = 0;
