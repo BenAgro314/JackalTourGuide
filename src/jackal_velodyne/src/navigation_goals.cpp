@@ -66,8 +66,21 @@ int main(int argc, char** argv){
 		if (!nh.getParam("bag_name", bag_name)){
 			bag_name = "tour_positions1.bag";
 		}
+
+		std::string username = "default";
+    if (const char * user = std::getenv("USER")){
+        username = user;
+    } 
+
+		std::string start_time;
+    if (!nh.getParam("start_time", start_time)){
+        std::cout << "ERROR SETTING START TIME\n";
+    }
 		
+		std::string filepath = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + start_time + "/";
 		
+		std::ofstream log_file;
+		log_file.open(filepath + "log.txt", std::ios_base::app);
 		
 		ROS_WARN("USING TOUR %s\n", bag_name.c_str());
 	
@@ -120,6 +133,7 @@ int main(int argc, char** argv){
 
 		int count = 0;
 
+		log_file << "Tour diagnostics: " << std::endl;
 		for (auto i: targets){
 			count++;
 			ROS_WARN("Sending Command (%d/%ld):", count, (long) targets.size());
@@ -137,8 +151,11 @@ int main(int argc, char** argv){
 
 				if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
 					ROS_INFO("Target Reached");
+					
+					log_file << "Reached target (" << count << "/" << targets.size() << ") at position (" << std::fixed << std::setprecision(1) << i->pose.position.x  << "m, " << std::fixed << std::setprecision(1) << i->pose.position.y << "m, " << std::fixed << std::setprecision(1) << i->pose.position.z <<  "m) at time: " << std::fixed << std::setprecision(1) << ros::Time::now().toSec() << "s" << std::endl;
 				} else {
 					ROS_INFO("Target Failed");
+					log_file << "Failed to reach target (" << count << "/" << targets.size() << ") at position (" << std::fixed << std::setprecision(1) << i->pose.position.x  << "m, " << std::fixed << std::setprecision(1) << i->pose.position.y << "m, " << std::fixed << std::setprecision(1) << i->pose.position.z <<  "m) at time: " << std::fixed << std::setprecision(1) << ros::Time::now().toSec() << "s" << std::endl;
 				}
 			}
 

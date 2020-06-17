@@ -18,6 +18,8 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 #include <queue> 
+#include <vector>
+#include <map>
 
 struct Stamp{
     ignition::math::Vector3d vel;
@@ -40,6 +42,8 @@ class Doctor{
 
         std::string shutdown_file;
 
+        std::string start_time = "ERROR SETTING START TIME";
+
         ignition::math::Pose3d last_pose;
 
         ignition::math::Vector3d lin_vel;
@@ -52,13 +56,19 @@ class Doctor{
 
         double last_update;
 
-        void GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg);
-
         double last_status_update =0;
 
         std::vector<double> dists;
 
         std::ofstream log_file;
+
+        std::string tour_name = "NONE";
+
+        std::vector<std::map<std::string, std::string>> rooms;
+
+        void GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg);
+
+        void ReadParams();
 
     public:
 
@@ -69,42 +79,38 @@ class Doctor{
 
 Doctor::Doctor(){
 
-    
-
-    this->username = "default";
-    if (const char * user = std::getenv("USER")){
-        this->username = user;
-    } 
+    this->ReadParams();
 
     this->shutdown_file = "/home/" + this->username + "/catkin_ws/shutdown.sh";
 
-    int argc = 0;
-    char **argv = NULL;
-    
-    
-
-    std::string start_time = "ERROR SETTING START TIME";
-
-    if (!this->nh.getParam("start_time", start_time)){
-        std::cout << "ERROR SETTING START TIME\n";
-    }
-
     this->filepath = "/home/" + this->username + "/Myhal_Simulation/simulated_runs/" + start_time + "/";
 
-    
+    this->log_file.open(this->filepath + "log.txt", std::ios_base::app);
 
-    std::cout << "JACKAL DIAGNOSTICS RUNNING. OUTPUT CAN BE FOUND AT: " << this->filepath << "notes.txt\n";
+    ROS_INFO_STREAM("\nJACKAL DIAGNOSTICS RUNNING. OUTPUT CAN BE FOUND AT: " << this->filepath << "log.txt");
+
+    this->log_file << "Tour Name: " << this->tour_name << std::endl;
+
+    if (this->rooms.size() > 0){
+        this->log_file << "\nRoom Info:\n";
+        for (auto room_map: this->rooms){
+            this->log_file << "\nname: " << room_map["name"] << std::endl;
+            this->log_file << "scenario: " << room_map["scenario"] << std::endl;
+            this->log_file << "enclosed: " << room_map["enclosed"] << std::endl;
+            this->log_file << "geometry: " << room_map["geometry"] << std::endl;
+            this->log_file << "positions: " << room_map["positions"] << std::endl;
+        }
+    }
+    
 
     this->sub = this->nh.subscribe<nav_msgs::Odometry>("ground_truth/state", 1000, std::bind(&Doctor::GroundTruthCallback, this, std::placeholders::_1), ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
 
     ros::spin();
 
-
 }
 
 
 void Doctor::GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg){
-
 
     double time = msg->header.stamp.toSec();
 
@@ -135,8 +141,8 @@ void Doctor::GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg){
     if ((time-this->last_status_update) >= this->duration){
         auto dist = (this->snapshots.front().pose.Pos()-curr_pose.Pos()).Length();
 
-        auto speed = this->running_sum/this->snapshots.size();
-        ROS_INFO("\nCurrent robot pos: (%.1fm, %.1fm, %.1fm)\nDisplacement over last %.1fs: %.1fm\n%.1fs average magnitude of velocity: %.1fm/s\n\n",curr_pose.Pos().X(), curr_pose.Pos().Y(), curr_pose.Pos().Z(), this->duration, dist, this->duration, speed);
+        double speed = this->running_sum/this->snapshots.size();
+        ROS_INFO("\nCurrent robot pos: (%.1fm, %.1fm, %.1fm)\nDisplacement over last %.1fs: %.1fm\n%.1fs average speed: %.1fm/s\n\n",curr_pose.Pos().X(), curr_pose.Pos().Y(), curr_pose.Pos().Z(), this->duration, dist, this->duration, speed);
         
         this->last_status_update = time;
      
@@ -151,15 +157,12 @@ void Doctor::GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg){
         }
         
         if (sum < 2 && sum > 1 && this->dists.size() == 3){
-            this->log_file.open(this->filepath + "log.txt");
+            
             ROS_WARN("\nROBOT MAY BE STUCK\n");
         }
 
         if (sum < 1 && this->dists.size() == 3){
             ROS_WARN("\nROBOT STUCK, STOPPING TOUR\n");
-            if (!this->log_file.is_open()){
-                this->log_file.open(this->filepath + "log.txt");
-            }
 
             this->log_file << "Tour failed: robot got stuck\n";
 
@@ -171,6 +174,39 @@ void Doctor::GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg){
         
     }
 
-    
+}
 
+void Doctor::ReadParams(){
+
+    this->username = "default";
+    if (const char * user = std::getenv("USER")){
+        this->username = user;
+    } 
+
+    if (!this->nh.getParam("start_time", this->start_time)){
+        std::cout << "ERROR SETTING START TIME\n";
+    }
+
+    if (!this->nh.getParam("bag_name", this->tour_name)){
+        std::cout << "ERROR FINDING TOUR NAME\n";
+    }
+
+    std::vector<std::string> room_names;
+    if (!this->nh.getParam("room_names", room_names)){
+        std::cout << "ERROR READING ROOM NAMES";
+    }
+
+    for (auto name: room_names){
+        
+        std::map<std::string, std::string> info;
+        info["name"] = name;
+        if (!nh.getParam(name, info)){
+            std::cout << "ERROR READING ROOM PARAMS";
+        }
+
+        this->rooms.push_back(info);
+        
+    }
+
+    
 }
