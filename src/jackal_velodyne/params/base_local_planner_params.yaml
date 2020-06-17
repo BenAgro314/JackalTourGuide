@@ -1,14 +1,14 @@
 TrajectoryPlannerROS:
 
   # Robot Configuration Parameters
-  acc_lim_x: 10.0
-  acc_lim_theta:  20.0
+  acc_lim_x: 3.0
+  acc_lim_theta:  10.0
 
   max_vel_x: 1.3
   min_vel_x: -1.3
 
-  max_vel_theta: 2
-  min_vel_theta: -2
+  max_vel_theta: 1
+  min_vel_theta: -1
   min_in_place_vel_theta: 0.314
 
   holonomic_robot: false

@@ -129,9 +129,11 @@ void Doctor::GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg){
     auto curr_pose =  ignition::math::Pose3d(x,y,z,qw,qx,qy,qz);
     this->lin_vel = (curr_pose.Pos()-this->last_pose.Pos())/dt;
     Stamp new_stamp = Stamp(lin_vel, curr_pose, time);
-    this->snapshots.push(new_stamp);
-    this->running_sum+=lin_vel.Length();
-
+    if (this->lin_vel.Length() < 10e3){
+        this->snapshots.push(new_stamp);
+        this->running_sum+=lin_vel.Length();
+    }
+    
     if (time-this->snapshots.front().time > this->duration){
         this->running_sum-=this->snapshots.front().vel.Length();
         this->snapshots.pop();
