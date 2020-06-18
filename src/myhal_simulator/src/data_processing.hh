@@ -125,13 +125,14 @@ FramesAndTraj DataProcessor::GetData(){
     
             pcl::PCLPointCloud2 pcl_pc2;
             pcl_conversions::toPCL(*cloud,pcl_pc2);
-            pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+            pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_ptr(new pcl::PointCloud<pcl::PointXYZI>);
             pcl::fromPCLPointCloud2(pcl_pc2,*cloud_ptr);
 
             stander_frames.push_back(Frame(false));
             stander_frames.back().SetTime(cloud->header.stamp.toSec());
             for (auto point: cloud_ptr->points){
                 stander_frames.back().AddPoint(ignition::math::Vector3d(point.x, point.y, point.z),-1);
+                
             }
             continue;
         }
@@ -169,7 +170,7 @@ FramesAndTraj DataProcessor::GetData(){
     
         pcl::PCLPointCloud2 pcl_pc2;
         pcl_conversions::toPCL(*cloud,pcl_pc2);
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_ptr(new pcl::PointCloud<pcl::PointXYZI>);
         pcl::fromPCLPointCloud2(pcl_pc2,*cloud_ptr);
 
         int cat = -1;
@@ -193,6 +194,7 @@ FramesAndTraj DataProcessor::GetData(){
         }
         
         for (auto point: cloud_ptr->points){
+            std::cout << point.intensity << std::endl;
             frames[id].AddPoint(ignition::math::Vector3d(point.x, point.y, point.z), cat);
  
         }

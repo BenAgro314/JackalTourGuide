@@ -68,6 +68,9 @@ target_link_libraries(data_processing ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 add_executable(post_classifier src/post_classifier.cpp) 
 target_link_libraries(post_classifier utilities quadtree ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_executable(process_bag src/process_bag.cpp) 
+target_link_libraries(process_bag utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 
 add_library(custom_velodyne src/custom_velodyne.cpp)
 target_link_libraries(custom_velodyne

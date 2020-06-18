@@ -383,22 +383,68 @@ namespace gazebo
                     auto max = ignition::math::Vector3d(point.X() + resolution, point.Y() + resolution, 0);
                     auto query_range = ignition::math::Box(min,max);
 
+                    std::vector<CollObj> check_objects;
+                    
                     std::vector<QTData> query_objects = this->static_quadtree->QueryRange(query_range);
                     for (auto n: query_objects){
                         if (n.type == entity_type){
-                            near_objects.push_back(boost::static_pointer_cast<gazebo::physics::Entity>(n.data));
+                            auto entity = boost::static_pointer_cast<gazebo::physics::Entity>(n.data);
+                            int cat;
+                            std::string name = entity->GetParent()->GetParent()->GetName();
+                            if (name == this->building_name){
+                                cat = 5; //wall
+                            } else if (name.substr(0,5) == "table"){
+                                cat = 4; //table
+                            } else if (name.substr(0,5) == "chair"){
+                                cat = 1; //chair
+                            } else {
+                                cat = 0; //ground
+                            }
+                            check_objects.push_back(CollObj(cat, entity->BoundingBox()));
+                            //near_objects.push_back(boost::static_pointer_cast<gazebo::physics::Entity>(n.data));
                         }
                     }
 
                     std::vector<QTData> query_actors = this->active_quadtree->QueryRange(query_range);
                     for (auto n: query_actors){
                         if (n.type == vehicle_type){
-                            near_actors.push_back(boost::static_pointer_cast<gazebo::physics::Actor>(n.data));
+                            auto actor = boost::static_pointer_cast<gazebo::physics::Actor>(n.data);
+                            int cat;
+                            if (actor_speed[actor->GetName()] < 10e-4){
+                                cat = 3; // stationary actors 
+                            } else{
+                                cat = 2; // moving actors 
+                            }
+                            
+                            auto box = ignition::math::Box(ignition::math::Vector3d(actor->WorldPose().Pos().X()-0.4, actor->WorldPose().Pos().Y()-0.4,0), ignition::math::Vector3d(actor->WorldPose().Pos().X()+0.4, actor->WorldPose().Pos().Y()+0.4, 1));
+                            check_objects.push_back(CollObj(cat, box));
+                            //near_actors.push_back(boost::static_pointer_cast<gazebo::physics::Actor>(n.data));
                         }
                     }
+                    
+                   
 
                     //collision checks:
 
+                    
+                    if (check_objects.size() == 0){
+                        intensity = 5;
+                    } else{
+
+                        
+                        intensity = 0;
+                        double min_dist = point.Z();
+
+                        for (auto n: check_objects){
+                            
+                            auto dist = utilities::dist_to_box(point, n.box);
+                            if (dist <= min_dist){
+                                min_dist = dist;
+                                intensity = n.cat;
+                            }
+                        }
+                    }
+                    /*
                     if (near_objects.size() == 0 && near_actors.size() == 0){
                         intensity = 5; // wall
                     } else {
@@ -436,6 +482,7 @@ namespace gazebo
                             
                         }
                     }
+                    */
 
                     *((float *)(ptr + 16)) = intensity;
                     *((uint16_t *)(ptr + 20)) = j; // ring

@@ -43,6 +43,17 @@
 #define RaySensorPtr GpuRaySensorPtr
 #endif
 
+struct CollObj{
+	int cat;
+	ignition::math::Box box;
+
+
+	CollObj(int cat, ignition::math::Box box){
+		this->cat = cat;
+		this->box = box;
+	}
+};
+
 namespace gazebo
 {
 
