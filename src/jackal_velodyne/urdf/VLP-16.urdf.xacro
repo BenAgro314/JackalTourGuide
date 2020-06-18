@@ -88,12 +88,14 @@
               <stddev>0.0</stddev>
             </noise>
           </ray>
-          <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_velodyne_gpu_laser.so">
+          <plugin name="gazebo_ros_laser_controller" filename="libcustom_velodyne_gpu.so">
             <topicName>${topic}</topicName>
             <frameName>${name}</frameName>
             <min_range>${min_range}</min_range>
             <max_range>${max_range}</max_range>
             <gaussianNoise>${noise}</gaussianNoise>
+            <robot_name>jackal</robot_name>
+            <building_name>building</building_name>
           </plugin>
         </sensor>
       </xacro:if>
@@ -128,12 +130,14 @@
               <stddev>0.0</stddev>
             </noise>
           </ray>
-          <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_velodyne_laser.so">
+          <plugin name="gazebo_ros_laser_controller" filename="libcustom_velodyne.so">
             <topicName>${topic}</topicName>
             <frameName>${name}</frameName>
             <min_range>${min_range}</min_range>
             <max_range>${max_range}</max_range>
             <gaussianNoise>${noise}</gaussianNoise>
+            <robot_name>jackal</robot_name>
+            <building_name>building</building_name>
           </plugin>
         </sensor>
       </xacro:unless>

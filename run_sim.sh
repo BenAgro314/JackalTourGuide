@@ -24,6 +24,5 @@ touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/log.txt"
 
 sleep 0.1
 
-rosrun jackal_velodyne diagnostics &
 roslaunch jackal_velodyne jackal_testing.launch &
 rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" # Limiting data to remain under rosbag buffer

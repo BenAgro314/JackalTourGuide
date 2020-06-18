@@ -104,23 +104,23 @@
     </plugin>
 
  
-    <!--include>
-      <name>building</name>
-      <pose>0 0 0 0 0 0</pose>
-      <uri>model://20x20box</uri>
-	  </include-->
-
     <include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>
-      <uri>model://myhal_V3</uri>
+      <uri>model://20x20box</uri>
 	  </include>
+
+    <!--include>
+      <name>building</name>
+      <pose>0 0 0 0 0 0</pose>
+      <uri>model://myhal_V3</uri>
+	  </include-->
 
     	<!--include>
 			<name>chair_8</name>
 			<pose>3 0 0.000000 0.000000 0.000000 0</pose>
 			<uri>model://chair_2</uri>
-		</include>
+		</include-->
 
     
 		<include>
@@ -192,7 +192,7 @@
 			</plugin>
 		</actor>
 
-    <actor name="actor_basic_stander_35">
+    <!--actor name="actor_basic_stander_35">
 			<pose>-2.333548 5 1.000000 0.000000 -0.000000 1.552967</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>

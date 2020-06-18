@@ -10,9 +10,10 @@ GZ_REGISTER_WORLD_PLUGIN(Puppeteer);
 //PUPPETEER CLASS
 
 void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
-
+    //note: world name is default
 
     this->world = _world;
+   
     this->sdf = _sdf;
     this->update_connection = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&Puppeteer::OnUpdate, this, std::placeholders::_1));
 

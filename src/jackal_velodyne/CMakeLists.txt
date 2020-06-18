@@ -46,10 +46,11 @@ include_directories(
 	${GAZEBO_INCLUDE_DIRS}
 )
 
-# link directories
 link_directories(
-	include
+  include
+  ${GAZEBO_LIBRARY_DIRS}
 )
+
 
 
 
@@ -75,3 +76,5 @@ target_link_libraries(tour_maker ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 add_executable(diagnostics src/diagnostics.cpp)
 add_dependencies(diagnostics diagnostics_cpp)
 target_link_libraries(diagnostics ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
+

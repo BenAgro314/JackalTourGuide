@@ -29,7 +29,6 @@ catkin_package(
 )
 
 
-
 link_directories(src/include ${GAZEBO_LIBRARY_DIRS})
 include_directories(src/include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 
@@ -68,3 +67,23 @@ target_link_libraries(data_processing ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_executable(post_classifier src/post_classifier.cpp) 
 target_link_libraries(post_classifier utilities quadtree ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
+
+add_library(custom_velodyne src/custom_velodyne.cpp)
+target_link_libraries(custom_velodyne
+  ${catkin_LIBRARIES}
+  ${GAZEBO_LIBRARIES}
+  RayPlugin
+  utilities
+  quadtree
+)
+
+add_library(custom_velodyne_gpu src/custom_velodyne.cpp)
+target_link_libraries(custom_velodyne_gpu
+  ${catkin_LIBRARIES}
+  ${GAZEBO_LIBRARIES}
+  GpuRayPlugin
+  utilities
+  quadtree
+)
+target_compile_definitions(custom_velodyne_gpu PRIVATE GAZEBO_GPU_RAY=1)
