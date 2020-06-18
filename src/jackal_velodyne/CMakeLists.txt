@@ -18,6 +18,12 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   pcl_ros
   pcl_conversions
+  tf2
+  tf2_ros
+  tf2_sensor_msgs
+  laser_geometry
+  message_filters
+  nodelet
 )
 
 find_package(gazebo REQUIRED)
@@ -35,7 +41,7 @@ generate_messages(
 )
 
 catkin_package(
-  CATKIN_DEPENDS nav_msgs roscpp rospy sensor_msgs rosbag actionlib move_base_msgs geometry_msgs message_runtime 
+  CATKIN_DEPENDS nav_msgs roscpp rospy sensor_msgs rosbag actionlib move_base_msgs geometry_msgs message_runtime laser_geometry message_filters nodelet tf2 tf2_ros tf2_sensor_msgs
   INCLUDE_DIRS include
 )
 
@@ -76,5 +82,11 @@ target_link_libraries(tour_maker ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 add_executable(diagnostics src/diagnostics.cpp)
 add_dependencies(diagnostics diagnostics_cpp)
 target_link_libraries(diagnostics ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
+add_library(pcl_filter src/pointcloud_to_laserscan_nodelet.cpp)
+target_link_libraries(pcl_filter ${catkin_LIBRARIES})
+
+add_executable(pcl_filter_node src/pointcloud_to_laserscan_node.cpp)
+target_link_libraries(pcl_filter_node pcl_filter ${catkin_LIBRARIES})
 
 

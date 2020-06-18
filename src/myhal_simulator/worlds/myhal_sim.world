@@ -111,96 +111,19 @@
 
 
 		<include>
-			<name>table_cafe_0</name>
-			<pose>-4.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
-			<uri>model://cafe_table</uri>
+			<name>table_coffee_set_1_0</name>
+			<pose>-4.000000 0.000000 0.000000 0.000000 -0.000000 1.570700</pose>
+			<uri>model://coffee_table_set_1</uri>
 		</include>
 		<include>
-			<name>chair_2</name>
-			<pose>-4.000000 -1.321987 0.000000 0.000000 -0.000000 2.105421</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<actor name="sitter_6">
-			<pose>-4.000000 -1.321987 1.000000 0.000000 -0.000000 2.105421</pose>
-			<skin>
-				<filename>sitting.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="vehicle_type" filename="sitter">
-			</plugin>
-			<plugin name="chair" filename="chair_2">
-			</plugin>
-		</actor>
-		<include>
-			<name>chair_3</name>
-			<pose>-2.652585 0.000000 0.000000 0.000000 -0.000000 -0.836634</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<actor name="sitter_7">
-			<pose>-2.652585 0.000000 1.000000 0.000000 -0.000000 -0.836634</pose>
-			<skin>
-				<filename>sitting.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="vehicle_type" filename="sitter">
-			</plugin>
-			<plugin name="chair" filename="chair_3">
-			</plugin>
-		</actor>
-		<include>
-			<name>chair_4</name>
-			<pose>-4.000000 1.237790 0.000000 0.000000 -0.000000 1.302017</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<include>
-			<name>chair_5</name>
-			<pose>-5.266034 0.000000 0.000000 0.000000 -0.000000 1.911589</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<include>
-			<name>table_cafe_8</name>
+			<name>table_cafe_2</name>
 			<pose>3.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://cafe_table</uri>
 		</include>
-		<include>
-			<name>chair_10</name>
-			<pose>3.000000 1.300987 0.000000 0.000000 -0.000000 -0.449067</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<actor name="sitter_12">
-			<pose>3.000000 1.300987 1.000000 0.000000 -0.000000 -0.449067</pose>
+		<actor name="actor_basic_random_walker_4">
+			<pose>1.364572 -3.019663 1.000000 0.000000 -0.000000 0.083385</pose>
 			<skin>
-				<filename>sitting.dae</filename>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
 			<animation name="walking">
 				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -218,20 +141,15 @@
 				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
 				<interpolate_x>true</interpolate_x>
 			</animation>
-			<plugin name="vehicle_type" filename="sitter">
+			<plugin name="max_speed" filename="1">
 			</plugin>
-			<plugin name="chair" filename="chair_10">
+			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
-		<include>
-			<name>chair_11</name>
-			<pose>1.747678 0.000000 0.000000 0.000000 -0.000000 -0.304586</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<actor name="sitter_13">
-			<pose>1.747678 0.000000 1.000000 0.000000 -0.000000 -0.304586</pose>
+		<actor name="actor_basic_random_walker_5">
+			<pose>1.767648 -4.190123 1.000000 0.000000 -0.000000 1.282899</pose>
 			<skin>
-				<filename>sitting.dae</filename>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
 			<animation name="walking">
 				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -249,13 +167,221 @@
 				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
 				<interpolate_x>true</interpolate_x>
 			</animation>
-			<plugin name="vehicle_type" filename="sitter">
+			<plugin name="max_speed" filename="1">
 			</plugin>
-			<plugin name="chair" filename="chair_11">
+			<plugin name="vehicle_type" filename="random_walker">
+			</plugin>
+		</actor>
+		<actor name="actor_basic_random_walker_6">
+			<pose>-5.937542 -6.645602 1.000000 0.000000 -0.000000 -2.342458</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="random_walker">
+			</plugin>
+		</actor>
+		<actor name="actor_basic_random_walker_7">
+			<pose>3.356653 -1.004924 1.000000 0.000000 -0.000000 0.311109</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="random_walker">
+			</plugin>
+		</actor>
+		<actor name="actor_basic_random_walker_8">
+			<pose>5.793634 -4.926400 1.000000 0.000000 -0.000000 2.943965</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="random_walker">
+			</plugin>
+		</actor>
+		<actor name="actor_basic_random_walker_9">
+			<pose>-5.148053 1.473837 1.000000 0.000000 -0.000000 -2.125770</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="random_walker">
+			</plugin>
+		</actor>
+		<actor name="actor_basic_random_walker_10">
+			<pose>6.406487 -6.315802 1.000000 0.000000 -0.000000 -3.111858</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="random_walker">
+			</plugin>
+		</actor>
+		<actor name="actor_basic_random_walker_11">
+			<pose>0.425679 -3.599669 1.000000 0.000000 -0.000000 -0.337158</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="random_walker">
+			</plugin>
+		</actor>
+		<actor name="actor_basic_random_walker_12">
+			<pose>1.104218 -5.249931 1.000000 0.000000 -0.000000 1.474074</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="random_walker">
+			</plugin>
+		</actor>
+		<actor name="actor_basic_random_walker_13">
+			<pose>-6.918536 0.457131 1.000000 0.000000 -0.000000 1.771104</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
 		<actor name="actor_basic_random_walker_14">
-			<pose>-6.831743 -3.427872 1.000000 0.000000 -0.000000 1.600143</pose>
+			<pose>-0.788567 -2.622423 1.000000 0.000000 -0.000000 -2.612195</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -281,7 +407,7 @@
 			</plugin>
 		</actor>
 		<actor name="actor_basic_random_walker_15">
-			<pose>2.025296 1.075689 1.000000 0.000000 -0.000000 -2.755675</pose>
+			<pose>0.806777 0.636723 1.000000 0.000000 -0.000000 -2.105545</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -307,7 +433,7 @@
 			</plugin>
 		</actor>
 		<actor name="actor_basic_random_walker_16">
-			<pose>-4.204396 -6.027097 1.000000 0.000000 -0.000000 1.378742</pose>
+			<pose>-1.227076 1.611060 1.000000 0.000000 -0.000000 2.697231</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -332,10 +458,25 @@
 			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_random_walker_17">
-			<pose>2.136030 -2.016720 1.000000 0.000000 -0.000000 2.962349</pose>
+		<include>
+			<name>table_coffee_set_1_17</name>
+			<pose>-5.000000 -12.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<uri>model://coffee_table_set_1</uri>
+		</include>
+		<include>
+			<name>table_cafe_19</name>
+			<pose>0.000000 -12.000000 0.000000 0.000000 -0.000000 1.570700</pose>
+			<uri>model://cafe_table</uri>
+		</include>
+		<include>
+			<name>chair_21</name>
+			<pose>-0.000130 -13.347932 0.000000 0.000000 -0.000000 -0.748005</pose>
+			<uri>model://kitchen_chair</uri>
+		</include>
+		<actor name="sitter_23">
+			<pose>-0.000130 -13.347932 1.000000 0.000000 -0.000000 -0.748005</pose>
 			<skin>
-				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+				<filename>sitting.dae</filename>
 			</skin>
 			<animation name="walking">
 				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -353,15 +494,20 @@
 				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
 				<interpolate_x>true</interpolate_x>
 			</animation>
-			<plugin name="max_speed" filename="1">
+			<plugin name="vehicle_type" filename="sitter">
 			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
+			<plugin name="chair" filename="chair_21">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_random_walker_18">
-			<pose>2.940690 -3.018962 1.000000 0.000000 -0.000000 2.411236</pose>
+		<include>
+			<name>chair_22</name>
+			<pose>1.243071 -12.000120 0.000000 0.000000 -0.000000 1.289178</pose>
+			<uri>model://kitchen_chair</uri>
+		</include>
+		<actor name="sitter_24">
+			<pose>1.243071 -12.000120 1.000000 0.000000 -0.000000 1.289178</pose>
 			<skin>
-				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+				<filename>sitting.dae</filename>
 			</skin>
 			<animation name="walking">
 				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
@@ -379,169 +525,13 @@
 				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
 				<interpolate_x>true</interpolate_x>
 			</animation>
-			<plugin name="max_speed" filename="1">
+			<plugin name="vehicle_type" filename="sitter">
 			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
-			</plugin>
-		</actor>
-		<actor name="actor_basic_random_walker_19">
-			<pose>-4.490023 -3.527107 1.000000 0.000000 -0.000000 0.668193</pose>
-			<skin>
-				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="max_speed" filename="1">
-			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
-			</plugin>
-		</actor>
-		<actor name="actor_basic_random_walker_20">
-			<pose>-0.123925 1.053602 1.000000 0.000000 -0.000000 1.580887</pose>
-			<skin>
-				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="max_speed" filename="1">
-			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
-			</plugin>
-		</actor>
-		<actor name="actor_basic_random_walker_21">
-			<pose>4.291105 -2.578789 1.000000 0.000000 -0.000000 2.600859</pose>
-			<skin>
-				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="max_speed" filename="1">
-			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
-			</plugin>
-		</actor>
-		<actor name="actor_basic_random_walker_22">
-			<pose>-6.589662 -0.622053 1.000000 0.000000 -0.000000 1.100903</pose>
-			<skin>
-				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="max_speed" filename="1">
-			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
-			</plugin>
-		</actor>
-		<actor name="actor_basic_random_walker_23">
-			<pose>-3.097547 -4.314400 1.000000 0.000000 -0.000000 -1.900381</pose>
-			<skin>
-				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="max_speed" filename="1">
-			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
-			</plugin>
-		</actor>
-		<actor name="actor_basic_random_walker_24">
-			<pose>3.691344 -6.099844 1.000000 0.000000 -0.000000 1.802835</pose>
-			<skin>
-				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="max_speed" filename="1">
-			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
+			<plugin name="chair" filename="chair_22">
 			</plugin>
 		</actor>
 		<actor name="actor_basic_random_walker_25">
-			<pose>-0.913867 -6.508938 1.000000 0.000000 -0.000000 -2.897964</pose>
+			<pose>-4.889034 -10.685409 1.000000 0.000000 -0.000000 -1.974814</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -567,7 +557,7 @@
 			</plugin>
 		</actor>
 		<actor name="actor_basic_random_walker_26">
-			<pose>-4.575936 -2.338962 1.000000 0.000000 -0.000000 1.806515</pose>
+			<pose>-4.500195 -17.173862 1.000000 0.000000 -0.000000 -2.378254</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -592,126 +582,8 @@
 			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
-		<include>
-			<name>table_coffee_set_1_27</name>
-			<pose>-5.000000 -12.000000 0.000000 0.000000 -0.000000 1.570700</pose>
-			<uri>model://coffee_table_set_1</uri>
-		</include>
-		<include>
-			<name>chair_29</name>
-			<pose>-5.000101 -13.051582 0.000000 0.000000 -0.000000 2.065070</pose>
-			<uri>model://chair_1</uri>
-		</include>
-		<actor name="sitter_31">
-			<pose>-5.000101 -13.051582 0.650000 0.000000 -0.000000 2.065070</pose>
-			<skin>
-				<filename>sitting.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="vehicle_type" filename="sitter">
-			</plugin>
-			<plugin name="chair" filename="chair_29">
-			</plugin>
-		</actor>
-		<include>
-			<name>chair_30</name>
-			<pose>-3.973287 -12.000099 0.000000 0.000000 -0.000000 0.346342</pose>
-			<uri>model://chair_1</uri>
-		</include>
-		<actor name="sitter_32">
-			<pose>-3.973287 -12.000099 0.650000 0.000000 -0.000000 0.346342</pose>
-			<skin>
-				<filename>sitting.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="vehicle_type" filename="sitter">
-			</plugin>
-			<plugin name="chair" filename="chair_30">
-			</plugin>
-		</actor>
-		<include>
-			<name>table_coffee_set_2_33</name>
-			<pose>0.000000 -12.000000 0.000000 0.000000 -0.000000 1.570700</pose>
-			<uri>model://coffee_table_set_2</uri>
-		</include>
-		<include>
-			<name>chair_35</name>
-			<pose>1.437698 -12.000138 0.000000 0.000000 -0.000000 0.945246</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<actor name="sitter_39">
-			<pose>1.437698 -12.000138 1.000000 0.000000 -0.000000 0.945246</pose>
-			<skin>
-				<filename>sitting.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="vehicle_type" filename="sitter">
-			</plugin>
-			<plugin name="chair" filename="chair_35">
-			</plugin>
-		</actor>
-		<include>
-			<name>chair_36</name>
-			<pose>0.000128 -10.671981 0.000000 0.000000 -0.000000 1.324776</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<include>
-			<name>chair_37</name>
-			<pose>-1.224077 -11.999882 0.000000 0.000000 -0.000000 3.100517</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<include>
-			<name>chair_38</name>
-			<pose>-0.000137 -13.420166 0.000000 0.000000 -0.000000 -0.526214</pose>
-			<uri>model://kitchen_chair</uri>
-		</include>
-		<actor name="actor_basic_random_walker_40">
-			<pose>-0.541693 -18.373581 1.000000 0.000000 -0.000000 -0.433372</pose>
+		<actor name="actor_basic_random_walker_27">
+			<pose>0.097734 -14.438097 1.000000 0.000000 -0.000000 -0.929198</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -736,8 +608,8 @@
 			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_random_walker_41">
-			<pose>1.208475 -13.187200 1.000000 0.000000 -0.000000 0.686160</pose>
+		<actor name="actor_basic_random_walker_28">
+			<pose>1.080264 -9.808069 1.000000 0.000000 -0.000000 1.841038</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -762,8 +634,8 @@
 			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_random_walker_42">
-			<pose>-0.095748 -17.615013 1.000000 0.000000 -0.000000 -0.505015</pose>
+		<actor name="actor_basic_random_walker_29">
+			<pose>-1.468569 -15.406074 1.000000 0.000000 -0.000000 -2.188918</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -788,8 +660,8 @@
 			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_random_walker_43">
-			<pose>-1.817840 -17.092325 1.000000 0.000000 -0.000000 -1.526425</pose>
+		<actor name="actor_basic_random_walker_30">
+			<pose>0.043956 -16.571843 1.000000 0.000000 -0.000000 3.057954</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -814,8 +686,8 @@
 			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_random_walker_44">
-			<pose>0.071440 -14.556009 1.000000 0.000000 -0.000000 1.924522</pose>
+		<actor name="actor_basic_random_walker_31">
+			<pose>-1.760650 -16.595861 1.000000 0.000000 -0.000000 -0.658722</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -840,8 +712,8 @@
 			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_random_walker_45">
-			<pose>-1.621472 -14.536460 1.000000 0.000000 -0.000000 2.008619</pose>
+		<actor name="actor_basic_random_walker_32">
+			<pose>-4.103143 -17.816572 1.000000 0.000000 -0.000000 -1.796625</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -866,8 +738,8 @@
 			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_random_walker_46">
-			<pose>-0.951737 -15.675976 1.000000 0.000000 -0.000000 -0.331689</pose>
+		<actor name="actor_basic_random_walker_33">
+			<pose>-2.971738 -15.832536 1.000000 0.000000 -0.000000 -1.784840</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -892,60 +764,8 @@
 			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_random_walker_47">
-			<pose>-2.734912 -11.405414 1.000000 0.000000 -0.000000 1.956602</pose>
-			<skin>
-				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="max_speed" filename="1">
-			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
-			</plugin>
-		</actor>
-		<actor name="actor_basic_random_walker_48">
-			<pose>-6.336606 -16.599945 1.000000 0.000000 -0.000000 -3.138369</pose>
-			<skin>
-				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="max_speed" filename="1">
-			</plugin>
-			<plugin name="vehicle_type" filename="random_walker">
-			</plugin>
-		</actor>
-		<actor name="actor_basic_random_walker_49">
-			<pose>-2.390291 -15.981340 1.000000 0.000000 -0.000000 1.059109</pose>
+		<actor name="actor_basic_random_walker_34">
+			<pose>0.406420 -10.484140 1.000000 0.000000 -0.000000 2.832903</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>

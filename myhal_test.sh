@@ -21,4 +21,5 @@ sleep 0.1
 
 rosrun myhal_simulator world_factory
 
-roslaunch jackal_velodyne myhal_sim_test.launch
+roslaunch jackal_velodyne myhal_sim_test.launch &
+
