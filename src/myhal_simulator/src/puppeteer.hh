@@ -20,11 +20,6 @@
 #include "frame.hh"
 #include "gazebo/msgs/msgs.hh"
 
-#define PUB false // publish catagorized point clouds?
-#define PLY false // publish catagorized ply files?
-#define RECORD true // record the model poses to a PLY file?
-#define NAV true // publish a reduced pointcloud for navigation?
-
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
 class Puppeteer: public gazebo::WorldPlugin{
@@ -54,8 +49,6 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         gazebo::common::Time last_update;
 
-        gazebo::common::Time last_pub;
-
         gazebo::common::Time last_retarget;
 
         double retarget_time = 10;
@@ -78,53 +71,7 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         std::vector<gazebo::physics::LinkPtr> robot_links;
 
-        std::string user_name;
-
-        std::string start_time;
-
         ignition::math::Pose3d sensor_pose;
-        
-        bool lidar_listener = false;
-
-        ros::NodeHandle nh;
-
-        ros::Subscriber sub;
-
-        ros::Publisher ground_pub;
-
-        ros::Publisher wall_pub;
-
-        ros::Publisher moving_actor_pub;
-
-        ros::Publisher still_actor_pub;
-
-        ros::Publisher table_pub;
-
-        ros::Publisher chair_pub;
-
-        ros::Publisher nav_pub;
-
-        ros::Publisher standing_actors;
-
-        ros::Publisher moving_actors;
-
-        ros::ServiceClient pauseGazebo;
-
-        ros::ServiceClient playGazebo;
-
-        std_srvs::Empty emptySrv;
-
-        bool publish_points = false;
-
-        bool publish_ply = false;
-
-        bool record_objects = false;
-
-        bool publish_navigation = false;
-
-        std::vector<BoxObject> ply_boxes;
-
-        void Callback(const PointCloud::ConstPtr& msg);
 
         
     public: 

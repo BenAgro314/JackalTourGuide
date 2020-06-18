@@ -17,10 +17,6 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->sdf = _sdf;
     this->update_connection = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&Puppeteer::OnUpdate, this, std::placeholders::_1));
 
-    this->user_name = "default";
-    if (const char * user = std::getenv("USER")){
-        this->user_name = user;
-    } 
 
     this->ReadSDF();
 
@@ -39,14 +35,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     
     this->fields.push_back(boost::make_shared<FlowField>(ignition::math::Vector3d(building_box.Min().X(),building_box.Max().Y(),0), building_box.Max().X() - building_box.Min().X(), building_box.Max().Y() - building_box.Min().Y(), 0.2));
     
-    happly::PLYData static_objects;
-    
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
         auto model = world->ModelByIndex(i);
         auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
-
-       
-        
 
         if (act){
             
@@ -68,25 +59,6 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                 for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
                     this->collision_entities.push_back(collision_box);
                     auto box = collision_box->BoundingBox();
-
-                    
-                    
-                    if (this->record_objects){
-                        int cat;
-                        
-                        std::string name = model->GetName();
-    
-                        if (name == this->building_name){
-                            cat = 5;
-                        } else if (name.substr(0,5) == "table"){
-                            cat = 4;
- 
-                        } else if (name.substr(0,5) == "chair"){
-                            
-                            cat = 1;
-                        } 
-                        this->ply_boxes.push_back(BoxObject(box, cat));
-                    }
                     box.Max().Z() = 0;
                     box.Min().Z() = 0;
                     auto new_node = QTData(box, collision_box, entity_type);
@@ -102,50 +74,11 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     }
 
 
-    if (this->record_objects){
-        AddBoxes(static_objects, this->ply_boxes);
-        static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/static_objects.ply", happly::DataFormat::ASCII);
-    }
-
     auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
   
     this->fields[0]->TargetInit(this->collision_entities, new_target);
 
     std::cout << "LOADED ALL VEHICLES\n";
-
-    if (this->lidar_listener){
-        
-        int argc = 0;
-        char **argv = NULL;
-        ros::init(argc, argv, "LidarListener");
-        
-        //this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 10, &Puppeteer::Callback, this);
-        this->sub = this->nh.subscribe<PointCloud>("velodyne_points", 10, std::bind(&Puppeteer::Callback, this, std::placeholders::_1), ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
-        this->pauseGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
-        this->playGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
-        if (this->publish_points){
-            this->ground_pub = nh.advertise<PointCloud>("ground_points", 10);
-            this->wall_pub = nh.advertise<PointCloud>("wall_points", 10);
-            this->moving_actor_pub = nh.advertise<PointCloud>("moving_actor_points", 10);
-            this->still_actor_pub = nh.advertise<PointCloud>("still_actor_points", 10);
-            this->table_pub = nh.advertise<PointCloud>("table_points", 10);
-            this->chair_pub = nh.advertise<PointCloud>("chair_points", 10);
-            
-        }
-        if (this->publish_navigation){
-            this->nav_pub = nh.advertise<PointCloud>("nav_points", 10);
-        }
-        if (this->record_objects){
-            
-            this->standing_actors = nh.advertise<PointCloud>("standing_actors", 10);
-            this->moving_actors = nh.advertise<PointCloud>("moving_actors", 10);
-        }
-        
-        ros::AsyncSpinner spinner(boost::thread::hardware_concurrency());
-        std::cout << "Advertising Lidar Points\n";
-        spinner.start();
-
-    }
 
 }
 
@@ -240,9 +173,6 @@ void Puppeteer::ReadSDF(){
         //std::cout << this->robot_name << std::endl;
     }
 
-    if (this->sdf->HasElement("lidar_listener")){
-        this->lidar_listener = this->sdf->GetElement("lidar_listener")->Get<bool>();
-    }
 }
 
 boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr actor){
@@ -317,17 +247,6 @@ boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr ac
 
             res = boost::make_shared<Sitter>(actor, chair, this->collision_entities, actor->WorldPose().Pos().Z());
 
-            if (this->record_objects){
-                auto min = ignition::math::Vector3d(actor->WorldPose().Pos().X() - 0.4, actor->WorldPose().Pos().Y() - 0.4, 0.3);
-                auto max = ignition::math::Vector3d(actor->WorldPose().Pos().X() + 0.4, actor->WorldPose().Pos().Y() + 0.4, 1);
-                auto box = ignition::math::Box(min,max);
-                auto min2 = ignition::math::Vector3d(actor->WorldPose().Pos().X() - 0.2, actor->WorldPose().Pos().Y() - 0.2, 0.3);
-                auto max2 = ignition::math::Vector3d(actor->WorldPose().Pos().X() + 0.2, actor->WorldPose().Pos().Y() + 0.2, 1);
-                auto box2 = ignition::math::Box(min2,max2);
-                this->ply_boxes.push_back(BoxObject(box, 3));
-                this->ply_boxes.push_back(BoxObject(box2, 3));
-            }
-
         } else if (actor_info["vehicle_type"] == "follower"){
 
             std::string leader_name = "";
@@ -378,348 +297,4 @@ void Puppeteer::ReadParams(){
         boid_params["FOV_radius"] =  3;
     }
 
-    if (!nh.getParam("start_time", this->start_time)){
-        std::cout << "ERROR SETTING START TIME\n";
-        this->start_time = "ERROR SETTING START TIME";
-    }
-
-    if (!nh.getParam("publish_points", this->publish_points)){
-        std::cout << "Not publishing catagorized lidar points to ROS\n";
-    } else{
-        if (this->publish_points){
-            std::cout << "Publishing catagorized lidar points to ROS\n";
-        } else{
-            std::cout << "Not publishing catagorized lidar points to ROS\n";
-        }
-    }
-
-    if (!nh.getParam("publish_ply", this->publish_ply)){
-        std::cout << "Not publishing catagorized lidar points to .ply\n";
-    } else{
-        if (this->publish_ply){
-            std::string command = "/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/frames/";
-            system(command.c_str());
-            std::cout << "Publishing catagorized lidar points to .ply\n";
-        } else{
-            std::cout << "Not publishing catagorized lidar points to .ply\n";
-        }
-    }
-
-    if (!nh.getParam("record_objects", this->record_objects)){
-        std::cout << "Not recording object positions to .ply\n";
-    } else{
-        if (this->record_objects){
-            std::cout << "Recording object positions to .ply\n";
-        } else{
-            std::cout << "Not recording object positions to .ply\n";
-        }
-    }
-
-    if (!nh.getParam("publish_navigation", this->publish_navigation)){
-        std::cout << "Not publishing reduced pointcloud for naviation\n";
-    } else{
-        if (this->publish_navigation){
-            std::cout << "Publishing reduced pointcloud for navigation\n";
-        } else{
-            std::cout << "Not publishing reduced pointcloud for naviation\n";
-        }
-    }
 }
-
-void Puppeteer::Callback(const PointCloud::ConstPtr& msg){
-  
-    this->pauseGazebo.call(this->emptySrv);
-
-
-    if (this->robot == nullptr){
-        return;
-    }
-
-    PointCloud::Ptr ground_msg;
-    PointCloud::Ptr wall_msg;
-    PointCloud::Ptr moving_actor_msg;
-    PointCloud::Ptr still_actor_msg;
-    PointCloud::Ptr table_msg;
-    PointCloud::Ptr chair_msg;
-
-    if (this->publish_points){
-        ground_msg  = boost::make_shared<PointCloud>();
-        ground_msg->header.frame_id = "velodyne";
-        ground_msg->height = msg->height;
-        ground_msg->width = 0;
-
-        wall_msg = boost::make_shared<PointCloud>();
-        wall_msg->header.frame_id = "velodyne";
-        wall_msg->height = msg->height;
-        wall_msg->width = 0;
-        
-        moving_actor_msg = boost::make_shared<PointCloud>();
-        moving_actor_msg->header.frame_id = "velodyne";
-        moving_actor_msg->height = msg->height;
-        moving_actor_msg->width = 0;
-
-        still_actor_msg = boost::make_shared<PointCloud>();
-        still_actor_msg->header.frame_id = "velodyne";
-        still_actor_msg->height = msg->height;
-        still_actor_msg->width = 0;
-
-        table_msg = boost::make_shared<PointCloud>();
-        table_msg->header.frame_id = "velodyne";
-        table_msg->height = msg->height;
-        table_msg->width = 0;
-
-        chair_msg = boost::make_shared<PointCloud>();
-        chair_msg->header.frame_id = "velodyne";
-        chair_msg->height = msg->height;
-        chair_msg->width = 0;
-    }
-
-    PointCloud::Ptr nav_msg;
-    if (this->publish_navigation){
-        nav_msg = boost::make_shared<PointCloud>();
-        nav_msg->header.frame_id = "velodyne";
-        nav_msg->height = msg->height;
-        nav_msg->width = 0;
-    }
-
-    PointCloud::Ptr standing_msg;
-    PointCloud::Ptr moving_msg;
-    if (this->record_objects){
-        standing_msg = boost::make_shared<PointCloud>();
-        standing_msg->header.frame_id = "velodyne";
-        standing_msg->height = msg->height;
-        standing_msg->width = 0;
-        moving_msg = boost::make_shared<PointCloud>();
-        moving_msg->header.frame_id = "velodyne";
-        moving_msg->height = msg->height;
-        moving_msg->width = 0;
-    }
-    
-    this->vehicle_quadtree2 = boost::make_shared<QuadTree>(this->building_box);
-
-    for (auto vehicle: this->vehicles){
-        
-        auto min = ignition::math::Vector3d(vehicle->GetPose().Pos().X() - 0.3, vehicle->GetPose().Pos().Y() - 0.3, 0);
-        auto max = ignition::math::Vector3d(vehicle->GetPose().Pos().X() + 0.3, vehicle->GetPose().Pos().Y() + 0.3, 0);
-        auto box = ignition::math::Box(min,max);
-        auto new_node = QTData(box, vehicle, vehicle_type);
-        this->vehicle_quadtree2->Insert(new_node);
-
-        if (this->record_objects){
-            auto pt = pcl::PointXYZ(vehicle->GetPose().Pos().X(), vehicle->GetPose().Pos().Y(), vehicle->GetPose().Pos().Z());
-            if (vehicle->IsStill()){
-                standing_msg->points.push_back(pt);
-                standing_msg->width++;
-            } else{
-                moving_msg->points.push_back(pt);
-                moving_msg->width++;
-            }
-        }
-    }
-    
-    auto robot_pose = this->robot_links[0]->WorldPose();
-    
-    if (this->robot != nullptr){
-        this->sensor_pose = robot_pose;
-        this->sensor_pose.Pos().Z() += 0.5767;
-    }
- 
-    
-    Frame frame = Frame(robot_pose, ros::Time::now().toSec());
-    
-    
-    for (auto pt : msg->points){
-        
-        int cat;
-        
-
-        auto point = this->sensor_pose.CoordPositionAdd(ignition::math::Vector3d(pt.x, pt.y, pt.z));       
-   
-        std::vector<boost::shared_ptr<Vehicle>> near_vehicles;
-        std::vector<gazebo::physics::EntityPtr> near_objects;
-
-        double resolution = 0.05;
-        auto min = ignition::math::Vector3d(point.X() - resolution, point.Y() - resolution, 0);
-        auto max = ignition::math::Vector3d(point.X() + resolution, point.Y() + resolution, 0);
-        auto query_range = ignition::math::Box(min,max);
-
-        std::vector<QTData> query_objects = this->static_quadtree->QueryRange(query_range);
-        for (auto n: query_objects){
-            if (n.type == entity_type){
-                near_objects.push_back(boost::static_pointer_cast<gazebo::physics::Entity>(n.data));
-                
-            }
-        }
-
-        std::vector<QTData> query_vehicles = this->vehicle_quadtree2->QueryRange(query_range);
-        for (auto n: query_vehicles){
-            if (n.type == vehicle_type){
-                near_vehicles.push_back(boost::static_pointer_cast<Vehicle>(n.data));
-            }
-        }
-
-   
-        if (near_objects.size() == 0 && near_vehicles.size() == 0){
-            if (this->publish_points){
-                ground_msg->points.push_back(pt);
-                ground_msg->width++;
-            }
-            if (this->publish_ply){
-                cat = 0;
-            }
-            if (this->publish_navigation){
-                nav_msg->points.push_back(pt);
-                nav_msg->width++;
-            }
-        
-        } else {
-            
-            std::string closest_name = "ground_plane";
-            double min_dist = point.Z();
-            
-            for (auto n: near_objects){
-                
-                auto dist = utilities::dist_to_box(point, n->BoundingBox());
-
-                if (dist <= min_dist){
-                    min_dist = dist;
-                    closest_name = n->GetParent()->GetParent()->GetName();
-                }
-            }
- 
-            if (closest_name == this->building_name){
-                if (this->publish_points){
-                    wall_msg->points.push_back(pt);
-                    wall_msg->width++;
-                }
-                if (this->publish_ply){
-                    cat = 5;
-                }
-                if (this->publish_navigation){
-                    nav_msg->points.push_back(pt);
-                    nav_msg->width++;
-                }
-            } else if (closest_name.substr(0,5) == "table"){
-                if (this->publish_points){
-                    table_msg->points.push_back(pt);
-                    table_msg->width++;
-                }
-                if (this->publish_ply){
-                    cat = 4;
-                }
-                if (this->publish_navigation){
-                    nav_msg->points.push_back(pt);
-                    nav_msg->width++;
-                }
-            } else if (closest_name.substr(0,5) == "chair" && near_vehicles.size() == 0){
-                if (this->publish_points){
-                    chair_msg->points.push_back(pt);
-                    chair_msg->width++;
-                }
-                if (this->publish_ply){
-                    cat = 1;
-                }
-                if (this->publish_navigation){
-                    nav_msg->points.push_back(pt);
-                    nav_msg->width++;
-                }
-            } else if (near_vehicles.size() == 0) {
-                if (this->publish_points){
-                    ground_msg->points.push_back(pt);
-                    ground_msg->width++;
-                }
-                if (this->publish_ply){
-                    cat = 0;
-                }
-                if (this->publish_navigation){
-                    nav_msg->points.push_back(pt);
-                    nav_msg->width++;
-                }
-            }
-  
-
-            
-            
-            for (auto n: near_vehicles){
-                
-                if (point.Z() <=0){
-                    if (this->publish_points){
-                        ground_msg->points.push_back(pt);
-                        ground_msg->width++;
-                    }
-                    if (this->publish_ply){
-                        cat = 0;
-                    }
-                    if (this->publish_navigation){
-                        nav_msg->points.push_back(pt);
-                        nav_msg->width++;
-                    }
-                } else{
-                  
-                    if (n->IsStill()){
-                        if (this->publish_points){
-                            still_actor_msg->points.push_back(pt);
-                            still_actor_msg->width++;
-                        }
-                        if (this->publish_ply){
-                            cat = 3;
-                        }
-                        if (this->publish_navigation){
-                            nav_msg->points.push_back(pt);
-                            nav_msg->width++;
-                        }
-                    } else{
-                        if (this->publish_points){
-                            moving_actor_msg->points.push_back(pt);
-                            moving_actor_msg->width++;
-                        }
-                        if (this->publish_ply){
-                            cat = 2;
-                        }
-                    }
-                    
-                }
-            }
-
-            
-           
-        }
-        if (this->publish_ply){
-            frame.AddPoint(ignition::math::Vector3d(pt.x, pt.y, pt.z), cat);
-        }
-        
-    }
-   
-    if (this->publish_ply){
-        frame.WriteToFile("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/frames/");
-    }
-    if (this->publish_points){
-        pcl_conversions::toPCL(ros::Time::now(), ground_msg->header.stamp);
-        pcl_conversions::toPCL(ros::Time::now(), wall_msg->header.stamp);
-        pcl_conversions::toPCL(ros::Time::now(), moving_actor_msg->header.stamp);
-        pcl_conversions::toPCL(ros::Time::now(), still_actor_msg->header.stamp);
-        pcl_conversions::toPCL(ros::Time::now(), table_msg->header.stamp);
-        pcl_conversions::toPCL(ros::Time::now(), chair_msg->header.stamp);
-
-        this->ground_pub.publish(ground_msg);
-        this->wall_pub.publish(wall_msg);
-        this->moving_actor_pub.publish(moving_actor_msg);
-        this->still_actor_pub.publish(still_actor_msg);
-        this->table_pub.publish(table_msg);
-        this->chair_pub.publish(chair_msg);
-    }
-    if (this->publish_navigation){
-        pcl_conversions::toPCL(ros::Time::now(), nav_msg->header.stamp);
-        this->nav_pub.publish(nav_msg);           
-    }
-    if (this->record_objects){
-        pcl_conversions::toPCL(ros::Time::now(), standing_msg->header.stamp);
-        this->standing_actors.publish(standing_msg);
-        pcl_conversions::toPCL(ros::Time::now(), moving_msg->header.stamp);
-        this->moving_actors.publish(moving_msg);
-    }
-
-    this->playGazebo.call(this->emptySrv);
-    
-}
-
