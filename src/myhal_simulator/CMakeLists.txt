@@ -62,12 +62,6 @@ target_link_libraries(world_factory world_entities ${catkin_LIBRARIES})
 add_executable(test_file src/tests.cpp) 
 target_link_libraries(test_file world_entities quadtree vehicles ${catkin_LIBRARIES})
 
-add_executable(data_processing src/data_processing.cpp) 
-target_link_libraries(data_processing ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
-add_executable(post_classifier src/post_classifier.cpp) 
-target_link_libraries(post_classifier utilities quadtree ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
 add_executable(process_bag src/process_bag.cpp) 
 target_link_libraries(process_bag utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
