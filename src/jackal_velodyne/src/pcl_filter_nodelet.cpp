@@ -1,19 +1,19 @@
 
 #include <limits>
 #include <pluginlib/class_list_macros.h>
-#include <pointcloud_to_laserscan/pointcloud_to_laserscan_nodelet.h>
+#include "pcl_filter_nodelet.h"
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/point_cloud2_iterator.h>
 #include <string>
 #include <tf2_sensor_msgs/tf2_sensor_msgs.h>
 
-namespace pointcloud_to_laserscan
+namespace jackal_velodyne
 {
-PointCloudToLaserScanNodelet::PointCloudToLaserScanNodelet()
+PCLFilterNodelet::PCLFilterNodelet()
 {
 }
 
-void PointCloudToLaserScanNodelet::onInit()
+void PCLFilterNodelet::onInit()
 {
   boost::mutex::scoped_lock lock(connect_mutex_);
   private_nh_ = getPrivateNodeHandle();
@@ -61,19 +61,19 @@ void PointCloudToLaserScanNodelet::onInit()
     tf2_.reset(new tf2_ros::Buffer());
     tf2_listener_.reset(new tf2_ros::TransformListener(*tf2_));
     message_filter_.reset(new MessageFilter(sub_, *tf2_, target_frame_, input_queue_size_, nh_));
-    message_filter_->registerCallback(boost::bind(&PointCloudToLaserScanNodelet::cloudCb, this, _1));
-    message_filter_->registerFailureCallback(boost::bind(&PointCloudToLaserScanNodelet::failureCb, this, _1, _2));
+    message_filter_->registerCallback(boost::bind(&PCLFilterNodelet::cloudCb, this, _1));
+    message_filter_->registerFailureCallback(boost::bind(&PCLFilterNodelet::failureCb, this, _1, _2));
   }
   else  // otherwise setup direct subscription
   {
-    sub_.registerCallback(boost::bind(&PointCloudToLaserScanNodelet::cloudCb, this, _1));
+    sub_.registerCallback(boost::bind(&PCLFilterNodelet::cloudCb, this, _1));
   }
 
-  pub_ = nh_.advertise<sensor_msgs::LaserScan>("scan", 10, boost::bind(&PointCloudToLaserScanNodelet::connectCb, this),
-                                               boost::bind(&PointCloudToLaserScanNodelet::disconnectCb, this));
+  pub_ = nh_.advertise<sensor_msgs::LaserScan>("scan", 10, boost::bind(&PCLFilterNodelet::connectCb, this),
+                                               boost::bind(&PCLFilterNodelet::disconnectCb, this));
 }
 
-void PointCloudToLaserScanNodelet::connectCb()
+void PCLFilterNodelet::connectCb()
 {
   boost::mutex::scoped_lock lock(connect_mutex_);
   if (pub_.getNumSubscribers() > 0 && sub_.getSubscriber().getNumPublishers() == 0)
@@ -83,7 +83,7 @@ void PointCloudToLaserScanNodelet::connectCb()
   }
 }
 
-void PointCloudToLaserScanNodelet::disconnectCb()
+void PCLFilterNodelet::disconnectCb()
 {
   boost::mutex::scoped_lock lock(connect_mutex_);
   if (pub_.getNumSubscribers() == 0)
@@ -93,7 +93,7 @@ void PointCloudToLaserScanNodelet::disconnectCb()
   }
 }
 
-void PointCloudToLaserScanNodelet::failureCb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg,
+void PCLFilterNodelet::failureCb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg,
                                              tf2_ros::filter_failure_reasons::FilterFailureReason reason)
 {
   NODELET_WARN_STREAM_THROTTLE(1.0, "Can't transform pointcloud from frame " << cloud_msg->header.frame_id << " to "
@@ -102,7 +102,7 @@ void PointCloudToLaserScanNodelet::failureCb(const sensor_msgs::PointCloud2Const
                                                                              << ", reason: " << reason);
 }
 
-void PointCloudToLaserScanNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
+void PCLFilterNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
   // build laserscan output
   sensor_msgs::LaserScan output;
@@ -157,10 +157,14 @@ void PointCloudToLaserScanNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPt
   }
 
   // Iterate through pointcloud
-  for (sensor_msgs::PointCloud2ConstIterator<float> iter_x(*cloud_out, "x"), iter_y(*cloud_out, "y"),
-       iter_z(*cloud_out, "z");
-       iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z)
+  
+  for (sensor_msgs::PointCloud2ConstIterator<float> iter_x(*cloud_out, "x"), iter_y(*cloud_out, "y"), iter_z(*cloud_out, "z"), iter_i(*cloud_out, "intensity");
+      iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z, ++iter_i)
   {
+
+    if (*iter_i != 5){
+      continue;
+    }
     if (std::isnan(*iter_x) || std::isnan(*iter_y) || std::isnan(*iter_z))
     {
       NODELET_DEBUG("rejected for nan in point(%f, %f, %f)\n", *iter_x, *iter_y, *iter_z);
@@ -203,6 +207,6 @@ void PointCloudToLaserScanNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPt
   }
   pub_.publish(output);
 }
-}  // namespace pointcloud_to_laserscan
+}  // namespace jackal_velodyne
 
-PLUGINLIB_EXPORT_CLASS(pointcloud_to_laserscan::PointCloudToLaserScanNodelet, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(jackal_velodyne::PCLFilterNodelet, nodelet::Nodelet)

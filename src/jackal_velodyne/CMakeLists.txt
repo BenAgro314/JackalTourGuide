@@ -83,10 +83,10 @@ add_executable(diagnostics src/diagnostics.cpp)
 add_dependencies(diagnostics diagnostics_cpp)
 target_link_libraries(diagnostics ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
-add_library(pcl_filter src/pointcloud_to_laserscan_nodelet.cpp)
+add_library(pcl_filter src/pcl_filter_nodelet.cpp)
 target_link_libraries(pcl_filter ${catkin_LIBRARIES})
 
-add_executable(pcl_filter_node src/pointcloud_to_laserscan_node.cpp)
+add_executable(pcl_filter_node src/pcl_filter_node.cpp)
 target_link_libraries(pcl_filter_node pcl_filter ${catkin_LIBRARIES})
 
 
