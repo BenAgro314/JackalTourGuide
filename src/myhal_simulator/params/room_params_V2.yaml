@@ -1,15 +1,15 @@
 # list the names of the rooms you want to include here:
 room_names:
   - lounge_532
-  #- study_space_546
-  #- irm_lab_580
-  #- admin_off_514
-  #- pace_533
-  #- study_space_545
-  #- proj_rm_564
-  #- inter_teaching_lab_570
-  #- proj_rm_552
-  #- proj_rm_556
+  - study_space_546
+  - irm_lab_580
+  - admin_off_514
+  - pace_533
+  - study_space_545
+  - proj_rm_564
+  - inter_teaching_lab_570
+  - proj_rm_552
+  - proj_rm_556
 
 
 # specify the geometry, position of tables, whether or not the room is enclosed, and the room scenario here  
