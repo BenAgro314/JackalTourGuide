@@ -378,7 +378,7 @@ namespace gazebo
                     std::vector<gazebo::physics::ActorPtr> near_actors;
                     std::vector<gazebo::physics::EntityPtr> near_objects;
 
-                    double resolution = 0.4;
+                    double resolution = 0.5;
                     auto min = ignition::math::Vector3d(point.X() - resolution, point.Y() - resolution, 0);
                     auto max = ignition::math::Vector3d(point.X() + resolution, point.Y() + resolution, 0);
                     auto query_range = ignition::math::Box(min,max);

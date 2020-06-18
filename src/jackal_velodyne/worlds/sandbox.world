@@ -160,6 +160,24 @@
 			<uri>model://table_conference_2</uri>
 		</include>
 
+    <include>
+			<name>table_A</name>
+			<pose>4.000000 3 0.000000 0.000000 -0.000000 0.000000</pose>
+			<uri>model://cafe_table</uri>
+		</include>
+
+    <include>
+			<name>table_B</name>
+			<pose>4.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<uri>model://coffee_table_1</uri>
+		</include>
+
+    <include>
+			<name>table_C</name>
+			<pose>4.000000 -3 0.000000 0.000000 -0.000000 0.000000</pose>
+			<uri>model://coffee_table_set_1</uri>
+		</include>
+
     <actor name="actor_basic_stander_34">
 			<pose>-2.333548 -5 1.000000 0.000000 -0.000000 1.552967</pose>
 			<skin>

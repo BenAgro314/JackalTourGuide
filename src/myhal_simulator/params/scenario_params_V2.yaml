@@ -86,6 +86,7 @@ small_table_group:
   - table_group_4
   - table_group_5
   - table_group_6
+  - table_group_8
 
 mixed_group:
   - table_group_4

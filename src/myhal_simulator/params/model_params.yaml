@@ -4,16 +4,16 @@ model_names:
   - table1
   - table2
   - table3
-  - cafe_table
-  - coffee_table_1
-  - coffee_table_set_1
-  - coffee_table_set_2
+  - table_cafe
+  - table_coffee_1
+  - table_coffee_set_1
+  - table_coffee_set_2
   - table
   - chair1
   - chair2
   - chair3
-  - kitchen_chair
-  - office_chair
+  - chair_kitchen
+  - chair_office
 
 table1:
   filename: model://table_conference_1
@@ -30,25 +30,25 @@ table3:
   width: "2.5"
   length: "4"
  
-cafe_table:
+table_cafe:
   filename: model://cafe_table
   width: "1"
   length: "1"
   
 
-coffee_table_1:
+table_coffee_1:
   filename: model://coffee_table_1
   width: "1.2"
   length: "1.2"
  
 
-coffee_table_set_1:
+table_coffee_set_1:
   filename: model://coffee_table_set_1
   width: "1.2"
   length: "1.2"
   
 
-coffee_table_set_2:
+table_coffee_set_2:
   filename: model://coffee_table_set_2
   width: "1.2"
   length: "1.2"
@@ -77,13 +77,13 @@ chair3:
   height: "0.65"
 
 
-kitchen_chair:
+chair_kitchen:
   filename: model://kitchen_chair
   width: "0.9"
   length: "0.9"
   height: "1"
 
-office_chair:
+chair_office:
   filename: model://office_chair
   width: "0.9"
   length: "0.9"
@@ -133,6 +133,8 @@ table_group_names:
   - table_group_5
   - table_group_6
   - table_group_7
+  - table_group_8
+
 
 table_group_1:
   table: table2
@@ -147,17 +149,22 @@ table_group_3:
   chair: chair3
 
 table_group_4:
-  table: cafe_table
-  chair: kitchen_chair
+  table: table_cafe
+  chair: chair_kitchen
 
 table_group_5:
-  table: coffee_table_set_1
+  table: table_coffee_set_1
   chair: chair1
 
 table_group_6:
-  table: coffee_table_set_2
-  chair: kitchen_chair
+  table: table_coffee_set_2
+  chair: chair_kitchen
 
 table_group_7:
   table: table
   chair: chair2
+
+
+table_group_8:
+  table: table_cafe
+  chair: chair_kitchen

@@ -20,11 +20,11 @@ int main(int argc, char ** argv){
 
 void WorldHandler::Load(){
 
-    ROS_INFO("Loading Parameters");
+    std::cout << "Loading Parameters\n";
 
     this->LoadParams();
 
-    ROS_INFO("Filling Rooms");
+    std::cout << "Filling Rooms\n";
     
     for (auto r_info: this->rooms){
         this->FillRoom(r_info);
@@ -33,12 +33,11 @@ void WorldHandler::Load(){
 
     }
 
-    ROS_INFO("Writing to file");
+    std::cout << "Writing to file\n";
 
     this->WriteToFile("myhal_sim.world");
 
-    ROS_WARN("WORLD CREATED!");
-    std::cout << "WORLD CREATED\n";
+    std::cout << "WORLD CREATED!\n";
 }
 
 WorldHandler::WorldHandler(){
@@ -59,7 +58,7 @@ void WorldHandler::LoadParams(){
     
     std::vector<std::string> plugin_names;
     if (!nh.getParam("plugin_names", plugin_names)){
-        ROS_ERROR("ERROR READING PLUGIN NAMES");
+        std::cout << "ERROR READING PLUGIN NAMES\n";
         return;
     }
 
@@ -68,7 +67,7 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            ROS_ERROR("ERROR READING PLUGIN PARAMS");
+            std::cout << "ERROR READING PLUGIN PARAMS\n";
             return;
         }
 
@@ -105,7 +104,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> animation_names;
     if (!nh.getParam("animation_names", animation_names)){
-        ROS_ERROR("ERROR READING ANIMATION NAMES");
+        std::cout << "ERROR READING ANIMATION NAMES\n";
         return;
     }
 
@@ -114,7 +113,7 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            ROS_ERROR("ERROR READING ANIMATION PARAMS");
+            std::cout << "ERROR READING ANIMATION PARAMS\n";
             return;
         }
 
@@ -128,7 +127,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> model_names;
     if (!nh.getParam("model_names", model_names)){
-        ROS_ERROR("ERROR READING MODEL NAMES");
+        std::cout << "ERROR READING MODEL NAMES\n";
         return;
     }
 
@@ -137,7 +136,7 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            ROS_ERROR("ERROR READING MODEL PARAMS");
+            std::cout << "ERROR READING MODEL PARAMS\n";
             return;
         }
         std::shared_ptr<ModelInfo> m_info;
@@ -153,7 +152,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> table_group_names;
     if (!nh.getParam("table_group_names", table_group_names)){
-        ROS_ERROR("ERROR READING TABLE GROUP NAMES");
+        std::cout << "ERROR READING TABLE GROUP NAMES\n";
         return;
     }
 
@@ -162,7 +161,7 @@ void WorldHandler::LoadParams(){
     
 
         if (!nh.getParam(name,info)){
-            ROS_ERROR("ERROR READING TABLE GROUP PARAMS");
+            std::cout << "ERROR READING TABLE GROUP PARAMS\n";
             return;
         }
 
@@ -171,11 +170,12 @@ void WorldHandler::LoadParams(){
     }
 
 
+
     /// READ ACTOR INFO 
 
     std::vector<std::string> actor_names;
     if (!nh.getParam("actor_names", actor_names)){
-        ROS_ERROR("ERROR READING ACTOR NAMES");
+        std::cout << "ERROR READING ACTOR NAMES\n";
         return;
     }
 
@@ -183,7 +183,7 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            ROS_ERROR("ERROR READING ACTOR PARAMS");
+            std::cout << "ERROR READING ACTOR PARAMS\n";
             return;
         }
 
@@ -196,7 +196,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> scenario_names;
     if (!nh.getParam("scenario_names", scenario_names)){
-        ROS_ERROR("ERROR READING SCENARIO NAMES");
+        std::cout << "ERROR READING SCENARIO NAMES\n";
         return;
     }
 
@@ -205,7 +205,7 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            ROS_ERROR("ERROR READING SCENARIO PARAMS");
+            std::cout << "ERROR READING SCENARIO PARAMS\n";
             return;
         }
 
@@ -214,7 +214,7 @@ void WorldHandler::LoadParams(){
         std::vector<std::string> model_list; 
 
         if (!nh.getParam(info["model_list"], model_list)){
-            ROS_ERROR("ERROR READING MODEL LIST");
+            std::cout << "ERROR READING MODEL LIST\n";
             return;
         }
 
@@ -227,7 +227,7 @@ void WorldHandler::LoadParams(){
         std::vector<std::string> table_group_list; 
 
         if (!nh.getParam(info["table_group_list"], table_group_list)){
-            ROS_ERROR("ERROR READING TABLE GROUP LIST");
+            std::cout << "ERROR READING TABLE GROUP LIST\n";
             return;
         }
 
@@ -244,7 +244,7 @@ void WorldHandler::LoadParams(){
 
     std::vector<std::string> room_names;
     if (!nh.getParam("room_names", room_names)){
-        ROS_ERROR("ERROR READING ROOM NAMES");
+        std::cout << "ERROR READING ROOM NAMES\n";
         return;
     }
 
@@ -253,14 +253,14 @@ void WorldHandler::LoadParams(){
         
         std::map<std::string, std::string> info;
         if (!nh.getParam(name, info)){
-            ROS_ERROR("ERROR READING ROOM PARAMS");
+            std::cout << "ERROR READING ROOM PARAMS\n";
             return;
         }
 
         std::map<std::string, double> geometry; 
 
         if (!nh.getParam(info["geometry"], geometry)){
-            ROS_ERROR("ERROR READING ROOM GEOMETRY");
+            std::cout << "ERROR READING ROOM GEOMETRY\n";
             return;
         }
 
@@ -269,7 +269,7 @@ void WorldHandler::LoadParams(){
         std::vector<double> poses;
 
         if (!nh.getParam(info["positions"], poses)){
-            ROS_ERROR("ERROR READING POSITION PARAMS");
+            std::cout << "ERROR READING POSITION PARAMS\n";
             return;
         }
         std::vector<std::vector<double>> positions;
@@ -277,16 +277,19 @@ void WorldHandler::LoadParams(){
             positions.push_back({poses[j],poses[j+1]});
         }
   
-
+       
         auto r_info = std::make_shared<RoomInfo>(room, info["scenario"], positions);
         this->rooms.push_back(r_info);
         
     }
+
 }
 
 void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
 
     auto scenario = this->scenarios[room_info->scenario];
+
+    
     
     int num_models = (int) (scenario->model_percentage*((room_info->positions.size())));
     
@@ -294,20 +297,35 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
     
     for (int i = 0; i < num_models; ++i){
         //auto m_info = scenario->GetRandomModel();
+        
 
         auto t_info = scenario->GetRandomTable();
 
         auto random_pose = ignition::math::Pose3d(room_info->positions[i][0], room_info->positions[i][1], 0, 0, 0, 0); //TODO: specify randomization parameters in yaml
         if (t_info){
             //auto new_model = std::make_shared<myhal::IncludeModel>(m_info->name, random_pose, m_info->filename, m_info->width, m_info->length);
+            if (!this->model_info.count(t_info->table_name)){
+                std::cout << "TABLE NAME ERROR\n";
+                return;
+            } 
+
+            if (!this->model_info.count(t_info->chair_name)){
+                std::cout << "CHAIR NAME ERROR\n";
+                return;
+            } 
+
+            
             auto t_model_info = this->model_info[t_info->table_name];
+
             auto c_model_info = this->model_info[t_info->chair_name];
+            
             auto table_model = std::make_shared<myhal::IncludeModel>(t_model_info->name, random_pose, t_model_info->filename, t_model_info->width, t_model_info->length);
             auto chair_model = std::make_shared<myhal::IncludeModel>(c_model_info->name, random_pose, c_model_info->filename, c_model_info->width, c_model_info->length);
 
             double rotation = 1.5707 * ignition::math::Rand::IntUniform(0,1);
             auto table_group = std::make_shared<myhal::TableGroup>(table_model, chair_model, ignition::math::Rand::IntUniform(0,4), rotation); 
             room_info->room->AddModel(table_group->table_model);
+            
             for (auto chair: table_group->chairs){
                 room_info->room->AddModel(chair);
                 // 50% chance of someone sitting on the chair 
@@ -331,8 +349,12 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
                 }
 
             }
+        
+
             
         } 
+
+         
     }
 
 

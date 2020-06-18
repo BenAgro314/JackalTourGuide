@@ -2,14 +2,14 @@
 room_names:
   - lounge_532
   - study_space_546
-  - irm_lab_580
-  - admin_off_514
-  - pace_533
-  - study_space_545
-  - proj_rm_564
-  - inter_teaching_lab_570
-  - proj_rm_552
-  - proj_rm_556
+  #- irm_lab_580
+  #- admin_off_514
+  #- pace_533
+  #- study_space_545
+  #- proj_rm_564
+  #- inter_teaching_lab_570
+  #- proj_rm_552
+  #- proj_rm_556
 
 
 # specify the geometry, position of tables, whether or not the room is enclosed, and the room scenario here  
@@ -18,13 +18,13 @@ lounge_532:
   geometry: g532
   positions: p532
   enclosed: "0"
-  scenario: mixed_tables_wanderer_study
+  scenario: small_tables_random_walker_study
 
 study_space_546:
   geometry: g546
   positions: p546
   enclosed: "0"
-  scenario: mixed_tables_wanderer_study
+  scenario: small_tables_random_walker_study
 
 irm_lab_580:
   geometry: g580
