@@ -28,7 +28,7 @@ int main(int argc, char ** argv){
     auto trans_drift = handle.TranslationDrift(gt_traj, amcl_traj);
 
     std::ofstream out(filepath + "translation_drift.csv");
-    out << "Time (s), Translation Drift (m)\n";
+    out << "Distance (m), Translation Drift (m)\n";
     for (auto row: trans_drift){
         out << row[0] << "," << row[1] << std::endl;
     }

@@ -49,6 +49,8 @@ class BagTools{
             }
 
             int last = 0;
+            ignition::math::Pose3d last_gt = gt[0].pose;
+            double dist = 0;
 
             //for every frame in amcl pose
             for (auto frame: other){
@@ -82,10 +84,11 @@ class BagTools{
                 
                 // interpolate gt pose to the time of amcl pose
                 auto interpolated_pose = utilities::InterpolatePose(time, t1, t2, pose1, pose2);
-
+                dist += (interpolated_pose.Pos()-last_gt.Pos()).Length();
+                last_gt = interpolated_pose;
 
                 // compute drift
-                trans_drift.push_back({time, (interpolated_pose.Pos() - frame.pose.Pos()).Length()});
+                trans_drift.push_back({dist, (interpolated_pose.Pos() - frame.pose.Pos()).Length()});
             }
 
             return trans_drift;
