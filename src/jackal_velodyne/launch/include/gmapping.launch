@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="scan_topic" default="/points_to_laser" />
+  <arg name="scan_topic" default="/wall_points" />
 
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
 

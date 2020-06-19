@@ -22,7 +22,7 @@ plugins:
 
 obstacles_layer:
   observation_sources: laser_scan 
-  laser_scan: {sensor_frame: support_link3, data_type: LaserScan, topic: points_to_laser, marking: true, clearing: true, min_obstacle_height: -2.0, max_obstacle_height: 2.0, obstacle_range: 10, raytrace_range: 10}
+  laser_scan: {sensor_frame: support_link3, data_type: LaserScan, topic: wall_points, marking: true, clearing: true, min_obstacle_height: -2.0, max_obstacle_height: 2.0, obstacle_range: 10, raytrace_range: 10}
   point_cloud_sensor: {sensor_frame: support_link3, data_type: PointCloud2, topic: velodyne_points, marking: true, clearing: true, obstacle_range: 10, raytrace_range: 10}
   depth_sensor: {sensor_frame: support_link3, data_type: PointCloud2, topic: kinect_V2/depth_registered/points, marking: true, clearing: true, obstacle_range: 5, raytrace_range: 5}
 

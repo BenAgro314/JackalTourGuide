@@ -7,6 +7,7 @@
 #include <string>
 #include <tf2_sensor_msgs/tf2_sensor_msgs.h>
 
+
 namespace jackal_velodyne
 {
 PCLFilterNodelet::PCLFilterNodelet()
@@ -34,7 +35,7 @@ void PCLFilterNodelet::onInit()
   int concurrency_level;
   private_nh_.param<int>("concurrency_level", concurrency_level, 1);
   private_nh_.param<bool>("use_inf", use_inf_, true);
-
+  private_nh_.param<std::vector<int>>("catagories", catagories, {5});
   // Check if explicitly single threaded, otherwise, let nodelet manager dictate thread pool size
   if (concurrency_level == 1)
   {
@@ -160,11 +161,12 @@ void PCLFilterNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg
   
   for (sensor_msgs::PointCloud2ConstIterator<float> iter_x(*cloud_out, "x"), iter_y(*cloud_out, "y"), iter_z(*cloud_out, "z"), iter_i(*cloud_out, "intensity");
       iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z, ++iter_i)
-  {
+  { 
 
-    if (*iter_i != 5){
+    if (std::find(catagories.begin(), catagories.end(), *iter_i) == catagories.end()){
       continue;
     }
+
     if (std::isnan(*iter_x) || std::isnan(*iter_y) || std::isnan(*iter_z))
     {
       NODELET_DEBUG("rejected for nan in point(%f, %f, %f)\n", *iter_x, *iter_y, *iter_z);

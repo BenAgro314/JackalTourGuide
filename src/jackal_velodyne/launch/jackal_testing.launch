@@ -71,5 +71,8 @@
   <!-- run tour -->
   <!--node pkg="jackal_velodyne" type="navigation_goals" name="navigation_goals"/-->
 
+  <!--include file="$(find jackal_velodyne)/launch/include/gmapping.launch" /-->
+
+
   
 </launch>

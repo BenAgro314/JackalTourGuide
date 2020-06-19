@@ -10,6 +10,7 @@
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/message_filter.h>
 #include <tf2_ros/transform_listener.h>
+#include <vector>
 
 namespace jackal_velodyne
 {
@@ -50,6 +51,7 @@ private:
   double min_height_, max_height_, angle_min_, angle_max_, angle_increment_, scan_time_, range_min_, range_max_;
   bool use_inf_;
   double inf_epsilon_;
+  std::vector<int> catagories;
 };
 
 }  // namespace jackal_velodyne

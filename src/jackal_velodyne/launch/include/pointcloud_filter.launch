@@ -1,8 +1,8 @@
 <launch>
-    <node pkg="jackal_velodyne" type="pcl_filter_node" name="pcl_filter">
+    <node pkg="jackal_velodyne" type="pcl_filter_node" name="pcl_pass_walls">
       <remap from="cloud_in" to="/velodyne_points"/>
    
-      <remap from="scan" to="/points_to_laser" />
+      <remap from="scan" to="/wall_points" />
       <rosparam>
         target_frame: base_link
         transform_tolerance: 0.01
@@ -22,6 +22,69 @@
         # 1: Single threaded
         # 2: inf : Parallelism level
         concurrency_level: 0
+
+        catagories:
+          - 5
+      </rosparam>
+    </node>
+
+    <node pkg="jackal_velodyne" type="pcl_filter_node" name="pcl_pass_people">
+      <remap from="cloud_in" to="/velodyne_points"/>
+   
+      <remap from="scan" to="/people_points" />
+      <rosparam>
+        target_frame: base_link
+        transform_tolerance: 0.01
+        min_height: 0.1
+        max_height: 1
+        
+        angle_min: -3.1415
+        angle_max: 3.1415
+        angle_increment: 0.01
+        scan_time: 0.01
+        range_min: 0
+        range_max: 30
+        use_inf: true
+        
+        #concurrency_level affects number of pc queued for processing and the number of threadsused
+        # 0: Detect number of cores
+        # 1: Single threaded
+        # 2: inf : Parallelism level
+        concurrency_level: 0
+
+        catagories:
+          - 2
+          - 3
+      </rosparam>
+    </node>
+
+    <node pkg="jackal_velodyne" type="pcl_filter_node" name="pcl_pass_movable">
+      <remap from="cloud_in" to="/velodyne_points"/>
+   
+      <remap from="scan" to="/movable_points" />
+      <rosparam>
+        target_frame: base_link
+        transform_tolerance: 0.01
+        min_height: 0.1
+        max_height: 1
+        
+        angle_min: -3.1415
+        angle_max: 3.1415
+        angle_increment: 0.01
+        scan_time: 0.01
+        range_min: 0
+        range_max: 30
+        use_inf: true
+        
+        #concurrency_level affects number of pc queued for processing and the number of threadsused
+        # 0: Detect number of cores
+        # 1: Single threaded
+        # 2: inf : Parallelism level
+        concurrency_level: 0
+
+        catagories:
+          - 1
+          - 4
       </rosparam>
     </node>
 </launch>
