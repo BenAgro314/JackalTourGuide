@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv){
     if (argc ==1){
-        std::cout << "must input folder name and true/false\n";
+        std::cout << "must input folder name\n";
         return 0;
     }
 

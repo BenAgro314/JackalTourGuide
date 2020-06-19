@@ -65,6 +65,8 @@ target_link_libraries(test_file world_entities quadtree vehicles ${catkin_LIBRAR
 add_executable(process_bag src/process_bag.cpp) 
 target_link_libraries(process_bag utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_executable(bag_diagnostics src/bag_diagnostics.cpp) 
+target_link_libraries(bag_diagnostics utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(custom_velodyne src/custom_velodyne.cpp)
 target_link_libraries(custom_velodyne

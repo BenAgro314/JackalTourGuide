@@ -35,7 +35,7 @@ void PCLFilterNodelet::onInit()
   int concurrency_level;
   private_nh_.param<int>("concurrency_level", concurrency_level, 1);
   private_nh_.param<bool>("use_inf", use_inf_, true);
-  private_nh_.param<std::vector<int>>("catagories", catagories, {5});
+  private_nh_.param<std::vector<int>>("catagories", catagories, {0,1,2,3,4,5});
   // Check if explicitly single threaded, otherwise, let nodelet manager dictate thread pool size
   if (concurrency_level == 1)
   {

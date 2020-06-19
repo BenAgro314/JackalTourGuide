@@ -56,14 +56,14 @@
   <node pkg="jackal_velodyne" type="tf_publisher"    name="tf_publisher"    output="screen"/>
   
     <!-- Run the map server -->
- <!--arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
- <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" /-->
+ <arg name="map_file" default="$(find jackal_velodyne)/maps/10x10box.yaml"/>
+ <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
   <!--- Run leg_detection: this was causing probelems and was thus removed  -->
  <!--include file="$(find jackal_velodyne)/launch/include/leg_detector.launch" /-->
 
   <!--- Run AMCL -->
- <!--include file="$(find jackal_velodyne)/launch/include/amcl.launch" /-->
+ <include file="$(find jackal_velodyne)/launch/include/amcl.launch" />
 
   <!--- Run Move Base -->
  <include file="$(find jackal_velodyne)/launch/include/move_base.launch" />
