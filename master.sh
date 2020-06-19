@@ -9,16 +9,19 @@ killall rosmaster
 GUI=false
 TOUR="A_tour.bag"
 MESSAGE=""
+LOADWORLD=""
 
-while getopts t:m:g: option
+while getopts t:m:g:l: option
 do
 case "${option}"
 in
-t) TOUR=${OPTARG};;
-m) MESSAGE=${OPTARG};;
-g) GUI=${OPTARG};;
+t) TOUR=${OPTARG};; # What tour is being used 
+m) MESSAGE=${OPTARG};; # A message to add to the log file
+g) GUI=${OPTARG};; # do you want to use the gui
+l) LOADWORLD=${OPTARG};; # do you want to load a prexisting world or generate a new one
 esac
 done
+
 
 #1. launch roscore
 #2. load parameters 
@@ -47,10 +50,19 @@ echo "Trial Notes: $MESSAGE" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/
 
 sleep 0.1
 
-rosrun myhal_simulator world_factory
+WORLDFILE="/home/$USER/catkin_ws/src/myhal_simulator/worlds/myhal_sim.world"
+
+if [[ -z $LOADWORLD ]]; then
+    rosrun myhal_simulator world_factory
+else
+    WORLDFILE="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/myhal_sim.world"
+    echo "Loading world $WORLDFILE"
+fi
+
+cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/"
 
 rosrun jackal_velodyne diagnostics &
-roslaunch jackal_velodyne master.launch gui:=$GUI &
+roslaunch jackal_velodyne master.launch gui:=$GUI world:=$WORLDFILE &
 rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" # Limiting data to remain under rosbag buffer
 
 
