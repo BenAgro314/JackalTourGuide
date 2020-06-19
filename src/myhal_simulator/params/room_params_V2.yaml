@@ -1,7 +1,7 @@
 # list the names of the rooms you want to include here:
 room_names:
   - lounge_532
-  #- study_space_546
+  - study_space_546
   #- irm_lab_580
   #- admin_off_514
   #- pace_533
@@ -18,13 +18,13 @@ lounge_532:
   geometry: g532
   positions: p532
   enclosed: "0"
-  scenario: small_tables_random_walker_study
+  scenario: mixed_tables_follower_tour
 
 study_space_546:
   geometry: g546
   positions: p546
   enclosed: "0"
-  scenario: small_tables_random_walker_study
+  scenario: big_tables_no_people
 
 irm_lab_580:
   geometry: g580

@@ -4,6 +4,7 @@ common_vehicle_params:
   slowing_distance: 2
   arrival_distance: 0.5
   obstacle_margin: 0.6
+  blocking: 1
 
 common_boid_params:
   alignement: 0.1

@@ -59,7 +59,7 @@ small_tables_random_walker_study:
   table_group_list: small_table_group
 
 mixed_tables_follower_tour:
-  pop_density: "0.05"
+  pop_density: "0.09"
   table_percentage: "0.3"
   actor: actor_basic_follower
   model_list: big_tables
