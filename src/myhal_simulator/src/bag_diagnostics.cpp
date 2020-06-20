@@ -24,11 +24,13 @@ int main(int argc, char ** argv){
 
     happly::PLYData plyOut;
     AddTrajectory(plyOut, amcl_traj);
-    plyOut.write(filepath + "amcl_pose.ply", happly::DataFormat::Binary);
+    plyOut.write(filepath + "/logs/amcl_pose.ply", happly::DataFormat::Binary);
 
+    std::cout << "Computing translation drift\n";
     auto trans_drift = handle.TranslationDrift(gt_traj, amcl_traj);
+    std::cout << "Finished computing translation drift\n";
 
-    std::ofstream out(filepath + "translation_drift.csv");
+    std::ofstream out(filepath + "/logs/translation_drift.csv");
     out << "Distance (m), Translation Drift (m)\n";
     for (auto row: trans_drift){
         out << row[0] << "," << row[1] << std::endl;
@@ -36,9 +38,10 @@ int main(int argc, char ** argv){
 
     out.close();
 
-    // read the information from the static objects file to creat the costmap 
+    // read the information from the static objects file to creat the costmap
+    std::cout << "Creating costmap\n"; 
 
-    happly::PLYData plyIn(filepath + "static_objects.ply");
+    happly::PLYData plyIn(filepath + "/logs/static_objects.ply");
     auto static_objects = ReadObjects(plyIn);
 
     double min_x = 10e9;
@@ -92,6 +95,7 @@ int main(int argc, char ** argv){
     }
     
     std::vector<std::vector<ignition::math::Vector3d>> paths;
+    std::cout << "Computing optimal paths\n";
     
     for (int first = 0; first < num_reached; first++){
       
@@ -126,7 +130,7 @@ int main(int argc, char ** argv){
             
             last_pose = pose;
         }
-        std::cout << optimal_lengths.back() << std::endl;
+        //std::cout << optimal_lengths.back() << std::endl;
     }
 
     // find how far the robot travelled in the times from 0->times[0], times[0]->times[1] ...
@@ -151,8 +155,18 @@ int main(int argc, char ** argv){
             last_pose = gt_traj[traj_ind].pose.Pos();
             traj_ind++;
         }
-        std::cout << actual_lengths.back() << std::endl;
+        //std::cout << actual_lengths.back() << std::endl;
     }
+
+    std::ofstream out2(filepath + "/logs/path_difference.csv");
+
+    out2 << " ,Optimal path length (m), actual path length (m), difference (m)\n";
+
+    for (int i =0; i< optimal_lengths.size(); i++){
+        out2 << "Target #" << i+1 << "," << actual_lengths[i] << "," << optimal_lengths[i] << "," << optimal_lengths[i]-actual_lengths[i] << std::endl; 
+    }
+
+    out2.close();
     
 
     return 0;

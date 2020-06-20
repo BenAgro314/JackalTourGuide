@@ -85,9 +85,9 @@ Doctor::Doctor(){
 
     this->filepath = "/home/" + this->username + "/Myhal_Simulation/simulated_runs/" + start_time + "/";
 
-    this->log_file.open(this->filepath + "log.txt", std::ios_base::app);
+    this->log_file.open(this->filepath + "/logs/log.txt", std::ios_base::app);
 
-    ROS_INFO_STREAM("\nJACKAL DIAGNOSTICS RUNNING. OUTPUT CAN BE FOUND AT: " << this->filepath << "log.txt");
+    ROS_INFO_STREAM("\nJACKAL DIAGNOSTICS RUNNING. OUTPUT CAN BE FOUND AT: " << this->filepath << "/logs/log.txt");
 
     this->log_file << "Tour Name: " << this->tour_name << std::endl;
 

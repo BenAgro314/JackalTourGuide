@@ -45,8 +45,9 @@ rosparam set bag_name $TOUR
 t=$(date +'%Y-%m-%d-%H-%M-%S')
 rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
-touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/log.txt"
-echo "Trial Notes: $MESSAGE" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/log.txt"
+mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs"
+touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs/log.txt"
+echo "Trial Notes: $MESSAGE" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs/log.txt"
 
 sleep 0.1
 
@@ -55,11 +56,11 @@ WORLDFILE="/home/$USER/catkin_ws/src/myhal_simulator/worlds/myhal_sim.world"
 if [[ -z $LOADWORLD ]]; then
     rosrun myhal_simulator world_factory
 else
-    WORLDFILE="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/myhal_sim.world"
+    WORLDFILE="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/logs/myhal_sim.world"
     echo "Loading world $WORLDFILE"
 fi
 
-cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/"
+cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs/"
 
 rosrun jackal_velodyne diagnostics &
 roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE &

@@ -80,7 +80,7 @@ int main(int argc, char** argv){
 		std::string filepath = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + start_time + "/";
 		
 		std::ofstream log_file;
-		log_file.open(filepath + "log.txt", std::ios_base::app);
+		log_file.open(filepath + "/logs/log.txt", std::ios_base::app);
 		
 		ROS_WARN("USING TOUR %s\n", bag_name.c_str());
 	
