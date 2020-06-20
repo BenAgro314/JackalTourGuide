@@ -105,9 +105,12 @@ int main(int argc, char ** argv){
   
         if(costmap.FindPath(start.Pos(), end.Pos(), path)){
             paths.push_back(path);
-        } 
+            
+        } else{
+            break;
+        }
 
-        break;
+        
         
     }
 
@@ -193,7 +196,12 @@ int main(int argc, char ** argv){
                 out2 << "Target #" << i+1 << "," << "Unreachable" << "," << status << "," << "NA"<< "," << "NA" << std::endl; 
             }
         } else{
-            out2 << "Target #" << i+1 << "," << optimal_lengths[i] << ",0,NA,NA\n";
+            if (optimal_lengths[i] > 0){
+                out2 << "Target #" << i+1 << "," << optimal_lengths[i] << ",0,NA,NA\n";
+            } else{
+                 out2 << "Target #" << i+1 << "," << "Unreachable" << ",0,NA,NA\n";
+            }
+            
         }
         
     }
