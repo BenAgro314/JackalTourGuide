@@ -103,8 +103,12 @@ int main(int argc, char ** argv){
         std::vector<ignition::math::Vector3d> path;
         
   
-        costmap.FindPath(start.Pos(), end.Pos(), path);
-        paths.push_back(path);
+        if(costmap.FindPath(start.Pos(), end.Pos(), path)){
+            paths.push_back(path);
+        } 
+
+        break;
+        
     }
 
     // compute length of each path 
@@ -130,6 +134,10 @@ int main(int argc, char ** argv){
             last_pose = pose;
         }
         
+    }
+
+    while (optimal_lengths.size() < goals.size()-1){
+        optimal_lengths.push_back(-1);
     }
 
     // find how far the robot travelled in the times from 0->times[0], times[0]->times[1] ...
@@ -175,12 +183,14 @@ int main(int argc, char ** argv){
 
     out2 << " ,Optimal path length (m), reached goal?, actual path length (m), difference (m)\n";
 
-    for (int i =0; i< optimal_lengths.size(); i++){
+    for (int i =0; i< goals.size()-1; i++){
         if (i<actual_lengths.size()){
-            if (i < times.size()){
-                out2 << "Target #" << i+1 << "," << optimal_lengths[i] << "," << 1  << "," << actual_lengths[i] << "," << actual_lengths[i]-optimal_lengths[i] << std::endl; 
+
+            int status = (int) (i <times.size());
+            if (optimal_lengths[i] > 0){
+                out2 << "Target #" << i+1 << "," << optimal_lengths[i] << "," << status << "," << actual_lengths[i] << "," << actual_lengths[i]-optimal_lengths[i] << std::endl; 
             } else{
-                out2 << "Target #" << i+1 << "," << optimal_lengths[i] << "," << 0 << "," << actual_lengths[i] << "," << actual_lengths[i]-optimal_lengths[i] << std::endl; 
+                out2 << "Target #" << i+1 << "," << "Unreachable" << "," << status << "," << "NA"<< "," << "NA" << std::endl; 
             }
         } else{
             out2 << "Target #" << i+1 << "," << optimal_lengths[i] << ",0,NA,NA\n";
