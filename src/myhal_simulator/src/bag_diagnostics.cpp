@@ -89,10 +89,6 @@ int main(int argc, char ** argv){
 
     auto times = handle.TargetSuccessTimes();
     auto num_reached = times.size();
-
-    if (num_reached == 0){
-        return 0;
-    }
     
     std::vector<std::vector<ignition::math::Vector3d>> paths;
     std::cout << "Computing optimal paths\n";
