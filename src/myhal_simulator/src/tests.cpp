@@ -9,38 +9,33 @@
 #include <fstream>
 #include "vehicles.hh"
 #include "utilities.hh"
+#include "costmap.hh"
 
-
-void print_nodes(std::vector<QTData> list);
 
 int main(int argc, char ** argv){
 
+    Costmap map = Costmap(ignition::math::Box(ignition::math::Vector3d(0,0,0), ignition::math::Vector3d(10,10,0)), 0.2);
+    
+    auto obj1= ignition::math::Box(ignition::math::Vector3d(0,0,0), ignition::math::Vector3d(1,9,0));
+    auto obj2= ignition::math::Box(ignition::math::Vector3d(3,5,0), ignition::math::Vector3d(11,6.5,0));
 
-    auto box = ignition::math::Box(ignition::math::Vector3d(10,0,0), ignition::math::Vector3d(11,10,5));
-    auto pos = ignition::math::Vector3d(1,1,1);
+    map.AddObject(obj1);
+    map.AddObject(obj2);
 
-    std::cout << utilities::dist_to_box(pos,box) << std::endl;
+    //std::cout << map.ToString();
 
-    /*
-    std::printf("hello world\n");
+    std::vector<ignition::math::Vector3d> path;
 
-    FlowField F = FlowField(ignition::math::Vector3d(0,0,0),10,10,1);
+    map.FindPath(ignition::math::Vector3d(2, 9,0), ignition::math::Vector3d(8, 0.5, 0), path);
 
-    F.PrintField();
 
-    int r;
-    int c;
+    std::cout << std::endl;
 
-    F.PosToIndicies(ignition::math::Vector3d(9.5,-9.5,0), r, c );
-    std::printf("%d %d\n", r, c);
-    */
+ 
+
+    for (auto p: path){
+        std::cout << p << std::endl;
+    }
     
     return 0;
-}
-
-void print_nodes(std::vector<QTData> list){
-    for (auto node : list){
-        auto box = node.box;
-        std::printf("node box: (%f, %f) -> (%f, %f)\n", box.Min().X(), box.Min().Y(), box.Max().X(), box.Max().Y());
-    }
 }

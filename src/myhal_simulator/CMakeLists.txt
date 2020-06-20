@@ -38,6 +38,9 @@ target_link_libraries(Perlin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 add_library(utilities src/include/utilities.cpp)
 target_link_libraries(utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_library(costmap src/include/costmap.cpp)
+target_link_libraries(costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 add_library(flowfield src/include/flowfield.cpp)
 target_link_libraries(flowfield utilities Perlin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
@@ -60,7 +63,7 @@ add_executable(world_factory src/world_factory.cpp)
 target_link_libraries(world_factory world_entities ${catkin_LIBRARIES})
 
 add_executable(test_file src/tests.cpp) 
-target_link_libraries(test_file world_entities quadtree vehicles ${catkin_LIBRARIES})
+target_link_libraries(test_file world_entities quadtree vehicles costmap ${catkin_LIBRARIES})
 
 add_executable(process_bag src/process_bag.cpp) 
 target_link_libraries(process_bag utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
