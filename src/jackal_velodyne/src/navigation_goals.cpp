@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <vector>
 #include "diagnostics.hh"
+#include <std_msgs/Int8.h>
 
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
@@ -60,11 +61,12 @@ int main(int argc, char** argv){
 		
 		ros::init(argc, argv, "simple_navigation_goals");
 		ros::NodeHandle nh;
+		ros::Publisher pub = nh.advertise<geometry_msgs::PoseStamped>("tour_data", 1000);
 
 		std::string bag_name("A_tour.bag");
 	
 		if (!nh.getParam("bag_name", bag_name)){
-			bag_name = "tour_positions1.bag";
+			bag_name = "A_tour.bag";
 		}
 
 		std::string username = "default";
@@ -122,11 +124,12 @@ int main(int argc, char** argv){
 
 		std::vector<geometry_msgs::PoseStamped::ConstPtr> targets;
 
+	
 		for (rosbag::MessageInstance const m: rosbag::View(tour)){
 
 			geometry_msgs::PoseStamped::ConstPtr i = m.instantiate<geometry_msgs::PoseStamped>();
 			targets.push_back(i);
-			
+			pub.publish(*i);
 		}
 
 		tour.close();

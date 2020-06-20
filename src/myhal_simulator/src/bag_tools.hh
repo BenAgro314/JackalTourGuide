@@ -128,7 +128,7 @@ class BagTools{
             rosbag::Bag bag;
             bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
             
-            std::vector<std::string> topics = {"/move_base/current_goal"};
+            std::vector<std::string> topics = {"/tour_data"};
             rosbag::View view(bag, rosbag::TopicQuery(topics));
 
             for (auto msg: view){

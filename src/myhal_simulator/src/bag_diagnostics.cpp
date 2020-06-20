@@ -88,14 +88,14 @@ int main(int argc, char ** argv){
     auto goals = handle.TourTargets();
 
     auto times = handle.TargetSuccessTimes();
-    auto num_reached = times.size();
+   
     
     std::vector<std::vector<ignition::math::Vector3d>> paths;
     std::cout << "Computing optimal paths\n";
 
     std::vector<TrajPoint> optimal_traj;
     
-    for (int first = 0; first < num_reached; first++){
+    for (int first = 0; first < goals.size()-1; first++){
       
         auto start = goals[first];
        
@@ -129,7 +129,7 @@ int main(int argc, char ** argv){
             
             last_pose = pose;
         }
-        //std::cout << optimal_lengths.back() << std::endl;
+        
     }
 
     // find how far the robot travelled in the times from 0->times[0], times[0]->times[1] ...
@@ -137,7 +137,7 @@ int main(int argc, char ** argv){
     std::vector<double> actual_lengths;
 
     int traj_ind = 0;
-
+    ignition::math::Vector3d final;
     for (int i =0; i<times.size(); i++){
         double time = times[i];
         actual_lengths.push_back(0);
@@ -155,16 +155,37 @@ int main(int argc, char ** argv){
             traj_ind++;
         }
         //std::cout << actual_lengths.back() << std::endl;
+        final = last_pose;
     }
+    if (traj_ind < gt_traj.size()){
+        actual_lengths.push_back(0);
 
+        ignition::math::Vector3d last_pose = final;
+        while(traj_ind < gt_traj.size()){
+            actual_lengths.back() += (gt_traj[traj_ind].pose.Pos() - last_pose).Length();
+            last_pose = gt_traj[traj_ind].pose.Pos();
+            traj_ind++;
+        }
+
+    }
+    
     std::cout << "Writing to file\n";
 
     std::ofstream out2(filepath + "/logs/path_difference.csv");
 
-    out2 << " ,Optimal path length (m), actual path length (m), difference (m)\n";
+    out2 << " ,Optimal path length (m), reached goal?, actual path length (m), difference (m)\n";
 
     for (int i =0; i< optimal_lengths.size(); i++){
-        out2 << "Target #" << i+1 << "," << optimal_lengths[i] << "," << actual_lengths[i] << "," << actual_lengths[i]-optimal_lengths[i] << std::endl; 
+        if (i<actual_lengths.size()){
+            if (i < times.size()){
+                out2 << "Target #" << i+1 << "," << optimal_lengths[i] << "," << 1  << "," << actual_lengths[i] << "," << actual_lengths[i]-optimal_lengths[i] << std::endl; 
+            } else{
+                out2 << "Target #" << i+1 << "," << optimal_lengths[i] << "," << 0 << "," << actual_lengths[i] << "," << actual_lengths[i]-optimal_lengths[i] << std::endl; 
+            }
+        } else{
+            out2 << "Target #" << i+1 << "," << optimal_lengths[i] << ",0,NA,NA\n";
+        }
+        
     }
 
     out2.close();

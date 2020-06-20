@@ -436,53 +436,24 @@ namespace gazebo
                         double min_dist = point.Z();
 
                         for (auto n: check_objects){
+                            double dist;
+                            if (n.cat == 2 || n.cat ==3){
+                                //if we a checking a person, treat them as a cylindar with a radius that is equal to box width/2
+                                double r = n.box.Max().X() - n.box.Min().X();
+                                auto other = (n.box.Min()+n.box.Max())/2; // the center of the box is the position of the person
+                                dist = (point-other).Length()-r;
+                            } else{
+                                dist = utilities::dist_to_box(point, n.box);
+                            }
                             
-                            auto dist = utilities::dist_to_box(point, n.box);
                             if (dist <= min_dist){
                                 min_dist = dist;
                                 intensity = n.cat;
                             }
                         }
                     }
-                    /*
-                    if (near_objects.size() == 0 && near_actors.size() == 0){
-                        intensity = 5; // wall
-                    } else {
-                        
-                        std::string closest_name = "ground_plane";
-                        double min_dist = point.Z();
-                        
-                        for (auto n: near_objects){
-                            
-                            auto dist = utilities::dist_to_box(point, n->BoundingBox());
-
-                            if (dist <= min_dist){
-                                min_dist = dist;
-                                closest_name = n->GetParent()->GetParent()->GetName();
-                            }
-                        }
-
-                        if (closest_name == this->building_name){
-                            intensity = 5; //wall
-                        } else if (closest_name.substr(0,5) == "table"){
-                            intensity = 4; //table
-                        } else if (closest_name.substr(0,5) == "chair" && near_actors.size() == 0){
-                            intensity = 1; //chair
-                        } else if (near_actors.size() == 0) {
-                            intensity = 0; //ground
-                        }
-
-                        for (auto n: near_actors){
-                            //TODO: add velocity checks
-                            if (actor_speed[n->GetName()] < 10e-4){
-                                intensity = 3; // stationary actors 
-                            } else{
-                                intensity = 2; // moving actors 
-                            }
-                            
-                        }
-                    }
-                    */
+                  
+                    
 
                     *((float *)(ptr + 16)) = intensity;
                     *((uint16_t *)(ptr + 20)) = j; // ring
