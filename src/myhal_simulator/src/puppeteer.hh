@@ -73,6 +73,8 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ignition::math::Pose3d sensor_pose;
 
+        std::string user_name, start_time;
+
         
     public: 
         

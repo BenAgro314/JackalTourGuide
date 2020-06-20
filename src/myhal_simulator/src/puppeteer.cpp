@@ -17,6 +17,10 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->sdf = _sdf;
     this->update_connection = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&Puppeteer::OnUpdate, this, std::placeholders::_1));
 
+    this->user_name = "default";
+    if (const char * user = std::getenv("USER")){
+        this->user_name = user;
+    } 
 
     this->ReadSDF();
 
@@ -32,7 +36,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->static_quadtree = boost::make_shared<QuadTree>(this->building_box);
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
     
-    
+    happly::PLYData static_objects;
+    std::vector<BoxObject> boxes;
+
     this->fields.push_back(boost::make_shared<FlowField>(ignition::math::Vector3d(building_box.Min().X(),building_box.Max().Y(),0), building_box.Max().X() - building_box.Min().X(), building_box.Max().Y() - building_box.Min().Y(), 0.2));
     
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
@@ -59,6 +65,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                 for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
                     this->collision_entities.push_back(collision_box);
                     auto box = collision_box->BoundingBox();
+                    boxes.push_back(BoxObject(box, -1));
                     box.Max().Z() = 0;
                     box.Min().Z() = 0;
                     auto new_node = QTData(box, collision_box, entity_type);
@@ -72,6 +79,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     
        
     }
+
+    AddBoxes(static_objects, boxes);
+    static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/static_objects.ply", happly::DataFormat::ASCII);
 
 
     auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
@@ -296,6 +306,11 @@ void Puppeteer::ReadParams(){
         boid_params["separation"] =  2;
         boid_params["FOV_angle"] =  4;
         boid_params["FOV_radius"] =  3;
+    }
+
+    if (!nh.getParam("start_time", this->start_time)){
+        std::cout << "ERROR SETTING START TIME\n";
+        this->start_time = "ERROR SETTING START TIME";
     }
 
 }

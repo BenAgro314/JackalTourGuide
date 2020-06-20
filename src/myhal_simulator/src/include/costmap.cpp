@@ -115,7 +115,7 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
 
     auto curr_pos = start;
     std::vector<int> curr_ind = {start_r, start_c};
-    temp[curr_ind[0]][curr_ind[1]] = -1;
+    //temp[curr_ind[0]][curr_ind[1]] = -1;
 
     while (curr_ind[0] != end_r || curr_ind[1] != end_c){
 
@@ -156,7 +156,8 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
         path.push_back(curr_pos);
         curr_ind = min_n;
 
-        temp[curr_ind[0]][curr_ind[1]] = -1;
+
+        //temp[curr_ind[0]][curr_ind[1]] = -1;
 
     }
 
