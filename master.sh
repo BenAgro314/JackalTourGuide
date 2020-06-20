@@ -10,8 +10,9 @@ GUI=false
 TOUR="A_tour.bag"
 MESSAGE=""
 LOADWORLD=""
+FILTER=false
 
-while getopts t:m:g:l: option
+while getopts t:m:g:l:f: option
 do
 case "${option}"
 in
@@ -19,6 +20,7 @@ t) TOUR=${OPTARG};; # What tour is being used
 m) MESSAGE=${OPTARG};; # A message to add to the log file
 g) GUI=${OPTARG};; # do you want to use the gui
 l) LOADWORLD=${OPTARG};; # do you want to load a prexisting world or generate a new one
+f) FILTER=${OPTARG};; # pointcloud filtering?
 esac
 done
 
@@ -63,7 +65,7 @@ fi
 cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs/"
 
 rosrun jackal_velodyne diagnostics &
-roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE &
+roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER &
 rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" # Limiting data to remain under rosbag buffer
 
 

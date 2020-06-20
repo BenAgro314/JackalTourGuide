@@ -4,6 +4,8 @@
   <arg name="gui" default="false" /> <!-- adjust gui and headless to speed up simulation by removing the gazebo gui -->
   <arg name="headless" default="true" />
   <arg name="world_name" default="$(find myhal_simulator)/worlds/myhal_sim.world" />
+  <arg name="filter" default="false" />
+  <arg name="mapping" default="false" />
 
   <!-- Short-term hack to support the original front_laser:=true argument for spawning
        the simulator. This will be removed in favour of using the config:=x arg instead. -->
@@ -40,7 +42,10 @@
     <arg name="joystick" value="false"/>
   </include-->
 
-  <include file="$(find jackal_velodyne)/launch/include/pointcloud_filter.launch" />
+  <include file="$(find jackal_velodyne)/launch/include/pointcloud_filter.launch">
+    <arg name="filter" value="$(arg filter)" />
+    <arg name="mapping" value="$(arg mapping)"/>
+  </include>
 
   <!-- Spawn Jackal -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
