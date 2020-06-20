@@ -60,7 +60,7 @@ int main(int argc, char ** argv){
 
     double robot_radius = std::sqrt((0.21*0.21) + (0.165*0.165));
     
-    Costmap costmap = Costmap(boundary, 0.1);
+    Costmap costmap = Costmap(boundary, 0.05);
 
     for (auto obj: static_objects){
         if (obj.MinZ() < 1.5){
@@ -96,6 +96,8 @@ int main(int argc, char ** argv){
     
     std::vector<std::vector<ignition::math::Vector3d>> paths;
     std::cout << "Computing optimal paths\n";
+
+    std::vector<TrajPoint> optimal_traj;
     
     for (int first = 0; first < num_reached; first++){
       
@@ -119,6 +121,7 @@ int main(int argc, char ** argv){
         int count = 0;
         ignition::math::Vector3d last_pose;
         for (auto pose: path){
+            optimal_traj.push_back(TrajPoint(ignition::math::Pose3d(pose, ignition::math::Quaterniond(0,0,0)),(double) count));
             if (count == 0){
                 last_pose = pose;
                 count++;
@@ -163,10 +166,14 @@ int main(int argc, char ** argv){
     out2 << " ,Optimal path length (m), actual path length (m), difference (m)\n";
 
     for (int i =0; i< optimal_lengths.size(); i++){
-        out2 << "Target #" << i+1 << "," << actual_lengths[i] << "," << optimal_lengths[i] << "," << optimal_lengths[i]-actual_lengths[i] << std::endl; 
+        out2 << "Target #" << i+1 << "," << optimal_lengths[i] << "," << actual_lengths[i] << "," << actual_lengths[i]-optimal_lengths[i] << std::endl; 
     }
 
     out2.close();
+
+    happly::PLYData plyOut2;
+    AddTrajectory(plyOut2, optimal_traj);
+    plyOut2.write(filepath + "/logs/optimal_traj.ply", happly::DataFormat::Binary);
     
 
     return 0;

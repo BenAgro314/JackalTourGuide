@@ -146,7 +146,7 @@ class BagTools{
 
         std::vector<double> TargetSuccessTimes(){
             std::vector<double> times;
-            
+
             
             rosbag::Bag bag;
             bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
@@ -158,6 +158,8 @@ class BagTools{
                 auto res = msg.instantiate<move_base_msgs::MoveBaseActionResult>();
                 if (res != nullptr && res->status.status == 3){
                     times.push_back(res->header.stamp.toSec());
+                } else if (res != nullptr && res->status.status == 4){
+                    break;
                 }
             }
 
