@@ -60,7 +60,7 @@ int main(int argc, char ** argv){
 
     double robot_radius = std::sqrt((0.21*0.21) + (0.165*0.165));
     
-    Costmap costmap = Costmap(boundary, 0.05);
+    Costmap costmap = Costmap(boundary, 0.1);
 
     for (auto obj: static_objects){
         if (obj.MinZ() < 1.5){
@@ -160,6 +160,8 @@ int main(int argc, char ** argv){
         }
         //std::cout << actual_lengths.back() << std::endl;
     }
+
+    std::cout << "Writing to file\n";
 
     std::ofstream out2(filepath + "/logs/path_difference.csv");
 
