@@ -68,14 +68,14 @@ int main(int argc, char** argv){
 		}
 
 		std::string username = "default";
-    if (const char * user = std::getenv("USER")){
-        username = user;
-    } 
+		if (const char * user = std::getenv("USER")){
+			username = user;
+		} 
 
 		std::string start_time;
-    if (!nh.getParam("start_time", start_time)){
-        std::cout << "ERROR SETTING START TIME\n";
-    }
+		if (!nh.getParam("start_time", start_time)){
+			std::cout << "ERROR SETTING START TIME\n";
+		}
 		
 		std::string filepath = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + start_time + "/";
 		

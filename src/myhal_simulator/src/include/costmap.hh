@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include "utilities.hh"
+#include <fstream>
 
 
 class Costmap{

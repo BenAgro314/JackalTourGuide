@@ -11,6 +11,7 @@
 #include <geometry_msgs/Pose.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <move_base_msgs/MoveBaseActionResult.h>
 #include <stdio.h>
 #include "happily.h"
 #include <map>
@@ -120,6 +121,47 @@ class BagTools{
 
             return trajectory;
             bag.close();
+        }
+
+        std::vector<ignition::math::Pose3d> TourTargets(){
+            std::vector<ignition::math::Pose3d> goals = {ignition::math::Pose3d(0,0,0,0,0,0)};
+            rosbag::Bag bag;
+            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
+            
+            std::vector<std::string> topics = {"/move_base/current_goal"};
+            rosbag::View view(bag, rosbag::TopicQuery(topics));
+
+            for (auto msg: view){
+                
+                auto pose = msg.instantiate<geometry_msgs::PoseStamped>();
+                if (pose!=nullptr){
+                    auto goal = ignition::math::Pose3d(pose->pose.position.x, pose->pose.position.y, pose->pose.position.z, pose->pose.orientation.w, pose->pose.orientation.x, pose->pose.orientation.y, pose->pose.orientation.z);
+                    goals.push_back(goal);
+                }
+            }
+
+            return goals;
+
+        }
+
+        std::vector<double> TargetSuccessTimes(){
+            std::vector<double> times;
+            
+            
+            rosbag::Bag bag;
+            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
+            
+            std::vector<std::string> topics = {"/move_base/result"};
+            rosbag::View view(bag, rosbag::TopicQuery(topics));
+
+            for (auto msg: view){
+                auto res = msg.instantiate<move_base_msgs::MoveBaseActionResult>();
+                if (res != nullptr && res->status.status == 3){
+                    times.push_back(res->header.stamp.toSec());
+                }
+            }
+
+            return times;
         }
 
 };

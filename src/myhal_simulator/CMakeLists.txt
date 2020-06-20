@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   rosbag
   nav_msgs
   geometry_msgs
+  move_base_msgs
 )
 
 
@@ -24,7 +25,7 @@ find_package(gazebo REQUIRED)
 
 
 catkin_package(
-	DEPENDS gazebo_ros pcl_ros roscpp rospy std_msgs rosbag sensor_msgs pcl_conversions nav_msgs geometry_msgs
+	DEPENDS gazebo_ros pcl_ros roscpp rospy std_msgs rosbag sensor_msgs pcl_conversions nav_msgs geometry_msgs move_base_msgs
 	INCLUDE_DIRS src/include
 )
 
@@ -69,7 +70,7 @@ add_executable(process_bag src/process_bag.cpp)
 target_link_libraries(process_bag utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_executable(bag_diagnostics src/bag_diagnostics.cpp) 
-target_link_libraries(bag_diagnostics utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(bag_diagnostics utilities costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(custom_velodyne src/custom_velodyne.cpp)
 target_link_libraries(custom_velodyne

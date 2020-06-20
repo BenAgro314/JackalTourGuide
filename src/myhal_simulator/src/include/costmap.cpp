@@ -32,7 +32,6 @@ void Costmap::AddObject(ignition::math::Box object){
     auto br = ignition::math::Vector3d(object.Max().X(), object.Min().Y(), 0);
 
     if (tl.X() >= this->boundary.Max().X() || tl.Y() <= this->boundary.Min().Y() || br.X() <= this->boundary.Min().X() || br.Y() >= this->boundary.Max().Y()){
-        std::cout << "rejected\n";
         return;
     }
 
@@ -43,7 +42,7 @@ void Costmap::AddObject(ignition::math::Box object){
     
     this->PosToIndicies(br, max_r, max_c);
 
-    //std::printf("min: %d %d, max %d %d\n", min_r, min_c, max_r, max_c);
+    //std::printf("tl: (%f, %f), br: (%f, %f), min: (%d, %d), max (%d, %d)\n", tl.X(), tl.Y(), br.X(), br.Y(), min_r, min_c, max_r, max_c);
 
     for (int r = min_r; r<=max_r; ++r){
         for(int c = min_c; c<=max_c; ++c){
@@ -100,7 +99,7 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
         return false;
     }
 
-    //auto temp = this->costmap;
+    // auto temp = this->costmap;
 
     path.push_back(start);
 
@@ -115,7 +114,7 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
 
     auto curr_pos = start;
     std::vector<int> curr_ind = {start_r, start_c};
-    //temp[curr_ind[0]][curr_ind[1]] = -1;
+    // temp[curr_ind[0]][curr_ind[1]] = -1;
 
     while (curr_ind[0] != end_r || curr_ind[1] != end_c){
 
@@ -157,11 +156,11 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
         curr_ind = min_n;
 
 
-        //temp[curr_ind[0]][curr_ind[1]] = -1;
+        // temp[curr_ind[0]][curr_ind[1]] = -1;
 
     }
 
-    std::stringstream out;
+    //std::stringstream out;
 
     // for (int r = 0; r<this->rows; r++){
     //     for (int c= 0; c<this->cols; c++){
@@ -176,13 +175,23 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
     //     out << "\n";
     // }
 
-
-    // std::cout << out.str();
+    // std::ofstream f("test.txt", std::ios_base::app);
+    // f << out.str();
+    // f <<std::endl <<std::endl;
+    // f.close();
 
     return true;
 }
 
 bool Costmap::Integrate(ignition::math::Vector3d goal){
+
+    for (int r = 0; r <this->rows; ++r){
+        
+        for (int c = 0; c< this->cols; ++c){
+            this->integration_field[r][c] = 10e9;
+        }
+        
+    }
     
     if (goal.X() < this->top_left.X() || goal.X() > this->boundary.Max().X() || goal.Y() > this->top_left.Y() || goal.Y() < this->boundary.Min().Y()){
         return false;
@@ -262,7 +271,19 @@ std::vector<std::vector<int>> Costmap::GetNeighbours(std::vector<int> curr_ind, 
 
 bool Costmap::PosToIndicies(ignition::math::Vector3d pos, int &r, int &c){
     
+    r = 0;
+    c = 0;
 
+    while ((this->top_left.Y() - r*this->resolution - this->resolution) > pos.Y()){
+        r++;
+    }
+
+    while ((this->top_left.X() + c*this->resolution + this->resolution) < pos.X()){
+        c++;
+    }
+
+
+    /*
     r = (int) (this->boundary.Max().Y() - pos.Y())/this->resolution;
     if (r >= this->rows){
         r = this->rows-1;
@@ -277,6 +298,7 @@ bool Costmap::PosToIndicies(ignition::math::Vector3d pos, int &r, int &c){
     if (c < 0){
         c = 0;
     }
+    */
 
     return utilities::inside_box(this->boundary, pos, true);
 }
