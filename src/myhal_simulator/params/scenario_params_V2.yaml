@@ -8,11 +8,20 @@ scenario_names:
   - small_tables_random_walker_study
   - mixed_tables_follower_tour
   - mixed_tables_wanderer_study
+  - no_tables_boid_crowd
+  - empty
 
 no_tables_wanderer_crowd:
   pop_density: "0.15"
   table_percentage: "0"
   actor: actor_basic_wanderer
+  model_list: big_tables
+  table_group_list: big_table_group
+
+no_tables_boid_crowd:
+  pop_density: "0.15"
+  table_percentage: "0"
+  actor: actor_basic_boid
   model_list: big_tables
   table_group_list: big_table_group
 
@@ -68,6 +77,13 @@ mixed_tables_follower_tour:
 mixed_tables_wanderer_study:
   pop_density: "0.08"
   table_percentage: "0.8"
+  actor: actor_basic_wanderer
+  model_list: big_tables
+  table_group_list: mixed_group
+
+empty:
+  pop_density: "0"
+  table_percentage: "0"
   actor: actor_basic_wanderer
   model_list: big_tables
   table_group_list: mixed_group

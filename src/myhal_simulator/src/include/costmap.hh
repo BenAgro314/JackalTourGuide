@@ -28,6 +28,8 @@ class Costmap{
 
         std::vector<std::vector<int>> costmap;
 
+        std::vector<std::vector<int>> last_path;
+
         std::vector<std::vector<double>> integration_field;
 
         bool PosToIndicies(ignition::math::Vector3d pos, int &r, int &c);
@@ -46,7 +48,7 @@ class Costmap{
 
         std::string ToString();
 
-        std::string IntegrationToString();
+        std::string PathString();
 
         bool FindPath(ignition::math::Vector3d start, ignition::math::Vector3d end,  std::vector<ignition::math::Vector3d> &path);
 

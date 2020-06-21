@@ -22,6 +22,8 @@ Costmap::Costmap(ignition::math::Box boundary, double resolution){
         this->integration_field.push_back(new_row2);
     }
 
+    this->last_path = this->costmap;
+
 }
 
 void Costmap::AddObject(ignition::math::Box object){
@@ -50,6 +52,8 @@ void Costmap::AddObject(ignition::math::Box object){
         }
     }
 
+    this->last_path = this->costmap;
+
 }
 
 std::string Costmap::ToString(){
@@ -70,21 +74,21 @@ std::string Costmap::ToString(){
     return out.str();
 }
 
-std::string Costmap::IntegrationToString(){
+std::string Costmap::PathString(){
     std::stringstream out;
 
     for (int r = 0; r<this->rows; r++){
         for (int c= 0; c<this->cols; c++){
-            if (this->integration_field[r][c] == 10e9){
-                out << "-1 ";
-            } else{
-                out << this->integration_field[r][c] << " ";
+            if (this->last_path[r][c] == 1){
+                out << " ";
+            } else if (this->last_path[r][c] == -1) {
+                out << "X";
+            } else {
+                out << "▇";
             }
-            
         }
         out << "\n";
     }
-
 
     return out.str();
 }
@@ -99,7 +103,7 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
         return false;
     }
 
-    // auto temp = this->costmap;
+    
 
     path.push_back(start);
 
@@ -114,7 +118,7 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
 
     auto curr_pos = start;
     std::vector<int> curr_ind = {start_r, start_c};
-    // temp[curr_ind[0]][curr_ind[1]] = -1;
+    this->last_path[curr_ind[0]][curr_ind[1]] = -1;
 
     while (curr_ind[0] != end_r || curr_ind[1] != end_c){
 
@@ -156,29 +160,9 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
         curr_ind = min_n;
 
 
-        // temp[curr_ind[0]][curr_ind[1]] = -1;
+        this->last_path[curr_ind[0]][curr_ind[1]] = -1;
 
     }
-
-    //std::stringstream out;
-
-    // for (int r = 0; r<this->rows; r++){
-    //     for (int c= 0; c<this->cols; c++){
-    //         if (temp[r][c] == 1){
-    //             out << "*";
-    //         } else if (temp[r][c] == -1) {
-    //             out << "O";
-    //         } else {
-    //             out << "#";
-    //         }
-    //     }
-    //     out << "\n";
-    // }
-
-    // std::ofstream f("test.txt", std::ios_base::app);
-    // f << out.str();
-    // f <<std::endl <<std::endl;
-    // f.close();
 
     return true;
 }

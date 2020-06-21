@@ -94,6 +94,8 @@ int main(int argc, char ** argv){
     std::cout << "Computing optimal paths\n";
 
     std::vector<TrajPoint> optimal_traj;
+
+    std::ofstream path_file(filepath + "/logs/paths.txt");
     
     for (int first = 0; first < goals.size()-1; first++){
       
@@ -105,6 +107,7 @@ int main(int argc, char ** argv){
   
         if(costmap.FindPath(start.Pos(), end.Pos(), path)){
             paths.push_back(path);
+
             
         } else{
             break;
@@ -113,6 +116,11 @@ int main(int argc, char ** argv){
         
         
     }
+
+    path_file << costmap.PathString();
+    path_file << std::endl <<std::endl;
+
+    path_file.close();
 
     // compute length of each path 
  
