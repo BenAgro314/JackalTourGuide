@@ -1,0 +1,176 @@
+<launch>
+  <node pkg="jackal_velodyne" type="pcl_filter_node" name="f0">
+    <remap from="cloud_in" to="/velodyne_points"/>
+
+    <remap from="scan" to="/f0" />
+    <rosparam>
+      target_frame: base_link
+      transform_tolerance: 0.01
+      min_height: 0.01
+      max_height: 1
+      
+      angle_min: -3.1415
+      angle_max: 3.1415
+      angle_increment: 0.01
+      scan_time: 0.01
+      range_min: 0
+      range_max: 30
+      use_inf: true
+      
+      #concurrency_level affects number of pc queued for processing and the number of threadsused
+      # 0: Detect number of cores
+      # 1: Single threaded
+      # 2: inf : Parallelism level
+      concurrency_level: 0
+
+      catagories:
+        - 0
+    </rosparam>
+  </node>
+
+  <node pkg="jackal_velodyne" type="pcl_filter_node" name="f1">
+    <remap from="cloud_in" to="/velodyne_points"/>
+
+    <remap from="scan" to="/f1" />
+    <rosparam>
+      target_frame: base_link
+      transform_tolerance: 0.01
+      min_height: 0.01
+      max_height: 1
+      
+      angle_min: -3.1415
+      angle_max: 3.1415
+      angle_increment: 0.01
+      scan_time: 0.01
+      range_min: 0
+      range_max: 30
+      use_inf: true
+      
+      #concurrency_level affects number of pc queued for processing and the number of threadsused
+      # 0: Detect number of cores
+      # 1: Single threaded
+      # 2: inf : Parallelism level
+      concurrency_level: 0
+
+      catagories:
+        - 1
+    </rosparam>
+  </node>
+
+  <node pkg="jackal_velodyne" type="pcl_filter_node" name="f2">
+    <remap from="cloud_in" to="/velodyne_points"/>
+
+    <remap from="scan" to="/f2" />
+    <rosparam>
+      target_frame: base_link
+      transform_tolerance: 0.01
+      min_height: 0.01
+      max_height: 1
+      
+      angle_min: -3.1415
+      angle_max: 3.1415
+      angle_increment: 0.01
+      scan_time: 0.01
+      range_min: 0
+      range_max: 30
+      use_inf: true
+      
+      #concurrency_level affects number of pc queued for processing and the number of threadsused
+      # 0: Detect number of cores
+      # 1: Single threaded
+      # 2: inf : Parallelism level
+      concurrency_level: 0
+
+      catagories:
+        - 2
+    </rosparam>
+  </node>
+
+  <node pkg="jackal_velodyne" type="pcl_filter_node" name="f3">
+    <remap from="cloud_in" to="/velodyne_points"/>
+
+    <remap from="scan" to="/f3" />
+    <rosparam>
+      target_frame: base_link
+      transform_tolerance: 0.01
+      min_height: 0.01
+      max_height: 1
+      
+      angle_min: -3.1415
+      angle_max: 3.1415
+      angle_increment: 0.01
+      scan_time: 0.01
+      range_min: 0
+      range_max: 30
+      use_inf: true
+      
+      #concurrency_level affects number of pc queued for processing and the number of threadsused
+      # 0: Detect number of cores
+      # 1: Single threaded
+      # 2: inf : Parallelism level
+      concurrency_level: 0
+
+      catagories:
+        - 3
+    </rosparam>
+  </node>
+
+  <node pkg="jackal_velodyne" type="pcl_filter_node" name="f4">
+    <remap from="cloud_in" to="/velodyne_points"/>
+
+    <remap from="scan" to="/f4" />
+    <rosparam>
+      target_frame: base_link
+      transform_tolerance: 0.01
+      min_height: 0.01
+      max_height: 1
+      
+      angle_min: -3.1415
+      angle_max: 3.1415
+      angle_increment: 0.01
+      scan_time: 0.01
+      range_min: 0
+      range_max: 30
+      use_inf: true
+      
+      #concurrency_level affects number of pc queued for processing and the number of threadsused
+      # 0: Detect number of cores
+      # 1: Single threaded
+      # 2: inf : Parallelism level
+      concurrency_level: 0
+
+      catagories:
+        - 4
+    </rosparam>
+  </node>
+
+  <node pkg="jackal_velodyne" type="pcl_filter_node" name="f5">
+    <remap from="cloud_in" to="/velodyne_points"/>
+
+    <remap from="scan" to="/f5" />
+    <rosparam>
+      target_frame: base_link
+      transform_tolerance: 0.01
+      min_height: 0.01
+      max_height: 1
+      
+      angle_min: -3.1415
+      angle_max: 3.1415
+      angle_increment: 0.01
+      scan_time: 0.01
+      range_min: 0
+      range_max: 30
+      use_inf: true
+      
+      #concurrency_level affects number of pc queued for processing and the number of threadsused
+      # 0: Detect number of cores
+      # 1: Single threaded
+      # 2: inf : Parallelism level
+      concurrency_level: 0
+
+      catagories:
+        - 5
+    </rosparam>
+  </node>
+
+</launch>

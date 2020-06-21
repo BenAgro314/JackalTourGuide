@@ -72,6 +72,9 @@ target_link_libraries(process_bag utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARI
 add_executable(bag_diagnostics src/bag_diagnostics.cpp) 
 target_link_libraries(bag_diagnostics utilities costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_executable(navigation_goals_V2 src/navigation_goals_V2.cpp) 
+target_link_libraries(navigation_goals_V2 utilities costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 add_library(custom_velodyne src/custom_velodyne.cpp)
 target_link_libraries(custom_velodyne
   ${catkin_LIBRARIES}

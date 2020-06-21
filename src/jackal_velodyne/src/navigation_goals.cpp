@@ -1,5 +1,3 @@
-///TODO: ADD DELAY UNTIL ALL OTHER TOPICS HAVE BEEN PUBLISHED
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <ros/ros.h>

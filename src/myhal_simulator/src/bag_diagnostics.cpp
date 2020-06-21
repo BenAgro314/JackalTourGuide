@@ -66,7 +66,6 @@ int main(int argc, char ** argv){
         if (obj.MinZ() < 1.5 && obj.MaxZ() >10e-2){
             auto box = obj.Box();
 
-            // TODO: inflate box
             box.Min().X()-=robot_radius;
             box.Min().Y()-=robot_radius;
             box.Max().X()+=robot_radius;
@@ -75,14 +74,6 @@ int main(int argc, char ** argv){
             costmap.AddObject(box);
         }
     }
-
-    //std::ofstream test(filepath+"test.txt");
-
-    //test << costmap.ToString();
-
-    //test.close();
-
-    // read navigation goals from tour:
   
 
     auto goals = handle.TourTargets();
@@ -121,9 +112,6 @@ int main(int argc, char ** argv){
     path_file << std::endl <<std::endl;
 
     path_file.close();
-
-    // compute length of each path 
- 
 
     std::vector<double> optimal_lengths;
     

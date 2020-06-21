@@ -16,9 +16,10 @@ rosparam set use_sim_time true
 t=$(date +'%Y-%m-%d-%H-%M-%S')
 rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
-touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/log.txt"
-echo $2 >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/log.txt"
-
+mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs"
+touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs/log.txt"
+echo $2 >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs/log.txt"
+ 
 sleep 0.1
 
 roslaunch jackal_velodyne jackal_testing.launch &

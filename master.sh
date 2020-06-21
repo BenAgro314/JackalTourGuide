@@ -64,9 +64,10 @@ fi
 
 cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs/"
 
+rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" & # Limiting data to remain under rosbag buffer
 rosrun jackal_velodyne diagnostics &
-roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER &
-rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" # Limiting data to remain under rosbag buffer
+roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER
+
 
 
 
