@@ -63,7 +63,7 @@ int main(int argc, char ** argv){
     Costmap costmap = Costmap(boundary, 0.1);
 
     for (auto obj: static_objects){
-        if (obj.MinZ() < 1.5){
+        if (obj.MinZ() < 1.5 && obj.MaxZ() >10e-2){
             auto box = obj.Box();
 
             // TODO: inflate box
