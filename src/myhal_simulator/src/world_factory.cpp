@@ -297,7 +297,7 @@ void WorldHandler::LoadParams(){
             return;
         }
 
-        std::shared_ptr<myhal::Room> room = std::make_shared<myhal::Room>(geometry["x_min"], geometry["y_min"], geometry["x_max"], geometry["y_max"], this->walls, (bool) std::stoi(info["enclosed"]));
+        std::shared_ptr<myhal::Room> room = std::make_shared<myhal::Room>(geometry["x_min"], geometry["y_min"], geometry["x_max"], geometry["y_max"], this->walls, this->route, (bool) std::stoi(info["enclosed"]));
 
         std::vector<double> poses;
 

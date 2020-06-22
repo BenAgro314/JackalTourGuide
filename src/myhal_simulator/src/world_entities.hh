@@ -118,9 +118,11 @@ namespace myhal{
 
             std::vector<ignition::math::Box> walls;
 
+            std::vector<ignition::math::Pose3d> route;
+
             std::vector<std::shared_ptr<Model>> models;
 
-            Room(double x_min, double y_min, double x_max, double y_max, std::vector<ignition::math::Box> walls,  bool _enclosed);
+            Room(double x_min, double y_min, double x_max, double y_max, std::vector<ignition::math::Box> walls, std::vector<ignition::math::Pose3d> route,  bool _enclosed);
 
             bool AddModel(std::shared_ptr<Model> model); //if safety is true, it prevents model collisions 
 
