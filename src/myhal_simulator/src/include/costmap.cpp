@@ -64,7 +64,7 @@ std::string Costmap::ToString(){
             if (this->costmap[r][c] == 1){
                 out << "*";
             } else{
-                out << "#";
+                out << "▇";
             }
         }
         out << "\n";

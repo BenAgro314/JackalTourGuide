@@ -6,6 +6,8 @@ killall rviz
 killall roscore
 killall rosmaster
 
+TOUR=$1
+
 roscore &
 
 until rostopic list; do sleep 0.5; done #wait until rosmaster has started 
@@ -16,6 +18,7 @@ rosparam load src/myhal_simulator/params/scenario_params_V2.yaml
 rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
 rosparam load src/myhal_simulator/params/common_vehicle_params.yaml
+rosparam load src/myhal_simulator/tours/$TOUR/$TOUR.yaml
 t=$(date +'%Y-%m-%d-%H-%M-%S')
 rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"

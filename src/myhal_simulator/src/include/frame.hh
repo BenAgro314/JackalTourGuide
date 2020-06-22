@@ -278,6 +278,10 @@ struct TrajPoint{
     double time;
 
     TrajPoint(ignition::math::Pose3d pose, double time): pose(pose), time(time){};
+
+    bool operator<(const TrajPoint &b){
+        return this->time < b.time;
+    }
 };
 
 std::vector<TrajPoint> ReadTrajectory(happly::PLYData &plyIn, std::string element_name = "trajectory"){

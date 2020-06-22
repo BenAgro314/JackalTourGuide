@@ -32,6 +32,8 @@ class Costmap{
 
         std::vector<std::vector<double>> integration_field;
 
+    public:
+
         bool PosToIndicies(ignition::math::Vector3d pos, int &r, int &c);
 
         bool IndiciesToPos(ignition::math::Vector3d &pos, int r, int c);
@@ -39,8 +41,6 @@ class Costmap{
         bool Integrate(ignition::math::Vector3d goal);
 
         std::vector<std::vector<int>> GetNeighbours(std::vector<int> curr_ind, bool diag = false);
-
-    public:
 
         Costmap(ignition::math::Box boundary, double resolution);
 

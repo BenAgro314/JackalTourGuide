@@ -33,6 +33,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->building_box.Min().Y()-=1;
     this->building_box.Max().X()+=1;
     this->building_box.Max().Y()+=1;
+    //std::printf("%f, %f, %f, %f\n", building_box.Min().X(), building_box.Min().Y(), building_box.Max().X(), building_box.Max().Y());
+    //std::cout << "min_x: " << building_box.Min().X() << " max_y: " << building_box.Max().Y() << std::endl;
     this->static_quadtree = boost::make_shared<QuadTree>(this->building_box);
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
     
