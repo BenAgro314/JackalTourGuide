@@ -16,10 +16,14 @@ rosparam load src/myhal_simulator/params/scenario_params_V2.yaml
 rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
 rosparam load src/myhal_simulator/params/common_vehicle_params.yaml
+t=$(date +'%Y-%m-%d-%H-%M-%S')
+rosparam set start_time $t
+mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
+mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs"
 
 sleep 0.1
 
 rosrun myhal_simulator world_factory
 
-roslaunch jackal_velodyne myhal_sim_test.launch &
+roslaunch jackal_velodyne myhal_sim_test.launch
 

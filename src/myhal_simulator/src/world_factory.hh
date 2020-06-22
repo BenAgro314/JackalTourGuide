@@ -5,6 +5,7 @@
 #include "world_entities.hh"
 #include <utility>
 #include <ros/ros.h>
+#include "frame.hh"
 
 class RoomInfo{
 
@@ -108,6 +109,12 @@ class WorldHandler{
 
         std::vector<std::shared_ptr<RoomInfo>> rooms;
         //std::map<std::string , std::shared_ptr<myhal::Room>> rooms;
+
+        std::string user_name;
+
+        std::vector<ignition::math::Box> walls;
+
+        double robot_radius = std::sqrt((0.21*0.21) + (0.165*0.165));
 };
 
 

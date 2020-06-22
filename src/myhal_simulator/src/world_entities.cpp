@@ -310,7 +310,7 @@ TableGroup::TableGroup(std::shared_ptr<Model> _table_model, std::shared_ptr<Mode
 
 ///Room
 
-Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclosed = false)
+Room::Room(double x_min, double y_min, double x_max, double y_max, std::vector<ignition::math::Box> walls, bool _enclosed = false)
 {
     this->boundary = ignition::math::Box(ignition::math::Vector3d(x_min, y_min, 0), ignition::math::Vector3d(x_max, y_max, 10));
     this->enclosed = _enclosed;
@@ -328,6 +328,8 @@ Room::Room(double x_min, double y_min, double x_max, double y_max, bool _enclose
         this->models.push_back(left);
         this->models.push_back(right);
     }
+
+    this->walls = walls;
 }
 
 bool Room::AddModel(std::shared_ptr<Model> model)
@@ -344,6 +346,13 @@ bool Room::AddModel(std::shared_ptr<Model> model)
         if (model->DoesCollide(other))
         {
             return false;
+        }
+
+        auto model_box = model->GetCollisionBox();
+        for (auto box: this->walls){
+            if (box.Intersects(model_box)){
+                return false;
+            }
         }
 
         if (this->enclosed){

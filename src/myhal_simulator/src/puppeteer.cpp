@@ -59,13 +59,18 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
        
         if (model->GetName() != "ground_plane"){
+            //double max_width = -10e9;
+            //double max_length = -10e9;
             auto links = model->GetLinks();
             for (gazebo::physics::LinkPtr link: links){
                 std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
                 for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
+                    
                     this->collision_entities.push_back(collision_box);
                     auto box = collision_box->BoundingBox();
                     boxes.push_back(BoxObject(box, -1));
+                    //max_width = std::max(box.Max().X() - box.Min().X(), max_width);
+                    //max_length = std::max(box.Max().Y() - box.Min().Y(), max_length);
                     box.Max().Z() = 0;
                     box.Min().Z() = 0;
                     auto new_node = QTData(box, collision_box, entity_type);
@@ -74,6 +79,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                 }
                     
             }
+            //std::cout << model->GetName() << " w: " << max_width << " l: " << max_length << std::endl;
         }
 
     

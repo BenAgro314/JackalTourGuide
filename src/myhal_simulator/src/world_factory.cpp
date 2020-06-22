@@ -53,6 +53,28 @@ void WorldHandler::LoadParams(){
     ros::init(argc, argv, "WorldHandler");
     ros::NodeHandle nh;
 
+    // READ BUILDING INFO
+
+    this->user_name = "default";
+    if (const char * user = std::getenv("USER")){
+        this->user_name = user;
+    } 
+
+    happly::PLYData plyIn("/home/" + this->user_name + "/catkin_ws/src/myhal_simulator/params/myhal_walls.ply");
+    auto static_objects = ReadObjects(plyIn);
+
+    for (auto obj: static_objects){
+        if (obj.MinZ() < 1.5 && obj.MaxZ() >10e-2){
+            auto box = obj.Box();
+
+            box.Min().X()-=robot_radius;
+            box.Min().Y()-=robot_radius;
+            box.Max().X()+=robot_radius;
+            box.Max().Y()+=robot_radius;
+
+            this->walls.push_back(box);
+        }
+    }
 
     /// READ PLUGIN INFO
     
@@ -141,9 +163,9 @@ void WorldHandler::LoadParams(){
         }
         std::shared_ptr<ModelInfo> m_info;
         if (info.find("height") != info.end()){
-            m_info = std::make_shared<ModelInfo>(name, info["filename"], std::stod(info["width"]), std::stod(info["length"]), std::stod(info["height"]));
+            m_info = std::make_shared<ModelInfo>(name, info["filename"], std::stod(info["width"])+2*this->robot_radius, std::stod(info["length"])+2*this->robot_radius, std::stod(info["height"]));
         } else{
-            m_info = std::make_shared<ModelInfo>(name, info["filename"], std::stod(info["width"]), std::stod(info["length"]));
+            m_info = std::make_shared<ModelInfo>(name, info["filename"], std::stod(info["width"])+2*this->robot_radius, std::stod(info["length"])+2*this->robot_radius);
         }
         this->model_info[name] = m_info;
     }
@@ -264,7 +286,7 @@ void WorldHandler::LoadParams(){
             return;
         }
 
-        std::shared_ptr<myhal::Room> room = std::make_shared<myhal::Room>(geometry["x_min"], geometry["y_min"], geometry["x_max"], geometry["y_max"], (bool) std::stoi(info["enclosed"]));
+        std::shared_ptr<myhal::Room> room = std::make_shared<myhal::Room>(geometry["x_min"], geometry["y_min"], geometry["x_max"], geometry["y_max"], this->walls, (bool) std::stoi(info["enclosed"]));
 
         std::vector<double> poses;
 
@@ -296,8 +318,6 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
     std::random_shuffle(room_info->positions.begin(), room_info->positions.end());
     
     for (int i = 0; i < num_models; ++i){
-        //auto m_info = scenario->GetRandomModel();
-        
 
         auto t_info = scenario->GetRandomTable();
 
@@ -388,13 +408,10 @@ void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
 
 void WorldHandler::WriteToFile(std::string out_name){
 
-    std::string user_name = "default";
-    if (const char * user = std::getenv("USER")){
-        user_name = user;
-    } 
+    
 
-    std::string in_string = "/home/" + user_name + "/catkin_ws/src/myhal_simulator/worlds/myhal_template.txt";
-    std::string out_string = "/home/" + user_name + "/catkin_ws/src/myhal_simulator/worlds/" + out_name;
+    std::string in_string = "/home/" + this->user_name + "/catkin_ws/src/myhal_simulator/worlds/myhal_template.txt";
+    std::string out_string = "/home/" + this->user_name + "/catkin_ws/src/myhal_simulator/worlds/" + out_name;
 
     std::ifstream in = std::ifstream(in_string);
 
