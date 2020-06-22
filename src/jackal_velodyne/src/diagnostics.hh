@@ -191,7 +191,7 @@ void Doctor::ReadParams(){
         std::cout << "ERROR SETTING START TIME\n";
     }
 
-    if (!this->nh.getParam("bag_name", this->tour_name)){
+    if (!this->nh.getParam("tour_name", this->tour_name)){
         std::cout << "ERROR FINDING TOUR NAME\n";
     }
 

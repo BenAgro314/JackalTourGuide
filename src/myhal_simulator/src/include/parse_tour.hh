@@ -7,11 +7,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ignition/math/Vector3.hh>
+#include <ignition/math/Pose3.hh>
 #include <ignition/math/Box.hh>
+#include <ignition/math/Quaternion.hh>
 #include <ros/ros.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <ctype.h>
+#include "costmap.hh"
+#include "frame.hh"
+#include <algorithm>
 
 move_base_msgs::MoveBaseGoal PoseToGoal(ignition::math::Pose3d pose);
 

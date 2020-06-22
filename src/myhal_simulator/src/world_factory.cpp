@@ -5,6 +5,7 @@
 #include <cstdlib> 
 #include <iostream>
 #include <fstream>
+#include "parse_tour.hh"
 
 int main(int argc, char ** argv){
 
@@ -77,6 +78,16 @@ void WorldHandler::LoadParams(){
     }
 
     /// READ PLUGIN INFO
+
+    if (!nh.getParam("tour_name", this->tour_name)){
+        std::cout << "ERROR READING TOUR NAME\n";
+        this->tour_name = "A_tour";
+        return;
+    }
+
+    TourParser parser = TourParser(this->tour_name);
+
+    this->route = parser.GetRoute();
     
     std::vector<std::string> plugin_names;
     if (!nh.getParam("plugin_names", plugin_names)){

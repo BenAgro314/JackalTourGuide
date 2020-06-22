@@ -115,6 +115,10 @@ class WorldHandler{
         std::vector<ignition::math::Box> walls;
 
         double robot_radius = std::sqrt((0.21*0.21) + (0.165*0.165));
+
+        std::string tour_name;
+
+        std::vector<ignition::math::Pose3d> route;
 };
 
 

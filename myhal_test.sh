@@ -18,7 +18,7 @@ rosparam load src/myhal_simulator/params/scenario_params_V2.yaml
 rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
 rosparam load src/myhal_simulator/params/common_vehicle_params.yaml
-rosparam load src/myhal_simulator/tours/$TOUR/$TOUR.yaml
+rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 t=$(date +'%Y-%m-%d-%H-%M-%S')
 rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
