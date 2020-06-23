@@ -6,7 +6,7 @@ killall rviz
 killall roscore
 killall rosmaster
 
-TOUR=$1
+TOUR="A_tour"
 
 roscore &
 

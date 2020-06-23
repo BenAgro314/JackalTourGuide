@@ -316,6 +316,7 @@ namespace gazebo
                 double r = _msg->scan().ranges(i + j * rangeCount);
                 // Intensity
                 double intensity = _msg->scan().intensities(i + j * rangeCount);
+                
                 // Ignore points that lay outside range bands or optionally, beneath a
                 // minimum intensity level.
                 if ((MIN_RANGE >= r) || (r >= MAX_RANGE) || (intensity < MIN_INTENSITY))
@@ -445,7 +446,10 @@ namespace gazebo
                                 //if we a checking a person, treat them as a cylindar with a radius that is equal to box width/2
                                 double r = n.box.Max().X() - n.box.Min().X();
                                 auto other = (n.box.Min()+n.box.Max())/2; // the center of the box is the position of the person
-                                dist = std::abs((point-other).Length()-r);
+                                dist = (point-other).Length()-r;
+                                if (dist < 0){
+                                    dist = 0;
+                                }
                             } else{
                                 dist = utilities::dist_to_box(point, n.box);
                                 

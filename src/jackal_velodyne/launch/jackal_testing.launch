@@ -2,7 +2,7 @@
 
   
   <arg name="use_sim_time" default="true" />
-  <arg name="gui" default="false" /> <!-- adjust gui and headless to speed up simulation by removing the gazebo gui -->
+  <arg name="gui" default="true" /> <!-- adjust gui and headless to speed up simulation by removing the gazebo gui -->
   <arg name="headless" default="true" />
   <arg name="world_name" default="$(find jackal_velodyne)/worlds/sandbox.world" />
   <!--arg name="world_name" default="$(find myhal_simulator)/worlds/myhal_sim.world" /-->
@@ -44,7 +44,7 @@
     <arg name="joystick" value="false"/>
   </include>
 
-   <include file="$(find jackal_velodyne)/launch/include/full_filter.launch">
+   <include file="$(find jackal_velodyne)/launch/include/pointcloud_filter.launch">
   </include>
 
   <!-- Spawn Jackal -->

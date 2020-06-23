@@ -28,6 +28,7 @@
         <meta>
           <layer>0</layer>
         </meta>
+        <laser_retro>200<laser_retro>
       </visual>
       <pose frame=''>-9.92491 0 0 0 -0 -1.56817</pose>
     </link>

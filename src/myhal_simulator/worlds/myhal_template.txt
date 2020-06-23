@@ -67,7 +67,7 @@
     <atmosphere type='adiabatic'/>
     <physics name='default_physics' default='0' type='ode'>
       <!--adjust max_step size to throttle the simulation (0.001 is realtime)-->
-      <max_step_size>0.001</max_step_size>
+      <max_step_size>0.0007</max_step_size>
       <real_time_factor>1</real_time_factor>
       <real_time_update_rate>1000</real_time_update_rate>
     </physics>

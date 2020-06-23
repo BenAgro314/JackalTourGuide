@@ -122,7 +122,7 @@
 		</include-->
 
     
-		<include>
+		<!--include>
 			<name>chair_6</name>
 			<pose>-4.000164 -1.704416 0.000000 0.000000 -0.000000 1.054588</pose>
 			<uri>model://chair_3</uri>
@@ -176,10 +176,10 @@
 			<name>table_C</name>
 			<pose>4.000000 -3 0.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://coffee_table_set_1</uri>
-		</include>
+		</include-->
 
     <actor name="actor_basic_stander_34">
-			<pose>-2.333548 -5 1.000000 0.000000 -0.000000 1.552967</pose>
+			<pose>-9 0 1.000000 0.000000 -0.000000 1.552967</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -205,7 +205,7 @@
 			</plugin>
 			<plugin name="vehicle_type" filename="stander">
 			</plugin>
-			<plugin name="walking_duration" filename="5">
+			<plugin name="walking_duration" filename="-1">
 			</plugin>
 		</actor>
 
