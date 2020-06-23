@@ -43,7 +43,6 @@ rosparam load src/myhal_simulator/params/scenario_params_V2.yaml
 rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
 rosparam set use_sim_time true
-#rosparam set bag_name $TOUR
 rosparam set tour_name $TOUR
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 t=$(date +'%Y-%m-%d-%H-%M-%S')
@@ -60,7 +59,7 @@ WORLDFILE="/home/$USER/catkin_ws/src/myhal_simulator/worlds/myhal_sim.world"
 if [[ -z $LOADWORLD ]]; then
     rosrun myhal_simulator world_factory
 else
-    WORLDFILE="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/logs-$t/myhal_sim.world"
+    WORLDFILE="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/logs-$LOADWORLD/myhal_sim.world"
     echo "Loading world $WORLDFILE"
 fi
 
