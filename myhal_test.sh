@@ -23,7 +23,7 @@ rosparam set tour_name $TOUR
 t=$(date +'%Y-%m-%d-%H-%M-%S')
 rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
-mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs"
+mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
 
 sleep 0.1
 
