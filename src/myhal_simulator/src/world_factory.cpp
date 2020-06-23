@@ -87,7 +87,10 @@ void WorldHandler::LoadParams(){
 
     TourParser parser = TourParser(this->tour_name);
 
+
     this->route = parser.GetRoute();
+
+    this->route.push_back(ignition::math::Pose3d(ignition::math::Vector3d(0,0,0), ignition::math::Quaterniond(0,0,0,1)));
     
     std::vector<std::string> plugin_names;
     if (!nh.getParam("plugin_names", plugin_names)){
