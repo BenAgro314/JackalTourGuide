@@ -436,6 +436,7 @@ namespace gazebo
                         double min_dist = point.Z();
                         if (min_dist > 0.05){
                             intensity = 5;
+                            min_dist = 10e9;
                         }
 
                         for (auto n: check_objects){
