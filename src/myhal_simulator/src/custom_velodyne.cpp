@@ -448,7 +448,13 @@ namespace gazebo
                                 dist = std::abs((point-other).Length()-r);
                             } else{
                                 dist = utilities::dist_to_box(point, n.box);
+                                if (n.cat == 5 && dist <0.05){
+                                    intensity = 5; 
+                                    break;
+                                }
                             }
+
+                            
                             
                             if (dist <= min_dist){
                                 min_dist = dist;
