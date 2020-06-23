@@ -246,8 +246,8 @@ namespace gazebo
         std::map<std::string, double> actor_speed;
         for (auto act: this->actors){
             actor_speed[act->GetName()] = (act->WorldPose().Pos() - this->last_actor_pose[act->GetName()].Pos()).Length()/dt;
-            auto min = ignition::math::Vector3d(act->WorldPose().Pos().X() - 0.1, act->WorldPose().Pos().Y() - 0.1, 0);
-            auto max = ignition::math::Vector3d(act->WorldPose().Pos().X() + 0.1, act->WorldPose().Pos().Y() + 0.1, 0);
+            auto min = ignition::math::Vector3d(act->WorldPose().Pos().X() - 0.15, act->WorldPose().Pos().Y() - 0.15, 0);
+            auto max = ignition::math::Vector3d(act->WorldPose().Pos().X() + 0.15, act->WorldPose().Pos().Y() + 0.15, 0);
             auto box = ignition::math::Box(min,max);
             auto new_node = QTData(box, act, vehicle_type);
             this->active_quadtree->Insert(new_node);
@@ -324,10 +324,10 @@ namespace gazebo
                 }
 
                 // Noise
-                if (gaussian_noise_ != 0.0)
-                {
-                    r += gaussianKernel(0, gaussian_noise_);
-                }
+                // if (gaussian_noise_ != 0.0)
+                // {
+                //     r += gaussianKernel(0, gaussian_noise_);
+                // }
 
                 // Get angles of ray to get xyz for point
                 double yAngle;
@@ -416,7 +416,7 @@ namespace gazebo
                                 cat = 2; // moving actors 
                             }
                             
-                            auto box = ignition::math::Box(ignition::math::Vector3d(actor->WorldPose().Pos().X()-0.1, actor->WorldPose().Pos().Y()-0.1,0), ignition::math::Vector3d(actor->WorldPose().Pos().X()+0.1, actor->WorldPose().Pos().Y()+0.1, 1));
+                            auto box = ignition::math::Box(ignition::math::Vector3d(actor->WorldPose().Pos().X()-0.15, actor->WorldPose().Pos().Y()-0.15,0), ignition::math::Vector3d(actor->WorldPose().Pos().X()+0.15, actor->WorldPose().Pos().Y()+0.15, 1));
                             check_objects.push_back(CollObj(cat, box));
                             //near_actors.push_back(boost::static_pointer_cast<gazebo::physics::Actor>(n.data));
                         }
@@ -516,8 +516,8 @@ namespace gazebo
             if (act){
                 this->actors.push_back(act);
                 this->last_actor_pose[act->GetName()] = act->WorldPose();
-                auto min = ignition::math::Vector3d(act->WorldPose().Pos().X() - 0.1, act->WorldPose().Pos().Y() - 0.1, 0);
-                auto max = ignition::math::Vector3d(act->WorldPose().Pos().X() + 0.1, act->WorldPose().Pos().Y() + 0.1, 0);
+                auto min = ignition::math::Vector3d(act->WorldPose().Pos().X() - 0.15, act->WorldPose().Pos().Y() - 0.15, 0);
+                auto max = ignition::math::Vector3d(act->WorldPose().Pos().X() + 0.15, act->WorldPose().Pos().Y() + 0.15, 0);
                 auto box = ignition::math::Box(min,max);
                 auto new_node = QTData(box, act, vehicle_type);
                 this->active_quadtree->Insert(new_node);
