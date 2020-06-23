@@ -444,7 +444,7 @@ namespace gazebo
                                 //if we a checking a person, treat them as a cylindar with a radius that is equal to box width/2
                                 double r = n.box.Max().X() - n.box.Min().X();
                                 auto other = (n.box.Min()+n.box.Max())/2; // the center of the box is the position of the person
-                                dist = (point-other).Length()-r;
+                                dist = std::abs((point-other).Length()-r);
                             } else{
                                 dist = utilities::dist_to_box(point, n.box);
                             }
