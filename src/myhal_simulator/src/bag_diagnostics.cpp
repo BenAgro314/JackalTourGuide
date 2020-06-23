@@ -24,13 +24,13 @@ int main(int argc, char ** argv){
 
     happly::PLYData plyOut;
     AddTrajectory(plyOut, amcl_traj);
-    plyOut.write(filepath + "/logs/amcl_pose.ply", happly::DataFormat::Binary);
+    plyOut.write(filepath + "/logs-" + time_name + "/amcl_pose.ply", happly::DataFormat::Binary);
 
     std::cout << "Computing translation drift\n";
     auto trans_drift = handle.TranslationDrift(gt_traj, amcl_traj);
     std::cout << "Finished computing translation drift\n";
 
-    std::ofstream out(filepath + "/logs/translation_drift.csv");
+    std::ofstream out(filepath + "/logs-" + time_name +"/translation_drift.csv");
     out << "Distance (m), Translation Drift (m)\n";
     for (auto row: trans_drift){
         out << row[0] << "," << row[1] << std::endl;
@@ -41,7 +41,7 @@ int main(int argc, char ** argv){
     // read the information from the static objects file to creat the costmap
     std::cout << "Creating costmap\n"; 
 
-    happly::PLYData plyIn(filepath + "/logs/static_objects.ply");
+    happly::PLYData plyIn(filepath + "/logs-" + time_name +"/static_objects.ply");
     auto static_objects = ReadObjects(plyIn);
 
     double min_x = 10e9;
@@ -86,7 +86,7 @@ int main(int argc, char ** argv){
 
     std::vector<TrajPoint> optimal_traj;
 
-    std::ofstream path_file(filepath + "/logs/paths.txt");
+    std::ofstream path_file(filepath + "/logs-" + time_name + "/paths.txt");
     
     for (int first = 0; first < goals.size()-1; first++){
       
@@ -178,7 +178,7 @@ int main(int argc, char ** argv){
     
     std::cout << "Writing to file\n";
 
-    std::ofstream out2(filepath + "/logs/path_difference.csv");
+    std::ofstream out2(filepath + "/logs-" + time_name + "/path_difference.csv");
 
     out2 << " ,Optimal path length (m), reached goal?, actual path length (m), difference (m)\n";
 
@@ -206,7 +206,7 @@ int main(int argc, char ** argv){
 
     happly::PLYData plyOut2;
     AddTrajectory(plyOut2, optimal_traj);
-    plyOut2.write(filepath + "/logs/optimal_traj.ply", happly::DataFormat::Binary);
+    plyOut2.write(filepath + "/logs-" + time_name + "/optimal_traj.ply", happly::DataFormat::Binary);
     
 
     return 0;

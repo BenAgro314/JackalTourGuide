@@ -7,7 +7,7 @@ killall roscore
 killall rosmaster
 
 GUI=false
-TOUR="A_tour.bag"
+TOUR="A_tour"
 MESSAGE=""
 LOADWORLD=""
 FILTER=false
@@ -49,9 +49,9 @@ rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 t=$(date +'%Y-%m-%d-%H-%M-%S')
 rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
-mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs"
-touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs/log.txt"
-echo "Trial Notes: $MESSAGE" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs/log.txt"
+mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
+touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
+echo "Trial Notes: $MESSAGE" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
 
 sleep 0.1
 
@@ -60,11 +60,11 @@ WORLDFILE="/home/$USER/catkin_ws/src/myhal_simulator/worlds/myhal_sim.world"
 if [[ -z $LOADWORLD ]]; then
     rosrun myhal_simulator world_factory
 else
-    WORLDFILE="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/logs/myhal_sim.world"
+    WORLDFILE="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/logs-$t/myhal_sim.world"
     echo "Loading world $WORLDFILE"
 fi
 
-cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs/"
+cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/"
 
 rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" & # Limiting data to remain under rosbag buffer
 rosrun jackal_velodyne diagnostics &
