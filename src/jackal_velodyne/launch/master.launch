@@ -75,8 +75,6 @@
   <!--- Run Move Base -->
  <include file="$(find jackal_velodyne)/launch/include/move_base.launch" />
  
-
-  <!--node pkg="jackal_velodyne" type="navigation_goals" name="navigation_goals"/-->
   <node pkg="myhal_simulator" type="navigation_goals_V2" name="navigation_goals_V2"/>
   
 </launch>
