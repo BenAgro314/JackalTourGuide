@@ -58,7 +58,7 @@
   </group>
 
   <group if="$(arg mapping)">
-    <include file="$(find jackal_velodyne)/launch/include/gmapping.launch" />
+    <include file="$(find jackal_velodyne)/launch/include/gmapping.launch"/>
   </group>
 
   <group unless="$(arg mapping)">

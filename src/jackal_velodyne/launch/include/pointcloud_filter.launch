@@ -30,8 +30,9 @@
           concurrency_level: 0
 
           catagories:
-            - 0
             - 1
+            - 2
+            - 3
             - 4
             - 5
         </rosparam>
@@ -92,6 +93,9 @@
             concurrency_level: 0
 
             catagories:
+              - 1
+              - 3
+              - 4
               - 5
           </rosparam>
         </node>

@@ -86,6 +86,8 @@ class BagTools{
                 
                 // interpolate gt pose to the time of amcl pose
                 auto interpolated_pose = utilities::InterpolatePose(time, t1, t2, pose1, pose2);
+                interpolated_pose.Pos().Z() = 0;
+                last_gt.Pos().Z() = 0;
                 dist += (interpolated_pose.Pos()-last_gt.Pos()).Length();
                 last_gt = interpolated_pose;
 
@@ -170,9 +172,11 @@ class BagTools{
                     auto pose = msg.instantiate<nav_msgs::Odometry>();
                     if (pose != nullptr) {
                         trajectory.push_back(TrajPoint(ignition::math::Pose3d(pose->pose.pose.position.x, pose->pose.pose.position.y, pose->pose.pose.position.z, pose->pose.pose.orientation.w, pose->pose.pose.orientation.x, pose->pose.pose.orientation.y, pose->pose.pose.orientation.z), pose->header.stamp.toSec()));
-                    } else{
+                       
+                    } else{ 
                         auto p = msg.instantiate<geometry_msgs::PoseWithCovarianceStamped>();
                         trajectory.push_back(TrajPoint(ignition::math::Pose3d(p->pose.pose.position.x, p->pose.pose.position.y, p->pose.pose.position.z, p->pose.pose.orientation.w, p->pose.pose.orientation.x, p->pose.pose.orientation.y, p->pose.pose.orientation.z), p->header.stamp.toSec()));
+                        
                     }
                     
                 } 

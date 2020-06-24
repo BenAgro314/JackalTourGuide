@@ -18,7 +18,7 @@ lounge_532:
   geometry: g532
   positions: p532
   enclosed: "0"
-  scenario: empty
+  scenario: no_tables_wanderer_crowd
 
 study_space_546:
   geometry: g546
@@ -34,7 +34,7 @@ irm_lab_580:
 
 admin_off_514:
   geometry: g514
-  positions: p514ag
+  positions: p514
   enclosed: "1"
   scenario: empty
 

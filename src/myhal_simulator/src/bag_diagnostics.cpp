@@ -24,8 +24,6 @@ int main(int argc, char ** argv){
 
     
 
-
-
     /// read in transforms between odom->base and map->odom
 
     auto odom_to_base = handle.GetTransforms("odom","base_link"); // what is the position of base_link w.r.t odom frame
@@ -43,30 +41,28 @@ int main(int argc, char ** argv){
         plyOut.write(filepath + "/logs-" + time_name + "/amcl_pose.ply", happly::DataFormat::Binary);
         
 
-        std::cout << "Computing amcl drift\n";
+        std::cout << "Computing amcl localization error\n";
         auto trans_drift = handle.TranslationDrift(gt_traj, amcl_traj);
-        std::cout << "Finished computing amcl drift\n";
+        std::cout << "Finished computing amcl localization error\n";
 
-        std::ofstream out(filepath + "/logs-" + time_name +"/amcl_drift.csv");
-        out << "Distance Travelled (m), AMCL Drift (m)\n";
+        std::ofstream out(filepath + "/logs-" + time_name +"/amcl_error.csv");
+        out << "Distance Travelled (m), Localization Error (m)\n";
         for (auto row: trans_drift){
             out << row[0] << "," << row[1] << std::endl;
         }
 
         out.close();
-    } 
-    
-    if (gmapping_traj.size() > 0){
+    } else if (gmapping_traj.size() >0){
         happly::PLYData plyOut;
         AddTrajectory(plyOut, gmapping_traj);
         plyOut.write(filepath + "/logs-" + time_name + "/gmapping_pose.ply", happly::DataFormat::Binary);
 
-        std::cout << "Computing gmapping drift\n";
+        std::cout << "Computing gmapping localization error\n";
         auto trans_drift = handle.TranslationDrift(gt_traj, gmapping_traj);
-        std::cout << "Finished computing gmapping drift\n";
+        std::cout << "Finished computing gmapping localization error\n";
 
-        std::ofstream out(filepath + "/logs-" + time_name +"/gmapping_drift.csv");
-        out << "Distance Travelled (m), gmapping Drift (m)\n";
+        std::ofstream out(filepath + "/logs-" + time_name +"/gmapping_error.csv");
+        out << "Distance Travelled (m), Localization Error (m)\n";
         for (auto row: trans_drift){
             out << row[0] << "," << row[1] << std::endl;
         }
