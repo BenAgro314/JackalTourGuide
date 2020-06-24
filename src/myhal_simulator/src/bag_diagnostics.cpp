@@ -22,21 +22,57 @@ int main(int argc, char ** argv){
     auto amcl_traj = handle.GetTrajectory("/amcl_pose");
     auto gt_traj = handle.GetTrajectory("/ground_truth/state");
 
-    happly::PLYData plyOut;
-    AddTrajectory(plyOut, amcl_traj);
-    plyOut.write(filepath + "/logs-" + time_name + "/amcl_pose.ply", happly::DataFormat::Binary);
+    
 
-    std::cout << "Computing translation drift\n";
-    auto trans_drift = handle.TranslationDrift(gt_traj, amcl_traj);
-    std::cout << "Finished computing translation drift\n";
 
-    std::ofstream out(filepath + "/logs-" + time_name +"/translation_drift.csv");
-    out << "Distance (m), Translation Drift (m)\n";
-    for (auto row: trans_drift){
-        out << row[0] << "," << row[1] << std::endl;
+
+    /// read in transforms between odom->base and map->odom
+
+    auto odom_to_base = handle.GetTransforms("odom","base_link"); // what is the position of base_link w.r.t odom frame
+    auto map_to_odom = handle.GetTransforms("map", "odom"); // what is the position of odom frame w.r.t map
+
+    /// translate odom_traj to to map frame
+
+    auto gmapping_traj = handle.ShiftTrajectory(odom_to_base, map_to_odom);
+
+    std::vector<TrajPoint> estimated_traj;
+
+    if (amcl_traj.size() > 0){
+        happly::PLYData plyOut;
+        AddTrajectory(plyOut, amcl_traj);
+        plyOut.write(filepath + "/logs-" + time_name + "/amcl_pose.ply", happly::DataFormat::Binary);
+        
+
+        std::cout << "Computing amcl drift\n";
+        auto trans_drift = handle.TranslationDrift(gt_traj, amcl_traj);
+        std::cout << "Finished computing amcl drift\n";
+
+        std::ofstream out(filepath + "/logs-" + time_name +"/amcl_drift.csv");
+        out << "Distance Travelled (m), AMCL Drift (m)\n";
+        for (auto row: trans_drift){
+            out << row[0] << "," << row[1] << std::endl;
+        }
+
+        out.close();
+    } 
+    
+    if (gmapping_traj.size() > 0){
+        happly::PLYData plyOut;
+        AddTrajectory(plyOut, gmapping_traj);
+        plyOut.write(filepath + "/logs-" + time_name + "/gmapping_pose.ply", happly::DataFormat::Binary);
+
+        std::cout << "Computing gmapping drift\n";
+        auto trans_drift = handle.TranslationDrift(gt_traj, gmapping_traj);
+        std::cout << "Finished computing gmapping drift\n";
+
+        std::ofstream out(filepath + "/logs-" + time_name +"/gmapping_drift.csv");
+        out << "Distance Travelled (m), gmapping Drift (m)\n";
+        for (auto row: trans_drift){
+            out << row[0] << "," << row[1] << std::endl;
+        }
+
+        out.close();
     }
-
-    out.close();
 
     // read the information from the static objects file to creat the costmap
     std::cout << "Creating costmap\n"; 

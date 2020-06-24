@@ -11,8 +11,9 @@ TOUR="A_tour"
 MESSAGE=""
 LOADWORLD=""
 FILTER=false
+MAPPING=false
 
-while getopts t:m:g:l:f: option
+while getopts t:m:g:l:f:a: option
 do
 case "${option}"
 in
@@ -21,6 +22,7 @@ m) MESSAGE=${OPTARG};; # A message to add to the log file
 g) GUI=${OPTARG};; # do you want to use the gui
 l) LOADWORLD=${OPTARG};; # do you want to load a prexisting world or generate a new one
 f) FILTER=${OPTARG};; # pointcloud filtering?
+a) MAPPING=${OPTARG};; # use gmapping?
 esac
 done
 
@@ -50,7 +52,7 @@ rosparam set start_time $t
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
 touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
-echo "Trial Notes: $MESSAGE" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
+echo -e "Trial Notes: $MESSAGE\nFILTER: $FILTER\nMAPPING $MAPPING" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
 
 sleep 0.1
 
@@ -67,7 +69,7 @@ cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/"
 
 rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" & # Limiting data to remain under rosbag buffer
 rosrun jackal_velodyne diagnostics &
-roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER
+roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER mapping:=$MAPPING
 
 
 

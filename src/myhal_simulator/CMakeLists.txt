@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   move_base_msgs
   actionlib
+  tf2_msgs
 )
 
 
@@ -26,7 +27,7 @@ find_package(gazebo REQUIRED)
 
 
 catkin_package(
-	DEPENDS gazebo_ros pcl_ros roscpp rospy std_msgs rosbag sensor_msgs pcl_conversions nav_msgs geometry_msgs move_base_msgs actionlib
+	DEPENDS gazebo_ros pcl_ros roscpp rospy std_msgs rosbag sensor_msgs pcl_conversions nav_msgs geometry_msgs move_base_msgs actionlib tf2_msgs
 	INCLUDE_DIRS src/include
 )
 

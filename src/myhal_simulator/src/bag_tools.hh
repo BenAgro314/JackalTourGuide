@@ -8,7 +8,8 @@
 #include <rosbag/view.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseWithCovariance.h>
-#include <geometry_msgs/Pose.h>
+#include <tf2_msgs/TFMessage.h>
+#include <geometry_msgs/TransformStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <move_base_msgs/MoveBaseActionResult.h>
@@ -95,6 +96,65 @@ class BagTools{
             return trans_drift;
         }
 
+        std::vector<TrajPoint> ShiftTrajectory(std::vector<TrajPoint> traj, std::vector<TrajPoint> transform){
+            std::vector<TrajPoint> transformed_traj;
+
+            double min_time = 10e9;
+            double max_time = -10e9;
+            for (auto frame: traj){
+                min_time = std::min(min_time, frame.time);
+                max_time = std::max(max_time, frame.time);
+            }
+
+            int last = 0;
+            ignition::math::Pose3d last_pose = traj[0].pose;
+            double dist = 0;
+
+            //for every transformation
+            for (auto frame: transform){
+                double time = frame.time;
+
+                if (time < min_time || time > max_time){
+                    continue;
+                }
+
+                int lower_ind = last;
+
+                // find closest two poses 
+                while (traj[lower_ind].time > time || traj[lower_ind+1].time < time){
+                        
+                    if (traj[lower_ind].time > time){
+                        lower_ind -=1;
+                    } else {
+                        lower_ind +=1;
+                    }
+                }
+
+                last = lower_ind+1;
+
+                auto pose1 = traj[lower_ind].pose;
+                    
+                auto pose2 = traj[lower_ind+1].pose;
+
+                double t1 = traj[lower_ind].time;
+                double t2 = traj[lower_ind+1].time;
+                
+                // interpolate gt pose to the time of transform
+                auto interpolated_pose = utilities::InterpolatePose(time, t1, t2, pose1, pose2);
+
+                // transform interpolated pose by transform 
+
+                interpolated_pose = interpolated_pose + frame.pose;
+
+                auto traj_point = TrajPoint(interpolated_pose, time);
+
+                transformed_traj.push_back(traj_point);
+               
+            }
+
+            return transformed_traj;
+        }
+
 
         // may take either nav_msgs::Odometry or geometry_msgs::PoseWithCovarianceStamped
         std::vector<TrajPoint> GetTrajectory(std::string topic){
@@ -121,6 +181,33 @@ class BagTools{
 
             return trajectory;
             bag.close();
+        }
+
+        // we will use TrajPoint to store the time and transfrom 
+
+        std::vector<TrajPoint> GetTransforms(std::string parent, std::string child, std::string topic = "/tf"){
+            std::vector<TrajPoint> transform_list;
+            rosbag::Bag bag;
+            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
+            rosbag::View view(bag, rosbag::TopicQuery({topic}));
+
+            for (auto msg: view){
+                if (msg.getTopic() == topic){
+
+                    auto transforms = msg.instantiate<tf2_msgs::TFMessage>();
+                    for (auto transform: transforms->transforms){
+                        if ((transform.header.frame_id == parent) && (transform.child_frame_id == child)){
+                            auto tf_pose = ignition::math::Pose3d(ignition::math::Vector3d(transform.transform.translation.x, transform.transform.translation.y, transform.transform.translation.z), ignition::math::Quaterniond(transform.transform.rotation.w,transform.transform.rotation.x, transform.transform.rotation.y, transform.transform.rotation.z));
+                            TrajPoint tf = TrajPoint(tf_pose, transform.header.stamp.toSec());
+                            transform_list.push_back(tf);
+                            //std::cout << transform.header.frame_id << " -> " << transform.child_frame_id << std::endl;
+                        }
+                    }
+                }
+
+            }
+
+            return transform_list;
         }
 
         std::vector<ignition::math::Pose3d> TourTargets(){

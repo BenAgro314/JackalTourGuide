@@ -33,6 +33,7 @@
                     $(find jackal_description)/urdf/configs/$(arg config)
                     $(find xacro)/xacro $(find jackal_velodyne)/urdf/jackal_velodyne.urdf.xacro
                     --inorder" />
+
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
 
@@ -51,27 +52,24 @@
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
               args="-urdf -model jackal -param robot_description -x 0 -y 0 -z 0.5" />
 
- 
 
-
-  <!-- TF -->
   <group if="$(arg gui)">
-     <!-- Rviz -->
       <node pkg="rviz" type="rviz" name="rviz" args="-d $(find jackal_velodyne)/launch/include/run.rviz" />
   </group>
+
+  <group if="$(arg mapping)">
+    <include file="$(find jackal_velodyne)/launch/include/gmapping.launch" />
+  </group>
+
+  <group unless="$(arg mapping)">
+     <!-- Run the map server -->
+    <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+     <include file="$(find jackal_velodyne)/launch/include/amcl.launch" />
+  </group>
   
-  <node pkg="jackal_velodyne" type="tf_publisher"    name="tf_publisher"    output="screen"/>
+  <!--node pkg="jackal_velodyne" type="tf_publisher"    name="tf_publisher"    output="screen"/-->
   
-    <!-- Run the map server -->
- <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
- <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
-
-  <!--- Run leg_detection: this was causing probelems and was thus removed  -->
- <!--include file="$(find jackal_velodyne)/launch/include/leg_detector.launch" /-->
-
-  <!--- Run AMCL -->
- <include file="$(find jackal_velodyne)/launch/include/amcl.launch" />
-
   <!--- Run Move Base -->
  <include file="$(find jackal_velodyne)/launch/include/move_base.launch" />
  
