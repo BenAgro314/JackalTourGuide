@@ -33,7 +33,7 @@ big_tables_random_walker_study:
   table_group_list: big_table_group
 
 small_tables_stander_meeting:
-  pop_density: "0.15"
+  pop_density: "0.1"
   table_percentage: "0.5"
   actor: actor_basic_stander
   model_list: big_tables
