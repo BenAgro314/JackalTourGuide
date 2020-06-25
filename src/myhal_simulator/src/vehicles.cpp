@@ -20,6 +20,7 @@ std::vector<gazebo::physics::EntityPtr> objects){
     this->velocity = initial_velocity;
     this->acceleration = 0;
     this->all_objects = objects;
+    this->height = initial_pose.Pos().Z();
 
     std::map<std::string, gazebo::common::SkeletonAnimation *>::iterator it;
     std::map<std::string, gazebo::common::SkeletonAnimation *> skel_anims = this->actor->SkeletonAnimations();
@@ -124,7 +125,7 @@ void Vehicle::Arrival(ignition::math::Vector3d target, double weight){
         steer.Normalize();
         steer*=this->max_force;
     }
-
+    
     ApplyForce(steer);
 }
 
@@ -146,7 +147,7 @@ void Vehicle::AvoidObstacles(std::vector<gazebo::physics::EntityPtr> objects){
 			boundary_force += min_normal/(dist*dist);
 		}
     }
-
+    boundary_force.Z() =0;
     this->ApplyForce(boundary_force);
 }
 
@@ -176,7 +177,7 @@ void Vehicle::AvoidActors(std::vector<boost::shared_ptr<Vehicle>> vehicles){
 			steer.Normalize();
 			steer*=this->max_force;
 	}
-
+    steer.Z() = 0;
     this->ApplyForce(steer);
 }
 
@@ -229,6 +230,7 @@ void Wanderer::SetNextTarget(){
     offset = rotation.RotateVector(offset);
 
     this->curr_target = this->pose.Pos() + dir + offset;
+    this->curr_target.Z() = this->height;
 
 }
 
@@ -314,6 +316,7 @@ void RandomWalker::SetNextTarget(std::vector<gazebo::physics::EntityPtr> objects
 		}
 		
 		this->curr_target = v_to_add + this->pose.Pos();
+        this->curr_target.Z() = this->height;
 		target_found = true;
         
 
@@ -388,7 +391,7 @@ void Boid::Separation(std::vector<boost::shared_ptr<Vehicle>> vehicles){
     } else{
         steer*= this->weights[SEP];
     }
-
+    steer.Z() = 0;
     this->ApplyForce(steer);
 }
 
@@ -435,7 +438,7 @@ void Boid::Alignement(double dt, std::vector<boost::shared_ptr<Vehicle>> vehicle
         } else{
             vel_sum*= this->weights[SEP];
         }
-
+        vel_sum.Z() = 0;
 	    this->ApplyForce(vel_sum);
 	}
 }
@@ -465,6 +468,7 @@ void Boid::Cohesion(std::vector<boost::shared_ptr<Vehicle>> vehicles){
     }
 
     if (count >0){
+        sum_pos.Z() = this->height;
         this->Seek(sum_pos, this->weights[COH]);
     }
 }

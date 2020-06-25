@@ -66,6 +66,7 @@ class Vehicle{
 
         void AvoidObstacles(std::vector<gazebo::physics::EntityPtr> objects);
 
+        double height = 1;
 
     public:
 
