@@ -20,7 +20,7 @@
 #include "utilities.hh"
 #include <fstream>
 #include <iostream>
-
+#include "process_bag.hh"
 
 
 class BagTools{
@@ -257,4 +257,42 @@ class BagTools{
             return times;
         }
 
+
+        void NewLidarTopic(std::string path){
+
+            // read velodyne_points frames 
+
+            BagProcessor processor = BagProcessor(this->filepath, "/ground_truth/state", "/velodyne_points", false);
+    
+            auto bag_data = processor.GetData();
+
+
+            // read in hugues frames 
+
+            for (auto v_frame: bag_data.frames){
+                std::string frame_name = std::to_string(v_frame.Time()) + ".ply";
+                std::cout << frame_name  << std::endl;
+
+                Frame h_frame = ReadFrame(path + frame_name);
+            }
+        }
+
+
+        int MessageCount(std::string topic){
+            rosbag::Bag bag;
+            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
+            
+            std::vector<std::string> topics = {topic};
+            rosbag::View view(bag, rosbag::TopicQuery(topics));
+
+            int count = 0;
+
+            for (auto msg: view){
+                if (msg.getTopic() == topic){
+                    count++;
+                }
+            }
+
+            return count;
+        }
 };

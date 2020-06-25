@@ -80,6 +80,9 @@ target_link_libraries(bag_diagnostics utilities costmap ${catkin_LIBRARIES} ${GA
 add_executable(navigation_goals_V2 src/navigation_goals_V2.cpp) 
 target_link_libraries(navigation_goals_V2 parse_tour ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_executable(bag_creator src/bag_creator.cpp) 
+target_link_libraries(bag_creator utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 add_library(custom_velodyne src/custom_velodyne.cpp)
 target_link_libraries(custom_velodyne
   ${catkin_LIBRARIES}

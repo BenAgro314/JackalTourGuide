@@ -213,12 +213,14 @@ int main(int argc, char ** argv){
         }
 
     }
+
+    int path_count = handle.MessageCount("/move_base/NavfnROS/plan");
     
     std::cout << "Writing to file\n";
 
-    std::ofstream out2(filepath + "/logs-" + time_name + "/path_difference.csv");
+    std::ofstream out2(filepath + "/logs-" + time_name + "/path_data.csv");
 
-    out2 << " ,Optimal path length (m), reached goal?, actual path length (m), difference (m)\n";
+    out2 << " ,Optimal path length (m), reached goal?, actual path length (m), difference (m), Number of Path Computations:," << path_count  << "\n";
 
     for (int i =0; i< goals.size()-1; i++){
         if (i<actual_lengths.size()){

@@ -170,6 +170,23 @@ class Frame{
     
 };
 
+Frame ReadFrame(std::string filepath){
+    happly::PLYData plyIn(filepath);
+    Frame res = Frame(false);
+
+    std::vector<double> xPos = plyIn.getElement("vertex").getProperty<double>("x");
+    std::vector<double> yPos = plyIn.getElement("vertex").getProperty<double>("y");
+    std::vector<double> zPos = plyIn.getElement("vertex").getProperty<double>("z");
+    std::vector<int> classif = plyIn.getElement("vertex").getProperty<int>("classif");
+    std::vector<int> labels = plyIn.getElement("vertex").getProperty<int>("labels");
+
+    for (size_t i = 0; i < xPos.size(); i++) {
+        res.AddPoint(ignition::math::Vector3d(xPos[i], yPos[i], zPos[i]), classif[i]);
+    }
+
+    return res;
+}
+
 
 class BoxObject{
 

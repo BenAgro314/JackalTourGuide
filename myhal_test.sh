@@ -8,7 +8,7 @@ killall rosmaster
 
 TOUR="A_tour"
 
-roscore &
+roscore -p $ROSPORT&
 
 until rostopic list; do sleep 0.5; done #wait until rosmaster has started 
 
