@@ -49,6 +49,7 @@ rosparam set tour_name $TOUR
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 t=$(date +'%Y-%m-%d-%H-%M-%S')
 rosparam set start_time $t
+rosparam set filter_status $FILTER
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
 touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"

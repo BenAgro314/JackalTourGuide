@@ -15,6 +15,10 @@ int main(int argc, char ** argv){
 
     std::string time_name = argv[1];
 
+    std::string filter_status = argv[2];
+
+    //std::cout << "FILTER:" << filter_status << std::endl;
+
     std::string filepath = "/home/" + user_name + "/Myhal_Simulation/simulated_runs/" + time_name + "/";
 
     BagTools handle = BagTools(filepath);
@@ -45,8 +49,9 @@ int main(int argc, char ** argv){
         auto trans_drift = handle.TranslationDrift(gt_traj, amcl_traj);
         std::cout << "Finished computing amcl localization error\n";
 
-        std::ofstream out(filepath + "/logs-" + time_name +"/amcl_error.csv");
-        out << "Distance Travelled (m), Localization Error (m)\n";
+        std::ofstream out(filepath + "/logs-" + time_name +"/localization_error.csv");
+        out << "Filtering: " << filter_status << "\n";
+        out << "Distance Travelled (m), AMCL Localization Error (m)\n";
         for (auto row: trans_drift){
             out << row[0] << "," << row[1] << std::endl;
         }
@@ -61,8 +66,9 @@ int main(int argc, char ** argv){
         auto trans_drift = handle.TranslationDrift(gt_traj, gmapping_traj);
         std::cout << "Finished computing gmapping localization error\n";
 
-        std::ofstream out(filepath + "/logs-" + time_name +"/gmapping_error.csv");
-        out << "Distance Travelled (m), Localization Error (m)\n";
+        std::ofstream out(filepath + "/logs-" + time_name +"/localization_error.csv");
+        out << "Filtering: " << filter_status << "\n";
+        out << "Distance Travelled (m), Gmapping Localization Error (m)\n";
         for (auto row: trans_drift){
             out << row[0] << "," << row[1] << std::endl;
         }
