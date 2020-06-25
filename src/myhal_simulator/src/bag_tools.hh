@@ -274,6 +274,27 @@ class BagTools{
                 std::cout << frame_name  << std::endl;
 
                 Frame h_frame = ReadFrame(path + frame_name);
+
+                // reclassify each point in v_frame as a point in h_frame 
+
+                for (int i =0; i< v_frame.points.size(); ++i){
+                    int h_cat = h_frame.points[i].Cat();
+                    int new_cat;
+
+                    if (h_cat == 0){
+                        new_cat = 5;
+                    } else if (h_cat == 1){
+                        new_cat = 0;
+                    } else if (h_cat == 2){
+                        new_cat = 5;
+                    } else if (h_cat == 3){
+                        new_cat = 2;
+                    } else if (h_cat == 4){
+                        new_cat = 4;
+                    }
+
+                    v_frame.points[i].SetCat(new_cat);
+                }
             }
         }
 

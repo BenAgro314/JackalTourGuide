@@ -31,6 +31,10 @@ class Point{
             return this->cat;
         }
 
+        void SetCat(int cat){
+            this->cat = cat;
+        }
+
         Point(ignition::math::Vector3d pos, int cat): pos(pos), cat(cat){};
 };
 
@@ -127,12 +131,14 @@ class Frame{
 
     private:
 
-        std::vector<Point> points;
+       
         ignition::math::Pose3d gt_pose;
         double time;
         bool has_pose = true;
 
     public:
+
+        std::vector<Point> points;
 
         Frame(bool has_pose): has_pose(has_pose) {};
 
