@@ -6,6 +6,7 @@
 #include <iostream>
 #include "utilities.hh"
 #include <fstream>
+#include "frame.hh"
 
 
 class Costmap{
@@ -48,8 +49,10 @@ class Costmap{
 
         std::string ToString();
 
-        std::string PathString();
+        std::string PathString(std::vector<TrajPoint> path);
 
         bool FindPath(ignition::math::Vector3d start, ignition::math::Vector3d end,  std::vector<ignition::math::Vector3d> &path);
+
+        bool Walkable(ignition::math::Vector3d start, ignition::math::Vector3d end);
 
 }; 

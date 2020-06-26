@@ -74,8 +74,18 @@ std::string Costmap::ToString(){
     return out.str();
 }
 
-std::string Costmap::PathString(){
+std::string Costmap::PathString(std::vector<TrajPoint> path){
+
+    this->last_path = this->costmap;
     std::stringstream out;
+
+    for (auto pt: path){
+        int r,c;
+        this->PosToIndicies(pt.pose.Pos(), r, c);
+        this->last_path[r][c] = -1;
+    }
+
+    
 
     for (int r = 0; r<this->rows; r++){
         for (int c= 0; c<this->cols; c++){
@@ -118,7 +128,7 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
 
     auto curr_pos = start;
     std::vector<int> curr_ind = {start_r, start_c};
-    this->last_path[curr_ind[0]][curr_ind[1]] = -1;
+    //this->last_path[curr_ind[0]][curr_ind[1]] = -1;
 
     while (curr_ind[0] != end_r || curr_ind[1] != end_c){
 
@@ -160,8 +170,43 @@ bool Costmap::FindPath(ignition::math::Vector3d start, ignition::math::Vector3d 
         curr_ind = min_n;
 
 
-        this->last_path[curr_ind[0]][curr_ind[1]] = -1;
+        //this->last_path[curr_ind[0]][curr_ind[1]] = -1;
 
+    }
+
+    // smooth path
+    
+    int check_ind = 0;
+    int next_ind =1;
+    while (next_ind < path.size()-1){
+        if (this->Walkable(path[check_ind],path[next_ind+1])){
+            path.erase(path.begin()+next_ind);
+        } else{
+            check_ind = next_ind;
+            next_ind = check_ind +1;
+        }
+    }
+
+    return true;
+}
+
+bool Costmap::Walkable(ignition::math::Vector3d start, ignition::math::Vector3d end){
+    // sample points every 1/5th of resolution along the line and check if it is in an occupied cell.
+
+    auto dir = end-start;
+    double length = dir.Length();
+    int N = (int) length/(this->resolution/5);
+    dir = dir.Normalize();
+    dir*= this->resolution/5;
+
+    for (int i =1; i <= N; i++){
+        auto check_point = dir*i + start;
+        int r,c;
+        this->PosToIndicies(check_point, r, c);
+
+        if (this->costmap[r][c] != 1){
+            return false;
+        }
     }
 
     return true;

@@ -106,8 +106,8 @@ int main(int argc, char ** argv){
     auto boundary = ignition::math::Box(min_x-1, min_y-1, 0, max_x+1, max_y+1, 0);
 
     double robot_radius = std::sqrt((0.21*0.21) + (0.165*0.165));
-    
-    Costmap costmap = Costmap(boundary, 0.1);
+    double reso = 0.1;
+    Costmap costmap = Costmap(boundary, reso);
 
     for (auto obj: static_objects){
         if (obj.MinZ() < 1.5 && obj.MaxZ() >10e-2){
@@ -155,10 +155,7 @@ int main(int argc, char ** argv){
         
     }
 
-    path_file << costmap.PathString();
-    path_file << std::endl <<std::endl;
-
-    path_file.close();
+   
 
     std::vector<double> optimal_lengths;
     
@@ -244,11 +241,9 @@ int main(int argc, char ** argv){
             if (optimal_lengths[i] > 0){
 
                 auto opt = optimal_lengths[i];
-                if (i > 0){
-                    opt = std::max(0.0, opt-0.5);
-                } else {
-                    opt = std::max(0.0, opt-0.25);
-                }
+                
+                opt = std::max(0.0, opt-0.25);
+                
                 out2 << "Target #" << i+1 << "," << opt << "," << status << "," << actual_lengths[i] << "," << actual_lengths[i]-opt << std::endl; 
             } else{
                 out2 << "Target #" << i+1 << "," << "Unreachable" << "," << status << "," << "NA"<< "," << "NA" << std::endl; 
@@ -256,11 +251,9 @@ int main(int argc, char ** argv){
         } else{
             if (optimal_lengths[i] > 0){
                 auto opt = optimal_lengths[i];
-                if (i > 0){
-                    opt = std::max(0.0, opt-0.5);
-                } else {
-                    opt = std::max(0.0, opt-0.25);
-                }
+                
+                opt = std::max(0.0, opt-0.25);
+                
                 out2 << "Target #" << i+1 << "," << opt << ",0,NA,NA\n";
             } else{
                  out2 << "Target #" << i+1 << "," << "Unreachable" << ",0,NA,NA\n";
@@ -273,7 +266,40 @@ int main(int argc, char ** argv){
     out2.close();
 
     happly::PLYData plyOut2;
-    AddTrajectory(plyOut2, optimal_traj);
+
+    int curr_ind = 0;
+    
+    std::vector<TrajPoint> plot_path;
+    
+    //std::cout << optimal_traj.size() << std::endl;
+    while (curr_ind+1 < optimal_traj.size()){
+        plot_path.push_back(optimal_traj[curr_ind]);
+
+        auto dir = optimal_traj[curr_ind+1].pose.Pos() - optimal_traj[curr_ind].pose.Pos();
+        double len = dir.Length();
+        if (len < reso){
+            curr_ind ++;
+            continue;
+        }
+        dir = dir.Normalize();
+        dir*=reso;
+
+        auto add = dir;
+        while (add.Length() < len){
+            auto pt = optimal_traj[curr_ind].pose.Pos()+add;
+            plot_path.push_back(TrajPoint(ignition::math::Pose3d(pt, ignition::math::Quaterniond(0,0,0,0)), (double) curr_ind));
+            add += dir;
+        }
+        //std::cout << curr_ind << std::endl;
+        curr_ind++;
+    }
+
+    path_file << costmap.PathString(plot_path);
+    path_file << std::endl <<std::endl;
+
+    path_file.close();
+
+    AddTrajectory(plyOut2, plot_path);
     plyOut2.write(filepath + "/logs-" + time_name + "/optimal_traj.ply", happly::DataFormat::Binary);
     
 
