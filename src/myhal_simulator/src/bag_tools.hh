@@ -29,13 +29,16 @@ class BagTools{
 
         std::string filepath;
 
+        std::string bag_name;
+
         rosbag::Bag bag;
 
 
     public:
 
-        BagTools(std::string filepath){
+        BagTools(std::string filepath, std::string bag_name = "raw_data.bag"){
             this->filepath = filepath;
+            this->bag_name = bag_name;
         }
 
 
@@ -162,7 +165,7 @@ class BagTools{
         std::vector<TrajPoint> GetTrajectory(std::string topic){
             std::vector<TrajPoint> trajectory;
             rosbag::Bag bag;
-            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
+            bag.open(this->filepath + this->bag_name, rosbag::bagmode::Read);
             rosbag::View view(bag, rosbag::TopicQuery({topic}));
 
             for (auto msg: view){
@@ -192,7 +195,7 @@ class BagTools{
         std::vector<TrajPoint> GetTransforms(std::string parent, std::string child, std::string topic = "/tf"){
             std::vector<TrajPoint> transform_list;
             rosbag::Bag bag;
-            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
+            bag.open(this->filepath + this->bag_name, rosbag::bagmode::Read);
             rosbag::View view(bag, rosbag::TopicQuery({topic}));
 
             for (auto msg: view){
@@ -217,7 +220,7 @@ class BagTools{
         std::vector<ignition::math::Pose3d> TourTargets(){
             std::vector<ignition::math::Pose3d> goals = {ignition::math::Pose3d(0,0,0,0,0,0)};
             rosbag::Bag bag;
-            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
+            bag.open(this->filepath + this->bag_name, rosbag::bagmode::Read);
             
             std::vector<std::string> topics = {"/tour_data"};
             rosbag::View view(bag, rosbag::TopicQuery(topics));
@@ -240,7 +243,7 @@ class BagTools{
 
             
             rosbag::Bag bag;
-            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
+            bag.open(this->filepath + this->bag_name, rosbag::bagmode::Read);
             
             std::vector<std::string> topics = {"/move_base/result"};
             rosbag::View view(bag, rosbag::TopicQuery(topics));
@@ -266,7 +269,7 @@ class BagTools{
     
             auto bag_data = processor.GetData();
             rosbag::Bag bag;
-            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Append);
+            bag.open(this->filepath + this->bag_name, rosbag::bagmode::Append);
 
             // read in hugues frames 
             std::cout << "Reading Frames\n";
@@ -332,7 +335,7 @@ class BagTools{
 
         int MessageCount(std::string topic){
             rosbag::Bag bag;
-            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Read);
+            bag.open(this->filepath + this->bag_name, rosbag::bagmode::Read);
             
             std::vector<std::string> topics = {topic};
             rosbag::View view(bag, rosbag::TopicQuery(topics));

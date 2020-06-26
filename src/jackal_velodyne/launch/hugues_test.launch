@@ -14,7 +14,9 @@
     </include>
 
     <group if="$(arg mapping)">
-        <include file="$(find jackal_velodyne)/launch/include/gmapping.launch"/>
+        <include file="$(find jackal_velodyne)/launch/include/gmapping.launch">
+            <arg name="map_topic" value="hugues_map"/>
+        </include>
     </group>
 
     <group unless="$(arg mapping)">

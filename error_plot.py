@@ -8,7 +8,7 @@ num = int(input("How many files would you like to plot?\n"))
 files = []
 
 for i in range(num):
-	files.append(input("Input file number " + str(i+1) + "/" + str(num) + "\n"))
+	files.append(input("Input file path (" + str(i+1) + "/" + str(num) + ")\n"))
 
 
 
@@ -22,7 +22,7 @@ for filename in files:
 
 	series = ""
 
-	with open('/home/'+username+'/Myhal_Simulation/simulated_runs/'+filename+'/logs-'+filename+'/localization_error.csv','r') as csvfile:
+	with open(filename,'r') as csvfile:
 		plots = csv.reader(csvfile, delimiter=',')
 		count = 0
 		for row in plots:
@@ -34,12 +34,14 @@ for filename in files:
 				
 			count+=1
 
-	if ((not f_label) and series == "Filtering: true"):
+	if ((not f_label) and series == "Ground Truth Demon"):
 		plt.plot(x,y, 'r',label=series)
 		f_label = True
-	elif ((not nf_label) and series == "Filtering: false"):
+	elif ((not nf_label) and series == "No Demon"):
 		plt.plot(x,y, 'b--',label=series)
 		nf_label = True
+	elif ((series != "Ground Truth Demon") and (series != "No Demon")):
+		plt.plot(x,y, 'g-.',label=series)
 	else:
 		if (series == "Filtering: true"):
 			plt.plot(x,y, 'r')

@@ -50,7 +50,11 @@ int main(int argc, char ** argv){
         std::cout << "Finished computing amcl localization error\n";
 
         std::ofstream out(filepath + "/logs-" + time_name +"/localization_error.csv");
-        out << "Filtering: " << filter_status << "\n";
+        if (filter_status == "true"){
+            out << "Ground Truth Demon\n";
+        } else {
+            out << "No Demon\n";
+        }
         out << "Distance Travelled (m), AMCL Localization Error (m)\n";
         for (auto row: trans_drift){
             out << row[0] << "," << row[1] << std::endl;
@@ -67,7 +71,12 @@ int main(int argc, char ** argv){
         std::cout << "Finished computing gmapping localization error\n";
 
         std::ofstream out(filepath + "/logs-" + time_name +"/localization_error.csv");
-        out << "Filtering: " << filter_status << "\n";
+        if (filter_status == "true"){
+            out << "Ground Truth Demon\n";
+        } else {
+            out << "No Demon\n";
+        }
+        
         out << "Distance Travelled (m), Gmapping Localization Error (m)\n";
         for (auto row: trans_drift){
             out << row[0] << "," << row[1] << std::endl;

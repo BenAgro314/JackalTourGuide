@@ -77,6 +77,9 @@ target_link_libraries(process_bag utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARI
 add_executable(bag_diagnostics src/bag_diagnostics.cpp) 
 target_link_libraries(bag_diagnostics utilities costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_executable(hugues_diagnostics src/hugues_diagnostics.cpp) 
+target_link_libraries(hugues_diagnostics utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 add_executable(navigation_goals_V2 src/navigation_goals_V2.cpp) 
 target_link_libraries(navigation_goals_V2 parse_tour ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 

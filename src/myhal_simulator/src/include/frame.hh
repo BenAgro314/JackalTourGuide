@@ -176,7 +176,7 @@ class Frame{
     
 };
 
-Frame ReadFrame(std::string filepath){
+Frame ReadFrame(std::string filepath, bool gt = false){
     happly::PLYData plyIn(filepath);
     Frame res = Frame(false);
 
@@ -187,7 +187,12 @@ Frame ReadFrame(std::string filepath){
     std::vector<int> labels = plyIn.getElement("vertex").getProperty<int>("labels");
 
     for (size_t i = 0; i < xPos.size(); i++) {
-        res.AddPoint(ignition::math::Vector3d(xPos[i], yPos[i], zPos[i]), classif[i]);
+        if (gt){
+            res.AddPoint(ignition::math::Vector3d(xPos[i], yPos[i], zPos[i]), labels[i]);
+        } else{
+            res.AddPoint(ignition::math::Vector3d(xPos[i], yPos[i], zPos[i]), classif[i]);
+        }
+        
     }
 
     return res;

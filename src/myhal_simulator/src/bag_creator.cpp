@@ -14,6 +14,8 @@ int main(int argc, char ** argv){
 
     std::string time_name = argv[1];
 
+    
+
     std::string filepath = "/home/" + user_name + "/Myhal_Simulation/simulated_runs/" + time_name + "/";
 
     BagTools handle = BagTools(filepath);
@@ -28,6 +30,7 @@ int main(int argc, char ** argv){
                     change it's intensity value to hughes classifications
                 rewrite the frame to the bag file 
     */
+
 
     handle.NewLidarTopic("/home/" + user_name + "/Myhal_Simulation/annotated_frames/" + time_name + "/");
 
