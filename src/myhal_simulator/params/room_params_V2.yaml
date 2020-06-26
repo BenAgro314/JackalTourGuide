@@ -17,8 +17,8 @@ room_names:
 lounge_532:
   geometry: g532
   positions: p532
-  enclosed: "0"
-  scenario: no_tables_boid_crowd
+  enclosed: "1"
+  scenario: small_tables_stander_meeting
 
 study_space_546:
   geometry: g546

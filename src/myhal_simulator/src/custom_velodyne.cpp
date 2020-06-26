@@ -243,9 +243,12 @@ namespace gazebo
         // rebuild active quadtree:
 
         this->active_quadtree = boost::make_shared<QuadTree>(this->building_box);
-        std::map<std::string, double> actor_speed;
+        
         for (auto act: this->actors){
-            actor_speed[act->GetName()] = (act->WorldPose().Pos() - this->last_actor_pose[act->GetName()].Pos()).Length()/dt;
+            if (dt > 0.05 && dt < 0.15){
+                this->actor_speed[act->GetName()] = (act->WorldPose().Pos() - this->last_actor_pose[act->GetName()].Pos()).Length()/dt;
+            }
+            
             auto min = ignition::math::Vector3d(act->WorldPose().Pos().X() - 0.2, act->WorldPose().Pos().Y() - 0.2, 0);
             auto max = ignition::math::Vector3d(act->WorldPose().Pos().X() + 0.2, act->WorldPose().Pos().Y() + 0.2, 0);
             auto box = ignition::math::Box(min,max);
@@ -411,7 +414,7 @@ namespace gazebo
                         if (n.type == vehicle_type){
                             auto actor = boost::static_pointer_cast<gazebo::physics::Actor>(n.data);
                             int cat;
-                            if (actor_speed[actor->GetName()] < 10e-4){
+                            if (actor_speed[actor->GetName()] < 10e-5){
                                 cat = 3; // stationary actors 
                             } else{
                                 cat = 2; // moving actors 
@@ -527,6 +530,7 @@ namespace gazebo
             if (act){
                 this->actors.push_back(act);
                 this->last_actor_pose[act->GetName()] = act->WorldPose();
+                this->actor_speed[act->GetName()] = 0;
                 auto min = ignition::math::Vector3d(act->WorldPose().Pos().X() - 0.2, act->WorldPose().Pos().Y() - 0.2, 0);
                 auto max = ignition::math::Vector3d(act->WorldPose().Pos().X() + 0.2, act->WorldPose().Pos().Y() + 0.2, 0);
                 auto box = ignition::math::Box(min,max);

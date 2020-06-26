@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<launch>
+
+
+    <arg name="in_topic" default="/hugues_points"/>
+    <arg name="filter" default="true" />
+    <arg name="mapping" default="true" />
+    <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
+
+    <include file="$(find jackal_velodyne)/launch/include/pointcloud_filter.launch">
+        <arg name="filter" value="$(arg filter)" />
+        <arg name="mapping" value="$(arg mapping)" />
+        <arg name="in_topic" value="$(arg in_topic)"/>
+    </include>
+
+    <group if="$(arg mapping)">
+        <include file="$(find jackal_velodyne)/launch/include/gmapping.launch"/>
+    </group>
+
+    <group unless="$(arg mapping)">
+        <!-- Run the map server -->
+        <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+        <include file="$(find jackal_velodyne)/launch/include/amcl.launch" />
+    </group>
+
+
+
+</launch>

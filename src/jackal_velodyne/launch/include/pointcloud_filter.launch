@@ -1,12 +1,12 @@
 <launch>
-
+    <arg name="in_topic" default="/velodyne_points"/>
     <arg name="filter" default="false" />
     <arg name="mapping" default="false" />
 
 
     <group if="$(arg filter)">
       <node pkg="jackal_velodyne" type="pcl_filter_node" name="local_filter">
-        <remap from="cloud_in" to="/velodyne_points"/>
+        <remap from="cloud_in" to="$(arg in_topic)"/>
     
         <remap from="scan" to="/local_planner_points" />
         <rosparam>
@@ -40,7 +40,7 @@
       </node>
 
       <node pkg="jackal_velodyne" type="pcl_filter_node" name="global_filter">
-        <remap from="cloud_in" to="/velodyne_points"/>
+        <remap from="cloud_in" to="$(arg in_topic)"/>
     
         <remap from="scan" to="/global_planner_points" />
         <rosparam>
@@ -71,7 +71,7 @@
       </node>
 
       <node pkg="jackal_velodyne" type="pcl_filter_node" name="amcl_filter">
-        <remap from="cloud_in" to="/velodyne_points"/>
+        <remap from="cloud_in" to="$(arg in_topic)"/>
     
         <remap from="scan" to="/amcl_points" />
         <rosparam>
@@ -101,7 +101,7 @@
 
       <group if="$(arg mapping)">
         <node pkg="jackal_velodyne" type="pcl_filter_node" name="gmapping_filter">
-          <remap from="cloud_in" to="/velodyne_points"/>
+          <remap from="cloud_in" to="$(arg in_topic)"/>
       
           <remap from="scan" to="/gmapping_points" />
           <rosparam>
@@ -137,7 +137,7 @@
     <group unless="$(arg filter)">
 
       <node pkg="jackal_velodyne" type="pcl_filter_node" name="local_filter">
-        <remap from="cloud_in" to="/velodyne_points"/>
+        <remap from="cloud_in" to="$(arg in_topic)"/>
     
         <remap from="scan" to="/local_planner_points" />
         <rosparam>
@@ -171,7 +171,7 @@
       </node>
 
       <node pkg="jackal_velodyne" type="pcl_filter_node" name="global_filter">
-        <remap from="cloud_in" to="/velodyne_points"/>
+        <remap from="cloud_in" to="$(arg in_topic)"/>
     
         <remap from="scan" to="/global_planner_points" />
         <rosparam>
@@ -205,7 +205,7 @@
       </node>
 
       <node pkg="jackal_velodyne" type="pcl_filter_node" name="amcl_filter">
-        <remap from="cloud_in" to="/velodyne_points"/>
+        <remap from="cloud_in" to="$(arg in_topic)"/>
     
         <remap from="scan" to="/amcl_points" />
         <rosparam>
@@ -240,7 +240,7 @@
 
       <group if="$(arg mapping)">
         <node pkg="jackal_velodyne" type="pcl_filter_node" name="gmapping_filter">
-          <remap from="cloud_in" to="/velodyne_points"/>
+          <remap from="cloud_in" to="$(arg in_topic)"/>
       
           <remap from="scan" to="/gmapping_points" />
           <rosparam>

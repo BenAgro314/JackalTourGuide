@@ -265,13 +265,14 @@ class BagTools{
             BagProcessor processor = BagProcessor(this->filepath, "/ground_truth/state", "/velodyne_points", false);
     
             auto bag_data = processor.GetData();
-
+            rosbag::Bag bag;
+            bag.open(this->filepath + "raw_data.bag", rosbag::bagmode::Append);
 
             // read in hugues frames 
-
+            std::cout << "Reading Frames\n";
             for (auto v_frame: bag_data.frames){
                 std::string frame_name = std::to_string(v_frame.Time()) + ".ply";
-                std::cout << frame_name  << std::endl;
+                //std::cout << frame_name  << std::endl;
 
                 Frame h_frame = ReadFrame(path + frame_name);
 
@@ -295,7 +296,37 @@ class BagTools{
 
                     v_frame.points[i].SetCat(new_cat);
                 }
+
+                // write frame as time stamped message to bag file 
+
+                pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_ptr(new pcl::PointCloud<pcl::PointXYZI>);
+                cloud_ptr->header.frame_id = "velodyne";
+                cloud_ptr->height = 1;
+                cloud_ptr->width = 0;
+
+                ros::Time frame_time(v_frame.Time());
+            
+                pcl_conversions::toPCL(frame_time, cloud_ptr->header.stamp);
+                
+
+                for (auto pt: v_frame.points){
+                    pcl::PointXYZI point;
+
+                    point.x = pt.X();
+                    point.y = pt.Y();
+                    point.z = pt.Z();
+                    point.intensity = pt.Cat();
+                    
+                    cloud_ptr->points.push_back(point);
+                    
+                    cloud_ptr->width++;
+                }
+
+                bag.write("/hugues_points",frame_time, cloud_ptr);
+                
             }
+            std::cout << "Done\n";
+            bag.close();
         }
 
 

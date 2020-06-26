@@ -182,6 +182,8 @@ namespace gazebo
 
 		std::map<std::string, ignition::math::Pose3d> last_actor_pose;
 
+		std::map<std::string, double> actor_speed;
+
 		ros::Time last_update;
 
 		void LoadWorld();
