@@ -3,12 +3,12 @@ import csv
 import os
 
 username = os.environ['USER']
-
 num = int(input("How many files would you like to plot?\n"))
 files = []
 
 for i in range(num):
-	files.append(input("Input file path (" + str(i+1) + "/" + str(num) + ")\n"))
+	path = input("Input folder name?\n")
+	files.append("/home/"+username+"/Myhal_Simulation/simulated_runs/" + path + "/logs-" + path + "/"+input("Input file name (" + str(i+1) + "/" + str(num) + ")\n"))
 
 
 

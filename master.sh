@@ -1,5 +1,11 @@
 #!/bin/bash
 
+myInvocation="$(printf %q "$BASH_SOURCE")$((($#)) && printf ' %q' "$@")"
+t=$(date +'%Y-%m-%d-%H-%M-%S')
+
+echo "Folder Name: $t"
+sleep 1
+
 killall gzserver
 killall gzclient
 killall rviz
@@ -47,13 +53,13 @@ rosparam load src/myhal_simulator/params/model_params.yaml
 rosparam set use_sim_time true
 rosparam set tour_name $TOUR
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
-t=$(date +'%Y-%m-%d-%H-%M-%S')
 rosparam set start_time $t
 rosparam set filter_status $FILTER
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
 touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
 echo -e "Trial Notes: $MESSAGE\nFILTER: $FILTER\nMAPPING $MAPPING" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
+echo -e "Command used: $myInvocation" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
 
 sleep 0.1
 

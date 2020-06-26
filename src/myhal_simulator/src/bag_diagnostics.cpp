@@ -229,6 +229,12 @@ int main(int argc, char ** argv){
 
     std::ofstream out2(filepath + "/logs-" + time_name + "/path_data.csv");
 
+    if (filter_status == "true"){
+        out2 << "Ground Truth Demon\n";
+    } else {
+        out2 << "No Demon\n";
+    }
+
     out2 << " ,Optimal path length (m), reached goal?, actual path length (m), difference (m), Number of Path Computations:," << path_count  << "\n";
 
     for (int i =0; i< goals.size()-1; i++){
@@ -236,13 +242,26 @@ int main(int argc, char ** argv){
 
             int status = (int) (i <times.size());
             if (optimal_lengths[i] > 0){
-                out2 << "Target #" << i+1 << "," << optimal_lengths[i] << "," << status << "," << actual_lengths[i] << "," << actual_lengths[i]-optimal_lengths[i] << std::endl; 
+
+                auto opt = optimal_lengths[i];
+                if (i > 0){
+                    opt = std::max(0.0, opt-0.5);
+                } else {
+                    opt = std::max(0.0, opt-0.25);
+                }
+                out2 << "Target #" << i+1 << "," << opt << "," << status << "," << actual_lengths[i] << "," << actual_lengths[i]-opt << std::endl; 
             } else{
                 out2 << "Target #" << i+1 << "," << "Unreachable" << "," << status << "," << "NA"<< "," << "NA" << std::endl; 
             }
         } else{
             if (optimal_lengths[i] > 0){
-                out2 << "Target #" << i+1 << "," << optimal_lengths[i] << ",0,NA,NA\n";
+                auto opt = optimal_lengths[i];
+                if (i > 0){
+                    opt = std::max(0.0, opt-0.5);
+                } else {
+                    opt = std::max(0.0, opt-0.25);
+                }
+                out2 << "Target #" << i+1 << "," << opt << ",0,NA,NA\n";
             } else{
                  out2 << "Target #" << i+1 << "," << "Unreachable" << ",0,NA,NA\n";
             }
