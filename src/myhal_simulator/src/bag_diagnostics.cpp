@@ -125,7 +125,46 @@ int main(int argc, char ** argv){
 
     auto goals = handle.TourTargets();
 
-    auto times = handle.TargetSuccessTimes();
+    auto times = handle.TargetTimes();
+
+    std::vector<double> actual_lengths;
+
+    int traj_ind = 0;
+
+    std::vector<ignition::math::Vector3d> end_pts;
+    end_pts.push_back(ignition::math::Vector3d(0,0,0));
+    
+    for (int i =0; i<times.size(); i++){
+        double time = times[i].time;
+        actual_lengths.push_back(0);
+        int count = 0;
+        ignition::math::Vector3d last_pose;
+        while (traj_ind < gt_traj.size() && gt_traj[traj_ind].time <= time){
+            if (count == 0){
+                last_pose = gt_traj[traj_ind].pose.Pos();
+                count++;
+                continue;
+            }
+            count++;
+            actual_lengths.back() += (gt_traj[traj_ind].pose.Pos() - last_pose).Length();
+            last_pose = gt_traj[traj_ind].pose.Pos();
+            traj_ind++;
+        }
+        //std::cout << actual_lengths.back() << std::endl;
+        
+        end_pts.push_back(last_pose);
+    }
+    if (traj_ind < gt_traj.size()){
+        actual_lengths.push_back(0);
+
+        ignition::math::Vector3d last_pose = end_pts.back();
+        while(traj_ind < gt_traj.size()){
+            actual_lengths.back() += (gt_traj[traj_ind].pose.Pos() - last_pose).Length();
+            last_pose = gt_traj[traj_ind].pose.Pos();
+            traj_ind++;
+        }
+
+    }
    
     
     std::vector<std::vector<ignition::math::Vector3d>> paths;
@@ -185,40 +224,7 @@ int main(int argc, char ** argv){
 
     // find how far the robot travelled in the times from 0->times[0], times[0]->times[1] ...
 
-    std::vector<double> actual_lengths;
-
-    int traj_ind = 0;
-    ignition::math::Vector3d final;
-    for (int i =0; i<times.size(); i++){
-        double time = times[i];
-        actual_lengths.push_back(0);
-        int count = 0;
-        ignition::math::Vector3d last_pose;
-        while (traj_ind < gt_traj.size() && gt_traj[traj_ind].time <= time){
-            if (count == 0){
-                last_pose = gt_traj[traj_ind].pose.Pos();
-                count++;
-                continue;
-            }
-            count++;
-            actual_lengths.back() += (gt_traj[traj_ind].pose.Pos() - last_pose).Length();
-            last_pose = gt_traj[traj_ind].pose.Pos();
-            traj_ind++;
-        }
-        //std::cout << actual_lengths.back() << std::endl;
-        final = last_pose;
-    }
-    if (traj_ind < gt_traj.size()){
-        actual_lengths.push_back(0);
-
-        ignition::math::Vector3d last_pose = final;
-        while(traj_ind < gt_traj.size()){
-            actual_lengths.back() += (gt_traj[traj_ind].pose.Pos() - last_pose).Length();
-            last_pose = gt_traj[traj_ind].pose.Pos();
-            traj_ind++;
-        }
-
-    }
+   
 
     int path_count = handle.MessageCount("/move_base/NavfnROS/plan");
     

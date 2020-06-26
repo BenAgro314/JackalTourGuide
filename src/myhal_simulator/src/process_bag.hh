@@ -181,13 +181,16 @@ class BagProcessor{
 
             std::string path;
             if (this->translate){
-                path = this->filepath + "/classified_transformed_frames/";
+                path = this->filepath + "classified_transformed_frames/";
             } else{
-                path = this->filepath + "/classified_frames/";
+                path = this->filepath + "classified_frames/";
             }
 
             std::string command = "mkdir " + path;
+            //std::cout << command << std::endl;
+
             system(command.c_str());
+            
    
             for (auto frame: this->data.frames){
                 frame.WriteToFile(path);

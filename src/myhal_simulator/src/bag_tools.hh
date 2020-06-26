@@ -23,6 +23,14 @@
 #include "process_bag.hh"
 
 
+struct TimeBool{
+
+    double time;
+    bool success;
+
+    TimeBool(double time, bool success): time(time), success(success){}
+};
+
 class BagTools{
 
     private:
@@ -238,8 +246,8 @@ class BagTools{
 
         }
 
-        std::vector<double> TargetSuccessTimes(){
-            std::vector<double> times;
+        std::vector<TimeBool> TargetTimes(){
+            std::vector<TimeBool> times;
 
             
             rosbag::Bag bag;
@@ -251,9 +259,9 @@ class BagTools{
             for (auto msg: view){
                 auto res = msg.instantiate<move_base_msgs::MoveBaseActionResult>();
                 if (res != nullptr && res->status.status == 3){
-                    times.push_back(res->header.stamp.toSec());
+                    times.push_back(TimeBool(res->header.stamp.toSec(), true));
                 } else if (res != nullptr && res->status.status == 4){
-                    break;
+                    times.push_back(TimeBool(res->header.stamp.toSec(), false));
                 }
             }
 

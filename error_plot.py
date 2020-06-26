@@ -8,7 +8,10 @@ files = []
 
 for i in range(num):
 	path = input("Input folder name?\n")
-	files.append("/home/"+username+"/Myhal_Simulation/simulated_runs/" + path + "/logs-" + path + "/"+input("Input file name (" + str(i+1) + "/" + str(num) + ")\n"))
+	filename = input("Input file name (" + str(i+1) + "/" + str(num) + ")/. Note default = localization_error.csv\n")
+	if (filename == ""):
+		filename = "localization_error.csv"
+	files.append("/home/"+username+"/Myhal_Simulation/simulated_runs/" + path + "/logs-" + path + "/"+filename)
 
 
 
