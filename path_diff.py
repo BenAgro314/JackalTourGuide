@@ -27,16 +27,21 @@ for i in range(num):
 
 x_labels = []
 y_data = []
+success_labels = []
 labels = []
 
 for filename in files:
     x = []
     y = []
+    suc = []
     series = ""
 
+    
     with open(filename,'r') as csvfile:
         plots = csv.reader(csvfile, delimiter=',')
         count = 0
+
+        last_success = True
         for row in plots:
             if (count < 2):
                 if count == 0:
@@ -47,9 +52,21 @@ for filename in files:
             optimal_length = float(row[1])
             success = int(row[2])
             actual_length = 0
+            
             if (success):
-                actual_length = float(row[3])
+                if (last_success):
+                    suc.append("")
+                    actual_length = float(row[3])
+                else:
+                    suc.append("Failure")
+                    actual_length = optimal_length*2
 
+                
+                last_success = True
+            else:
+                suc.append("Failure")
+                actual_length = optimal_length*2
+                last_success = False
 
             percent_diff = ((actual_length - optimal_length)/optimal_length)*100
             y.append(percent_diff)
@@ -58,6 +75,7 @@ for filename in files:
     x_labels = x
     y_data.append(y)
     labels.append(series)
+    success_labels.append(suc)
     #plt.bar(x,y, label= series)
 
 
@@ -94,18 +112,23 @@ ax.set_xticks(x)
 ax.set_xticklabels(x_labels)
 ax.legend()
 
-def autolabel(rects):
+def autolabel(rects, labels):
     """Attach a text label above each bar in *rects*, displaying its height."""
+    i =0
     for rect in rects:
         height = rect.get_height()
-        ax.annotate('{}'.format(height),xy=(rect.get_x() + rect.get_width() / 2, height),
+       
+        ax.annotate(labels[i],xy=(rect.get_x() + rect.get_width() / 2, height),
                     xytext=(0, 3),  # 3 points vertical offset
                     textcoords="offset points",
                     ha='center', va='bottom')
+        i+=1
 
-                    
+
+i =0
 for rects in rects_list:
-    autolabel(rects)
+    autolabel(rects, success_labels[i])
+    i+=1
 
 
 fig.tight_layout()
