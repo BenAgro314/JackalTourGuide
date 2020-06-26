@@ -243,7 +243,10 @@ int main(int argc, char ** argv){
     for (int i =0; i< goals.size()-1; i++){
         if (i<actual_lengths.size()){
 
-            int status = (int) (i <times.size());
+            int status =0;
+            if (i < times.size()){
+                status = (int) times[i].success;
+            }
             if (optimal_lengths[i] > 0){
 
                 auto opt = optimal_lengths[i];
