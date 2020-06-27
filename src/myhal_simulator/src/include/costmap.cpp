@@ -333,6 +333,164 @@ bool Costmap::PosToIndicies(ignition::math::Vector3d pos, int &r, int &c){
 }
 
 bool Costmap::IndiciesToPos(ignition::math::Vector3d &pos, int r, int c){
+
     pos = ignition::math::Vector3d(this->boundary.Min().X() + c*this->resolution, this->boundary.Max().Y() - r*this->resolution, 0);
     return ((r>=0 && r < this->rows) && (c>=0 && c < this->cols));
+}
+
+bool Costmap::DijkstraSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d>& path){
+
+    std::map<std::vector<int>, std::vector<int>> came_from;
+    std::map<std::vector<int>, double> cost_so_far;
+
+    PriorityQueue<std::vector<int>, double> frontier; 
+    int start_r, start_c, end_r, end_c;
+    this->PosToIndicies(start, start_r, start_c);
+    this->PosToIndicies(end, end_r, end_c);
+    std::vector<int> start_coords = {start_r, start_c};
+    std::vector<int> end_coords = {end_r, end_c};
+
+    frontier.put(start_coords, 0);
+    came_from[start_coords] = start_coords;
+    cost_so_far[start_coords] = 0;
+
+    bool found = false;
+
+    while (!frontier.empty()){
+        std::vector<int> current = frontier.get();
+
+        if ((current[0] == end_coords[0]) && (current[1]==end_coords[1])){
+            found = true;
+            break;
+        }
+
+        auto neighbours = this->GetNeighbours(current, true);
+
+        for (std::vector<int> next: neighbours){
+            double n_cost = this->costmap[next[0]][next[1]];
+            if (n_cost > 1){ // if we encounter a wall, skip 
+                continue;
+            }
+            double new_cost = cost_so_far[current] + n_cost;
+            if (cost_so_far.find(next) == cost_so_far.end() || new_cost < cost_so_far[next]){
+                cost_so_far[next] = new_cost;
+                came_from[next] = current;
+                frontier.put(next, new_cost);
+            }
+        }
+    }
+
+    if (!found){
+        return false;
+    }
+
+  
+    auto curr_coords = end_coords;
+    ignition::math::Vector3d curr_pos = end;
+
+    while (curr_coords[0] != start_coords[0] && curr_coords[1] != start_coords[1]){
+        
+        ignition::math::Vector3d pos;
+        this->IndiciesToPos(pos, curr_coords[0], curr_coords[1]);
+        path.push_back(pos);
+        curr_coords = came_from[curr_coords];
+    }
+
+    path.push_back(start);
+    std::reverse(path.begin(), path.end());
+
+    int check_ind = 0;
+    int next_ind =1;
+    while (next_ind < path.size()-1){
+        if (this->Walkable(path[check_ind],path[next_ind+1])){
+            path.erase(path.begin()+next_ind);
+        } else{
+            check_ind = next_ind;
+            next_ind = check_ind +1;
+        }
+    }
+
+    return true;
+}
+
+double Costmap::Heuristic(std::vector<int> loc1, std::vector<int> loc2){
+    ignition::math::Vector3d pos1, pos2;
+    this->IndiciesToPos(pos1, loc1[0], loc1[1]);
+    this->IndiciesToPos(pos2, loc2[0], loc2[1]);
+    return std::abs(pos1.X() - pos2.X()) + std::abs(pos1.Y() - pos2.Y());
+}
+
+bool Costmap::AStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d>& path){
+    std::map<std::vector<int>, std::vector<int>> came_from;
+    std::map<std::vector<int>, double> cost_so_far;
+
+    PriorityQueue<std::vector<int>, double> frontier; 
+    int start_r, start_c, end_r, end_c;
+    this->PosToIndicies(start, start_r, start_c);
+    this->PosToIndicies(end, end_r, end_c);
+    std::vector<int> start_coords = {start_r, start_c};
+    std::vector<int> end_coords = {end_r, end_c};
+
+    frontier.put(start_coords, 0);
+    came_from[start_coords] = start_coords;
+    cost_so_far[start_coords] = 0;
+
+    bool found = false;
+
+    while (!frontier.empty()){
+        std::vector<int> current = frontier.get();
+
+        if ((current[0] == end_coords[0]) && (current[1]==end_coords[1])){
+            found = true;
+            break;
+        }
+
+        auto neighbours = this->GetNeighbours(current, true);
+
+        for (std::vector<int> next: neighbours){
+            double n_cost = this->costmap[next[0]][next[1]];
+            if (n_cost > 1){ // if we encounter a wall, skip 
+                continue;
+            }
+            double new_cost = cost_so_far[current] + n_cost;
+            if (cost_so_far.find(next) == cost_so_far.end() || new_cost < cost_so_far[next]){
+                cost_so_far[next] = new_cost;
+                double prio = this->Heuristic(next, end_coords);
+                came_from[next] = current;
+                frontier.put(next, prio);
+            }
+        }
+    }
+
+    if (!found){
+        return false;
+    }
+
+  
+    auto curr_coords = end_coords;
+    ignition::math::Vector3d curr_pos = end;
+
+    while (curr_coords[0] != start_coords[0] && curr_coords[1] != start_coords[1]){
+        
+        ignition::math::Vector3d pos;
+        this->IndiciesToPos(pos, curr_coords[0], curr_coords[1]);
+        path.push_back(pos);
+        curr_coords = came_from[curr_coords];
+    }
+
+    path.push_back(start);
+    std::reverse(path.begin(), path.end());
+
+    int check_ind = 0;
+    int next_ind =1;
+    while (next_ind < path.size()-1){
+        if (this->Walkable(path[check_ind],path[next_ind+1])){
+            path.erase(path.begin()+next_ind);
+        } else{
+            check_ind = next_ind;
+            next_ind = check_ind +1;
+        }
+    }
+
+    return true;
 }

@@ -182,7 +182,7 @@ int main(int argc, char ** argv){
         std::vector<ignition::math::Vector3d> path;
         
   
-        if(costmap.FindPath(start.Pos(), end.Pos(), path)){
+        if(costmap.AStarSearch(start.Pos(), end.Pos(), path)){
             paths.push_back(path);
 
             

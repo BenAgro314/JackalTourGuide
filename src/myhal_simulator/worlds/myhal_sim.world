@@ -162,6 +162,119 @@
 				</collision>
 			</link>
 		</model>
+		<include>
+			<name>chair_26</name>
+			<pose>-4.000000 -3.152314 0.000000 0.000000 -0.000000 -2.461272</pose>
+			<uri>model://chair_3</uri>
+		</include>
+		<actor name="sitter_28">
+			<pose>-4.000000 -3.152314 0.650000 0.000000 -0.000000 -2.461272</pose>
+			<skin>
+				<filename>sitting.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="vehicle_type" filename="sitter">
+			</plugin>
+			<plugin name="chair" filename="chair_26">
+			</plugin>
+		</actor>
+		<include>
+			<name>chair_27</name>
+			<pose>-2.176734 0.000000 0.000000 0.000000 -0.000000 -1.215454</pose>
+			<uri>model://chair_3</uri>
+		</include>
+		<include>
+			<name>table2_29</name>
+			<pose>3.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<uri>model://table_conference_2</uri>
+		</include>
+		<include>
+			<name>chair_33</name>
+			<pose>-3.999748 -0.380798 0.000000 0.000000 -0.000000 2.403793</pose>
+			<uri>model://chair_1</uri>
+		</include>
+		<actor name="sitter_34">
+			<pose>-3.999748 -0.380798 0.650000 0.000000 -0.000000 2.403793</pose>
+			<skin>
+				<filename>sitting.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="vehicle_type" filename="sitter">
+			</plugin>
+			<plugin name="chair" filename="chair_33">
+			</plugin>
+		</actor>
+		<include>
+			<name>table1_35</name>
+			<pose>3.000000 -3.000000 0.000000 0.000000 -0.000000 1.570700</pose>
+			<uri>model://table_conference_1</uri>
+		</include>
+		<actor name="sitter_41">
+			<pose>2.999758 -5.514295 0.650000 0.000000 -0.000000 -0.177138</pose>
+			<skin>
+				<filename>sitting.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="vehicle_type" filename="sitter">
+			</plugin>
+			<plugin name="chair" filename="chair_37">
+			</plugin>
+		</actor>
+		<include>
+			<name>chair_38</name>
+			<pose>4.627234 -3.000157 0.000000 0.000000 -0.000000 -1.133581</pose>
+			<uri>model://chair_2</uri>
+		</include>
+		<include>
+			<name>chair_40</name>
+			<pose>1.366134 -2.999843 0.000000 0.000000 -0.000000 2.680875</pose>
+			<uri>model://chair_2</uri>
+		</include>
 		<model name="box_4">
 			<pose>17.250000 -20.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
 			<static>true</static>
