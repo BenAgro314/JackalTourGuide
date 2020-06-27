@@ -121,177 +121,124 @@ int main(int argc, char ** argv){
             costmap.AddObject(box);
         }
     }
-  
 
-    auto goals = handle.TourTargets();
+    auto waypoints = handle.TourTargets(); // stores all the waypoints on the tour (including the start 0,0,0)
+    auto times = handle.TargetTimes(); // stores the times (and a boolean) for each target the robot tried to reach
 
-    auto times = handle.TargetTimes();
 
     std::vector<double> actual_lengths;
+    std::vector<double> optimal_lengths;
 
-    int traj_ind = 0;
-
-    std::vector<ignition::math::Vector3d> end_pts;
-    end_pts.push_back(ignition::math::Vector3d(0,0,0));
-    
-    for (int i =0; i<times.size(); i++){
-        double time = times[i].time;
-        actual_lengths.push_back(0);
-        int count = 0;
-        ignition::math::Vector3d last_pose;
-        while (traj_ind < gt_traj.size() && gt_traj[traj_ind].time <= time){
-            if (count == 0){
-                last_pose = gt_traj[traj_ind].pose.Pos();
-                count++;
-                continue;
-            }
-            count++;
-            actual_lengths.back() += (gt_traj[traj_ind].pose.Pos() - last_pose).Length();
-            last_pose = gt_traj[traj_ind].pose.Pos();
-            traj_ind++;
-        }
-        //std::cout << actual_lengths.back() << std::endl;
-        
-        end_pts.push_back(last_pose);
-    }
-    if (traj_ind < gt_traj.size()){
-        actual_lengths.push_back(0);
-
-        ignition::math::Vector3d last_pose = end_pts.back();
-        while(traj_ind < gt_traj.size()){
-            actual_lengths.back() += (gt_traj[traj_ind].pose.Pos() - last_pose).Length();
-            last_pose = gt_traj[traj_ind].pose.Pos();
-            traj_ind++;
-        }
-
-    }
-   
-    
     std::vector<std::vector<ignition::math::Vector3d>> paths;
     std::cout << "Computing optimal paths\n";
 
-    std::vector<TrajPoint> optimal_traj;
-
-    std::ofstream path_file(filepath + "/logs-" + time_name + "/paths.txt");
     
-    for (int first = 0; first < goals.size()-1; first++){
+
+    
+    
+    for (int first = 0; first < waypoints.size()-1; first++){
       
-        auto start = goals[first];
-       
-        auto end = goals[first+1];
+        auto start = waypoints[first];
+        auto end = waypoints[first+1];
+
         std::vector<ignition::math::Vector3d> path;
-        
   
         if(costmap.AStarSearch(start.Pos(), end.Pos(), path)){
-            paths.push_back(path);
-
-            
+            paths.push_back(path); 
+           
+            optimal_lengths.push_back(handle.PathLength(path)); 
+            //std::cout << "Optimal Length To Reach Target #" <<first +1 << " is " << optimal_lengths.back() << "m" << std::endl;
+            //std::cout << start.Pos() << " " << end.Pos() << std::endl;
         } else{
-            break;
+            optimal_lengths.push_back(-1);
+            //std::cout << "Unreachable target #" << first+1 << std::endl;
+        }   
+    }
+
+    int traj_ind = 0;
+
+    for (int i =0; i<times.size(); ++i){
+        double time = times[i].time;
+        std::vector<ignition::math::Vector3d> temp_path;
+        while (traj_ind < gt_traj.size() && gt_traj[traj_ind].time <=time){
+            temp_path.push_back(gt_traj[traj_ind].pose.Pos());
+            traj_ind++;
         }
-
-        
-        
+        actual_lengths.push_back(handle.PathLength(temp_path));
     }
 
-   
-
-    std::vector<double> optimal_lengths;
-    
-    for (auto path: paths){
-        optimal_lengths.push_back(0);
-        int count = 0;
-        ignition::math::Vector3d last_pose;
-        for (auto pose: path){
-            optimal_traj.push_back(TrajPoint(ignition::math::Pose3d(pose, ignition::math::Quaterniond(0,0,0)),(double) count));
-            if (count == 0){
-                last_pose = pose;
-                count++;
-                continue;
-            }
-            count ++;
-            
-            optimal_lengths.back() += (pose - last_pose).Length();
-            
-            last_pose = pose;
-        }
-        
+    std::vector<ignition::math::Vector3d> temp_path;
+    while(traj_ind < gt_traj.size()){
+        temp_path.push_back(gt_traj[traj_ind].pose.Pos());
+        traj_ind ++;
     }
-
-    while (optimal_lengths.size() < goals.size()-1){
-        optimal_lengths.push_back(-1);
-    }
-
-    // find how far the robot travelled in the times from 0->times[0], times[0]->times[1] ...
-
-   
+    actual_lengths.push_back(handle.PathLength(temp_path));
 
     int path_count = handle.MessageCount("/move_base/NavfnROS/plan");
+
+    
+    
     
     std::cout << "Writing to file\n";
 
     std::ofstream out2(filepath + "/logs-" + time_name + "/path_data.csv");
 
     if (filter_status == "true"){
-        out2 << "Ground Truth Demon\n";
+        out2 << "Ground Truth Demon,";
     } else {
-        out2 << "No Demon\n";
+        out2 << "No Demon,";
     }
+    out2 << "Numer of path computations:," << path_count << "\n";
+    out2 << " ,Optimal path length (m), reached goal?, actual path length (m)\n";
 
-    out2 << " ,Optimal path length (m), reached goal?, actual path length (m), difference (m), Number of Path Computations:," << path_count  << "\n";
-
-    for (int i =0; i< goals.size()-1; i++){
-        if (i<actual_lengths.size()){
-
-            int status =0;
-            if (i < times.size()){
-                status = (int) times[i].success;
-            }
-            if (optimal_lengths[i] > 0){
-
-                auto opt = optimal_lengths[i];
-                if (i == 0){
-                    opt = std::max(0.0, opt-0.25);
-                } else {
-                    opt = std::max(0.0, opt-0.5);
-                }
-                
-                out2 << "Target #" << i+1 << "," << opt << "," << status << "," << actual_lengths[i] << "," << actual_lengths[i]-opt << std::endl; 
-            } else{
-                out2 << "Target #" << i+1 << "," << "Unreachable" << "," << status << "," << "NA"<< "," << "NA" << std::endl; 
-            }
-        } else{
-            if (optimal_lengths[i] > 0){
-                auto opt = optimal_lengths[i];
-                
-                if (i == 0){
-                    opt = std::max(0.0, opt-0.25);
-                } else {
-                    opt = std::max(0.0, opt-0.5);
-                }
-                
-                out2 << "Target #" << i+1 << "," << opt << ",0,NA,NA\n";
-            } else{
-                 out2 << "Target #" << i+1 << "," << "Unreachable" << ",0,NA,NA\n";
-            }
-            
-        }
+    for (int i =0; i< waypoints.size()-1; ++i){
+        out2 << "Target #" << i+1 << ",";
         
+        double opt = optimal_lengths[i];
+
+        if (i == 0){
+            opt = std::max(0.0, optimal_lengths[i]-0.25);
+        } else{
+            opt = std::max(0.0, optimal_lengths[i]-0.5);
+        }
+
+        out2 << opt << ",";
+        int goal_status = 0;
+        if (i < times.size()){
+            goal_status = (int) times[i].success;
+        } 
+        out2 << goal_status << ",";
+
+        if (i < actual_lengths.size()){
+            out2 << actual_lengths[i] << "\n";
+        } else {
+            out2 << "NA\n";
+        }
+       
+
     }
 
     out2.close();
 
     happly::PLYData plyOut2;
+    std::ofstream path_file(filepath + "/logs-" + time_name + "/paths.txt");
 
     int curr_ind = 0;
     
     std::vector<TrajPoint> plot_path;
-    
-    //std::cout << optimal_traj.size() << std::endl;
-    while (curr_ind+1 < optimal_traj.size()){
-        plot_path.push_back(optimal_traj[curr_ind]);
 
-        auto dir = optimal_traj[curr_ind+1].pose.Pos() - optimal_traj[curr_ind].pose.Pos();
+    std::vector<ignition::math::Vector3d> optimal_traj;
+    for (auto path: paths){
+        for (auto pt: path){
+            optimal_traj.push_back(pt);
+        }
+    }
+    
+    
+    while (curr_ind+1 < optimal_traj.size()){
+        plot_path.push_back(TrajPoint(ignition::math::Pose3d(optimal_traj[curr_ind],ignition::math::Quaterniond(0,0,0,0)), (double)1));
+
+        auto dir = optimal_traj[curr_ind+1] - optimal_traj[curr_ind];
         double len = dir.Length();
         if (len < reso){
             curr_ind ++;
@@ -302,8 +249,8 @@ int main(int argc, char ** argv){
 
         auto add = dir;
         while (add.Length() < len){
-            auto pt = optimal_traj[curr_ind].pose.Pos()+add;
-            plot_path.push_back(TrajPoint(ignition::math::Pose3d(pt, ignition::math::Quaterniond(0,0,0,0)), (double) curr_ind));
+            auto pt = optimal_traj[curr_ind]+add;
+            plot_path.push_back(TrajPoint(ignition::math::Pose3d(pt, ignition::math::Quaterniond(0,0,0,0)), (double)1));
             add += dir;
         }
         //std::cout << curr_ind << std::endl;
@@ -317,7 +264,7 @@ int main(int argc, char ** argv){
 
     AddTrajectory(plyOut2, plot_path);
     plyOut2.write(filepath + "/logs-" + time_name + "/optimal_traj.ply", happly::DataFormat::Binary);
-    
+
 
     return 0;
 }

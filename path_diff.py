@@ -90,14 +90,20 @@ for i in range(len(y_data)):
     c = ["g"]*len(x_labels)
     if (labels[i] == "Ground Truth Demon"):
         c = ["r"]*len(x_labels)
+        j =0
+        for l in success_labels[i]:
+            if (success_labels[i][j] != ""):
+                c[j] = "rosybrown"
+            j+=1
     elif (labels[i] == "No Demon"):
         c = ["b"]*len(x_labels)
+        j =0
+        for l in success_labels[i]:
+            if (success_labels[i][j] != ""):
+                c[j] = "lightsteelblue"
+            j+=1
 
-    j =0
-    for l in success_labels[i]:
-        if (success_labels[i][j] != ""):
-            c[j] = "grey"
-        j+=1
+    
     rects_list.append(ax.bar(x- width/2. + i/float(n)*width, y_data[i], width/float(n), align="edge",  label = labels[i], color = c))
 
 ax.set_ylabel('Percent Deviation From Optimal Path (%)')   

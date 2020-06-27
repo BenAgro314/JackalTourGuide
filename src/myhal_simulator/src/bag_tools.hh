@@ -268,6 +268,15 @@ class BagTools{
             return times;
         }
 
+        double PathLength(std::vector<ignition::math::Vector3d> path){
+            double length = 0;
+
+            for (int i =0; i< path.size() -1; ++i){
+                length += (path[i+1]-path[i]).Length();
+            }
+
+            return length;
+        }
 
         void NewLidarTopic(std::string path){
 

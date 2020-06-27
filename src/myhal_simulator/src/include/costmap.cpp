@@ -195,7 +195,7 @@ bool Costmap::Walkable(ignition::math::Vector3d start, ignition::math::Vector3d 
 
     auto dir = end-start;
     double length = dir.Length();
-    int N = (int) length/(this->resolution/5);
+    int N = (int) length/(this->resolution/10);
     dir = dir.Normalize();
     dir*= this->resolution/5;
 
@@ -388,7 +388,7 @@ bool Costmap::DijkstraSearch(ignition::math::Vector3d start, ignition::math::Vec
     auto curr_coords = end_coords;
     ignition::math::Vector3d curr_pos = end;
 
-    while (curr_coords[0] != start_coords[0] && curr_coords[1] != start_coords[1]){
+    while (curr_coords[0] != start_coords[0] ||  curr_coords[1] != start_coords[1]){
         
         ignition::math::Vector3d pos;
         this->IndiciesToPos(pos, curr_coords[0], curr_coords[1]);
@@ -462,20 +462,36 @@ bool Costmap::AStarSearch(ignition::math::Vector3d start, ignition::math::Vector
         }
     }
 
+    
+
     if (!found){
         return false;
     }
 
   
     auto curr_coords = end_coords;
-    ignition::math::Vector3d curr_pos = end;
+    ignition::math::Vector3d actual_pos = end;
+    ignition::math::Vector3d last_pos = end;
 
-    while (curr_coords[0] != start_coords[0] && curr_coords[1] != start_coords[1]){
-        
-        ignition::math::Vector3d pos;
-        this->IndiciesToPos(pos, curr_coords[0], curr_coords[1]);
-        path.push_back(pos);
+    int count = 0;
+
+    while (curr_coords[0] != start_coords[0] || curr_coords[1] != start_coords[1]){
+
+        if (count != 0){
+            ignition::math::Vector3d curr_pos;
+            this->IndiciesToPos(curr_pos, curr_coords[0], curr_coords[1]);
+            auto offset = curr_pos - last_pos;
+            actual_pos = actual_pos+offset;
+            path.push_back(actual_pos);
+        } else{
+            path.push_back(end);
+        }
+
+        this->IndiciesToPos(last_pos, curr_coords[0], curr_coords[1]);
         curr_coords = came_from[curr_coords];
+        
+
+        count ++;
     }
 
     path.push_back(start);
