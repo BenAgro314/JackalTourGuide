@@ -18,7 +18,7 @@ lounge_532:
   geometry: g532
   positions: p532
   enclosed: "1"
-  scenario: big_tables_no_people
+  scenario: empty
 
 study_space_546:
   geometry: g546
