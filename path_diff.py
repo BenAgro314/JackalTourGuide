@@ -76,17 +76,6 @@ for filename in files:
     y_data.append(y)
     labels.append(series)
     success_labels.append(suc)
-    #plt.bar(x,y, label= series)
-
-
-#subcategorybar(x_labels , y_data, labels)
-
-#plt.xlabel('Target Number')
-#plt.ylabel('Difference From Optimal Path (%)')
-#plt.title('Length Difference Between Actual Path and Optimal Path')
-#plt.legend()
-
-#plt.show()
 
 x = np.arange(len(x_labels))
 width = 0.8
@@ -98,11 +87,17 @@ n = len(y_data)
 rects_list = []
 
 for i in range(len(y_data)):
-    c = "g"
+    c = ["g"]*len(x_labels)
     if (labels[i] == "Ground Truth Demon"):
-        c = "r"
+        c = ["r"]*len(x_labels)
     elif (labels[i] == "No Demon"):
-        c = "b"
+        c = ["b"]*len(x_labels)
+
+    j =0
+    for l in success_labels[i]:
+        if (success_labels[i][j] != ""):
+            c[j] = "grey"
+        j+=1
     rects_list.append(ax.bar(x- width/2. + i/float(n)*width, y_data[i], width/float(n), align="edge",  label = labels[i], color = c))
 
 ax.set_ylabel('Percent Deviation From Optimal Path (%)')   
