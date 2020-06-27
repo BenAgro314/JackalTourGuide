@@ -59,13 +59,13 @@ for filename in files:
                     actual_length = float(row[3])
                 else:
                     suc.append("Failure")
-                    actual_length = optimal_length*2
+                    actual_length = optimal_length
 
                 
                 last_success = True
             else:
                 suc.append("Failure")
-                actual_length = optimal_length*2
+                actual_length = optimal_length
                 last_success = False
 
             percent_diff = ((actual_length - optimal_length)/optimal_length)*100

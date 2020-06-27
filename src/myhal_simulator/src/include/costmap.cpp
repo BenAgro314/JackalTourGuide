@@ -195,9 +195,10 @@ bool Costmap::Walkable(ignition::math::Vector3d start, ignition::math::Vector3d 
 
     auto dir = end-start;
     double length = dir.Length();
-    int N = (int) length/(this->resolution/10);
+    int num = 10;
+    int N = (int) length/(this->resolution/num);
     dir = dir.Normalize();
-    dir*= this->resolution/5;
+    dir*= this->resolution/num;
 
     for (int i =1; i <= N; i++){
         auto check_point = dir*i + start;
