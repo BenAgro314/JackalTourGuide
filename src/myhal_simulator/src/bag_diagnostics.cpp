@@ -250,8 +250,11 @@ int main(int argc, char ** argv){
             if (optimal_lengths[i] > 0){
 
                 auto opt = optimal_lengths[i];
-                
-                opt = std::max(0.0, opt-0.25);
+                if (i == 0){
+                    opt = std::max(0.0, opt-0.25);
+                } else {
+                    opt = std::max(0.0, opt-0.5);
+                }
                 
                 out2 << "Target #" << i+1 << "," << opt << "," << status << "," << actual_lengths[i] << "," << actual_lengths[i]-opt << std::endl; 
             } else{
@@ -261,7 +264,11 @@ int main(int argc, char ** argv){
             if (optimal_lengths[i] > 0){
                 auto opt = optimal_lengths[i];
                 
-                opt = std::max(0.0, opt-0.25);
+                if (i == 0){
+                    opt = std::max(0.0, opt-0.25);
+                } else {
+                    opt = std::max(0.0, opt-0.5);
+                }
                 
                 out2 << "Target #" << i+1 << "," << opt << ",0,NA,NA\n";
             } else{
