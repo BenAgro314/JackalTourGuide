@@ -196,11 +196,8 @@ int main(int argc, char ** argv){
         
         double opt = optimal_lengths[i];
 
-        if (i == 0){
-            opt = std::max(0.0, optimal_lengths[i]-0.25);
-        } else{
-            opt = std::max(0.0, optimal_lengths[i]-0.5);
-        }
+        opt = std::max(0.0, optimal_lengths[i]-0.5);
+        
 
         out2 << opt << ",";
         int goal_status = 0;
