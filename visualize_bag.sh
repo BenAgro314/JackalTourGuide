@@ -24,4 +24,5 @@ rosparam set use_sim_time true
 
 #rviz -d "/home/$USER/catkin_ws/src/jackal_velodyne/launch/include/visualize.rviz" &
 roslaunch jackal_velodyne visualize.launch &
+sleep 4
 rosbag play -l $BAGPATH

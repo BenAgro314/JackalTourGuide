@@ -37,12 +37,11 @@ for filename in files:
 				
 			count+=1
 
-	if ((not f_label) and series == "Ground Truth Demon"):
+	print(filename, ":", series)
+	if (series == "Ground Truth Demon"):
 		plt.plot(x,y, 'r',label=series)
-		f_label = True
-	elif ((not nf_label) and series == "No Demon"):
+	elif (series == "No Demon"):
 		plt.plot(x,y, 'b--',label=series)
-		nf_label = True
 	elif ((series != "Ground Truth Demon") and (series != "No Demon")):
 		plt.plot(x,y, 'g-.',label=series)
 	else:
