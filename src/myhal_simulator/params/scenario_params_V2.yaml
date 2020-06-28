@@ -12,7 +12,7 @@ scenario_names:
   - empty
 
 no_tables_wanderer_crowd:
-  pop_density: "0.1"
+  pop_density: "0.15"
   table_percentage: "0"
   actor: actor_basic_wanderer
   model_list: big_tables

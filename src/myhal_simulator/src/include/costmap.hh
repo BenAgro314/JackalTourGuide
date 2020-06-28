@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <sstream> 
+#include <sstream>
 #include <string>
 #include <iostream>
 #include "utilities.hh"
@@ -9,84 +9,126 @@
 #include "frame.hh"
 #include <queue>
 #include <map>
-#include <utility>  
+#include <utility>
 #include <algorithm>
+#include <queue>
 
+class Costmap
+{
 
-class Costmap{
+private:
+	ignition::math::Box boundary;
 
-    private:
+	double resolution;
 
-        ignition::math::Box boundary;
+	ignition::math::Vector3d top_left;
 
-        double resolution;
+	double width;
 
-        ignition::math::Vector3d top_left;
+	double height;
 
-        double width;
+	int rows;
 
-        double height;
+	int cols;
 
-        int rows;
+	std::vector<std::vector<int>> costmap;
 
-        int cols;
+	std::vector<std::vector<int>> last_path;
 
-        std::vector<std::vector<int>> costmap;
+	std::vector<std::vector<double>> integration_field;
 
-        std::vector<std::vector<int>> last_path;
+public:
+	bool PosToIndicies(ignition::math::Vector3d pos, int &r, int &c);
 
-        std::vector<std::vector<double>> integration_field;
+	bool IndiciesToPos(ignition::math::Vector3d &pos, int r, int c);
 
-    public:
+	bool Integrate(ignition::math::Vector3d goal);
 
-        bool PosToIndicies(ignition::math::Vector3d pos, int &r, int &c);
+	std::vector<std::vector<int>> GetNeighbours(std::vector<int> curr_ind, bool diag = false);
 
-        bool IndiciesToPos(ignition::math::Vector3d &pos, int r, int c);
+	Costmap(ignition::math::Box boundary, double resolution);
 
-        bool Integrate(ignition::math::Vector3d goal);
+	void AddObject(ignition::math::Box object);
 
-        std::vector<std::vector<int>> GetNeighbours(std::vector<int> curr_ind, bool diag = false);
+	std::string ToString();
 
-        Costmap(ignition::math::Box boundary, double resolution);
+	std::string PathString(std::vector<TrajPoint> path);
 
-        void AddObject(ignition::math::Box object);
+	bool FindPath(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
 
-        std::string ToString();
+	bool Walkable(ignition::math::Vector3d start, ignition::math::Vector3d end);
 
-        std::string PathString(std::vector<TrajPoint> path);
+	bool DijkstraSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
 
-        bool FindPath(ignition::math::Vector3d start, ignition::math::Vector3d end,  std::vector<ignition::math::Vector3d> &path);
+	double Heuristic(std::vector<int> loc1, std::vector<int> loc2);
 
-        bool Walkable(ignition::math::Vector3d start, ignition::math::Vector3d end);
+	bool AStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
 
-        bool DijkstraSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d>& path);
+	bool ThetaStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
+};
 
-        double Heuristic(std::vector<int> loc1, std::vector<int> loc2);
+// template <typename T, typename priority_t>
+// struct PriorityQueue
+// {
 
-        bool AStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d>& path);
+// 	typedef std::pair<priority_t, T> PQElement;
+// 	std::priority_queue<PQElement, std::vector<PQElement>, std::greater<PQElement>> elements;
 
-        bool ThetaStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d>& path);
-}; 
+// 	inline bool empty() const
+// 	{
+// 		return elements.empty();
+// 	}
 
-template<typename T, typename priority_t>
-struct PriorityQueue {
+// 	inline void put(T item, priority_t priority)
+// 	{
+// 		elements.emplace(priority, item);
+// 	}
 
-  typedef std::pair<priority_t, T> PQElement;
-  std::priority_queue<PQElement, std::vector<PQElement>, std::greater<PQElement>> elements;
+// 	T get()
+// 	{
+// 		T best_item = elements.top().second;
+// 		elements.pop();
+// 		return best_item;
+// 	}
+// };
 
-  inline bool empty() const {
-     return elements.empty();
-  }
+template <class T, class priority_t>
+class PriorityQueue : public std::priority_queue<std::pair<priority_t, T>, std::vector<std::pair<priority_t, T>>, std::greater<std::pair<priority_t, T>>>
+{
+	public:
 
-  inline void put(T item, priority_t priority) {
-    elements.emplace(priority, item);
-  }
+		typedef typename 
+			std::priority_queue<
+				T, 
+				std::vector<std::pair<priority_t, T>>,  
+				std::greater<std::pair<priority_t, T>>>::container_type::const_iterator const_iterator;
 
-  T get() {
-    T best_item = elements.top().second;
-    elements.pop();
-    return best_item;
-  }
+		const_iterator find(const T&val) const{
+            auto first = this->c.cbegin();
+            auto last = this->c.cend();
+            while (first!=last) {
+                if ((*first).second==val) return first;
+                ++first;
+            }
+            return last;
+        }
 
-  
+        const_iterator last() const{
+            return this->c.cend();
+        }
+
+		T get(){
+			T best = this->top().second;
+			this->pop();
+			return best;
+		}
+
+        void put(T item, priority_t priority){
+		    this->emplace(priority, item);
+	    }
+
+        // bool empty() {
+		//     return this->empty();
+	    // }
+
 };

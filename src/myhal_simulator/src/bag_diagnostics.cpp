@@ -3,7 +3,7 @@
 
 int main(int argc, char ** argv){
 
-    if (argc ==1){
+    if (argc <=2){
         std::cout << "must input folder name and true/false\n";
         return 0;
     }
@@ -143,7 +143,7 @@ int main(int argc, char ** argv){
 
         std::vector<ignition::math::Vector3d> path;
   
-        if(costmap.AStarSearch(start.Pos(), end.Pos(), path)){
+        if(costmap.FindPath(start.Pos(), end.Pos(), path)){
             paths.push_back(path); 
            
             optimal_lengths.push_back(handle.PathLength(path)); 
