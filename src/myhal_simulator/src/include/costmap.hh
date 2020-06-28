@@ -10,8 +10,6 @@
 #include <queue>
 #include <map>
 #include <utility>
-#include <algorithm>
-#include <queue>
 #include <set>
 #include <limits>
 #include <chrono>
@@ -48,9 +46,20 @@ private:
 
     PriorityQueue<std::vector<int>, double> open;
 
+    std::vector<int> target;
+
+    void UpdateVertexA(std::vector<int> s, std::vector<int> n);
+
+    void UpdateVertexB(std::vector<int> s, std::vector<int> n);
+
+    double DistCost(std::vector<int> s, std::vector<int> n);
+
+    bool Walkable(ignition::math::Vector3d start, ignition::math::Vector3d end);
+
+    double Heuristic(std::vector<int> loc1, std::vector<int> loc2);
+
 public:
 
-    std::vector<int> target;
 
 	bool PosToIndicies(ignition::math::Vector3d pos, int &r, int &c);
 
@@ -70,17 +79,11 @@ public:
 
 	bool FindPath(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
 
-	bool Walkable(ignition::math::Vector3d start, ignition::math::Vector3d end);
-
-	double Heuristic(std::vector<int> loc1, std::vector<int> loc2);
-
-	bool ThetaStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
+	bool ThetaStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
 
     bool AStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
 
-    void UpdateVertex(std::vector<int> s, std::vector<int> n);
-
-    double DistCost(std::vector<int> s, std::vector<int> n);
+    
 
     
 };

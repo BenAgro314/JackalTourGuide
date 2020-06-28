@@ -312,24 +312,6 @@ bool Costmap::PosToIndicies(ignition::math::Vector3d pos, int &r, int &c){
         c++;
     }
 
-
-    /*
-    r = (int) (this->boundary.Max().Y() - pos.Y())/this->resolution;
-    if (r >= this->rows){
-        r = this->rows-1;
-    }
-    if (r < 0){
-        r = 0;
-    }
-    c = (int) (pos.X() -this->boundary.Min().X())/this->resolution;
-    if (c >= this->cols){
-        c = this->cols-1;
-    }
-    if (c < 0){
-        c = 0;
-    }
-    */
-
     return utilities::inside_box(this->boundary, pos, true);
 }
 
@@ -338,21 +320,13 @@ bool Costmap::IndiciesToPos(ignition::math::Vector3d &pos, int r, int c){
     pos = ignition::math::Vector3d(this->boundary.Min().X() + c*this->resolution, this->boundary.Max().Y() - r*this->resolution, 0);
     return ((r>=0 && r < this->rows) && (c>=0 && c < this->cols));
 }
+
 double Costmap::Heuristic(std::vector<int> loc1, std::vector<int> loc2){
-    //auto dr = std::abs(loc1[0]-loc2[0]);
-    //auto dc = std::abs(loc1[1]-loc2[1]);
     ignition::math::Vector3d pos1, pos2;
     this->IndiciesToPos(pos1, loc1[0],loc1[1]);
     this->IndiciesToPos(pos2, loc2[0],loc2[1]);
 
     return (pos1-pos2).Length();
-}
-
-
-bool Costmap::ThetaStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d>& path){
-    
-    return false;
-    
 }
 
 bool Costmap::AStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path){
@@ -402,7 +376,7 @@ bool Costmap::AStar(ignition::math::Vector3d start, ignition::math::Vector3d end
                 if (this->open.find(n) == open.last()){
                     this->g_cost[n] = std::numeric_limits<double>::infinity();
                 }
-                this->UpdateVertex(s, n);
+                this->UpdateVertexA(s, n);
             }
         }
     }
@@ -458,7 +432,7 @@ bool Costmap::AStar(ignition::math::Vector3d start, ignition::math::Vector3d end
     return true;
 }
 
-void Costmap::UpdateVertex(std::vector<int> s, std::vector<int> n){
+void Costmap::UpdateVertexA(std::vector<int> s, std::vector<int> n){
     auto c = this->DistCost(s,n);
     if (this->g_cost[s] + c < this->g_cost[n]){
         this->g_cost[n] = this->g_cost[s] + c;
@@ -467,6 +441,132 @@ void Costmap::UpdateVertex(std::vector<int> s, std::vector<int> n){
             this->open.remove(n);
         }
         this->open.put(n, this->g_cost[n] + this->Heuristic(n, this->target));
+    }
+}
+
+bool Costmap::ThetaStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path){
+    auto t1 = std::chrono::high_resolution_clock::now();
+
+    this->parent.clear();
+    this->g_cost.clear();
+    this->open.clear();
+    
+    int start_r, start_c, end_r, end_c;
+    this->PosToIndicies(start, start_r, start_c);
+    this->PosToIndicies(end, end_r, end_c);
+
+
+    std::vector<int> start_coords = {start_r, start_c};
+    std::vector<int> end_coords = {end_r, end_c};
+    //std::cout << "end: ";
+    
+    this->target = end_coords;
+
+    this->g_cost[start_coords] = 0;
+    this->parent[start_coords] = start_coords;
+    
+    this->open.put(start_coords, this->Heuristic(start_coords, end_coords));
+    std::set<std::vector<int>> closed;
+
+    bool found = false;
+
+    while (!this->open.empty()){
+        //std::cout << open.size() << std::endl;
+        
+        auto s = this->open.get();
+        //print_coords(s);
+        if (s[0] == end_coords[0] && s[1] == end_coords[1]){
+            found = true;
+            break; // path found
+        }
+
+        closed.insert(s);
+
+        for (auto n: this->GetNeighbours(s, true)){
+            double n_cost = this->costmap[n[0]][n[1]];
+            if (n_cost > 1){ // if we encounter a wall, skip 
+                continue;
+            }
+            if (closed.find(n) == closed.end()){
+                if (this->open.find(n) == open.last()){
+                    this->g_cost[n] = std::numeric_limits<double>::infinity();
+                }
+                this->UpdateVertexB(s, n);
+            }
+        }
+    }
+
+
+    if (!found){
+        return false;
+    }
+
+
+    auto curr_coords = end_coords;
+    ignition::math::Vector3d actual_pos = end;
+    ignition::math::Vector3d last_pos = end;
+
+    int count = 0;
+
+    while (curr_coords[0] != start_coords[0] || curr_coords[1] != start_coords[1]){
+
+        if (count != 0){
+            ignition::math::Vector3d curr_pos;
+            this->IndiciesToPos(curr_pos, curr_coords[0], curr_coords[1]);
+            auto offset = curr_pos - last_pos;
+            actual_pos = actual_pos+offset;
+            path.push_back(actual_pos);
+        } else{
+            path.push_back(end);
+        }
+
+        this->IndiciesToPos(last_pos, curr_coords[0], curr_coords[1]);
+        curr_coords = this->parent[curr_coords];
+        
+
+        count ++;
+    }
+
+    path.push_back(start);
+    std::reverse(path.begin(), path.end());
+
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+    std::cout <<  "Path Found. Duration: " << ((double)duration)/10e6 << " s"<< std::endl;
+    return true;
+}
+
+void Costmap::UpdateVertexB(std::vector<int> s, std::vector<int> n){
+
+    ignition::math::Vector3d p1, p2;
+
+    auto par = this->parent[s];
+
+    this->IndiciesToPos(p1, par[0], par[1]);
+    this->IndiciesToPos(p2, n[0], n[1]);
+
+    if (this->Walkable(p1, p2)){
+
+
+        auto c = this->DistCost(par, n);
+        if (this->g_cost[par] + c < this->g_cost[n]){
+            this->g_cost[n] = this->g_cost[par]+c;
+            this->parent[n] = par;
+            if (this->open.find(n) != this->open.last()){
+                this->open.remove(n);
+            }
+            this->open.put(n, this->g_cost[n]+this->Heuristic(n, this->target));
+        }
+    } else{
+        auto c = this->DistCost(s, n);
+        if (this->g_cost[s] + c < this->g_cost[n]){
+            this->g_cost[n] = this->g_cost[s]+c;
+            this->parent[n] = s;
+            if (this->open.find(n) != this->open.last()){
+                this->open.remove(n);
+            }
+            this->open.put(n, this->g_cost[n] + this->Heuristic(n, this->target));
+        }
     }
 }
 

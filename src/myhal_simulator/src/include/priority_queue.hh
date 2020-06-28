@@ -1,5 +1,8 @@
 #pragma once 
 
+#include <algorithm>
+#include <queue>
+
 template <class T, class priority_t>
 class PriorityQueue : public std::priority_queue<std::pair<priority_t, T>, std::vector<std::pair<priority_t, T>>, std::greater<std::pair<priority_t, T>>>
 {
