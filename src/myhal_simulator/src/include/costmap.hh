@@ -64,13 +64,15 @@ class Costmap{
         double Heuristic(std::vector<int> loc1, std::vector<int> loc2);
 
         bool AStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d>& path);
+
+        bool ThetaStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d>& path);
 }; 
 
 template<typename T, typename priority_t>
 struct PriorityQueue {
+
   typedef std::pair<priority_t, T> PQElement;
-  std::priority_queue<PQElement, std::vector<PQElement>,
-                 std::greater<PQElement>> elements;
+  std::priority_queue<PQElement, std::vector<PQElement>, std::greater<PQElement>> elements;
 
   inline bool empty() const {
      return elements.empty();
@@ -85,4 +87,6 @@ struct PriorityQueue {
     elements.pop();
     return best_item;
   }
+
+  
 };

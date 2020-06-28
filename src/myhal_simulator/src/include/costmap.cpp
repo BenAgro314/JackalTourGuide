@@ -387,14 +387,28 @@ bool Costmap::DijkstraSearch(ignition::math::Vector3d start, ignition::math::Vec
 
   
     auto curr_coords = end_coords;
-    ignition::math::Vector3d curr_pos = end;
+    ignition::math::Vector3d actual_pos = end;
+    ignition::math::Vector3d last_pos = end;
 
-    while (curr_coords[0] != start_coords[0] ||  curr_coords[1] != start_coords[1]){
-        
-        ignition::math::Vector3d pos;
-        this->IndiciesToPos(pos, curr_coords[0], curr_coords[1]);
-        path.push_back(pos);
+    int count = 0;
+
+    while (curr_coords[0] != start_coords[0] || curr_coords[1] != start_coords[1]){
+
+        if (count != 0){
+            ignition::math::Vector3d curr_pos;
+            this->IndiciesToPos(curr_pos, curr_coords[0], curr_coords[1]);
+            auto offset = curr_pos - last_pos;
+            actual_pos = actual_pos+offset;
+            path.push_back(actual_pos);
+        } else{
+            path.push_back(end);
+        }
+
+        this->IndiciesToPos(last_pos, curr_coords[0], curr_coords[1]);
         curr_coords = came_from[curr_coords];
+        
+
+        count ++;
     }
 
     path.push_back(start);
@@ -415,13 +429,13 @@ bool Costmap::DijkstraSearch(ignition::math::Vector3d start, ignition::math::Vec
 }
 
 double Costmap::Heuristic(std::vector<int> loc1, std::vector<int> loc2){
-    ignition::math::Vector3d pos1, pos2;
-    this->IndiciesToPos(pos1, loc1[0], loc1[1]);
-    this->IndiciesToPos(pos2, loc2[0], loc2[1]);
-    return std::abs(pos1.X() - pos2.X()) + std::abs(pos1.Y() - pos2.Y());
+    auto dr = std::abs(loc1[0]-loc2[0]);
+    auto dc = std::abs(loc1[1]-loc2[1]);
+    return dr+dc-std::min(dr,dc);
 }
 
 bool Costmap::AStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d>& path){
+    
     std::map<std::vector<int>, std::vector<int>> came_from;
     std::map<std::vector<int>, double> cost_so_far;
 
@@ -456,7 +470,7 @@ bool Costmap::AStarSearch(ignition::math::Vector3d start, ignition::math::Vector
             double new_cost = cost_so_far[current] + n_cost;
             if (cost_so_far.find(next) == cost_so_far.end() || new_cost < cost_so_far[next]){
                 cost_so_far[next] = new_cost;
-                double prio = this->Heuristic(next, end_coords);
+                double prio = new_cost+this->Heuristic(next, end_coords);
                 came_from[next] = current;
                 frontier.put(next, prio);
             }
@@ -510,4 +524,10 @@ bool Costmap::AStarSearch(ignition::math::Vector3d start, ignition::math::Vector
     }
 
     return true;
+}
+
+bool Costmap::ThetaStarSearch(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d>& path){
+    
+    return false;
+    
 }
