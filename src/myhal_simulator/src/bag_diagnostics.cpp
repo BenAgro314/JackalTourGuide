@@ -143,7 +143,7 @@ int main(int argc, char ** argv){
 
         std::vector<ignition::math::Vector3d> path;
   
-        if(costmap.FindPath(start.Pos(), end.Pos(), path)){
+        if(costmap.AStar(start.Pos(), end.Pos(), path)){
             paths.push_back(path); 
            
             optimal_lengths.push_back(handle.PathLength(path)); 

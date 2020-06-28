@@ -62,10 +62,14 @@ int main(int argc, char ** argv){
 
     PriorityQueue<std::vector<int>, double> Q2;
 
-    Q2.put({1},1);
+    std::vector<int> one = {1};
+
+    Q2.put(one,1);
     Q2.put({0},0);
     Q2.put({5},5);
     Q2.put({3},3);
+
+    Q2.remove(one);
 
     while (!Q2.empty()){
         auto el = Q2.get();
@@ -74,6 +78,9 @@ int main(int argc, char ** argv){
         }
         std::cout << std::endl;
     }
+
+    
+    
     
     return 0;
 }

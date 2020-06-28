@@ -531,3 +531,132 @@ bool Costmap::ThetaStarSearch(ignition::math::Vector3d start, ignition::math::Ve
     return false;
     
 }
+
+double Costmap::NewHeuristic(std::vector<int> loc1, std::vector<int> loc2){
+    return 0;
+}
+
+
+bool Costmap::AStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path){
+    auto t1 = std::chrono::high_resolution_clock::now();
+
+    this->parent.clear();
+    this->g_cost.clear();
+    this->open.clear();
+    
+    int start_r, start_c, end_r, end_c;
+    this->PosToIndicies(start, start_r, start_c);
+    this->PosToIndicies(end, end_r, end_c);
+
+
+    std::vector<int> start_coords = {start_r, start_c};
+    std::vector<int> end_coords = {end_r, end_c};
+    //std::cout << "end: ";
+    
+    this->target = end_coords;
+
+    this->g_cost[start_coords] = 0;
+    this->parent[start_coords] = start_coords;
+    
+    this->open.put(start_coords, this->NewHeuristic(start_coords, end_coords));
+    std::set<std::vector<int>> closed;
+
+    bool found = false;
+
+    while (!this->open.empty()){
+        //std::cout << open.size() << std::endl;
+        
+        auto s = this->open.get();
+        //print_coords(s);
+        if (s[0] == end_coords[0] && s[1] == end_coords[1]){
+            found = true;
+            break; // path found
+        }
+
+        closed.insert(s);
+
+        for (auto n: this->GetNeighbours(s, true)){
+            double n_cost = this->costmap[n[0]][n[1]];
+            if (n_cost > 1){ // if we encounter a wall, skip 
+                continue;
+            }
+            if (closed.find(n) == closed.end()){
+                if (this->open.find(n) == open.last()){
+                    this->g_cost[n] = std::numeric_limits<double>::infinity();
+                }
+                this->UpdateVertex(s, n);
+            }
+        }
+    }
+
+
+    if (!found){
+        return false;
+    }
+
+
+    auto curr_coords = end_coords;
+    ignition::math::Vector3d actual_pos = end;
+    ignition::math::Vector3d last_pos = end;
+
+    int count = 0;
+
+    while (curr_coords[0] != start_coords[0] || curr_coords[1] != start_coords[1]){
+
+        if (count != 0){
+            ignition::math::Vector3d curr_pos;
+            this->IndiciesToPos(curr_pos, curr_coords[0], curr_coords[1]);
+            auto offset = curr_pos - last_pos;
+            actual_pos = actual_pos+offset;
+            path.push_back(actual_pos);
+        } else{
+            path.push_back(end);
+        }
+
+        this->IndiciesToPos(last_pos, curr_coords[0], curr_coords[1]);
+        curr_coords = this->parent[curr_coords];
+        
+
+        count ++;
+    }
+
+    path.push_back(start);
+    std::reverse(path.begin(), path.end());
+
+    int check_ind = 0;
+    int next_ind =1;
+    while (next_ind < path.size()-1){
+        if (this->Walkable(path[check_ind],path[next_ind+1])){
+            path.erase(path.begin()+next_ind);
+        } else{
+            check_ind = next_ind;
+            next_ind = check_ind +1;
+        }
+    }
+
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+    std::cout <<  "Path Found. Duration: " << ((double)duration)/1000 << " s"<< std::endl;
+    return true;
+}
+
+void Costmap::UpdateVertex(std::vector<int> s, std::vector<int> n){
+    auto c = this->DistCost(s,n);
+    if (this->g_cost[s] + c < this->g_cost[n]){
+        this->g_cost[n] = this->g_cost[s] + c;
+        this->parent[n] = s;
+        if (this->open.find(n) != this->open.last()){
+            this->open.remove(n);
+        }
+        this->open.put(n, this->g_cost[n] + this->NewHeuristic(n, this->target));
+    }
+}
+
+double Costmap::DistCost(std::vector<int> s, std::vector<int> n){
+    ignition::math::Vector3d s_pos;
+    ignition::math::Vector3d n_pos;
+    this->IndiciesToPos(s_pos, s[0], s[1]);
+    this->IndiciesToPos(n_pos, n[0], n[1]);
+
+    return (s_pos-n_pos).Length();
+}
