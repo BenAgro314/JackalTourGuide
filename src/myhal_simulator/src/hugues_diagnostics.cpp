@@ -18,10 +18,14 @@ int main(int argc, char ** argv){
 
     std::string ground_truth = argv[2];
 
+    std::string filter = argv[3];
+
     bool gt = false;
     if (ground_truth == "true"){
         gt = true;
     }
+
+    
 
     std::cout << "Obtaining Trajectories\n";
 
@@ -40,10 +44,15 @@ int main(int argc, char ** argv){
 
     auto gmapping_traj = hugues_bag.ShiftTrajectory(odom_to_base, map_to_odom);
 
-    std::string name = "Hugues";
+    std::string name = "hugues_filter";
     if (gt){
-        name = "Ground Truth";
+        name = "gt_filter";
     }
+    if (filter == "true"){
+        name = "no_filter";
+    }
+
+
 
     if (amcl_traj.size() > 0){
         std::cout << "Computing amcl localization error\n";
@@ -51,7 +60,7 @@ int main(int argc, char ** argv){
         std::cout << "Finished computing amcl localization error\n";
 
         std::ofstream out(filepath + "/logs-" + time_name +"/" +name +"_localization_error_amcl.csv");
-        out << name << " Demon\n";
+        out << name << " Demon," << "Filter:," << filter << "\n";
         out << "Distance Travelled (m), AMCL Localization Error (m)\n";
         for (auto row: trans_drift){
             out << row[0] << "," << row[1] << std::endl;
@@ -64,8 +73,8 @@ int main(int argc, char ** argv){
         auto trans_drift = raw_bag.TranslationDrift(gt_traj, gmapping_traj);
         std::cout << "Finished computing gmapping localization error\n";
 
-        std::ofstream out(filepath + "/logs-" + time_name +"/" +name +"_localization_error_gmapping.csv");
-        out << name <<" Demon\n";
+        std::ofstream out(filepath + "/logs-" + time_name +"/" +name + "_localization_error_gmapping.csv");
+        out << name <<" Demon," << "Filter:," <<filter << "\n";
         out << "Distance Travelled (m), Gmapping Localization Error (m)\n";
         for (auto row: trans_drift){
             out << row[0] << "," << row[1] << std::endl;

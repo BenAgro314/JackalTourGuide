@@ -4,6 +4,9 @@ import os
 
 username = os.environ['USER']
 num = int(input("How many files would you like to plot?\n"))
+
+
+
 files = []
 
 for i in range(num):
