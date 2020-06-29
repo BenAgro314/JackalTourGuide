@@ -46,7 +46,7 @@ for filename in files:
 	elif (series == "No Demon"):
 		plt.plot(x,y, 'b--',label=series)
 	elif ((series != "Ground Truth Demon") and (series != "No Demon")):
-		plt.plot(x,y, 'g-.',label=series)
+		plt.plot(x,y, label=series)
 	else:
 		if (series == "Filtering: true"):
 			plt.plot(x,y, 'r')

@@ -48,7 +48,7 @@ int main(int argc, char ** argv){
     if (gt){
         name = "gt_filter";
     }
-    if (filter == "true"){
+    if (filter == "false"){
         name = "no_filter";
     }
 

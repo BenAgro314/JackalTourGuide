@@ -39,17 +39,12 @@ public:
 
     void run(){
 
-        ros::Rate rate(100);
+        ros::Rate rate(10);
 
         while (ros::ok()){
 
             // sleep
             rate.sleep();
-
-            // Get tf between odom and base_link
-            try{listener.lookupTransform("odom","base_link", ros::Time(0), transform);}
-            catch (tf::TransformException ex){continue;}
-            tf::Transform odom_to_laser(transform.getBasis(), transform.getOrigin());
 
             // get robot pose from Gazebo
             getClient.waitForExistence();
@@ -65,12 +60,14 @@ public:
             geometry_msgs::Quaternion geoQuat = getmodelstate.response.pose.orientation;
             tf::Quaternion tfQuat(geoQuat.x, geoQuat.y, geoQuat.z, geoQuat.w);
 
+            std::printf("(%f, %f, %f)\n",x,y,z);
+
             // calculate tf between map and odom
-            tf::Transform laser_to_map = tf::Transform(tfQuat, tf::Vector3(x, y, z)).inverse();
-            tf::Transform map_to_odom = (odom_to_laser * laser_to_map).inverse();
+            tf::Transform world_to_base = tf::Transform(tfQuat, tf::Vector3(x, y, z));
+            //tf::Transform map_to_odom = (odom_to_laser * laser_to_map).inverse();
 
             // Publish TF (map to odom)
-            tfMap2OdomBroadcaster.sendTransform(tf::StampedTransform(map_to_odom, ros::Time::now(), "/map", "/odom"));
+            tfMap2OdomBroadcaster.sendTransform(tf::StampedTransform(world_to_base, ros::Time::now(), "map", "gt_base_link"));
         }
     }
 };
