@@ -10,6 +10,22 @@ scenario_names:
   - mixed_tables_wanderer_study
   - no_tables_boid_crowd
   - empty
+  - dense_boids
+  - dense_wanderers
+
+dense_boids:
+  pop_density: "0.5"
+  table_percentage: "0"
+  actor: actor_basic_boid
+  model_list: big_tables
+  table_group_list: big_table_group
+
+dense_wanderers:
+  pop_density: "0.5"
+  table_percentage: "0"
+  actor: actor_basic_wanderer
+  model_list: big_tables
+  table_group_list: big_table_group
 
 no_tables_wanderer_crowd:
   pop_density: "0.15"

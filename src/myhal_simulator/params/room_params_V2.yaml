@@ -10,6 +10,7 @@ room_names:
   - inter_teaching_lab_570
   - proj_rm_552
   - proj_rm_556
+  - hallway1
 
 
 # specify the geometry, position of tables, whether or not the room is enclosed, and the room scenario here  
@@ -73,6 +74,12 @@ proj_rm_556:
   positions: p556
   enclosed: "1"
   scenario: empty
+
+hallway1:
+  geometry: g1
+  positions: p1
+  enclosed: "1"
+  scenario: dense_wanderers
 
 # Specify the contents of each geometry and position here 
 # note the geometries are specifying the square dimensions of the room, and the positions are a flattened list of (x,y) table points
@@ -231,3 +238,12 @@ p556:
   - -18.5
   - -18 
 
+g1:
+  x_min: -8
+  y_min: -9
+  x_max: 2.7
+  y_max: -5
+
+p1:
+  - 0
+  - 0
