@@ -91,16 +91,16 @@ Doctor::Doctor(){
 
     this->log_file << "Tour Name: " << this->tour_name << std::endl;
 
-    if (this->rooms.size() > 0){
-        this->log_file << "\nRoom Info:\n";
-        for (auto room_map: this->rooms){
-            this->log_file << "\nname: " << room_map["name"] << std::endl;
-            this->log_file << "scenario: " << room_map["scenario"] << std::endl;
-            this->log_file << "enclosed: " << room_map["enclosed"] << std::endl;
-            this->log_file << "geometry: " << room_map["geometry"] << std::endl;
-            this->log_file << "positions: " << room_map["positions"] << std::endl;
-        }
-    }
+    // if (this->rooms.size() > 0){
+    //     this->log_file << "\nRoom Info:\n";
+    //     for (auto room_map: this->rooms){
+    //         this->log_file << "\nname: " << room_map["name"] << std::endl;
+    //         this->log_file << "scenario: " << room_map["scenario"] << std::endl;
+    //         this->log_file << "enclosed: " << room_map["enclosed"] << std::endl;
+    //         this->log_file << "geometry: " << room_map["geometry"] << std::endl;
+    //         this->log_file << "positions: " << room_map["positions"] << std::endl;
+    //     }
+    // }
     
 
     this->sub = this->nh.subscribe<nav_msgs::Odometry>("ground_truth/state", 1000, std::bind(&Doctor::GroundTruthCallback, this, std::placeholders::_1), ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));

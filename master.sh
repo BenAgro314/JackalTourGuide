@@ -57,9 +57,14 @@ rosparam set start_time $t
 rosparam set filter_status $FILTER
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
-touch "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
-echo -e "Trial Notes: $MESSAGE\nFILTER: $FILTER\nMAPPING $MAPPING" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
-echo -e "Command used: $myInvocation" >> "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
+LOGFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
+touch $LOGFILE
+echo -e "Trial Notes: $MESSAGE\nFILTER: $FILTER\nMAPPING $MAPPING" >> $LOGFILE
+echo -e "Command used: $myInvocation" >> $LOGFILE
+echo -e "\nPARAMS: \n" >> $LOGFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/room_params_V2.yaml)" >> $LOGFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/scenario_params_V2.yaml)" >> $LOGFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/plugin_params.yaml)" >> $LOGFILE
 
 sleep 0.1
 
