@@ -79,7 +79,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                     auto new_node = QTData(box, collision_box, entity_type);
                     this->static_quadtree->Insert(new_node);
 
-                    if (collision_box->BoundingBox().Min().Z() < 1.5 && collision_box->BoundingBox.Max().Z() > 10e-2){
+                    if (collision_box->BoundingBox().Min().Z() < 1.5 && collision_box->BoundingBox().Max().Z() > 10e-2){
                         box.Min().X()-=0.2;
                         box.Min().Y()-=0.2;
                         box.Max().X()+=0.2;
