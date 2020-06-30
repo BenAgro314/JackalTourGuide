@@ -419,7 +419,7 @@ ignition::math::Vector3d Costmap::RandPos(){
     return ignition::math::Vector3d(0,0,0);
 }
 
-bool Costmap::AStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path){
+bool Costmap::AStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path, bool straighten){
     auto t1 = std::chrono::high_resolution_clock::now();
 
     this->parent.clear();
@@ -506,14 +506,16 @@ bool Costmap::AStar(ignition::math::Vector3d start, ignition::math::Vector3d end
     path.push_back(start);
     std::reverse(path.begin(), path.end());
 
-    int check_ind = 0;
-    int next_ind =1;
-    while (next_ind < path.size()-1){
-        if (this->Walkable(path[check_ind],path[next_ind+1])){
-            path.erase(path.begin()+next_ind);
-        } else{
-            check_ind = next_ind;
-            next_ind = check_ind +1;
+    if (straighten){
+        int check_ind = 0;
+        int next_ind =1;
+        while (next_ind < path.size()-1){
+            if (this->Walkable(path[check_ind],path[next_ind+1])){
+                path.erase(path.begin()+next_ind);
+            } else{
+                check_ind = next_ind;
+                next_ind = check_ind +1;
+            }
         }
     }
 

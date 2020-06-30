@@ -252,7 +252,7 @@ class Follower: public Vehicle{
 
 
 
-class FlowFollower: public Wanderer{
+class PathFollower: public Wanderer{
 
     protected:
 
@@ -268,7 +268,7 @@ class FlowFollower: public Wanderer{
 
     public: 
         
-        FlowFollower(gazebo::physics::ActorPtr _actor,
+        PathFollower(gazebo::physics::ActorPtr _actor,
          double _mass,
          double _max_force, 
          double _max_speed, 

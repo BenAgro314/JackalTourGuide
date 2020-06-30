@@ -97,31 +97,37 @@ actor_names:
   - actor_basic_boid
   - actor_basic_random_walker
   - actor_basic_follower
+  - actor_long_term_stander
 
 actor_basic_wanderer: 
   filename: model://actor/meshes/SKIN_man_blue_shirt.dae
   plugin: basic_wanderer
-  obstacle_margin: "0.6"
+  obstacle_margin: "0.3"
 
 actor_basic_stander: 
   filename: model://actor/meshes/SKIN_man_blue_shirt.dae
   plugin: basic_stander
-  obstacle_margin: "0.6"
+  obstacle_margin: "0.3"
 
 actor_basic_boid: 
   filename: model://actor/meshes/SKIN_man_blue_shirt.dae
   plugin: basic_boid
-  obstacle_margin: "0.6"
+  obstacle_margin: "0.3"
 
 actor_basic_random_walker:
   filename: model://actor/meshes/SKIN_man_blue_shirt.dae
   plugin: basic_random_walker
-  obstacle_margin: "0.6"
+  obstacle_margin: "0.3"
 
 actor_basic_follower:
   filename: model://actor/meshes/SKIN_man_blue_shirt.dae
   plugin: basic_follower
-  obstacle_margin: "0.5"
+  obstacle_margin: "0.3"
+
+actor_long_term_stander:
+  filename: model://actor/meshes/SKIN_man_blue_shirt.dae
+  plugin: long_term_stander
+  obstacle_margin: "0.3"
 
 # table group parameters 
 

@@ -1,5 +1,6 @@
 #include "vehicles.hh"
 #include "Perlin.h"
+#include <thread>
 
 //VEHICLE CLASS
 
@@ -704,26 +705,27 @@ void Follower::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std
 }
 
 
-void FlowFollower::Follow(){
+void PathFollower::Follow(){
 
     if ((this->pose.Pos() - this->curr_target).Length() < this->arrival_distance){
         
         this->path_ind++;
         
         if (this->path_ind >= this->curr_path.size()){
+            
             this->RePath();
         } 
             
         this->curr_target = this->curr_path[this->path_ind];
         this->curr_target.Z() = this->height;
-        std::cout << "TARGET: " << this->curr_target << std::endl;
+        //std::cout << "TARGET: " << this->curr_target << std::endl;
     }
     
     this->Seek(this->curr_target);
 
 }
 
-FlowFollower::FlowFollower(gazebo::physics::ActorPtr _actor,
+PathFollower::PathFollower(gazebo::physics::ActorPtr _actor,
 double _mass,
 double _max_force, 
 double _max_speed, 
@@ -741,7 +743,7 @@ boost::shared_ptr<Costmap> costmap)
     //std::cout << "size: " << this->curr_path.size() << std::endl;
 }
 
-void FlowFollower::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
+void PathFollower::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
     
     
     this->Follow();
@@ -752,14 +754,14 @@ void FlowFollower::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, 
     this->UpdateModel();
 }
 
-void FlowFollower::RePath(){
+void PathFollower::RePath(){
     this->path_ind = 1;
 
     ignition::math::Vector3d next_goal;
     this->curr_path.clear();
     do{
         next_goal = this->costmap->RandPos();
-        std::cout << "GOAL: " << next_goal << std::endl;
-    } while (!this->costmap->AStar(this->pose.Pos(), next_goal, this->curr_path));
+        //std::cout << "GOAL: " << next_goal << std::endl;
+    } while (!this->costmap->AStar(this->pose.Pos(), next_goal, this->curr_path, false));
     
 }

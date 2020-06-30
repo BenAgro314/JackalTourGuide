@@ -4,6 +4,7 @@ plugin_names:
   - basic_boid
   - basic_random_walker
   - basic_follower
+  - long_term_stander
 
 basic_wanderer:
   vehicle_type: wanderer
@@ -27,3 +28,9 @@ basic_follower:
   vehicle_type: follower
   max_speed: "1"
   leader: "jackal"
+
+long_term_stander:
+  vehicle_type: stander
+  max_speed: "0.7"
+  standing_duration: "20"
+  walking_duration: "1"

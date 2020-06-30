@@ -83,7 +83,7 @@ public:
 
 	bool ThetaStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
 
-    bool AStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
+    bool AStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path, bool straighten = true);
 
     bool Occupied(ignition::math::Vector3d pos);
 

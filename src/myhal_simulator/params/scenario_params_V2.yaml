@@ -12,6 +12,7 @@ scenario_names:
   - empty
   - dense_boids
   - dense_wanderers
+  - long_term_standers
 
 dense_boids:
   pop_density: "0.5"
@@ -101,6 +102,13 @@ empty:
   pop_density: "0"
   table_percentage: "0"
   actor: actor_basic_wanderer
+  model_list: big_tables
+  table_group_list: mixed_group
+
+long_term_standers:
+  pop_density: "0.5"
+  table_percentage: "0"
+  actor: actor_long_term_stander
   model_list: big_tables
   table_group_list: mixed_group
 
