@@ -49,10 +49,6 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         gazebo::common::Time last_update;
 
-        gazebo::common::Time last_retarget;
-
-        double retarget_time = 10;
-
         std::map<std::string, double> vehicle_params;
 
         std::map<std::string, double> boid_params;
@@ -67,13 +63,13 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         std::vector<boost::shared_ptr<Follower>> follower_queue;
 
-        std::vector<boost::shared_ptr<FlowField>> fields;
-
         std::vector<gazebo::physics::LinkPtr> robot_links;
 
         ignition::math::Pose3d sensor_pose;
 
         std::string user_name, start_time;
+
+        boost::shared_ptr<Costmap> costmap;
 
         
     public: 

@@ -51,7 +51,7 @@ add_library(sdfstring src/include/sdfstring.cpp)
 target_link_libraries(sdfstring ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(vehicles src/vehicles.cpp)
-target_link_libraries(vehicles utilities Perlin flowfield ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(vehicles utilities Perlin costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(world_entities src/world_entities.cpp)
 target_link_libraries(world_entities sdfstring utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
@@ -60,7 +60,7 @@ add_library(quadtree src/include/quadtree.cpp)
 target_link_libraries(quadtree utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(puppeteer src/puppeteer.cpp)
-target_link_libraries(puppeteer utilities quadtree vehicles flowfield ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(puppeteer utilities quadtree vehicles costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_library(parse_tour src/include/parse_tour.cpp)
 target_link_libraries(parse_tour costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})

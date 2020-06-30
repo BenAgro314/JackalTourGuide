@@ -16,6 +16,7 @@
 #include "priority_queue.hh"
 
 
+
 class Costmap
 {
 
@@ -60,6 +61,7 @@ private:
 
 public:
 
+    int obj_count;
 
 	bool PosToIndicies(ignition::math::Vector3d pos, int &r, int &c);
 
@@ -83,9 +85,9 @@ public:
 
     bool AStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path);
 
-    
+    bool Occupied(ignition::math::Vector3d pos);
 
-    
+    ignition::math::Vector3d RandPos();
 };
 
 

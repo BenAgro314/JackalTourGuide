@@ -79,7 +79,7 @@ hallway1:
   geometry: g1
   positions: p1
   enclosed: "1"
-  scenario: dense_wanderers
+  scenario: empty
 
 # Specify the contents of each geometry and position here 
 # note the geometries are specifying the square dimensions of the room, and the positions are a flattened list of (x,y) table points

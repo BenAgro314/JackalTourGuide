@@ -37,11 +37,11 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     //std::cout << "min_x: " << building_box.Min().X() << " max_y: " << building_box.Max().Y() << std::endl;
     this->static_quadtree = boost::make_shared<QuadTree>(this->building_box);
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
+    this->costmap = boost::make_shared<Costmap>(this->building_box, 0.2);
     
     happly::PLYData static_objects;
     std::vector<BoxObject> boxes;
 
-    this->fields.push_back(boost::make_shared<FlowField>(ignition::math::Vector3d(building_box.Min().X(),building_box.Max().Y(),0), building_box.Max().X() - building_box.Min().X(), building_box.Max().Y() - building_box.Min().Y(), 0.2));
     
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
         auto model = world->ModelByIndex(i);
@@ -61,27 +61,37 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
        
         if (model->GetName() != "ground_plane"){
-            //double max_width = -10e9;
-            //double max_length = -10e9;
+
             auto links = model->GetLinks();
             for (gazebo::physics::LinkPtr link: links){
                 std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
                 for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
+
+                    
                     
                     this->collision_entities.push_back(collision_box);
                     auto box = collision_box->BoundingBox();
                     boxes.push_back(BoxObject(box, -1));
-                    //max_width = std::max(box.Max().X() - box.Min().X(), max_width);
-                    //max_length = std::max(box.Max().Y() - box.Min().Y(), max_length);
+                    
                     box.Max().Z() = 0;
                     box.Min().Z() = 0;
+                    
                     auto new_node = QTData(box, collision_box, entity_type);
                     this->static_quadtree->Insert(new_node);
+
+                    if (collision_box->BoundingBox().Min().Z() < 1.5){
+                        box.Min().X()-=0.2;
+                        box.Min().Y()-=0.2;
+                        box.Max().X()+=0.2;
+                        box.Max().Y()+=0.2;
+                        this->costmap->AddObject(box);
+                    }
+                    
                     
                 }
                     
             }
-            //std::cout << model->GetName() << " w: " << max_width << " l: " << max_length << std::endl;
+            
         }
 
     
@@ -89,12 +99,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     }
 
     AddBoxes(static_objects, boxes);
-    static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" +this->start_time +"/static_objects.ply", happly::DataFormat::ASCII);
-
-
-    auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
-  
-    this->fields[0]->TargetInit(this->collision_entities, new_target);
+    if (this->start_time != ""){
+        static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" +this->start_time +"/static_objects.ply", happly::DataFormat::ASCII);
+    }
 
     std::cout << "LOADED ALL VEHICLES\n";
 
@@ -108,13 +115,6 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
     }
 
     this->last_update = _info.simTime;
-
-    if ((_info.simTime - this->last_retarget).Double() > this->retarget_time){
-        auto new_target = ignition::math::Vector3d(ignition::math::Rand::DblUniform(this->building_box.Min().X(), this->building_box.Max().X()),ignition::math::Rand::DblUniform(this->building_box.Min().Y(), this->building_box.Max().Y()),0);
-        this->fields[0]->SetTarget(new_target);
-        //std::printf("(%f, %f)\n", new_target.X(), new_target.Y());
-        this->last_retarget = _info.simTime;
-    }
 
 
     if ((this->robot_name != "") && this->robot == nullptr){
@@ -280,7 +280,7 @@ boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr ac
             }
         } else if (actor_info["vehicle_type"] == "flow_follower"){
 
-            res = boost::make_shared<FlowFollower>(actor, this->vehicle_params["mass"], this->vehicle_params["max_force"], max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities, this->fields);
+            res = boost::make_shared<FlowFollower>(actor, this->vehicle_params["mass"], this->vehicle_params["max_force"], max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities, this->costmap);
             
         } else {
             std::cout << "INVALID VEHICLE TYPE\n";
@@ -318,7 +318,7 @@ void Puppeteer::ReadParams(){
 
     if (!nh.getParam("start_time", this->start_time)){
         std::cout << "ERROR SETTING START TIME\n";
-        this->start_time = "ERROR SETTING START TIME";
+        this->start_time = "";
     }
 
 }

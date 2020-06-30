@@ -704,38 +704,23 @@ void Follower::OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std
 }
 
 
-bool FlowFollower::Follow(){
-    ignition::math::Vector3d desired;
-    bool found = false;
-    for (auto field: this->fields){
+void FlowFollower::Follow(){
+
+    if ((this->pose.Pos() - this->curr_target).Length() < this->arrival_distance){
         
-        if (field->Lookup(this->pose.Pos(), desired)){
+        this->path_ind++;
+        
+        if (this->path_ind >= this->curr_path.size()){
+            this->RePath();
+        } 
             
-            found = true;
-            break;
-        }
+        this->curr_target = this->curr_path[this->path_ind];
+        this->curr_target.Z() = this->height;
+        std::cout << "TARGET: " << this->curr_target << std::endl;
     }
-    if (found){
-        desired.Normalize();
-        desired*=max_speed;
-        if(desired.Length() > this->max_force){
-            desired.Normalize();
-            desired*=this->max_force;
-        }
-        
-        //this->ApplyForce(desired);
-        
-        desired*=max_speed;
-        auto steer = desired-this->velocity;
-        if (steer.Length() > this->max_force){
-            steer.Normalize();
-            steer*=this->max_force;
-        }
-        
-        this->ApplyForce(steer);
-        
-    }
-    return found;
+    
+    this->Seek(this->curr_target);
+
 }
 
 FlowFollower::FlowFollower(gazebo::physics::ActorPtr _actor,
@@ -745,22 +730,36 @@ double _max_speed,
 ignition::math::Pose3d initial_pose, 
 ignition::math::Vector3d initial_velocity, 
 std::vector<gazebo::physics::EntityPtr> objects,
-std::vector<boost::shared_ptr<FlowField>>_fields)
+boost::shared_ptr<Costmap> costmap)
 : Wanderer(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, objects){
-
-    this->fields = _fields;
-
+    this->costmap = costmap;
+    this->path_ind =0;
+    
+    this->RePath();
+    //this->costmap->AStar(this->pose.Pos(), ignition::math::Vector3d(0,-10,this->height), this->curr_path);
+    //this->curr_target = this->curr_path[this->path_ind];
+    //std::cout << "size: " << this->curr_path.size() << std::endl;
 }
 
 void FlowFollower::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects){
     
-    if (!this->Follow()){
-        this->SetNextTarget();
-        this->Seek(this->curr_target);
-    }
+    
+    this->Follow();
     this->AvoidActors(vehicles);
     this->AvoidObstacles(objects);
     
     this->UpdatePosition(dt);
     this->UpdateModel();
+}
+
+void FlowFollower::RePath(){
+    this->path_ind = 1;
+
+    ignition::math::Vector3d next_goal;
+    this->curr_path.clear();
+    do{
+        next_goal = this->costmap->RandPos();
+        std::cout << "GOAL: " << next_goal << std::endl;
+    } while (!this->costmap->AStar(this->pose.Pos(), next_goal, this->curr_path));
+    
 }

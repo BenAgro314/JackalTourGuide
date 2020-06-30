@@ -23,6 +23,7 @@ Costmap::Costmap(ignition::math::Box boundary, double resolution){
     }
 
     this->last_path = this->costmap;
+    this->obj_count = 0;
 
 }
 
@@ -53,6 +54,7 @@ void Costmap::AddObject(ignition::math::Box object){
     }
 
     this->last_path = this->costmap;
+    this->obj_count++;
 
 }
 
@@ -329,6 +331,94 @@ double Costmap::Heuristic(std::vector<int> loc1, std::vector<int> loc2){
     return (pos1-pos2).Length();
 }
 
+bool Costmap::Occupied(ignition::math::Vector3d pos){
+    int r,c;
+    this->PosToIndicies(pos, r, c);
+    
+    return (this->costmap[r][c] > 1);
+}
+
+ignition::math::Vector3d Costmap::RandPos(){
+    // select random height
+    int rand_row = ignition::math::Rand::IntUniform(0, this->rows-1);
+
+    // work across and save safe spaces (those that are after only one collision)
+
+    
+    bool found = false;
+    int count = 0;
+    
+    while (!found && count < 1000){
+        
+        std::vector<int> collisions;
+
+        for (int c = 0; c < this->cols; c++){
+
+            bool occupied = (this->costmap[rand_row][c] >1);
+
+            if (occupied){
+
+                if (c == 0){
+                    if (this->costmap[rand_row][1] == 1){
+                        collisions.push_back(c);
+                        collisions.push_back(c);
+                    }else{
+                        collisions.push_back(c);
+                    }
+                } else if (c == this->cols-1){
+                    if (this->costmap[rand_row][c-1] == 1){
+                        collisions.push_back(c);
+                        collisions.push_back(c);
+                    }else{
+                        collisions.push_back(c);
+                    }
+                } else{
+                    if (this->costmap[rand_row][c-1] == 1 && this->costmap[rand_row][c+1] == 1){
+                        collisions.push_back(c);
+                        collisions.push_back(c);
+                    } else if (this->costmap[rand_row][c-1] == 1 || this->costmap[rand_row][c+1] == 1){
+                        collisions.push_back(c);
+                    }
+                }
+            }
+
+
+        }
+
+        std::vector<int> safe_cols;
+
+        for (int ind = 1; ind < collisions.size(); ind+=2){
+            int start_c = collisions[ind];
+            int end_c = this->cols;
+            if (ind+1 < collisions.size()){
+                end_c = collisions[ind+1];
+            }
+
+            for (int i = start_c+1; i < end_c; i++){
+                safe_cols.push_back(i);
+            }
+        
+        }
+
+        if (safe_cols.size() > 0){
+            found = true;
+        } else {
+            count ++;
+            continue;
+        }
+
+        int rand_ind = ignition::math::Rand::IntUniform(0,safe_cols.size()-1);
+
+        ignition::math::Vector3d res;
+        this->IndiciesToPos(res, rand_row, safe_cols[rand_ind]);
+
+        return res;
+    }
+
+    std::cout << "Failed to find random target for actor\n" << std::endl;
+    return ignition::math::Vector3d(0,0,0);
+}
+
 bool Costmap::AStar(ignition::math::Vector3d start, ignition::math::Vector3d end, std::vector<ignition::math::Vector3d> &path){
     auto t1 = std::chrono::high_resolution_clock::now();
 
@@ -383,6 +473,7 @@ bool Costmap::AStar(ignition::math::Vector3d start, ignition::math::Vector3d end
 
 
     if (!found){
+        std::cout << "No Path Found\n";
         return false;
     }
 

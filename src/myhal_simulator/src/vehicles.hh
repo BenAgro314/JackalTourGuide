@@ -1,5 +1,5 @@
-#ifndef VEHICLES_HH
-#define VEHICLES_HH
+#pragma once 
+
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Box.hh>
@@ -11,7 +11,7 @@
 #include <utility>
 #include <string>
 #include "utilities.hh"
-#include "flowfield.hh"
+#include "costmap.hh"
 
 #define ALI 0 
 #define COH 1
@@ -256,9 +256,15 @@ class FlowFollower: public Wanderer{
 
     protected:
 
-        std::vector<boost::shared_ptr<FlowField>> fields;
+        void Follow();
 
-        bool Follow();
+        boost::shared_ptr<Costmap> costmap;
+
+        std::vector<ignition::math::Vector3d> curr_path;
+
+        int path_ind;
+
+        void RePath();
 
     public: 
         
@@ -268,11 +274,9 @@ class FlowFollower: public Wanderer{
          double _max_speed, 
          ignition::math::Pose3d initial_pose, 
          ignition::math::Vector3d initial_velocity, 
-         std::vector<gazebo::physics::EntityPtr> objects, 
-         std::vector<boost::shared_ptr<FlowField>> _fields);
+         std::vector<gazebo::physics::EntityPtr> objects,
+         boost::shared_ptr<Costmap> costmap);
 
         void OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);
 };
 
-
-#endif
