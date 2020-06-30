@@ -6,6 +6,7 @@
 #include <utility>
 #include <ros/ros.h>
 #include "frame.hh"
+#include "costmap.hh"
 
 class RoomInfo{
 
@@ -119,6 +120,10 @@ class WorldHandler{
         std::string tour_name;
 
         std::vector<ignition::math::Pose3d> route;
+
+        std::vector<std::shared_ptr<myhal::Model>> doors; 
+
+        std::shared_ptr<Costmap> costmap;
 };
 
 

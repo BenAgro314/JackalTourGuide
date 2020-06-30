@@ -13,7 +13,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     //note: world name is default
 
     this->world = _world;
+
    
+    
     this->sdf = _sdf;
     this->update_connection = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&Puppeteer::OnUpdate, this, std::placeholders::_1));
 
@@ -61,7 +63,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
        
         if (model->GetName() != "ground_plane"){
-
+            
             auto links = model->GetLinks();
             for (gazebo::physics::LinkPtr link: links){
                 std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();

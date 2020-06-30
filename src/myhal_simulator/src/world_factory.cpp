@@ -34,6 +34,10 @@ void WorldHandler::Load(){
 
     }
 
+    for (auto door: this->doors){
+        door->AddToWorld(this->world_string);
+    }
+
     std::cout << "Writing to file\n";
 
     this->WriteToFile("myhal_sim.world");
@@ -61,24 +65,6 @@ void WorldHandler::LoadParams(){
         this->user_name = user;
     } 
 
-    happly::PLYData plyIn("/home/" + this->user_name + "/catkin_ws/src/myhal_simulator/params/myhal_walls.ply");
-    auto static_objects = ReadObjects(plyIn);
-
-    for (auto obj: static_objects){
-        if (obj.MinZ() < 1.5 && obj.MaxZ() >10e-2){
-            auto box = obj.Box();
-
-            box.Min().X()-=robot_radius;
-            box.Min().Y()-=robot_radius;
-            box.Max().X()+=robot_radius;
-            box.Max().Y()+=robot_radius;
-
-            this->walls.push_back(box);
-        }
-    }
-
-    /// READ PLUGIN INFO
-
     if (!nh.getParam("tour_name", this->tour_name)){
         std::cout << "ERROR READING TOUR NAME\n";
         this->tour_name = "A_tour";
@@ -89,8 +75,91 @@ void WorldHandler::LoadParams(){
 
 
     this->route = parser.GetRoute();
+    this->route.insert(this->route.begin(), ignition::math::Pose3d(ignition::math::Vector3d(0,0,0), ignition::math::Quaterniond(0,0,0,1)));
+    
+    this->costmap = std::make_shared<Costmap>(ignition::math::Box(ignition::math::Vector3d(-21.55,-21.4,0), ignition::math::Vector3d(21.55,21.4,0)), 0.2);
 
-    this->route.push_back(ignition::math::Pose3d(ignition::math::Vector3d(0,0,0), ignition::math::Quaterniond(0,0,0,1)));
+    happly::PLYData plyIn("/home/" + this->user_name + "/catkin_ws/src/myhal_simulator/params/myhal_walls.ply");
+    auto static_objects = ReadObjects(plyIn);
+
+    for (auto obj: static_objects){
+        if (obj.MinZ() < 1.5 && obj.MaxZ() >10e-2){
+            auto box = obj.Box();
+            this->costmap->AddObject(box);
+            box.Min().X()-=robot_radius;
+            box.Min().Y()-=robot_radius;
+            box.Max().X()+=robot_radius;
+            box.Max().Y()+=robot_radius;
+
+            this->walls.push_back(box);
+        }
+    }
+
+    std::vector<ignition::math::Vector3d> paths;
+
+    for (int i =0; i< route.size()-1; i++){
+        auto start = route[i];
+        auto end = route[i+1];
+
+        std::vector<ignition::math::Vector3d> path;
+        this->costmap->AStar(start.Pos(), end.Pos(), path,false);
+        paths.insert(paths.end(),path.begin(),path.end());
+    }
+
+    // for (auto pt: paths){
+    //      this->doors.push_back(std::make_shared<myhal::IncludeModel>("point", ignition::math::Pose3d(pt,ignition::math::Quaterniond(0,0,0,0)), "model://small_point", 0.2,0.2));
+    // }
+
+    for (auto obj: static_objects){
+        if (obj.MinZ()  >= (2 - 10e-3)){
+            // we are dealing with a doorway
+
+            auto box = obj.Box();
+            //std::cout << box << std::endl;
+
+            auto pos = (box.Min() + box.Max())/2;
+            pos.Z() = 0;
+
+            int open = ignition::math::Rand::IntUniform(0,1);
+
+
+            for (auto pt: paths){
+
+                if ((pt-pos).Length() < 1){
+                    open = 1;
+                    break;
+                } 
+            }
+
+            auto door = std::make_shared<myhal::IncludeModel>("door", ignition::math::Pose3d(pos, ignition::math::Quaterniond(0,0,0,0)), "model://simple_door2", 0.9, 0.15);
+            door->pose.Pos().Z() = 1;
+
+            
+            if (box.Max().X() - box.Min().X() > 0.2){
+                // horizontal door
+              
+                door->pose.Pos().X() -= 0.45;
+            } else{
+                // vertical door
+                door->RotateClockwise(1.571);
+                door->pose.Pos().Y() -= 0.45;
+            }
+
+            
+            
+          
+            auto yaw = door->pose.Rot().Yaw();
+            door->pose.Rot() = ignition::math::Quaterniond(0,0,yaw+(open*1.571));
+
+            this->doors.push_back(door);
+
+           
+        }
+    }
+
+    /// READ PLUGIN INFO
+
+ 
     
     std::vector<std::string> plugin_names;
     if (!nh.getParam("plugin_names", plugin_names)){

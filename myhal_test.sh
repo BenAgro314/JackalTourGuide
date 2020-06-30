@@ -6,7 +6,7 @@ killall rviz
 killall roscore
 killall rosmaster
 
-TOUR="A_tour"
+TOUR="D_tour"
 
 roscore -p $ROSPORT&
 
