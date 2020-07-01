@@ -37,6 +37,17 @@ int main(int argc, char ** argv){
 
     auto gmapping_traj = handle.ShiftTrajectory(odom_to_base, map_to_odom);
 
+    std::ofstream trajectories(filepath + "/logs-" + time_name +"/trajectories.csv");
+
+    trajectories << "Ground Truth\n";
+    trajectories << "x (m), y (m)\n";
+
+           
+    for (auto pose: gt_traj){
+        trajectories << pose.pose.Pos().X() << "," << pose.pose.Pos().Y() << std::endl;
+    }
+
+        
     std::vector<TrajPoint> estimated_traj;
 
     if (amcl_traj.size() > 0){
@@ -61,6 +72,17 @@ int main(int argc, char ** argv){
         }
 
         out.close();
+
+        trajectories << "AMCL\n";
+        trajectories << "x (m), y (m)\n";
+
+            
+        for (auto pose: amcl_traj){
+            trajectories << pose.pose.Pos().X() << "," << pose.pose.Pos().Y() << std::endl;
+        }
+
+
+
     } else if (gmapping_traj.size() >0){
         happly::PLYData plyOut;
         AddTrajectory(plyOut, gmapping_traj);
@@ -83,7 +105,18 @@ int main(int argc, char ** argv){
         }
 
         out.close();
+
+
+        trajectories << "Gmapping\n";
+        trajectories << "x (m), y (m)\n";
+
+            
+        for (auto pose: gmapping_traj){
+            trajectories << pose.pose.Pos().X() << "," << pose.pose.Pos().Y() << std::endl;
+        }
     }
+
+    trajectories.close();
 
     // read the information from the static objects file to creat the costmap
     std::cout << "Creating costmap\n"; 
