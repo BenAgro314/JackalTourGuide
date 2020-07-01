@@ -6,3 +6,4 @@
 /.catkin_tools
 topics.txt
 .pdf
+semantic_lidar/

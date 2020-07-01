@@ -55,12 +55,12 @@
   <node pkg="rviz" type="rviz" name="rviz" args="-d $(find jackal_velodyne)/launch/include/run.rviz" />
 
 
-  <group if="$(arg mapping)">
+  <!--group if="$(arg mapping)">
     <include file="$(find jackal_velodyne)/launch/include/gmapping.launch"/>
   </group>
 
   <group unless="$(arg mapping)">
-     <!-- Run the map server -->
+     
     <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
     <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
     
@@ -69,8 +69,8 @@
 
   <include file="$(find jackal_velodyne)/launch/include/move_base.launch">
     <arg name="mapping" value="$(arg mapping)" />
- </include>
+ </include-->
 
-  <!--include file="$(find jackal_velodyne)/launch/include/gmapping.launch" /-->
+  <include file="$(find lego-loam)/lego-loam/launch/run.launch" />
   
 </launch>
