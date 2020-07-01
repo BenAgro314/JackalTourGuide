@@ -34,6 +34,8 @@ int main(int argc, char ** argv){
     BagTools hugues_bag = BagTools(filepath + "logs-" + time_name + "/", "hugues_test.bag");
     BagTools raw_bag = BagTools(filepath);
 
+    std::ofstream trajectories(filepath + "/logs-" + time_name +"/trajectories.csv", std::ios_base::app);
+
     auto amcl_traj = hugues_bag.GetTrajectory("/amcl_pose");
     auto gt_traj = raw_bag.GetTrajectory("/ground_truth/state");
 
@@ -66,6 +68,13 @@ int main(int argc, char ** argv){
             out << row[0] << "," << row[1] << "," << row[2] << std::endl;
         }
 
+        trajectories << "AMCL (post processing " << name << ")\n";
+        trajectories << "x (m), y (m)\n";
+
+        for (auto pose: amcl_traj){
+            trajectories << pose.pose.Pos().X() << "," << pose.pose.Pos().Y() << std::endl;
+        }
+
         out.close();
     } else if (gmapping_traj.size() >0){
        
@@ -81,6 +90,13 @@ int main(int argc, char ** argv){
         }
 
         out.close();
+
+        trajectories << "Gmapping (post processing " << name << ")\n";
+        trajectories << "x (m), y (m)\n";
+            
+        for (auto pose: gmapping_traj){
+            trajectories << pose.pose.Pos().X() << "," << pose.pose.Pos().Y() << std::endl;
+        }
     }
 
     return 0;

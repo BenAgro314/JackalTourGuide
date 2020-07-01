@@ -392,15 +392,20 @@ namespace gazebo
                     std::vector<QTData> query_objects = this->static_quadtree->QueryRange(query_range);
                     for (auto n: query_objects){
                         if (n.type == entity_type){
+                            
                             auto entity = boost::static_pointer_cast<gazebo::physics::Entity>(n.data);
                             int cat;
                             std::string name = entity->GetParent()->GetParent()->GetName();
+                           
                             if (name == this->building_name){
                                 cat = 5; //wall
                             } else if (name.substr(0,5) == "table"){
                                 cat = 4; //table
                             } else if (name.substr(0,5) == "chair"){
                                 cat = 1; //chair
+                            } else if (name.substr(0,4) == "door"){
+                                cat = 6;
+                                
                             } else {
                                 cat = 0; //ground
                             }
@@ -527,6 +532,8 @@ namespace gazebo
             auto model = this->world->ModelByIndex(i);
             auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
 
+            
+
             if (act){
                 this->actors.push_back(act);
                 this->last_actor_pose[act->GetName()] = act->WorldPose();
@@ -540,6 +547,7 @@ namespace gazebo
             } 
             
             if (model->GetName() != "ground_plane" && model->GetName() != this->robot_name){
+               
                 auto links = model->GetLinks();
                 for (gazebo::physics::LinkPtr link: links){
                     std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
