@@ -46,7 +46,7 @@ int main(int argc, char ** argv){
         
 
         std::cout << "Computing amcl localization error\n";
-        auto trans_drift = handle.TranslationDrift(gt_traj, amcl_traj);
+        auto trans_drift = handle.LocalizationError(gt_traj, amcl_traj);
         std::cout << "Finished computing amcl localization error\n";
 
         std::ofstream out(filepath + "/logs-" + time_name +"/localization_error.csv");
@@ -55,9 +55,9 @@ int main(int argc, char ** argv){
         } else {
             out << "No Demon\n";
         }
-        out << "Distance Travelled (m), AMCL Localization Error (m)\n";
+        out << "Distance Travelled (m), AMCL Translation Error (m), AMCL Rotation Error (rad)\n";
         for (auto row: trans_drift){
-            out << row[0] << "," << row[1] << std::endl;
+            out << row[0] << "," << row[1] << "," << row[2] << std::endl;
         }
 
         out.close();
@@ -67,7 +67,7 @@ int main(int argc, char ** argv){
         plyOut.write(filepath + "/logs-" + time_name + "/gmapping_pose.ply", happly::DataFormat::Binary);
 
         std::cout << "Computing gmapping localization error\n";
-        auto trans_drift = handle.TranslationDrift(gt_traj, gmapping_traj);
+        auto trans_drift = handle.LocalizationError(gt_traj, gmapping_traj);
         std::cout << "Finished computing gmapping localization error\n";
 
         std::ofstream out(filepath + "/logs-" + time_name +"/localization_error.csv");
@@ -77,9 +77,9 @@ int main(int argc, char ** argv){
             out << "No Demon\n";
         }
         
-        out << "Distance Travelled (m), Gmapping Localization Error (m)\n";
+        out << "Distance Travelled (m), Gmapping Translation Error (m), Gmapping Rotation Error (rad)\n";
         for (auto row: trans_drift){
-            out << row[0] << "," << row[1] << std::endl;
+            out << row[0] << "," << row[1] << "," << row[2] << std::endl;
         }
 
         out.close();

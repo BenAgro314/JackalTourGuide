@@ -50,9 +50,9 @@ class BagTools{
         }
 
 
-        std::vector<std::vector<double>> TranslationDrift(std::vector<TrajPoint> gt, std::vector<TrajPoint> other){
+        std::vector<std::vector<double>> LocalizationError(std::vector<TrajPoint> gt, std::vector<TrajPoint> other){
 
-            std::vector<std::vector<double>> trans_drift;
+            std::vector<std::vector<double>> error;
 
             double min_time = 10e9;
             double max_time = -10e9;
@@ -103,10 +103,10 @@ class BagTools{
                 last_gt = interpolated_pose;
 
                 // compute drift
-                trans_drift.push_back({dist, (interpolated_pose.Pos() - frame.pose.Pos()).Length()});
+                error.push_back({dist, (interpolated_pose.Pos() - frame.pose.Pos()).Length(), std::abs(interpolated_pose.Rot().Yaw() - frame.pose.Rot().Yaw())});
             }
 
-            return trans_drift;
+            return error;
         }
 
         std::vector<TrajPoint> ShiftTrajectory(std::vector<TrajPoint> traj, std::vector<TrajPoint> transform){

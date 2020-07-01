@@ -4,7 +4,17 @@ import os
 
 username = os.environ['USER']
 num = int(input("How many files would you like to plot?\n"))
+inp = input("Input 1 for translation plot and 2 for rotation plot\n")
 
+col = 1
+
+if (inp == "2"):
+    col = 2
+    plt.title('Rotation Error vs. Distance Travelled')
+    plt.ylabel("Rotation Error (rad)")
+else:
+    plt.title('Translation Error vs. Distance Travelled')
+    plt.ylabel("Translation Error (m)")
 
 
 files = []
@@ -34,7 +44,7 @@ for filename in files:
 		for row in plots:
 			if (count > 1):
 				x.append(float(row[0]))
-				y.append(float(row[1]))
+				y.append(float(row[col]))
 			elif (count == 0):
 				series = row[0]
 				
@@ -56,7 +66,7 @@ for filename in files:
 	
 
 plt.xlabel("Distance Travelled (m)")
-plt.ylabel("Localization Error (m)")
-plt.title('Localization Error vs. Distance Travelled')
+
+
 plt.legend()
 plt.show()

@@ -56,28 +56,28 @@ int main(int argc, char ** argv){
 
     if (amcl_traj.size() > 0){
         std::cout << "Computing amcl localization error\n";
-        auto trans_drift = raw_bag.TranslationDrift(gt_traj, amcl_traj);
+        auto trans_drift = raw_bag.LocalizationError(gt_traj, amcl_traj);
         std::cout << "Finished computing amcl localization error\n";
 
         std::ofstream out(filepath + "/logs-" + time_name +"/" +name +"_localization_error_amcl.csv");
         out << name << " Demon," << "Filter:," << filter << "\n";
-        out << "Distance Travelled (m), AMCL Localization Error (m)\n";
+        out << "Distance Travelled (m), AMCL Translation Error (m), AMCL Rotation Error (rad)\n";
         for (auto row: trans_drift){
-            out << row[0] << "," << row[1] << std::endl;
+            out << row[0] << "," << row[1] << "," << row[2] << std::endl;
         }
 
         out.close();
     } else if (gmapping_traj.size() >0){
        
         std::cout << "Computing gmapping localization error\n";
-        auto trans_drift = raw_bag.TranslationDrift(gt_traj, gmapping_traj);
+        auto trans_drift = raw_bag.LocalizationError(gt_traj, gmapping_traj);
         std::cout << "Finished computing gmapping localization error\n";
 
         std::ofstream out(filepath + "/logs-" + time_name +"/" +name + "_localization_error_gmapping.csv");
         out << name <<" Demon," << "Filter:," <<filter << "\n";
-        out << "Distance Travelled (m), Gmapping Localization Error (m)\n";
+        out << "Distance Travelled (m), Gmapping Translation Error (m), Gmapping Rotation Error (rad)\n";
         for (auto row: trans_drift){
-            out << row[0] << "," << row[1] << std::endl;
+            out << row[0] << "," << row[1] << "," << row[2] << std::endl;
         }
 
         out.close();
