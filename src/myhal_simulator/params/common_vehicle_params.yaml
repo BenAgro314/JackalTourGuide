@@ -5,6 +5,7 @@ common_vehicle_params:
   arrival_distance: 0.5
   obstacle_margin: 0.6
   blocking: 1
+  start_mode: 0 #2 for random, 1 for walking, 0 for standing
 
 common_boid_params:
   alignement: 0.1

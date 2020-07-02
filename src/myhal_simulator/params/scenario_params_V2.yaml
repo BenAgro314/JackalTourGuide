@@ -106,7 +106,7 @@ empty:
   table_group_list: mixed_group
 
 long_term_standers:
-  pop_density: "0.5"
+  pop_density: "0.1"
   table_percentage: "0"
   actor: actor_long_term_stander
   model_list: big_tables

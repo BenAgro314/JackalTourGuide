@@ -484,13 +484,21 @@ ignition::math::Pose3d initial_pose,
 ignition::math::Vector3d initial_velocity,  
 std::vector<gazebo::physics::EntityPtr> objects, 
 double _standing_duration,
-double _walking_duration)
+double _walking_duration,
+int start_mode)
 : Wanderer(_actor, _mass, _max_force, _max_speed, initial_pose, initial_velocity, objects){
 
     this->standing_duration = std::max(0.0 ,_standing_duration +  ignition::math::Rand::DblUniform(-0.5,0.5));
     this->walking_duration = std::max(0.0 , _walking_duration +  ignition::math::Rand::DblUniform(-0.5,0.5));
 
-    this->standing = (bool) ignition::math::Rand::IntUniform(0,1);
+    if (start_mode == 2){
+        this->standing = (bool) ignition::math::Rand::IntUniform(0,1);
+    } else if (start_mode == 1){
+        this->standing = false;
+    } else {
+        this->standing = true;
+    }
+    
 
     if (walking_duration <= 0){
         this->never_walk = true;

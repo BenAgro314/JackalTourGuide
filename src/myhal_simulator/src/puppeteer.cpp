@@ -255,7 +255,7 @@ boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr ac
                 }
             }
 
-            res = boost::make_shared<Stander>(actor, 1, 10, max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities, standing_duration, walking_duration); // read in as params 
+            res = boost::make_shared<Stander>(actor, 1, 10, max_speed, actor->WorldPose(), ignition::math::Vector3d(0,0,0), this->collision_entities, standing_duration, walking_duration, this->vehicle_params["start_mode"]); // read in as params 
             
         } else if (actor_info["vehicle_type"] == "sitter"){
 
@@ -307,6 +307,7 @@ void Puppeteer::ReadParams(){
         vehicle_params["arrival_distance"] = 0.5;
         vehicle_params["obstacle_margin"] = 0.6;
         vehicle_params["blocking"] = 0;
+        vehicle_params["start_mode"] = 2;
     }
 
     if (!nh.getParam("common_boid_params", this->boid_params)){

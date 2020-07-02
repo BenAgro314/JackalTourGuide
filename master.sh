@@ -65,6 +65,7 @@ echo -e "\nPARAMS: \n" >> $LOGFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/room_params_V2.yaml)" >> $LOGFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/scenario_params_V2.yaml)" >> $LOGFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/plugin_params.yaml)" >> $LOGFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/jackal_velodyne/launch/include/pointcloud_filter.launch)" >> $LOGFILE
 
 sleep 0.1
 

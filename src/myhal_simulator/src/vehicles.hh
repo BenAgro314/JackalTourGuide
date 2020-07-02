@@ -189,7 +189,8 @@ class Stander: public Wanderer{
          ignition::math::Vector3d initial_velocity,  
          std::vector<gazebo::physics::EntityPtr> objects, 
          double _standing_duration,
-         double _walking_duration);
+         double _walking_duration,
+         int start_mode = 2); //2 for random, 1 for walking, 0 for standing
 
 
         void OnUpdate(const gazebo::common::UpdateInfo &_info , double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects);

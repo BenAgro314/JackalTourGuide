@@ -60,7 +60,7 @@ Visualization Manager:
       Reference Frame: velodyne
       Value: false
     - Alpha: 1
-      Autocompute Intensity Bounds: true
+      Autocompute Intensity Bounds: false
       Autocompute Value Bounds:
         Max Value: 2.219862937927246
         Min Value: -0.3429943323135376

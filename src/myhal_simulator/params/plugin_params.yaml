@@ -33,4 +33,4 @@ long_term_stander:
   vehicle_type: stander
   max_speed: "0.7"
   standing_duration: "20"
-  walking_duration: "1"
+  walking_duration: "20"

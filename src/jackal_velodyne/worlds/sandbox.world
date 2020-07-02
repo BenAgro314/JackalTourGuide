@@ -133,7 +133,7 @@
         </animation>
         <plugin name="max_speed" filename="1">
         </plugin>
-        <plugin name="vehicle_type" filename="path_follower">
+        <plugin name="vehicle_type" filename="wanderer">
         </plugin>
     </actor>
 
