@@ -1,16 +1,5 @@
 #include "maze.hh"
 
-ignition::math::Vector3d RandomPointInCircle(double radius){
-    double t = 2*3.141*ignition::math::Rand::DblUniform(0,1);
-    double u = ignition::math::Rand::DblUniform(0,1)+ignition::math::Rand::DblUniform(0,1);
-    double r;
-    if (u > 1){
-        r = 2 -u;
-    } else {
-        r = u;
-    }
-    return ignition::math::Vector3d(radius*r*std::cos(t), radius*r*std::sin(t), 0);
-}
 
 namespace dungeon{
 
@@ -50,7 +39,7 @@ Dungeon::Dungeon(int num_rooms, double init_radius){
 
 void Dungeon::FillCircle(){
     for (int i =0; i< num_rooms;i++){
-        auto pos = RandomPointInCircle(init_radius);
+        auto pos = math_utils::RandomPointInCircle(init_radius);
 
         double width = std::max(3.0,ignition::math::Rand::DblNormal(7,2));
         double length = std::max(3.0,ignition::math::Rand::DblNormal(7,2));

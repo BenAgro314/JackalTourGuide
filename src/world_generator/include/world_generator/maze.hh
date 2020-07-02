@@ -1,6 +1,6 @@
 #pragma once 
 #include "objects.hh"
-//#include "math_utilities.hh"
+#include "math_utils.hh"
 
 ignition::math::Vector3d RandomPointInCircle(double radius);
 

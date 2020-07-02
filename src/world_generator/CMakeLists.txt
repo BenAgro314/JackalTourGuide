@@ -26,9 +26,6 @@ catkin_package(
 	INCLUDE_DIRS include/world_generator
 )
 
-add_library(math_utilities src/math_utilities.cpp ${catkin_INCLUDE_DIRS})
-target_link_libraries(math_utilities ${catkin_INCLUDE_DIRS} ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
 add_library(objects src/objects.cpp ${catkin_INCLUDE_DIRS})
 target_link_libraries(objects ${catkin_INCLUDE_DIRS} ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
