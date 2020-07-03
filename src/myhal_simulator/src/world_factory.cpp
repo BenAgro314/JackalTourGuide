@@ -173,9 +173,13 @@ void WorldHandler::LoadParams(){
             }
 
             auto yaw = door->pose.Rot().Yaw();
+            
             door->pose.Rot() = ignition::math::Quaterniond(0,0,yaw+(open*1.571));
 
-            this->doors.push_back(door);
+            if (!intersected){
+                this->doors.push_back(door); //use this for now to eliminate failed tours 
+            }
+            
 
            
         }

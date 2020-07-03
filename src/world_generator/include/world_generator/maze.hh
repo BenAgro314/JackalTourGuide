@@ -82,15 +82,17 @@ class BSPDungeon: public Grid{
 
         boost::shared_ptr<BSPDungeon> child_b = nullptr;
 
+        void CreateRooms();
+
+        void FillRoom();
+
     public:
 
         BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, double room_area, double min_width = 3, double min_height = 3);
 
         virtual void FillCells();
 
-        void CreateRooms();
-
-        void FillRoom();
+        
 
 };
 
