@@ -74,17 +74,17 @@ class BSPDungeon: public Grid{
 
     protected:
 
-        double room_area;
+        double room_area, min_width, min_height;
 
         bool split = false;
 
-        boost::shared_ptr<BSPDungeon> child_a;
+        boost::shared_ptr<BSPDungeon> child_a = nullptr;
 
-        boost::shared_ptr<BSPDungeon> child_b;
+        boost::shared_ptr<BSPDungeon> child_b = nullptr;
 
     public:
 
-        BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, double room_area);
+        BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, double room_area, double min_width = 3, double min_height = 3);
 
         virtual void FillCells();
 

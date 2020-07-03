@@ -4,11 +4,11 @@ import os
 
 username = os.environ['USER']
 num = int(input("How many files would you like to plot?\n"))
-inp = input("Input 1 for translation plot and 2 for rotation plot\n")
+inp = int(input("Input 1 for translation plot and 2 for rotation plot\n"))
 
 col = 1
 
-if (inp == "2"):
+if (inp == 2):
     col = 2
     plt.title('Rotation Error vs. Distance Travelled')
     plt.ylabel("Rotation Error (rad)")
@@ -21,9 +21,13 @@ files = []
 
 for i in range(num):
 	path = input("Input folder name?\n")
-	filename = input("Input file name (" + str(i+1) + "/" + str(num) + "). Note default = localization_error.csv\n")
+	filename = input("Input file name (" + str(i+1) + "/" + str(num) + "). Note default = localization_error.csv,\n (1) = gt_filter_localization_error_gmapping,\n (2) = no_filter_localization_error_gmapping\n")
 	if (filename == ""):
 		filename = "localization_error.csv"
+    elif (filename == "1"):
+        filename = "gt_filter_localization_error_gmapping.csv"
+    elif (filename == "2"):
+        filename = "no_filter_localization_error_gmapping.csv"
 	files.append("/home/"+username+"/Myhal_Simulation/simulated_runs/" + path + "/logs-" + path + "/"+filename)
 
 
