@@ -11,15 +11,6 @@ void WorldMaster::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->update_connection.push_back(gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&WorldMaster::WorldUpdate, this, std::placeholders::_1)));
     this->update_connection.push_back(gazebo::event::Events::ConnectBeforePhysicsUpdate(std::bind(&WorldMaster::PhysicsUpdate, this, std::placeholders::_1)));
   
-    //auto room = dungeon::Room(ignition::math::Box(0,0,0,10,10,2));
-    //room.AddToWorld(this->world);
-
-    auto dung = dungeon::Dungeon(15,25);
-    dung.FillCircle();
-    dung.AddToWorld(world);
-
-    //auto B = objects::Box(ignition::math::Box(1,0,0,3,1,1));
-    //B.AddToWorld(this->world);
 
 
     // sdf::SDF actorSDF;

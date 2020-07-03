@@ -102,7 +102,7 @@ void WorldHandler::LoadParams(){
         auto end = route[i+1];
 
         std::vector<ignition::math::Vector3d> path;
-        this->costmap->AStar(start.Pos(), end.Pos(), path,false);
+        this->costmap->AStar(start.Pos(), end.Pos(), path, false);
         paths.insert(paths.end(),path.begin(),path.end());
     }
 
@@ -122,19 +122,19 @@ void WorldHandler::LoadParams(){
 
             int open = ignition::math::Rand::IntUniform(0,1);
 
-
-            for (auto pt: paths){
-
-                if ((pt-pos).Length() < 1){
-                    open = 1;
-                    break;
-                } 
-            }
-
             auto door = std::make_shared<myhal::IncludeModel>("door", ignition::math::Pose3d(pos, ignition::math::Quaterniond(0,0,0,0)), "model://simple_door2", 0.9, 0.15);
+
+            // for (auto pt: paths){
+        
+            //     if ((pt-pos).Length() < 1){
+            //         open = 1;
+            //         break;
+            //     } 
+            // }
+            
             door->pose.Pos().Z() = 1;
 
-            
+        
             if (box.Max().X() - box.Min().X() > 0.2){
                 // horizontal door
               
@@ -145,9 +145,41 @@ void WorldHandler::LoadParams(){
                 door->pose.Pos().Y() -= 0.45;
             }
 
-            
-            
-          
+            bool intersected = false;
+            bool near = false;
+
+            for (int i =0; i<paths.size()-1; i++){
+                auto first = paths[i];
+                first.Z() = 0;
+
+                if ((first - pos).Length() < 1){
+                    near = true;
+                    auto second = paths[i+1];
+                    second.Z() = 0;
+                    auto line = ignition::math::Line3d(first, second);
+
+                    auto door_box = box;
+                    door_box.Min().Z() = 0;
+                    door_box.Max().Z() = 0;
+
+                    auto edges = utilities::get_box_edges(door_box);
+
+                    for (auto edge: edges){
+                        if (edge.Intersect(line) || utilities::inside_box(door_box, first, true)){
+                            open = 1;
+                            intersected = true;
+                            break;
+                        }
+                    }
+                }
+
+                
+            }
+
+            if (!intersected && near){
+                open = 0;
+            }
+
             auto yaw = door->pose.Rot().Yaw();
             door->pose.Rot() = ignition::math::Quaterniond(0,0,yaw+(open*1.571));
 
