@@ -123,14 +123,6 @@ void WorldHandler::LoadParams(){
             int open = ignition::math::Rand::IntUniform(0,1);
 
             auto door = std::make_shared<myhal::IncludeModel>("door", ignition::math::Pose3d(pos, ignition::math::Quaterniond(0,0,0,0)), "model://simple_door2", 0.9, 0.15);
-
-            // for (auto pt: paths){
-        
-            //     if ((pt-pos).Length() < 1){
-            //         open = 1;
-            //         break;
-            //     } 
-            // }
             
             door->pose.Pos().Z() = 1;
 

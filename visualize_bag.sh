@@ -5,12 +5,14 @@ killall rviz
 killall rosmaster
 
 LOADWORLD=""
+RATE=1
 
-while getopts l: option
+while getopts l:r: option
 do
 case "${option}"
 in
 l) LOADWORLD=${OPTARG};; 
+r) RATE=${OPTARG};; 
 esac
 done
 
@@ -25,4 +27,4 @@ rosparam set use_sim_time true
 #rviz -d "/home/$USER/catkin_ws/src/jackal_velodyne/launch/include/visualize.rviz" &
 roslaunch jackal_velodyne visualize.launch &
 sleep 4
-rosbag play -l $BAGPATH
+rosbag play -l -r $RATE $BAGPATH

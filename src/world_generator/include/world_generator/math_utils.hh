@@ -6,6 +6,7 @@
 #include <ignition/math/Rand.hh>
 #include <ignition/math/Rand.hh>
 
+
 namespace math_utils{
 
 ignition::math::Vector3d RandomPointInCircle(double radius){
