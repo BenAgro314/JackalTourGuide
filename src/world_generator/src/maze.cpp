@@ -22,6 +22,14 @@ void Cell::SetFill(bool filled){
     }
 }
 
+ignition::math::Box Cell::GetBounds(){
+    return this->bounds;
+}
+
+bool Cell::Filled(){
+    return filled;
+}
+
 Grid::Grid(ignition::math::Box bounds, double x_res, double y_res){
     this->x_res = x_res;
     this->y_res = y_res;
@@ -84,12 +92,17 @@ ignition::math::Vector3d Grid::IndiciesToPos(Tuple t){
 }
 
 void Grid::AddToWorld(gazebo::physics::WorldPtr world){
+    auto boxes = objects::Boxes("boxes");
+
     for (auto row: cells){
         for (auto cell: row){
-          
-            cell->AddToWorld(world);
+            if (cell->Filled()){
+                boxes.AddBox(cell->GetBounds());
+            }
         }
     }
+
+    boxes.AddToWorld(world);
 }
 
 void Grid::FillCells(){
@@ -104,6 +117,42 @@ void Grid::FillCells(){
         }
     }
 }
+
+BSPDungeon::BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, double room_area):
+Grid(bounds, x_res, y_res){
+    this->room_area= room_area;
+}
+
+void BSPDungeon::CreateRooms(){
+    double area = this->rows*y_res*this->cols*x_res;
+
+    if (area <= room_area || this->rows*y_res < 2 || this->cols*x_res < 2){
+
+        // fill room
+        this->FillRoom();
+
+        return;
+    }
+
+    bool vert = (bool) ignition::math::Rand::IntUniform(0,1);
+    if (vert){ // making a vertial cut
+        
+        int rand_col = ignition::math::Rand::IntUniform(1,this->rows-2);
+
+    }else{
+
+    }
+}
+
+void BSPDungeon::FillRoom(){
+
+}
+
+void BSPDungeon::FillCells(){
+
+}
+
+
 
 
 }

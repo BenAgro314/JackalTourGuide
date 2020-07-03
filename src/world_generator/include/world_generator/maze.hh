@@ -34,6 +34,10 @@ class Cell{
 
         void AddToWorld(gazebo::physics::WorldPtr world);
 
+        ignition::math::Box GetBounds();
+
+        bool Filled();
+
 };
 
 class Grid{
@@ -63,7 +67,31 @@ class Grid{
 
         void AddToWorld(gazebo::physics::WorldPtr world);
 
-        void FillCells();
+        virtual void FillCells();
+};
+
+class BSPDungeon: public Grid{
+
+    protected:
+
+        double room_area;
+
+        bool split = false;
+
+        boost::shared_ptr<BSPDungeon> child_a;
+
+        boost::shared_ptr<BSPDungeon> child_b;
+
+    public:
+
+        BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, double room_area);
+
+        virtual void FillCells();
+
+        void CreateRooms();
+
+        void FillRoom();
+
 };
 
 }

@@ -17,7 +17,8 @@ boost::shared_ptr<sdf::SDF> Object::GetSDF(){
 }
 
 void Object::AddToWorld(gazebo::physics::WorldPtr world){
-    return;    
+    auto sdf = this->GetSDF();
+    world->InsertModelSDF(*sdf);
 }
 
 Box::Box(ignition::math::Box box, std::string name):
@@ -65,7 +66,44 @@ boost::shared_ptr<sdf::SDF> Box::GetSDF(){
     return boxSDF;
 }
 
-void Box::AddToWorld(gazebo::physics::WorldPtr world){
-    auto sdf = this->GetSDF();
-    world->InsertModelSDF(*sdf);
+
+Boxes::Boxes(std::string name): Object(name, ignition::math::Pose3d(0,0,0,0,0,0)){
+
+}
+
+void Boxes::AddBox(ignition::math::Box box){
+    this->boxes.push_back(box);
+}
+
+boost::shared_ptr<sdf::SDF> Boxes::GetSDF(){
+    int count = 0;
+
+    boost::shared_ptr<sdf::SDF> sdf = boost::make_shared<sdf::SDF>();
+    sdf->SetFromString(
+       "<sdf version ='1.6'>\
+          <model name ='box'>\
+            <pose>0 0 0 0 0 0</pose>\
+          </model>\
+        </sdf>");
+
+    auto model = sdf->Root()->GetElement("model");
+
+    
+
+    for (auto box: this->boxes){
+
+        auto center = (box.Min() + box.Max())/2;
+        auto width = box.Max().X() - box.Min().X();
+        auto depth = box.Max().Y() - box.Min().Y();
+        auto height = box.Max().Z() - box.Min().Z();
+
+        auto link = model->AddElement("link");
+        link->GetAttribute("name")->SetFromString("l" + std::to_string(count));
+        link->GetElement("pose")->Set(ignition::math::Pose3d(center, ignition::math::Quaterniond(0,0,0,0)));
+        link->GetElement("collision")->GetElement("geometry")->GetElement("box")->GetElement("size")->Set(ignition::math::Vector3d(width,depth,height));
+        link->GetElement("visual")->GetElement("geometry")->GetElement("box")->GetElement("size")->Set(ignition::math::Vector3d(width,depth,height));
+        count++;
+    }
+
+    return sdf;
 }

@@ -23,8 +23,23 @@ class Object{
 
         virtual boost::shared_ptr<sdf::SDF> GetSDF();
 
-        virtual void AddToWorld(gazebo::physics::WorldPtr world);
+        void AddToWorld(gazebo::physics::WorldPtr world);
 
+};
+
+class Boxes: public Object{
+
+    protected:
+
+        std::vector<ignition::math::Box> boxes;
+
+    public:
+
+        Boxes(std::string name);
+
+        void AddBox(ignition::math::Box box);
+
+        boost::shared_ptr<sdf::SDF> GetSDF();
 };
 
 class Box: public Object{
@@ -38,8 +53,6 @@ class Box: public Object{
         Box(ignition::math::Box box, std::string name = "box");
 
         boost::shared_ptr<sdf::SDF> GetSDF();
-
-        void AddToWorld(gazebo::physics::WorldPtr world);
 
 };
 

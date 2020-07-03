@@ -96,7 +96,6 @@
     <plugin name = "world_master" filename = "libworld_master.so">
     </plugin>
 
-
  
   </world>
 </sdf>

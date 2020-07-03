@@ -10,8 +10,8 @@ void WorldMaster::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     this->update_connection.push_back(gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&WorldMaster::WorldUpdate, this, std::placeholders::_1)));
     this->update_connection.push_back(gazebo::event::Events::ConnectBeforePhysicsUpdate(std::bind(&WorldMaster::PhysicsUpdate, this, std::placeholders::_1)));
-  
-
+    
+    
     auto G = dungeon::Grid(ignition::math::Box(-10,-10,0,10,10,2), 1,1);
     G.FillCells();
     G.AddToWorld(world);
