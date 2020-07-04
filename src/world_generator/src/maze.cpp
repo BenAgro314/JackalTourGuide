@@ -3,6 +3,20 @@
 
 namespace dungeon{
 
+void print_grid(std::vector<std::vector<int>> grid){
+    for (int r =0; r<grid.size(); r++){
+        for (int c= 0; c<grid.size(); c++){
+            if (grid[r][c] == 1){
+                std::cout << "#";
+            }else{
+                std::cout << ".";
+            }
+            
+        }
+        std::cout << std::endl;
+    }
+}
+
 Cell::Cell(ignition::math::Box bounds, bool filled){
     this->bounds = bounds;
     this->filled = filled;
@@ -59,6 +73,8 @@ void Cell::AddToWorld(gazebo::physics::WorldPtr world){
         box.AddToWorld(world);
        
     }
+
+    
 }
 
 
@@ -94,15 +110,145 @@ ignition::math::Vector3d Grid::IndiciesToPos(Tuple t){
 void Grid::AddToWorld(gazebo::physics::WorldPtr world){
     auto boxes = objects::Boxes("boxes");
 
+    // for (auto row: cells){
+    //     for (auto cell: row){
+    //         if (cell->Filled()){
+    //             boxes.AddBox(cell->GetBounds());
+    //         }
+    //     }
+    // }
+
+    // boxes.AddToWorld(world);
+
+
+    int num_on = 0;
+
+    std::vector<std::vector<int>> grid;
+
     for (auto row: cells){
+        std::vector<int> new_row;
         for (auto cell: row){
             if (cell->Filled()){
-                boxes.AddBox(cell->GetBounds());
+                new_row.push_back(1);
+                num_on++;
+            }else{
+                new_row.push_back(0);
             }
         }
+        grid.push_back(new_row);
+    }
+
+    while (num_on >0){
+        //print_grid(grid);
+        boxes.AddBox(this->MaxRectangle(grid,num_on));
     }
 
     boxes.AddToWorld(world);
+
+}
+
+ignition::math::Box Grid::MaxRectangle(std::vector<std::vector<int>> &grid, int &num_on){ // returns the largest rectangle in the array that isn't included in taken and modifies taken to include that rectangle
+   
+
+    //iterate through the rows
+    //keep a running histogram 
+    //for each row compute the maxhistogram area, if it is a new global maximum, store the row index, area, and left and right indicies of the rectangle 
+    //At the end, compute the resultant rectangle, and turn off the values in the grid
+
+    std::vector<int> hist(grid[0].size(), 0);
+    int max_area = 0;
+    int left;
+    int right;
+    int max_row;
+
+    for (int r =0; r<grid.size(); r++){
+        for (int c = 0; c<grid[0].size(); c++){
+            hist[c]=((grid[r][c] == 0) ? 0 : hist[c]+grid[r][c]);
+        }
+        int le,ri;
+        int area =  this->MaxHistogramArea(hist, le, ri);
+        if(max_area < area){
+            max_area = area;
+            max_row =r;
+            left = le;
+            right = ri;
+        }
+
+    }
+
+    
+
+    //std::printf("Min: max_row: %d, left: %d, right: %d, area: %d\n", max_row, left, right, max_area);
+    auto min_corner = this->IndiciesToPos(max_row, left);
+    min_corner.Y()-=y_res;
+    int h = max_area/(right-left);
+    auto max_corner = this->IndiciesToPos(max_row-h,right-1);
+    max_corner.X() += x_res;
+    max_corner.Y() -= y_res;
+
+    min_corner.Z() = 0;
+    max_corner.Z() = bounds.Max().Z();
+
+
+    auto max_box = ignition::math::Box(min_corner, max_corner);
+    //std::cout << max_box << std::endl;
+
+    for (int r = max_row-h+1; r<=max_row;r++){
+        for (int c=left; c<=right-1;c++){
+            grid[r][c] =0;
+            num_on--;
+        }
+    }
+    
+
+    return max_box;
+
+} 
+
+int Grid::MaxHistogramArea(std::vector<int> hist, int &l, int &r){
+    std::vector<int> stack; //make this a vector of (bar height, bar index)
+
+    int max_area = 0;
+    int tp;
+    int area_with_top;
+    int i =0;
+
+    while (i<hist.size()){
+        if (stack.empty() || hist[stack.back()] <= hist[i]){
+            stack.push_back(i++);
+        }else{
+            tp = stack.back();
+            stack.pop_back();
+
+            area_with_top = hist[tp]*(stack.empty() ? i:(i-stack.back()-1));
+
+            if (max_area < area_with_top){
+                max_area = area_with_top;
+                l = (stack.empty() ? 0:(stack.back()+1));
+                r = i;
+            }
+
+        }
+    }
+
+    while (stack.empty() == false) { 
+        tp = stack.back(); 
+        stack.pop_back(); 
+      
+        area_with_top = hist[tp]*(stack.empty() ? i:(i-stack.back()-1));
+  
+        if (max_area < area_with_top){
+            max_area = area_with_top; 
+            
+            l = (stack.empty() ? 0:(stack.back()+1));
+            r = i;
+            
+        } 
+            
+    } 
+    
+   
+    return max_area; 
 }
 
 void Grid::FillCells(){
@@ -293,9 +439,10 @@ void BSPDungeon::ConnectHallways(){
 
     while (queue.size() > 0){
         int n = queue.size();
-        for (int i=0; i< n-1; i++){
-            auto A = queue[i];
-            auto B = queue[i+1];
+        //std::cout << n << std::endl;
+        for (int i=0; i< n-1; i+=2){
+            auto A = queue[0];
+            auto B = queue[1];
             queue.erase(queue.begin());
             queue.erase(queue.begin());
 
@@ -319,28 +466,37 @@ void BSPDungeon::ConnectHallways(){
 
             auto A_cen_inds = this->PosToIndicies(A_cen);
             auto B_cen_inds = this->PosToIndicies(B_cen);
-            
 
             if (A_cen_inds.r == B_cen_inds.r){
                 for (int c = std::min(A_cen_inds.c, B_cen_inds.c); c<std::max(A_cen_inds.c, B_cen_inds.c); c++){
-                    std::cout << B_cen_inds.r << " " << c << std::endl;
-                    // for (int r = std::max(this->wall_w,A_cen_inds.r-(int)std::floor(this->hallway_w/2)); r <= std::min(rows-wall_w, A_cen_inds.r+(int)std::floor(hallway_w/2)); r++){
-                    //     std::cout << r << " " << c << std::endl;
-                    //     this->cells[r][c]->SetFill(false);
-                    // }
-                    cells[A_cen_inds.r][c]->SetFill(false);
+
+                    if (hallway_w %2 ==0){
+                        for (int r = std::max(this->wall_w,A_cen_inds.r-(int)std::floor(this->hallway_w/2)); r < std::min(rows-wall_w, A_cen_inds.r+(int)std::floor(hallway_w/2)); r++){
+
+                            this->cells[r][c]->SetFill(false);
+                        }
+                    } else  {
+                        for (int r = std::max(this->wall_w,A_cen_inds.r-(int)std::floor(this->hallway_w/2)); r <= std::min(rows-wall_w, A_cen_inds.r+(int)std::floor(hallway_w/2)); r++){
+
+                            this->cells[r][c]->SetFill(false);
+                        }
+                    }
+
                     
                 }
             }
              if (A_cen_inds.c == B_cen_inds.c){
                 for (int r = std::min(A_cen_inds.r, B_cen_inds.r); r<std::max(A_cen_inds.r, B_cen_inds.r); r++){
-                    std::cout << r << " " << A_cen_inds.c  << std::endl;
-                    // for (int c = std::max(this->wall_w,  A_cen_inds.c-(int)std::floor(this->hallway_w/2)); c <= std::min(cols-wall_w, A_cen_inds.c+(int)std::floor(hallway_w/2)); c++){
-                    //     std::cout << r << " " << c << std::endl;
-                    //     this->cells[r][c]->SetFill(false);
-                    // }
-                    cells[r][A_cen_inds.c]->SetFill(false);
-                    
+                    if (hallway_w % 2 == 0){
+                        for (int c = std::max(this->wall_w,  A_cen_inds.c-(int)std::floor(this->hallway_w/2)); c < std::min(cols-wall_w, A_cen_inds.c+(int)std::floor(hallway_w/2)); c++){
+                            this->cells[r][c]->SetFill(false);
+                        }
+                    } else{
+                        for (int c = std::max(this->wall_w,  A_cen_inds.c-(int)std::floor(this->hallway_w/2)); c <= std::min(cols-wall_w, A_cen_inds.c+(int)std::floor(hallway_w/2)); c++){
+                            this->cells[r][c]->SetFill(false);
+                        }
+                    }
+
                 }
             }
 

@@ -3,6 +3,7 @@
 #include "math_utils.hh"
 #include <vector>
 
+
 namespace dungeon{
 
 struct Tuple{
@@ -60,6 +61,9 @@ class Grid{
 
         ignition::math::Vector3d IndiciesToPos(Tuple t);
 
+        int MaxHistogramArea(std::vector<int> hist, int &l, int &r);
+
+        ignition::math::Box MaxRectangle(std::vector<std::vector<int>> &grid, int &num_on); // returns the largest rectangle in the array that isn't included in taken and modifies taken to include that rectangle
 
     public:
 

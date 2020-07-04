@@ -34,6 +34,8 @@ void WorldHandler::Load(){
 
     }
 
+    std::cout << "Creating doors\n";
+
     for (auto door: this->doors){
         door->AddToWorld(this->world_string);
     }

@@ -87,7 +87,7 @@ boost::shared_ptr<sdf::SDF> Boxes::GetSDF(){
         </sdf>");
 
     auto model = sdf->Root()->GetElement("model");
-
+    model->GetElement("static")->Set(true);
     
 
     for (auto box: this->boxes){
@@ -101,6 +101,9 @@ boost::shared_ptr<sdf::SDF> Boxes::GetSDF(){
         link->GetAttribute("name")->SetFromString("l" + std::to_string(count));
         link->GetElement("pose")->Set(ignition::math::Pose3d(center, ignition::math::Quaterniond(0,0,0,0)));
         link->GetElement("collision")->GetElement("geometry")->GetElement("box")->GetElement("size")->Set(ignition::math::Vector3d(width,depth,height));
+        // link->GetElement("collision")->GetElement("surface")->GetElement("friction")->GetElement("ode")->GetElement("mu")->Set(1);
+        // link->GetElement("collision")->GetElement("surface")->GetElement("friction")->GetElement("ode")->GetElement("mu2")->Set(1);
+        // link->GetElement("self_collide")->Set(false);
         link->GetElement("visual")->GetElement("geometry")->GetElement("box")->GetElement("size")->Set(ignition::math::Vector3d(width,depth,height));
         count++;
     }

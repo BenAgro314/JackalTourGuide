@@ -8,26 +8,33 @@ inp = int(input("Input 1 for translation plot and 2 for rotation plot\n"))
 
 col = 1
 
+title = ""
+y_label = ""
+
 if (inp == 2):
-    col = 2
-    plt.title('Rotation Error vs. Distance Travelled')
-    plt.ylabel("Rotation Error (rad)")
+	col = 2
+	title = 'Rotation Error vs. Distance Travelled'
+	y_label = "Rotation Error (rad)"
 else:
-    plt.title('Translation Error vs. Distance Travelled')
-    plt.ylabel("Translation Error (m)")
+	title = 'Translation Error vs. Distance Travelled'
+	y_label = "Translation Error (m)"
 
 
 files = []
 
 for i in range(num):
 	path = input("Input folder name?\n")
-	filename = input("Input file name (" + str(i+1) + "/" + str(num) + "). Note default = localization_error.csv,\n (1) = gt_filter_localization_error_gmapping,\n (2) = no_filter_localization_error_gmapping\n")
+	filename = input("Input file name (" + str(i+1) + "/" + str(num) + "). Note default = localization_error.csv,\n (1) = gt_filter_localization_error_gmapping,\n (2) = no_filter_localization_error_gmapping,\n(3) = gt_filter_localization_error_amcl,\n(4) = no_filter_localization_error_amcl\n")
 	if (filename == ""):
 		filename = "localization_error.csv"
-    elif (filename == "1"):
-        filename = "gt_filter_localization_error_gmapping.csv"
-    elif (filename == "2"):
-        filename = "no_filter_localization_error_gmapping.csv"
+	elif (filename == "1"):
+		filename = "gt_filter_localization_error_gmapping.csv"
+	elif (filename == "2"):
+		filename = "no_filter_localization_error_gmapping.csv"
+	elif (filename == "3"):
+		filename = "gt_filter_localization_error_amcl.csv"
+	elif (filename == "4"):
+		filename = "no_filter_localization_error_amcl.csv"
 	files.append("/home/"+username+"/Myhal_Simulation/simulated_runs/" + path + "/logs-" + path + "/"+filename)
 
 
@@ -70,7 +77,7 @@ for filename in files:
 	
 
 plt.xlabel("Distance Travelled (m)")
-
-
+plt.ylabel(y_label)
+plt.title(title)
 plt.legend()
 plt.show()
