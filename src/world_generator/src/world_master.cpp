@@ -16,7 +16,7 @@ void WorldMaster::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     // G.FillCells();
     // G.AddToWorld(world);
 
-    auto D = dungeon::BSPDungeon(ignition::math::Box(-10,-10,0,10,10,2), 1, 1, 4,4,1, 2);
+    auto D = dungeon::BSPDungeon(ignition::math::Box(-15,-15,0,15,15,2), 1, 1, 3,3,1, 2);
     
     D.FillCells();
    

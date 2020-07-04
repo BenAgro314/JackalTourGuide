@@ -323,19 +323,23 @@ void BSPDungeon::ConnectHallways(){
 
             if (A_cen_inds.r == B_cen_inds.r){
                 for (int c = std::min(A_cen_inds.c, B_cen_inds.c); c<std::max(A_cen_inds.c, B_cen_inds.c); c++){
-                    for (int r = std::max(this->wall_w,A_cen_inds.r-(int)std::floor(this->hallway_w/2)); r <= std::min(rows-wall_w, A_cen_inds.r+(int)std::floor(hallway_w/2)); r++){
-                        std::cout << r << " " << c << std::endl;
-                        this->cells[r][c]->SetFill(false);
-                    }
+                    std::cout << B_cen_inds.r << " " << c << std::endl;
+                    // for (int r = std::max(this->wall_w,A_cen_inds.r-(int)std::floor(this->hallway_w/2)); r <= std::min(rows-wall_w, A_cen_inds.r+(int)std::floor(hallway_w/2)); r++){
+                    //     std::cout << r << " " << c << std::endl;
+                    //     this->cells[r][c]->SetFill(false);
+                    // }
+                    cells[A_cen_inds.r][c]->SetFill(false);
                     
                 }
             }
              if (A_cen_inds.c == B_cen_inds.c){
                 for (int r = std::min(A_cen_inds.r, B_cen_inds.r); r<std::max(A_cen_inds.r, B_cen_inds.r); r++){
-                    for (int c = std::max(this->wall_w,  A_cen_inds.c-(int)std::floor(this->hallway_w/2)); c <= std::min(cols-wall_w, A_cen_inds.c+(int)std::floor(hallway_w/2)); c++){
-                        std::cout << r << " " << c << std::endl;
-                        this->cells[r][c]->SetFill(false);
-                    }
+                    std::cout << r << " " << A_cen_inds.c  << std::endl;
+                    // for (int c = std::max(this->wall_w,  A_cen_inds.c-(int)std::floor(this->hallway_w/2)); c <= std::min(cols-wall_w, A_cen_inds.c+(int)std::floor(hallway_w/2)); c++){
+                    //     std::cout << r << " " << c << std::endl;
+                    //     this->cells[r][c]->SetFill(false);
+                    // }
+                    cells[r][A_cen_inds.c]->SetFill(false);
                     
                 }
             }
