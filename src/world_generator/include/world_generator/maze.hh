@@ -74,7 +74,7 @@ class BSPDungeon: public Grid{
 
     protected:
 
-        double room_area, min_width, min_height;
+        int min_w, min_l, wall_w, hallway_w;
 
         bool split = false;
 
@@ -86,9 +86,11 @@ class BSPDungeon: public Grid{
 
         void FillRoom();
 
+        void ConnectHallways();
+        
     public:
 
-        BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, double room_area, double min_width = 3, double min_height = 3);
+        BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, int min_w, int min_l, int wall_w, int hallway_w);
 
         virtual void FillCells();
 
