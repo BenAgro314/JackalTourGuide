@@ -12,25 +12,17 @@ void WorldMaster::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->update_connection.push_back(gazebo::event::Events::ConnectBeforePhysicsUpdate(std::bind(&WorldMaster::PhysicsUpdate, this, std::placeholders::_1)));
 
 
-    auto D = dungeon::BSPDungeon(ignition::math::Box(-15,-15,0,15,15,2), 0.5, 0.5, 5,5 ,0.5, 1);
-
+    auto D = dungeon::BSPDungeon(ignition::math::Box(-15,4,0,15,15,2), 0.5, 0.5, 5,5 ,0.5, 1);
+    objects[D.boxes->Name()] = D.boxes;
     D.FillCells();
+    D.AddToWorld(world);
 
-    // sdf::SDF modelSDF;
-    // modelSDF.SetFromString(
-    //    "<sdf version ='1.6'>\
-    //       <model name ='door'>\
-    //         <pose>-5 5 1.000000 0.000000 -0.000000 1.571000</pose>\
-    //         <include>\
-    //             <name>door_0</name>\
-    //             <uri>model://simple_door2</uri>\
-	// 	    </include>\
-    //       </model>\
-    //     </sdf>");
-  
-   
-    //D.AddToWorld(world);
-
+    
+    for (double x =0; x<10; x+=3){
+        auto model = boost::make_shared<objects::Model>("model",ignition::math::Pose3d(x,0,0,0,0,0), "model://table");
+        objects[model->Name()] = model;
+        model->AddToWorld(world);
+    }
 
     // sdf::SDF actorSDF;
     // actorSDF.SetFromString(
@@ -50,36 +42,6 @@ void WorldMaster::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     // auto actor = actorSDF.Root()->GetElement("actor");
     // actor->GetAttribute("name")->SetFromString("actor");
-
-    // sdf::SDF modelSDF;
-    // modelSDF.SetFromString(
-    //    "<sdf version ='1.6'>\
-    //       <model name ='door'>\
-    //         <pose>-5 5 1.000000 0.000000 -0.000000 1.571000</pose>\
-    //         <include>\
-    //             <name>door_0</name>\
-    //             <uri>model://simple_door2</uri>\
-	// 	    </include>\
-    //       </model>\
-    //     </sdf>");
-
-    // sdf::SDF model2SDF;
-    // model2SDF.SetFromString(
-    //    "<sdf version ='1.6'>\
-    //       <model name ='door2'>\
-    //       <pose>5 5 1.000000 0.000000 -0.000000 1.571000</pose>\
-    //         <include>\
-    //             <name>door2</name>\
-	// 	    </include>\
-    //       </model>\
-    //     </sdf>");
-
-    // model2SDF.Root()->GetElement("model")->GetElement("pose")->Set(ignition::math::Pose3d(5,0,0,0,0,0));
-    // model2SDF.Root()->GetElement("model")->GetElement("include")->AddElement("uri");
-    // model2SDF.Root()->GetElement("model")->GetElement("include")->GetElement("uri")->Set("model://kitchen_chair");
-    
-    // this->world->InsertModelSDF(modelSDF);
-    // this->world->InsertModelSDF(model2SDF);
 
    
 
@@ -115,6 +77,19 @@ void WorldMaster::ReadSDF(){
 }
 
 void WorldMaster::FirstUpdate(){
-    //auto B= objects::Box(ignition::math::Box(5,5,1,7,7,2));
-    //B.AddToWorld(this->world);
+  
+
+    for (int i =0; i<world->ModelCount(); i++){
+     
+        auto model = world->ModelByIndex(i);
+
+        if (objects[model->GetName()] == nullptr){
+            continue;
+        }
+        // if (model->GetName() == "ground_plane"){
+        //     continue;
+        //}
+        
+        objects[model->GetName()]->Model() = model;
+    }
 }

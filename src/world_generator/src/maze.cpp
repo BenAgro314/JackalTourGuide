@@ -218,7 +218,6 @@ Grid(bounds, x_res, y_res){
 
 
 void Grid::AddToWorld(gazebo::physics::WorldPtr world){
-    auto boxes = objects::Boxes("boxes");
 
     int num_on = 0;
 
@@ -256,11 +255,11 @@ void Grid::AddToWorld(gazebo::physics::WorldPtr world){
         max_v.X() += x_res/2;
         max_v.Y() +=y_res/2;
         max_v.Z() = bounds.Max().Z();
-
-        boxes.AddBox(ibox(min_v, max_v));
+        
+        boxes->AddBox(ibox(min_v, max_v));
     }
 
-    boxes.AddToWorld(world);
+    boxes->AddToWorld(world);
 }
 
 
@@ -325,6 +324,7 @@ void Grid::ToString(){
 }
 
 Grid::Grid(ibox bounds, double x_res, double y_res){
+    boxes = boost::make_shared<objects::Boxes>("boxes");
     rows = std::round((bounds.Max().Y()-bounds.Min().Y())/y_res);
     cols = std::round((bounds.Max().X()-bounds.Min().X())/x_res);
     this->x_res = x_res;

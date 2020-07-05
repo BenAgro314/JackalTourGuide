@@ -7,6 +7,7 @@
 #include <ros/ros.h>
 #include "objects.hh"
 #include "maze.hh"
+#include <map>
 
 
 class WorldMaster: public gazebo::WorldPlugin{
@@ -24,6 +25,8 @@ class WorldMaster: public gazebo::WorldPlugin{
         gazebo::common::Time last_physics_update;
 
         bool first_update = true;
+
+        std::map<std::string, boost::shared_ptr<objects::Object>> objects;
 
     public: 
         

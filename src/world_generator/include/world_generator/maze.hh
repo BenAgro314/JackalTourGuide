@@ -17,13 +17,12 @@ class Grid{
 
         int rows,cols;
 
-       
+
     public:
 
-         
+        boost::shared_ptr<objects::Boxes> boxes;
 
         std::vector<std::vector<int>> binary;
-
 
         math_utils::Tuple<int> PosToIndicies(ignition::math::Vector3d pos);
 

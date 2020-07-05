@@ -17,6 +17,8 @@ class Object{
 
         ignition::math::Pose3d pose;
 
+        gazebo::physics::ModelPtr world_model = nullptr;
+
     public:
 
         Object(std::string name, ignition::math::Pose3d pose);
@@ -25,7 +27,32 @@ class Object{
 
         void AddToWorld(gazebo::physics::WorldPtr world);
 
+        std::string Name();
+
+        gazebo::physics::ModelPtr &Model();
+
 };
+
+class Model: public Object{
+
+    protected:
+
+        std::string uri;
+
+    public:
+
+        Model(std::string name, ignition::math::Pose3d pose, std::string uri);
+
+        boost::shared_ptr<sdf::SDF> GetSDF();
+};
+
+class Actor: public Object{
+
+
+    public: 
+
+        Actor(std::string name, ignition::math::Pose3d initial_pose, std::string type);
+}
 
 class Boxes: public Object{
 
@@ -42,18 +69,18 @@ class Boxes: public Object{
         boost::shared_ptr<sdf::SDF> GetSDF();
 };
 
-class Box: public Object{
+// class Box: public Object{
 
-    protected:
+//     protected:
 
-        ignition::math::Box box;
+//         ignition::math::Box box;
 
-    public:
+//     public:
 
-        Box(ignition::math::Box box, std::string name = "box");
+//         Box(ignition::math::Box box, std::string name = "box");
 
-        boost::shared_ptr<sdf::SDF> GetSDF();
+//         boost::shared_ptr<sdf::SDF> GetSDF();
 
-};
+// };
 
 }
