@@ -1,410 +1,63 @@
 #include "maze.hh"
 
+typedef ignition::math::Box ibox;
+typedef ignition::math::Vector3d ivector;
+typedef math_utils::Tuple<int> Tuple;
 
 namespace dungeon{
 
-void print_grid(std::vector<std::vector<int>> grid){
-    for (int r =0; r<grid.size(); r++){
-        for (int c= 0; c<grid.size(); c++){
-            if (grid[r][c] == 1){
-                std::cout << "#";
-            }else{
-                std::cout << ".";
-            }
-            
-        }
-        std::cout << std::endl;
-    }
-}
-
-Cell::Cell(ignition::math::Box bounds, bool filled){
-    this->bounds = bounds;
-    this->filled = filled;
-    if (this->filled){
-        this->cost = 255;
-    } else {
-        this->cost = 1;
-    }
-}
-
-void Cell::SetFill(bool filled){
-    this->filled = filled;
-    if (filled){
-        this->cost = 255;
-    } else {
-        this->cost = 1;
-    }
-}
-
-ignition::math::Box Cell::GetBounds(){
-    return this->bounds;
-}
-
-bool Cell::Filled(){
-    return filled;
-}
-
-Grid::Grid(ignition::math::Box bounds, double x_res, double y_res){
-    this->x_res = x_res;
-    this->y_res = y_res;
-    this->bounds = bounds;
-
-    this->cols = (int) (bounds.Max().X() - bounds.Min().X())/x_res;
-    
-    this->rows = (int) (bounds.Max().Y() - bounds.Min().Y())/y_res;
- 
-
-    for (int r = 0; r < this->rows; ++r){
-        std::vector<boost::shared_ptr<Cell>> new_row;
-        
-        for (int c =0; c<this->cols; ++c){
-            auto top_left = this->IndiciesToPos(r,c);
-
-            new_row.push_back(boost::make_shared<Cell>(ignition::math::Box(top_left.X(),top_left.Y()-y_res, top_left.Z(), top_left.X() + x_res, top_left.Y(), bounds.Max().Z())));
-            new_row.back()->SetFill(true);
-        }
-        this->cells.push_back(new_row);
-    }
-}
-
-void Cell::AddToWorld(gazebo::physics::WorldPtr world){
-    
-    if (this->filled){
-        auto box = objects::Box(this->bounds);
-        box.AddToWorld(world);
-       
-    }
-
-    
-}
-
-
-Tuple Grid::PosToIndicies(ignition::math::Vector3d pos){
-    int r = 0;
-    int c = 0;
-
-    while ((bounds.Max().Y() - r*this->y_res) > pos.Y()){
-        r++;
-    }
-
-    while ((bounds.Min().X() + c*this->x_res) < pos.X()){
-        c++;
-    }
-
-    return Tuple(r, c);
-}
-
-ignition::math::Vector3d Grid::IndiciesToPos(int r, int c){
-
-    auto pos = ignition::math::Vector3d(bounds.Min().X() + c*x_res, bounds.Max().Y() - r*y_res, 0);
-
-    return pos;
-}
-
-ignition::math::Vector3d Grid::IndiciesToPos(Tuple t){
-
-    auto pos = ignition::math::Vector3d(bounds.Min().X() + t.c*x_res, bounds.Max().Y() - t.r*y_res, 0);
-    
-    return pos;
-}
-
-void Grid::AddToWorld(gazebo::physics::WorldPtr world){
-    auto boxes = objects::Boxes("boxes");
-
-    // for (auto row: cells){
-    //     for (auto cell: row){
-    //         if (cell->Filled()){
-    //             boxes.AddBox(cell->GetBounds());
-    //         }
-    //     }
-    // }
-
-    // boxes.AddToWorld(world);
-
-
-    int num_on = 0;
-
-    std::vector<std::vector<int>> grid;
-
-    for (auto row: cells){
-        std::vector<int> new_row;
-        for (auto cell: row){
-            if (cell->Filled()){
-                new_row.push_back(1);
-                num_on++;
-            }else{
-                new_row.push_back(0);
-            }
-        }
-        grid.push_back(new_row);
-    }
-
-    print_grid(grid);
-    while (num_on >0){
-        
-        boxes.AddBox(this->MaxRectangle(grid,num_on));
-    }
-
-    boxes.AddToWorld(world);
-
-}
-
-ignition::math::Box Grid::MaxRectangle(std::vector<std::vector<int>> &grid, int &num_on){ // returns the largest rectangle in the array that isn't included in taken and modifies taken to include that rectangle
-   
-
-    //iterate through the rows
-    //keep a running histogram 
-    //for each row compute the maxhistogram area, if it is a new global maximum, store the row index, area, and left and right indicies of the rectangle 
-    //At the end, compute the resultant rectangle, and turn off the values in the grid
-
-    std::vector<int> hist(grid[0].size(), 0);
-    int max_area = 0;
-    int left;
-    int right;
-    int max_row;
-
-    for (int r =0; r<grid.size(); r++){
-        for (int c = 0; c<grid[0].size(); c++){
-            hist[c]=((grid[r][c] == 0) ? 0 : hist[c]+grid[r][c]);
-        }
-        int le,ri;
-        int area =  this->MaxHistogramArea(hist, le, ri);
-        if(max_area < area){
-            max_area = area;
-            max_row =r;
-            left = le;
-            right = ri;
-        }
-
-    }
+void BSPDungeon::CreateChildren(){
+    double w = bounds.Max().X() - bounds.Min().X();
+    double l = bounds.Max().Y() - bounds.Min().Y();
 
     
 
-    //std::printf("Min: max_row: %d, left: %d, right: %d, area: %d\n", max_row, left, right, max_area);
-    auto min_corner = this->IndiciesToPos(max_row, left);
-    min_corner.Y()-=y_res;
-    int h = max_area/(right-left);
-    auto max_corner = this->IndiciesToPos(max_row-h,right-1);
-    max_corner.X() += x_res;
-    max_corner.Y() -= y_res;
+    if ((bool) ignition::math::Rand::IntUniform(0,1)){
+        // vertical slice
 
-    min_corner.Z() = 0;
-    max_corner.Z() = bounds.Max().Z();
-
-
-    auto max_box = ignition::math::Box(min_corner, max_corner);
-    //std::cout << max_box << std::endl;
-
-    for (int r = max_row-h+1; r<=max_row;r++){
-        for (int c=left; c<=right-1;c++){
-            grid[r][c] =0;
-            num_on--;
-        }
-    }
-    
-
-    return max_box;
-
-} 
-
-int Grid::MaxHistogramArea(std::vector<int> hist, int &l, int &r){
-    std::vector<int> stack; //make this a vector of (bar height, bar index)
-
-    int max_area = 0;
-    int tp;
-    int area_with_top;
-    int i =0;
-
-    while (i<hist.size()){
-        if (stack.empty() || hist[stack.back()] <= hist[i]){
-            stack.push_back(i++);
-        }else{
-            tp = stack.back();
-            stack.pop_back();
-
-            area_with_top = hist[tp]*(stack.empty() ? i:(i-stack.back()-1));
-
-            if (max_area < area_with_top){
-                max_area = area_with_top;
-                l = (stack.empty() ? 0:(stack.back()+1));
-                r = i;
-            }
-
-        }
-    }
-
-    while (stack.empty() == false) { 
-        tp = stack.back(); 
-        stack.pop_back(); 
-      
-        area_with_top = hist[tp]*(stack.empty() ? i:(i-stack.back()-1));
-  
-        if (max_area < area_with_top){
-            max_area = area_with_top; 
-            
-            l = (stack.empty() ? 0:(stack.back()+1));
-            r = i;
-            
-        } 
-            
-    } 
-    
-   
-    return max_area; 
-}
-
-void Grid::FillCells(){
-    for (auto row: cells){
-        for (auto cell: row){
-           
-            cell->SetFill((bool) ignition::math::Rand::IntUniform(0,1));
-            
-        }
-    }
-}
-
-BSPDungeon::BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, int min_w, int min_l, int wall_w, int hallway_w):
-Grid(bounds, x_res, y_res){
-    this->min_w= min_w;
-    this->min_l = min_l;
-    this->wall_w = wall_w;
-    this->hallway_w = hallway_w;
-    // for (int r = 0; r < this->rows; ++r){
-    //     for (int c =0; c<this->cols; ++c){
-    //        cells[r][c]->SetFill(true);
-    //     }
-    // }
-}
-
-void BSPDungeon::CreateRooms(){
-    
-    
-    
-    if (rows <= min_l || cols <= min_w){
-
-        // fill room
-        this->FillRoom();
-
-        return;
-    }
- 
- 
-    bool vert = (bool) ignition::math::Rand::IntUniform(0,1);
-    if (vert){ // making a vertial cut
-
-        int min_c = min_w + wall_w;
-        int max_c = cols-min_w - wall_w;
-
-        if (min_c >= max_c || min_c >= cols || max_c <=0){
-            this->FillRoom();
+        if (w<=2*min_w){
+            this->CreateRoom();
             return;
         }
 
-        int rand_col = ignition::math::Rand::IntUniform(min_c,max_c);
+        auto rand_x = ignition::math::Rand::DblUniform(bounds.Min().X() + min_w, bounds.Max().X()-min_w);
+        // convert this to an index and back;
+        auto ind = this->PosToIndicies(ivector(rand_x,0,0));
+        rand_x = this->IndiciesToPos(ind).X();
 
-        auto left_max = IndiciesToPos(0,rand_col);
-        left_max.Z() = bounds.Max().Z();
-        auto right_min = IndiciesToPos(rows,rand_col);
-        right_min.Z() = bounds.Min().Z();
+        auto max_left = ivector(rand_x, bounds.Max().Y(),bounds.Max().Z());
+        auto min_right = ivector(rand_x, bounds.Min().Y(), 0);
 
-        child_a = boost::make_shared<BSPDungeon>(ignition::math::Box(bounds.Min(),left_max), x_res, y_res, min_w, min_l, wall_w, hallway_w);
-        child_b = boost::make_shared<BSPDungeon>(ignition::math::Box(right_min,bounds.Max()), x_res, y_res, min_w, min_l, wall_w, hallway_w);
+        this->child_a = boost::make_shared<BSPDungeon>(ibox(bounds.Min(), max_left), x_res, y_res, min_w,min_l,wall_w, hallway_w);
+        this->child_b =  boost::make_shared<BSPDungeon>(ibox(min_right,bounds.Max()), x_res, y_res, min_w,min_l,wall_w, hallway_w);
 
-        child_a->CreateRooms();
-        child_b->CreateRooms();
-    }else{
+        child_a->CreateChildren();
+        child_b->CreateChildren();
+    } else{
+        // horizontal slice
 
-        int min_r = min_l + wall_w;
-        int max_r = rows-min_r;
-
-        if (min_r >= max_r || min_r >= cols || max_r <=0){
-            this->FillRoom();
+        if (l <= 2*min_l){
+            this->CreateRoom();
             return;
         }
+        auto rand_y = ignition::math::Rand::DblUniform(bounds.Min().Y() + min_l, bounds.Max().Y()-min_l);
+        // convert this to an index and back;
+        auto ind = this->PosToIndicies(ivector(0,rand_y,0));
+        rand_y = this->IndiciesToPos(ind).Y();
 
-        int rand_row = ignition::math::Rand::IntUniform(min_r,max_r);
+        auto max_bot = ivector(bounds.Max().X(), rand_y,bounds.Max().Z());
+        auto min_top = ivector(bounds.Min().X(), rand_y, 0);
 
-        auto bot_max = IndiciesToPos(rand_row, cols);
-        bot_max.Z() = bounds.Max().Z();
-        auto top_min = IndiciesToPos(rand_row,0);
-        top_min.Z() = bounds.Min().Z();
+        this->child_a = boost::make_shared<BSPDungeon>(ibox(bounds.Min(), max_bot), x_res, y_res, min_w,min_l,wall_w, hallway_w);
+        this->child_b =  boost::make_shared<BSPDungeon>(ibox(min_top,bounds.Max()), x_res, y_res, min_w,min_l,wall_w, hallway_w);
 
-        child_a = boost::make_shared<BSPDungeon>(ignition::math::Box(bounds.Min(),bot_max), x_res, y_res, min_w, min_l, wall_w, hallway_w);
-        child_b = boost::make_shared<BSPDungeon>(ignition::math::Box(top_min,bounds.Max()), x_res, y_res, min_w, min_l, wall_w, hallway_w);
-
-        child_a->CreateRooms();
-        child_b->CreateRooms();
-
+        child_a->CreateChildren();
+        child_b->CreateChildren();
     }
 }
 
-void BSPDungeon::FillRoom(){
+void BSPDungeon::ConnectChildren(){
 
-    int min_r = wall_w;
-    int min_c = wall_w;
-    int max_r = rows-1-wall_w;
-    int max_c = cols-1-wall_w;
- 
-    for (int r =0; r<this->rows; r++){
-        for (int c =0; c<this->cols; c++){
-            if (r <= max_r && r>=min_r && c<=max_c && c>=min_c){
-                cells[r][c]->SetFill(false);
-            } else{
-                cells[r][c]->SetFill(true);
-            }
-        }
-    }
-    
-}
-
-void BSPDungeon::FillCells(){
-    // traverse the tree using a queue
-    // if it is a leaf node: add its cells to the boxes object
-
-  
-    this->CreateRooms();
-
-
-    if (this->child_a == nullptr || this->child_b == nullptr){
-        return;
-    }
-
-    std::vector<boost::shared_ptr<BSPDungeon>> queue;
-    queue.push_back(this->child_a);
-    queue.push_back(this->child_b);
-
-    while (queue.size() > 0){
-        auto curr= queue[0];
-        queue.erase(queue.begin());
-   
-        if (curr->child_a == nullptr && curr->child_b == nullptr){
-            
-            for (int r= 0; r<curr->rows; r++){
-                for (int c=0; c<curr->cols; c++){
-                    auto pos = curr->IndiciesToPos(r,c);
-                    auto inds = this->PosToIndicies(pos);
-                    
-                    // std::printf("child:(%d %d)->par:(%d %d)", r, c, inds.r, inds.c);
-                    // std::cout << "pose: " << pos << std::endl;
-                    this->cells[inds.r][inds.c]->SetFill(curr->cells[r][c]->Filled());
-           
-                }
-            }
-            continue;
-        }
-
-        queue.push_back(curr->child_a);
-        queue.push_back(curr->child_b);
-    }
-
-    this->ConnectHallways();
-
-
-}
-
-void BSPDungeon::ConnectHallways(){
-
-    
 
     if (this->child_a == nullptr || this->child_b==nullptr){
         return;
@@ -447,35 +100,21 @@ void BSPDungeon::ConnectHallways(){
             auto B_cen_inds = this->PosToIndicies(B_cen);
 
             if (A_cen_inds.r == B_cen_inds.r){
-                for (int c = std::min(A_cen_inds.c, B_cen_inds.c); c<std::max(A_cen_inds.c, B_cen_inds.c); c++){
-
-                    if (hallway_w %2 ==0){
-                        for (int r = std::max(this->wall_w,A_cen_inds.r-(int)std::floor(this->hallway_w/2)); r < std::min(rows-wall_w, A_cen_inds.r+(int)std::floor(hallway_w/2)); r++){
-
-                            this->cells[r][c]->SetFill(false);
-                        }
-                    } else  {
-                        for (int r = std::max(this->wall_w,A_cen_inds.r-(int)std::floor(this->hallway_w/2)); r <= std::min(rows-wall_w, A_cen_inds.r+(int)std::floor(hallway_w/2)); r++){
-
-                            this->cells[r][c]->SetFill(false);
-                        }
+                int min_r = A_cen_inds.r - std::round(hallway_w/2);
+                int max_r = A_cen_inds.r + std::round(hallway_w/2);
+                for (int c = std::min(A_cen_inds.c, B_cen_inds.c); c<=std::max(A_cen_inds.c, B_cen_inds.c); c++){
+                    for (int r = std::max(0,min_r); r<=std::min(rows-1,max_r); r++){
+                        binary[r][c] = 0;
                     }
-
                     
                 }
-            }
-             if (A_cen_inds.c == B_cen_inds.c){
-                for (int r = std::min(A_cen_inds.r, B_cen_inds.r); r<std::max(A_cen_inds.r, B_cen_inds.r); r++){
-                    if (hallway_w % 2 == 0){
-                        for (int c = std::max(this->wall_w,  A_cen_inds.c-(int)std::floor(this->hallway_w/2)); c < std::min(cols-wall_w, A_cen_inds.c+(int)std::floor(hallway_w/2)); c++){
-                            this->cells[r][c]->SetFill(false);
-                        }
-                    } else{
-                        for (int c = std::max(this->wall_w,  A_cen_inds.c-(int)std::floor(this->hallway_w/2)); c <= std::min(cols-wall_w, A_cen_inds.c+(int)std::floor(hallway_w/2)); c++){
-                            this->cells[r][c]->SetFill(false);
-                        }
+            } else if (A_cen_inds.c == B_cen_inds.c){
+                int min_c = A_cen_inds.c - std::round(hallway_w/2);
+                int max_c = A_cen_inds.c + std::round(hallway_w/2);
+                for (int r = std::min(A_cen_inds.r, B_cen_inds.r); r<=std::max(A_cen_inds.r, B_cen_inds.r); r++){
+                    for (int c = std::max(0,min_c); c<=std::min(cols-1,max_c); c++){
+                        binary[r][c] = 0;
                     }
-
                 }
             }
 
@@ -483,5 +122,192 @@ void BSPDungeon::ConnectHallways(){
     }
 }
 
+void BSPDungeon::CreateRoom(){
+    //std::printf("(%f, %f)\n", bounds.Min().X() + wall_w, bounds.Min().Y() + wall_w);
+    auto min_inds = this->PosToIndicies(ivector(bounds.Min().X() + wall_w, bounds.Min().Y() + wall_w, 0));
+    auto max_inds = this->PosToIndicies(ivector(bounds.Max().X()-wall_w, bounds.Max().Y() - wall_w,0));
+
+    //std::printf("Min: (%d, %d), Max: (%d, %d)\n", min_inds.r, min_inds.c, max_inds.r, max_inds.c);
+    for (int r =0; r<this->rows; r++){
+        for (int c =0; c<this->cols; c++){
+            if (r < max_inds.r && r>=min_inds.r && c<max_inds.c && c>=min_inds.c){
+                binary[r][c] = 0;
+            } else{
+                binary[r][c] = 1;
+            }
+        }
+    }
+    
+}
+
+void BSPDungeon::FillCells(){
+
+    this->CreateChildren();
+
+    if (this->child_a == nullptr || this->child_b == nullptr){
+        return;
+    }
+
+    std::vector<boost::shared_ptr<BSPDungeon>> queue;
+    queue.push_back(this->child_a);
+    queue.push_back(this->child_b);
+
+    while (queue.size() > 0){
+        auto curr= queue[0];
+        queue.erase(queue.begin());
+   
+        if (curr->child_a == nullptr && curr->child_b == nullptr){
+            
+            for (int r= 0; r<curr->rows; r++){
+                for (int c=0; c<curr->cols; c++){
+                    auto pos = curr->IndiciesToPos(r,c);
+                    auto inds = this->PosToIndicies(pos);
+
+                    binary[inds.r][inds.c] = curr->binary[r][c];
+           
+                }
+            }
+            continue;
+        }
+
+        queue.push_back(curr->child_a);
+        queue.push_back(curr->child_b);
+    }
+
+    this->ConnectChildren();
+
+
+}
+
+BSPDungeon::BSPDungeon(ibox bounds, double x_res, double y_res, double min_w, double min_l, double wall_w, double hallway_w):
+Grid(bounds, x_res, y_res){
+    this->min_w = min_w;
+    this->min_l = min_l;
+    this->wall_w =wall_w;
+    this->hallway_w = hallway_w;
+}
+
+
+void Grid::AddToWorld(gazebo::physics::WorldPtr world){
+    auto boxes = objects::Boxes("boxes");
+
+    int num_on = 0;
+
+    std::vector<std::vector<int>> binary_copy;
+
+    for (auto row: binary){
+        std::vector<int> new_row;
+        for (auto cell: row){
+            new_row.push_back(cell);
+            if (cell == 1){
+                num_on++;
+            }
+        }
+        binary_copy.push_back(new_row);
+    }
+
+    while (num_on >0){
+        auto ind_box = math_utils::MaxRectangle(binary_copy);
+        auto min_i = ind_box.r;
+        auto max_i = ind_box.c; 
+
+        for (int r = min_i.r; r<=max_i.r; r++){
+            for (int c = min_i.c; c<=max_i.c; c++){
+                num_on--;
+                binary_copy[r][c] = 0;
+            }
+        }
+
+        ivector min_v = this->IndiciesToPos(min_i);
+        ivector max_v = this->IndiciesToPos(max_i);
+
+        min_v.X() -= x_res/2;
+        min_v.Y() -= y_res/2;
+        min_v.Z() = 0;
+        max_v.X() += x_res/2;
+        max_v.Y() +=y_res/2;
+        max_v.Z() = bounds.Max().Z();
+
+        boxes.AddBox(ibox(min_v, max_v));
+    }
+
+    boxes.AddToWorld(world);
+}
+
+
+ivector Grid::IndiciesToPos(int r, int c){
+    //return the center of the cell in row r and column c
+ 
+    double x = bounds.Min().X() + (c*x_res) + x_res/2;
+    double y = bounds.Min().Y() + (r*y_res) + y_res/2;
+
+    return ivector(x,y,0);
+}
+
+ivector Grid::IndiciesToPos(Tuple t){
+    //return the center of the cell in row r and column c
+    double x = bounds.Min().X() + (t.c*x_res) + x_res/2;
+    double y = bounds.Min().Y() + (t.r*y_res) + y_res/2;
+
+    return ivector(x,y,0);
+}
+
+Tuple Grid::PosToIndicies(ivector pos){
+    // we define pos as lying in row r and column c iff
+    // box.Min().X() + x_res*c <= pos.X() < box.Min().X() + x_res*(c+1);
+    // box.Min().Y() + y_res*r <= pos.Y() < box.Min().Y() + y_res*(r+1);
+    // unless we are on the outer edge (ie pos.X() == box.Max().X() || pos.Y() == box.Max().Y())
+
+    int c = std::floor((pos.X() - bounds.Min().X())/x_res);
+    if (pos.X() == bounds.Max().X()){
+        c = cols -1;
+    } 
+    
+    int r = std::floor((pos.Y() - bounds.Min().Y())/y_res);
+    if (pos.Y() == bounds.Max().Y()){
+        r = rows-1;
+    }
+
+    return Tuple(r,c);
+}
+
+void Grid::Fill(){
+
+    for (int r = 0; r< rows; r++){
+        for (int c =0; c<cols; c++){
+            binary[r][c] = ignition::math::Rand::IntUniform(0,1);
+        }
+    }
+
+    //binary[0][0]=1;
+}
+
+void Grid::ToString(){
+    for (int r=0; r< rows; r++){
+        for (int c= 0; c<cols; c++){
+            if (binary[r][c] == 1){
+                std::cout << "#";
+            }else{
+                std::cout << ".";
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
+Grid::Grid(ibox bounds, double x_res, double y_res){
+    rows = std::round((bounds.Max().Y()-bounds.Min().Y())/y_res);
+    cols = std::round((bounds.Max().X()-bounds.Min().X())/x_res);
+    this->x_res = x_res;
+    this->y_res = y_res;
+    this->bounds = bounds;
+    for (int r = 0; r<rows;r++){
+        std::vector<int> b_row;
+        for (int c =0; c<cols; c++){
+            b_row.push_back(0);
+        }
+        binary.push_back(b_row);
+    }
+}
 
 }
