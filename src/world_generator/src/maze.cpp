@@ -61,6 +61,7 @@ Grid::Grid(ignition::math::Box bounds, double x_res, double y_res){
             auto top_left = this->IndiciesToPos(r,c);
 
             new_row.push_back(boost::make_shared<Cell>(ignition::math::Box(top_left.X(),top_left.Y()-y_res, top_left.Z(), top_left.X() + x_res, top_left.Y(), bounds.Max().Z())));
+            new_row.back()->SetFill(true);
         }
         this->cells.push_back(new_row);
     }
@@ -138,8 +139,9 @@ void Grid::AddToWorld(gazebo::physics::WorldPtr world){
         grid.push_back(new_row);
     }
 
+    print_grid(grid);
     while (num_on >0){
-        //print_grid(grid);
+        
         boxes.AddBox(this->MaxRectangle(grid,num_on));
     }
 
@@ -290,8 +292,8 @@ void BSPDungeon::CreateRooms(){
     bool vert = (bool) ignition::math::Rand::IntUniform(0,1);
     if (vert){ // making a vertial cut
 
-        int min_c = min_w + 2*wall_w;
-        int max_c = cols-min_w - 2* wall_w;
+        int min_c = min_w + wall_w;
+        int max_c = cols-min_w - wall_w;
 
         if (min_c >= max_c || min_c >= cols || max_c <=0){
             this->FillRoom();
@@ -312,7 +314,7 @@ void BSPDungeon::CreateRooms(){
         child_b->CreateRooms();
     }else{
 
-        int min_r = min_l + 2*wall_w;
+        int min_r = min_l + wall_w;
         int max_r = rows-min_r;
 
         if (min_r >= max_r || min_r >= cols || max_r <=0){
@@ -337,27 +339,6 @@ void BSPDungeon::CreateRooms(){
 }
 
 void BSPDungeon::FillRoom(){
-  
-    // double rand_w = ignition::math::Rand::DblUniform(min_width, cols*x_res-2*x_res);
-    // double rand_h = ignition::math::Rand::DblUniform(min_height, rows*y_res-2*y_res);
-
-
-    // auto r_lim = (int)(rows*y_res-rand_h)/y_res; 
-    // auto c_lim = (int)(cols*x_res-rand_w)/x_res;
-    // std::cout << r_lim << " " << c_lim << std::endl;
-
-    // int min_r = 2;
-    // if (r_lim > 2){
-    //     min_r = ignition::math::Rand::IntUniform(2,r_lim);
-    // }
-    // int min_c = 2;
-    // if (c_lim > 2){
-    //     min_c = ignition::math::Rand::IntUniform(2,c_lim);
-    // } 
-    // int max_r = min_r + rand_h/y_res;
-    // int max_c = min_c + rand_w/x_res;
-
-    //std::cout << this->bounds << std::endl;
 
     int min_r = wall_w;
     int min_c = wall_w;
@@ -375,8 +356,6 @@ void BSPDungeon::FillRoom(){
     }
     
 }
-
-
 
 void BSPDungeon::FillCells(){
     // traverse the tree using a queue
