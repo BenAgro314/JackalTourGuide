@@ -5,4 +5,4 @@ killall roscore
 killall rosmaster
 killall rviz
 killall worldgen_test.sh
-
+clear

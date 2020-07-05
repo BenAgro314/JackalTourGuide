@@ -3,6 +3,7 @@
 typedef ignition::math::Box ibox;
 typedef ignition::math::Vector3d ivector;
 typedef math_utils::Tuple<int> Tuple;
+typedef ignition::math::Rand irand;
 
 namespace dungeon{
 
@@ -12,7 +13,7 @@ void BSPDungeon::CreateChildren(){
 
     
 
-    if ((bool) ignition::math::Rand::IntUniform(0,1)){
+    if ((bool) irand::IntUniform(0,1)){
         // vertical slice
 
         if (w<=2*min_w){
@@ -20,7 +21,7 @@ void BSPDungeon::CreateChildren(){
             return;
         }
 
-        auto rand_x = ignition::math::Rand::DblUniform(bounds.Min().X() + min_w, bounds.Max().X()-min_w);
+        auto rand_x = irand::DblUniform(bounds.Min().X() + min_w, bounds.Max().X()-min_w);
         // convert this to an index and back;
         auto ind = this->PosToIndicies(ivector(rand_x,0,0));
         rand_x = this->IndiciesToPos(ind).X();
@@ -28,8 +29,8 @@ void BSPDungeon::CreateChildren(){
         auto max_left = ivector(rand_x, bounds.Max().Y(),bounds.Max().Z());
         auto min_right = ivector(rand_x, bounds.Min().Y(), 0);
 
-        this->child_a = boost::make_shared<BSPDungeon>(ibox(bounds.Min(), max_left), x_res, y_res, min_w,min_l,wall_w, hallway_w);
-        this->child_b =  boost::make_shared<BSPDungeon>(ibox(min_right,bounds.Max()), x_res, y_res, min_w,min_l,wall_w, hallway_w);
+        this->child_a = boost::make_shared<BSPDungeon>(ibox(bounds.Min(), max_left), x_res, y_res, min_w,min_l,wall_w, hallway_w, min_room_w, min_room_l);
+        this->child_b =  boost::make_shared<BSPDungeon>(ibox(min_right,bounds.Max()), x_res, y_res, min_w,min_l,wall_w, hallway_w, min_room_w, min_room_l);
 
         child_a->CreateChildren();
         child_b->CreateChildren();
@@ -40,7 +41,7 @@ void BSPDungeon::CreateChildren(){
             this->CreateRoom();
             return;
         }
-        auto rand_y = ignition::math::Rand::DblUniform(bounds.Min().Y() + min_l, bounds.Max().Y()-min_l);
+        auto rand_y = irand::DblUniform(bounds.Min().Y() + min_l, bounds.Max().Y()-min_l);
         // convert this to an index and back;
         auto ind = this->PosToIndicies(ivector(0,rand_y,0));
         rand_y = this->IndiciesToPos(ind).Y();
@@ -48,8 +49,8 @@ void BSPDungeon::CreateChildren(){
         auto max_bot = ivector(bounds.Max().X(), rand_y,bounds.Max().Z());
         auto min_top = ivector(bounds.Min().X(), rand_y, 0);
 
-        this->child_a = boost::make_shared<BSPDungeon>(ibox(bounds.Min(), max_bot), x_res, y_res, min_w,min_l,wall_w, hallway_w);
-        this->child_b =  boost::make_shared<BSPDungeon>(ibox(min_top,bounds.Max()), x_res, y_res, min_w,min_l,wall_w, hallway_w);
+        this->child_a = boost::make_shared<BSPDungeon>(ibox(bounds.Min(), max_bot), x_res, y_res, min_w,min_l,wall_w, hallway_w, min_room_w, min_room_l);
+        this->child_b =  boost::make_shared<BSPDungeon>(ibox(min_top,bounds.Max()), x_res, y_res, min_w,min_l,wall_w, hallway_w, min_room_w, min_room_l);
 
         child_a->CreateChildren();
         child_b->CreateChildren();
@@ -127,10 +128,36 @@ void BSPDungeon::CreateRoom(){
     auto min_inds = this->PosToIndicies(ivector(bounds.Min().X() + wall_w, bounds.Min().Y() + wall_w, 0));
     auto max_inds = this->PosToIndicies(ivector(bounds.Max().X()-wall_w, bounds.Max().Y() - wall_w,0));
 
+    Tuple rand_min = min_inds;
+    Tuple rand_max = max_inds;
+   
+    if (this->min_room_l >=0 && this->min_room_w >= 0){
+       
+        auto middle = (bounds.Max() + bounds.Min())/2;
+        middle.Z() = 0;
+
+        auto min_mid = middle;
+        min_mid.X() -= this->min_room_w/2;
+        min_mid.Y() -= this->min_room_l/2;
+        auto max_mid = middle;
+        max_mid.X() += this->min_room_w/2;
+        max_mid.Y() += this->min_room_l/2;
+
+        auto min_mid_i = this->PosToIndicies(min_mid);
+        auto max_mid_i = this->PosToIndicies(max_mid);
+
+        
+        if (!(min_inds.r > min_mid_i.r || min_inds.c > min_mid_i.c || max_mid_i.r>max_inds.r || max_mid_i.c > max_inds.c)){
+          
+            rand_min = Tuple(irand::IntUniform(min_inds.r, min_mid_i.r), irand::IntUniform(min_inds.c, min_mid_i.c));
+            rand_max = Tuple(irand::IntUniform(max_mid_i.r, max_inds.r), irand::IntUniform(max_mid_i .c, max_inds.c));
+        }
+    }
+
     //std::printf("Min: (%d, %d), Max: (%d, %d)\n", min_inds.r, min_inds.c, max_inds.r, max_inds.c);
     for (int r =0; r<this->rows; r++){
         for (int c =0; c<this->cols; c++){
-            if (r < max_inds.r && r>=min_inds.r && c<max_inds.c && c>=min_inds.c){
+            if (r < rand_max.r && r>=rand_min.r && c<rand_max.c && c>=rand_min.c){
                 binary[r][c] = 0;
             } else{
                 binary[r][c] = 1;
@@ -179,12 +206,14 @@ void BSPDungeon::FillCells(){
 
 }
 
-BSPDungeon::BSPDungeon(ibox bounds, double x_res, double y_res, double min_w, double min_l, double wall_w, double hallway_w):
+BSPDungeon::BSPDungeon(ibox bounds, double x_res, double y_res, double min_w, double min_l, double wall_w, double hallway_w, double min_room_w, double min_roow_l):
 Grid(bounds, x_res, y_res){
     this->min_w = min_w;
     this->min_l = min_l;
     this->wall_w =wall_w;
     this->hallway_w = hallway_w;
+    this->min_room_l = min_room_l;
+    this->min_room_w = min_room_w;
 }
 
 
@@ -275,7 +304,7 @@ void Grid::Fill(){
 
     for (int r = 0; r< rows; r++){
         for (int c =0; c<cols; c++){
-            binary[r][c] = ignition::math::Rand::IntUniform(0,1);
+            binary[r][c] = irand::IntUniform(0,1);
         }
     }
 

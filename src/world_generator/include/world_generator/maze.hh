@@ -7,8 +7,6 @@
 
 namespace dungeon{
 
-
-
 class Grid{
 
     protected:
@@ -49,7 +47,7 @@ class BSPDungeon: public Grid{
 
     protected:
 
-        double min_w, min_l, wall_w, hallway_w;
+        double min_w, min_l, wall_w, hallway_w, min_room_w, min_room_l;
 
         boost::shared_ptr<BSPDungeon> child_a = nullptr;
 
@@ -65,7 +63,7 @@ class BSPDungeon: public Grid{
 
         void CreateRoom();
 
-        BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, double min_w, double min_l, double wall_w, double hallway_w);
+        BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, double min_w, double min_l, double wall_w, double hallway_w, double min_room_w = -1, double min_room_l = -1);
 
         virtual void FillCells();
 

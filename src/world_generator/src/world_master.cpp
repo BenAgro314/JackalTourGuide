@@ -12,12 +12,24 @@ void WorldMaster::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->update_connection.push_back(gazebo::event::Events::ConnectBeforePhysicsUpdate(std::bind(&WorldMaster::PhysicsUpdate, this, std::placeholders::_1)));
 
 
-    auto D = dungeon::BSPDungeon(ignition::math::Box(0,0,0,10,10,2), 0.25, 0.25, 2,2 ,0.25, 1);
+    auto D = dungeon::BSPDungeon(ignition::math::Box(-15,-15,0,15,15,2), 0.5, 0.5, 5,5 ,0.5, 1);
 
     D.FillCells();
-    //D.ToString();
+
+    // sdf::SDF modelSDF;
+    // modelSDF.SetFromString(
+    //    "<sdf version ='1.6'>\
+    //       <model name ='door'>\
+    //         <pose>-5 5 1.000000 0.000000 -0.000000 1.571000</pose>\
+    //         <include>\
+    //             <name>door_0</name>\
+    //             <uri>model://simple_door2</uri>\
+	// 	    </include>\
+    //       </model>\
+    //     </sdf>");
+  
    
-    D.AddToWorld(world);
+    //D.AddToWorld(world);
 
 
     // sdf::SDF actorSDF;
