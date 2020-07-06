@@ -11,18 +11,23 @@ void WorldMaster::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->update_connection.push_back(gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&WorldMaster::WorldUpdate, this, std::placeholders::_1)));
     this->update_connection.push_back(gazebo::event::Events::ConnectBeforePhysicsUpdate(std::bind(&WorldMaster::PhysicsUpdate, this, std::placeholders::_1)));
 
-
-    auto D = dungeon::BSPDungeon(ignition::math::Box(-15,4,0,15,15,2), 0.5, 0.5, 5,5 ,0.5, 1);
+    auto specs = boost::make_shared<dungeon::RoomInfo>(10,10, 0.5, 3);
+    auto D = dungeon::BSPDungeon(ignition::math::Box(-15,-15,0,15,15,2),0.5, 0.5, specs, 1);
+    D.SetDensity(1);
     objects[D.boxes->Name()] = D.boxes;
     D.FillCells();
     D.AddToWorld(world);
 
     
-    for (double x =0; x<10; x+=3){
-        auto model = boost::make_shared<objects::Model>("model",ignition::math::Pose3d(x,0,0,0,0,0), "model://table");
-        objects[model->Name()] = model;
-        model->AddToWorld(world);
-    }
+    // for (double x =0; x<10; x+=3){
+    //     auto model = boost::make_shared<objects::Model>("model",ignition::math::Pose3d(x,0,0,0,0,0), "model://table");
+    //     objects[model->Name()] = model;
+    //     model->AddToWorld(world);
+    // }
+
+    // auto act = boost::make_shared<objects::Actor>("actor", ignition::math::Pose3d(-5,-5,1,0,0,0), "wanderer");
+    // act->AddToWorld(world);
+    // actors[act->Name()] = act;
 
     // sdf::SDF actorSDF;
     // actorSDF.SetFromString(
@@ -82,13 +87,15 @@ void WorldMaster::FirstUpdate(){
     for (int i =0; i<world->ModelCount(); i++){
      
         auto model = world->ModelByIndex(i);
+        auto act =  boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
+        if (act){
+            actors[act->GetName()]->Model() = model;
+            continue;
+        }
 
         if (objects[model->GetName()] == nullptr){
             continue;
         }
-        // if (model->GetName() == "ground_plane"){
-        //     continue;
-        //}
         
         objects[model->GetName()]->Model() = model;
     }

@@ -28,6 +28,8 @@ class WorldMaster: public gazebo::WorldPlugin{
 
         std::map<std::string, boost::shared_ptr<objects::Object>> objects;
 
+        std::map<std::string, boost::shared_ptr<objects::Actor>> actors;
+
     public: 
         
         void Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf);

@@ -4,57 +4,150 @@ typedef ignition::math::Box ibox;
 typedef ignition::math::Vector3d ivector;
 typedef math_utils::Tuple<int> Tuple;
 typedef ignition::math::Rand irand;
+typedef boost::shared_ptr<dungeon::BSPDungeon> DungeonPtr;
 
 namespace dungeon{
+
+
+void BSPDungeon::CreateConnections(){
+    // for all leave dugneons, add them to the graph connections
+    // if there is a line of sight from one dungeon center to the other, add and edge between them weighted by the triangular distance (ie base + height of hypotenous)
+    // the id of the dungeon vertex will be denoted by its index in the vector leaves
+    
+    std::vector<DungeonPtr> leaves_list;
+    for (auto it = leaves.begin(); it != leaves.end(); it++){
+        auto cen = (it->first->room_bounds.Max() - it->first->room_bounds.Min())/2;
+        std::cout << cen << std::endl;
+        std::string name = std::to_string(cen.X()) + " " + std::to_string(cen.Y());
+        connections.AddVertex(name,it->first, it->second);
+        leaves_list.push_back(it->first);
+    }
+
+    
+    for (auto parent: leaves_list){
+
+        for (auto n: leaves_list){
+            if (leaves[parent] == leaves[n]){
+                continue; // don't connect a dungeon to itself 
+            }
+
+            // check if there is a line of sight that doesn't go through another room 
+
+            auto par_cen = (parent->room_bounds.Max() - parent->room_bounds.Min())/2;
+            par_cen.Z() = 0;
+
+            auto n_cen = (n->room_bounds.Max() - n->room_bounds.Min())/2;
+            n_cen.Z() = 0;
+
+            auto ray = ignition::math::Line3d(par_cen, n_cen);
+
+            bool status = true;
+
+            for (auto other: leaves_list){
+                if (leaves[other] == leaves[n] || leaves[other] == leaves[parent]){ // dont check for intersection with parent or n
+                    continue;
+                }
+
+                if (std::get<0>((other->room_bounds).Intersect(ray))){
+                    status = false;
+                }
+            }
+
+            double tri_dist = std::abs(par_cen.X() - n_cen.X()) + std::abs(par_cen.Y() - n_cen.Y());
+
+            if (status){
+                connections.AddEdge(std::make_pair(leaves[parent],leaves[n]), ray, tri_dist);
+            }
+        }
+    }
+
+    std::cout << connections <<std::endl;
+}
+
+void BSPDungeon::SetDensity(double prob){
+    dense_prob = prob;
+    if (dense_prob >1){
+        dense_prob = 1;
+    } else if (dense_prob < 0){
+        dense_prob = 0;
+    }
+}
+
+void BSPDungeon::Slice(bool vert){
+    if (vert){
+        auto rand_x = irand::DblUniform(bounds.Min().X() + room_specs->width, bounds.Max().X()-room_specs->width);
+        // convert this to an index and back;
+        auto ind = this->PosToIndicies(ivector(rand_x,0,0));
+        rand_x = this->IndiciesToPos(ind).X();
+
+        rand_x+= ((bool)irand::IntUniform(0,1)) ? (x_res/2) : (-1*x_res/2); // ensure we are on a grid edge
+
+        auto max_left = ivector(rand_x, bounds.Max().Y(),bounds.Max().Z());
+        auto min_right = ivector(rand_x, bounds.Min().Y(), 0);
+
+        this->child_a = boost::make_shared<BSPDungeon>(ibox(bounds.Min(), max_left), x_res, y_res, room_specs, hallway_w);
+        this->child_b =  boost::make_shared<BSPDungeon>(ibox(min_right,bounds.Max()), x_res, y_res, room_specs, hallway_w);
+        child_a->SetDensity(dense_prob);
+        child_b->SetDensity(dense_prob);
+    } else{
+        auto rand_y = irand::DblUniform(bounds.Min().Y() + room_specs->length, bounds.Max().Y()-room_specs->length);
+        // convert this to an index and back;
+        auto ind = this->PosToIndicies(ivector(0,rand_y,0));
+        rand_y = this->IndiciesToPos(ind).Y();
+
+        rand_y += ((bool)irand::IntUniform(0,1)) ? (y_res/2) : (-1*y_res/2);
+
+        auto max_bot = ivector(bounds.Max().X(), rand_y,bounds.Max().Z());
+        auto min_top = ivector(bounds.Min().X(), rand_y, 0);
+
+        this->child_a = boost::make_shared<BSPDungeon>(ibox(bounds.Min(), max_bot), x_res, y_res, room_specs, hallway_w);
+        this->child_b =  boost::make_shared<BSPDungeon>(ibox(min_top,bounds.Max()), x_res, y_res, room_specs, hallway_w);
+        child_a->SetDensity(dense_prob);
+        child_b->SetDensity(dense_prob);
+    }
+}
 
 void BSPDungeon::CreateChildren(){
     double w = bounds.Max().X() - bounds.Min().X();
     double l = bounds.Max().Y() - bounds.Min().Y();
 
+    // if can't be sliced vertically: slice horizontally
+    // if can't be sliced horizontally: slice veritcally
+    // if can't be sliced either way: create room
+    // if can be sliced both ways: choose random direction
+
+    bool vert = w>2*room_specs->width;
+    bool hor =  l>2*room_specs->length;
     
-
-    if ((bool) irand::IntUniform(0,1)){
-        // vertical slice
-
-        if (w<=2*min_w){
+    if (irand::DblUniform(0,1) < dense_prob){
+        if (vert && !hor){
+            this->Slice(true);
+        } else if (!vert && hor){
+            this->Slice(false);
+        } else if (!vert && !hor){
             this->CreateRoom();
             return;
+        } else {
+            this->Slice((bool)irand::IntUniform(0,1));
         }
-
-        auto rand_x = irand::DblUniform(bounds.Min().X() + min_w, bounds.Max().X()-min_w);
-        // convert this to an index and back;
-        auto ind = this->PosToIndicies(ivector(rand_x,0,0));
-        rand_x = this->IndiciesToPos(ind).X();
-
-        auto max_left = ivector(rand_x, bounds.Max().Y(),bounds.Max().Z());
-        auto min_right = ivector(rand_x, bounds.Min().Y(), 0);
-
-        this->child_a = boost::make_shared<BSPDungeon>(ibox(bounds.Min(), max_left), x_res, y_res, min_w,min_l,wall_w, hallway_w, min_room_w, min_room_l);
-        this->child_b =  boost::make_shared<BSPDungeon>(ibox(min_right,bounds.Max()), x_res, y_res, min_w,min_l,wall_w, hallway_w, min_room_w, min_room_l);
-
-        child_a->CreateChildren();
-        child_b->CreateChildren();
     } else{
-        // horizontal slice
-
-        if (l <= 2*min_l){
-            this->CreateRoom();
-            return;
+        if ((bool) irand::IntUniform(0,1)){
+            if (w<=2*room_specs->width){
+                this->CreateRoom();
+                return;
+            }
+            this->Slice(true);
+        } else{
+            if (l <= 2*room_specs->length){
+                this->CreateRoom();
+                return;
+            }
+            this->Slice(false);
         }
-        auto rand_y = irand::DblUniform(bounds.Min().Y() + min_l, bounds.Max().Y()-min_l);
-        // convert this to an index and back;
-        auto ind = this->PosToIndicies(ivector(0,rand_y,0));
-        rand_y = this->IndiciesToPos(ind).Y();
-
-        auto max_bot = ivector(bounds.Max().X(), rand_y,bounds.Max().Z());
-        auto min_top = ivector(bounds.Min().X(), rand_y, 0);
-
-        this->child_a = boost::make_shared<BSPDungeon>(ibox(bounds.Min(), max_bot), x_res, y_res, min_w,min_l,wall_w, hallway_w, min_room_w, min_room_l);
-        this->child_b =  boost::make_shared<BSPDungeon>(ibox(min_top,bounds.Max()), x_res, y_res, min_w,min_l,wall_w, hallway_w, min_room_w, min_room_l);
-
-        child_a->CreateChildren();
-        child_b->CreateChildren();
     }
+    
+    child_a->CreateChildren();
+    child_b->CreateChildren();
 }
 
 void BSPDungeon::ConnectChildren(){
@@ -64,7 +157,7 @@ void BSPDungeon::ConnectChildren(){
         return;
     }
 
-    std::vector<boost::shared_ptr<BSPDungeon>> queue;
+    std::vector<DungeonPtr> queue;
     queue.push_back(child_a);
     queue.push_back(child_b);
 
@@ -124,37 +217,21 @@ void BSPDungeon::ConnectChildren(){
 }
 
 void BSPDungeon::CreateRoom(){
-    //std::printf("(%f, %f)\n", bounds.Min().X() + wall_w, bounds.Min().Y() + wall_w);
-    auto min_inds = this->PosToIndicies(ivector(bounds.Min().X() + wall_w, bounds.Min().Y() + wall_w, 0));
-    auto max_inds = this->PosToIndicies(ivector(bounds.Max().X()-wall_w, bounds.Max().Y() - wall_w,0));
 
+    auto min_inds = this->PosToIndicies(ivector(bounds.Min().X() + room_specs->min_wall_width, bounds.Min().Y() + room_specs->min_wall_width, 0));
+    auto max_inds = this->PosToIndicies(ivector(bounds.Max().X()-room_specs->min_wall_width, bounds.Max().Y() - room_specs->min_wall_width,0));
+    auto min_mid_i = this->PosToIndicies(ivector(bounds.Min().X() + room_specs->max_wall_width, bounds.Min().Y() + room_specs->max_wall_width, 0));
+    auto max_mid_i = this->PosToIndicies(ivector(bounds.Max().X() - room_specs->max_wall_width, bounds.Max().Y() - room_specs->max_wall_width, 0));
+   
     Tuple rand_min = min_inds;
     Tuple rand_max = max_inds;
-   
-    if (this->min_room_l >=0 && this->min_room_w >= 0){
-       
-        auto middle = (bounds.Max() + bounds.Min())/2;
-        middle.Z() = 0;
 
-        auto min_mid = middle;
-        min_mid.X() -= this->min_room_w/2;
-        min_mid.Y() -= this->min_room_l/2;
-        auto max_mid = middle;
-        max_mid.X() += this->min_room_w/2;
-        max_mid.Y() += this->min_room_l/2;
-
-        auto min_mid_i = this->PosToIndicies(min_mid);
-        auto max_mid_i = this->PosToIndicies(max_mid);
-
-        
-        if (!(min_inds.r > min_mid_i.r || min_inds.c > min_mid_i.c || max_mid_i.r>max_inds.r || max_mid_i.c > max_inds.c)){
-          
-            rand_min = Tuple(irand::IntUniform(min_inds.r, min_mid_i.r), irand::IntUniform(min_inds.c, min_mid_i.c));
-            rand_max = Tuple(irand::IntUniform(max_mid_i.r, max_inds.r), irand::IntUniform(max_mid_i .c, max_inds.c));
-        }
+    if (!(min_inds.r >= min_mid_i.r || min_inds.c >= min_mid_i.c || max_mid_i.r>=max_inds.r || max_mid_i.c >= max_inds.c)){
+        rand_min = Tuple(irand::IntUniform(min_inds.r, min_mid_i.r), irand::IntUniform(min_inds.c, min_mid_i.c));
+        rand_max = Tuple(irand::IntUniform(max_mid_i.r, max_inds.r), irand::IntUniform(max_mid_i .c, max_inds.c));
     }
 
-    //std::printf("Min: (%d, %d), Max: (%d, %d)\n", min_inds.r, min_inds.c, max_inds.r, max_inds.c);
+    
     for (int r =0; r<this->rows; r++){
         for (int c =0; c<this->cols; c++){
             if (r < rand_max.r && r>=rand_min.r && c<rand_max.c && c>=rand_min.c){
@@ -164,7 +241,18 @@ void BSPDungeon::CreateRoom(){
             }
         }
     }
-    
+
+    room_bounds.Min() = this->IndiciesToPos(rand_min);
+    room_bounds.Min().Z() = bounds.Min().Z();
+    room_bounds.Min().Y() -= y_res/2;
+    room_bounds.Min().X() -= x_res/2;
+    room_bounds.Max() = this->IndiciesToPos(rand_max);
+    room_bounds.Max().Z() = bounds.Max().Z();
+    room_bounds.Max().X() -= x_res/2;
+    room_bounds.Max().Y() -= y_res/2;
+
+    //std::cout << room_bounds << std::endl;
+    //std::printf("BOUNDS: w: %f, h: %f, ROOM: w: %f, h: %f\n", bounds.Max().X()-bounds.Min().X(), bounds.Max().Y() - bounds.Min().Y(), room_bounds.Max().X() - room_bounds.Min().X(), room_bounds.Max().Y() - room_bounds.Min().Y());
 }
 
 void BSPDungeon::FillCells(){
@@ -175,16 +263,19 @@ void BSPDungeon::FillCells(){
         return;
     }
 
-    std::vector<boost::shared_ptr<BSPDungeon>> queue;
+    std::vector<DungeonPtr> queue;
     queue.push_back(this->child_a);
     queue.push_back(this->child_b);
+
+    int ind =0;
 
     while (queue.size() > 0){
         auto curr= queue[0];
         queue.erase(queue.begin());
    
         if (curr->child_a == nullptr && curr->child_b == nullptr){
-            
+            //leaves.push_back(curr);
+            leaves[curr] = ind++;
             for (int r= 0; r<curr->rows; r++){
                 for (int c=0; c<curr->cols; c++){
                     auto pos = curr->IndiciesToPos(r,c);
@@ -202,20 +293,18 @@ void BSPDungeon::FillCells(){
     }
 
     this->ConnectChildren();
-
+    //this->CreateConnections();
+    //std::cout << children.size() << std::endl;
 
 }
 
-BSPDungeon::BSPDungeon(ibox bounds, double x_res, double y_res, double min_w, double min_l, double wall_w, double hallway_w, double min_room_w, double min_roow_l):
+BSPDungeon::BSPDungeon(ignition::math::Box bounds, double x_res, double y_res, boost::shared_ptr<RoomInfo> room_specs, double hallway_width):
 Grid(bounds, x_res, y_res){
-    this->min_w = min_w;
-    this->min_l = min_l;
-    this->wall_w =wall_w;
-    this->hallway_w = hallway_w;
-    this->min_room_l = min_room_l;
-    this->min_room_w = min_room_w;
-}
 
+    this->hallway_w = hallway_width;
+    this->room_specs = room_specs;
+}
+    
 
 void Grid::AddToWorld(gazebo::physics::WorldPtr world){
 
@@ -337,6 +426,13 @@ Grid::Grid(ibox bounds, double x_res, double y_res){
         }
         binary.push_back(b_row);
     }
+}
+
+RoomInfo::RoomInfo(double width, double length, double min_wall_width, double max_wall_width){
+    this->width = width;
+    this->length = length;
+    this->min_wall_width = min_wall_width;
+    this->max_wall_width = max_wall_width;
 }
 
 }

@@ -3,6 +3,41 @@
 
 using namespace objects;
 
+Actor::Actor(std::string name, ignition::math::Pose3d initial_pose, std::string type): Object(name, initial_pose){
+    this->type = type;
+}
+
+boost::shared_ptr<sdf::SDF> Actor::GetSDF(){
+    
+    boost::shared_ptr<sdf::SDF> sdf = boost::make_shared<sdf::SDF>();
+
+    sdf->SetFromString( 
+        "<sdf version ='1.6'>\
+          <actor name ='actor'>\
+          </actor>\
+        </sdf>");
+
+    auto actor = sdf->Root()->GetElement("actor");
+    actor->GetAttribute("name")->SetFromString(name);
+    actor->GetElement("pose")->Set(pose);
+
+    actor->GetElement("skin")->GetElement("filename")->Set("model://actor/meshes/SKIN_man_blue_shirt.dae"); // TODO: generalize these filenames
+
+    std::vector<math_utils::Tuple<std::string>> anims = {
+        math_utils::Tuple<std::string>("walking","model://actor/meshes/ANIMATION_walking.dae"),
+        math_utils::Tuple<std::string>("talking","model://actor/meshes/ANIMATION_talking_a.dae"),
+        math_utils::Tuple<std::string>("standing","model://actor/meshes/ANIMATION_talking_a.dae"),
+        math_utils::Tuple<std::string>("sitting","model://actor/meshes/ANIMATION_sitting.dae")};
+
+    for (auto anim: anims){
+        auto anim_el = actor->AddElement("animation");
+        anim_el->GetAttribute("name")->SetFromString(anim.r);
+        anim_el->GetElement("filename")->Set(anim.c);
+        anim_el->GetElement("interpolate_x")->Set(true);
+    }
+    return sdf;
+}
+
 int Object::obj_count = 0;
 
 Object::Object(std::string name, ignition::math::Pose3d pose):

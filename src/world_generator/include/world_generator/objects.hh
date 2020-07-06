@@ -4,6 +4,7 @@
 #include "gazebo/common/common.hh"
 #include "gazebo/gazebo.hh"
 #include <ignition/math/Pose3.hh>
+#include "math_utils.hh"
 
 namespace objects{
 
@@ -48,11 +49,17 @@ class Model: public Object{
 
 class Actor: public Object{
 
+    protected:
+
+        std::string type;
 
     public: 
 
         Actor(std::string name, ignition::math::Pose3d initial_pose, std::string type);
-}
+
+        boost::shared_ptr<sdf::SDF> GetSDF();
+
+};
 
 class Boxes: public Object{
 
