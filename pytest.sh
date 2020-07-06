@@ -1,9 +1,9 @@
-rosnode kill -a 
+#!/bin/bash
+
 killall gzclient
 killall gzserver
 killall roscore
 killall rosmaster
 killall rviz
-killall worldgen_test.sh
-killall pytest.sh
-clear
+
+roslaunch dummy_classifier test.launch
