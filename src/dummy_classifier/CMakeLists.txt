@@ -13,9 +13,10 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   pcl_ros
+  ros_numpy
 )
 
-catkin_package(CATKIN_DEPENDS std_msgs roscpp rospy sensor_msgs pcl_ros)
+catkin_package(CATKIN_DEPENDS std_msgs roscpp rospy sensor_msgs pcl_ros ros_numpy)
 
 catkin_install_python(PROGRAMS 
     src/helloworld.py
