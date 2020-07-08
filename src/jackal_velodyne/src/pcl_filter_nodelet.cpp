@@ -158,8 +158,8 @@ void PCLFilterNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg
   }
 
   // Iterate through pointcloud
-  
-  for (sensor_msgs::PointCloud2ConstIterator<float> iter_x(*cloud_out, "x"), iter_y(*cloud_out, "y"), iter_z(*cloud_out, "z"), iter_i(*cloud_out, "intensity");
+   sensor_msgs::PointCloud2ConstIterator<int> iter_i(*cloud_out, "class");
+  for (sensor_msgs::PointCloud2ConstIterator<float> iter_x(*cloud_out, "x"), iter_y(*cloud_out, "y"), iter_z(*cloud_out, "z");
       iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z, ++iter_i)
   { 
 

@@ -298,9 +298,9 @@ namespace gazebo
         msg.fields[2].offset = 8;
         msg.fields[2].datatype = sensor_msgs::PointField::FLOAT32;
         msg.fields[2].count = 1;
-        msg.fields[3].name = "intensity";
+        msg.fields[3].name = "class";
         msg.fields[3].offset = 16;
-        msg.fields[3].datatype = sensor_msgs::PointField::FLOAT32;
+        msg.fields[3].datatype = sensor_msgs::PointField::INT32;
         msg.fields[3].count = 1;
         msg.fields[4].name = "ring";
         msg.fields[4].offset = 20;
@@ -319,7 +319,7 @@ namespace gazebo
                 double r = _msg->scan().ranges(i + j * rangeCount);
                 // Intensity
                 double intensity = _msg->scan().intensities(i + j * rangeCount);
-                
+                int catagory;
                 // Ignore points that lay outside range bands or optionally, beneath a
                 // minimum intensity level.
                 if ((MIN_RANGE >= r) || (r >= MAX_RANGE) || (intensity < MIN_INTENSITY))
@@ -369,8 +369,8 @@ namespace gazebo
                     ignition::math::Vector3d point = sensor_pose.CoordPositionAdd(ignition::math::Vector3d(x,y,z));
 
                     if (point.Z() < 0.05){
-                        intensity = 0; //ground
-                        *((float *)(ptr + 16)) = intensity;
+                        catagory = 0; //ground
+                        *((int *)(ptr + 16)) = catagory;
                         *((uint16_t *)(ptr + 20)) = j; // ring
 
                         ptr += POINT_STEP;
@@ -437,14 +437,14 @@ namespace gazebo
 
                     
                     if (check_objects.size() == 0){
-                        intensity = 5;
+                        catagory = 5;
                     } else{
 
                         
-                        intensity = 0;
+                        catagory = 0;
                         double min_dist = point.Z();
                         if (min_dist > 0.05){
-                            intensity = 5;
+                            catagory = 5;
                             min_dist = 10e9;
                         }
 
@@ -464,20 +464,20 @@ namespace gazebo
                             }
 
                             if (n.cat == 5 && dist <0.05){
-                                intensity = 5; 
+                                catagory = 5; 
                                 break;
                             }
                             
                             if (dist <= min_dist){
                                 min_dist = dist;
-                                intensity = n.cat;
+                                catagory = n.cat;
                             }
                         }
                     }
                   
                     
 
-                    *((float *)(ptr + 16)) = intensity;
+                    *((int *)(ptr + 16)) = catagory;
                     *((uint16_t *)(ptr + 20)) = j; // ring
 
                     ptr += POINT_STEP;
