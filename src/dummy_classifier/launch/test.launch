@@ -1,5 +1,0 @@
-<launch>
-
-    <node name="helloworld" pkg="dummy_classifier" type="helloworld.py"/>
-    <node name="lidarlistener" pkg="dummy_classifier" type="lidarlistener.py"/>
-</launch>
