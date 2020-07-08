@@ -356,10 +356,18 @@
 
 
   <!-- VLP-16 -->
-  <xacro:include filename="$(find jackal_velodyne)/urdf/VLP-16.urdf.xacro"/>
-  <VLP-16 parent="support_link3" name="velodyne" topic="/velodyne_points" hz="10" samples="1024" gpu="true" lasers="33" max_range="30">
-    <origin xyz="0 0 0" rpy="0 0 0" />
-  </VLP-16>
+  <xacro:if value="$(optenv CLASSIFY 1)">
+    <xacro:include filename="$(find jackal_velodyne)/urdf/VLP-16.urdf.xacro"/>
+    <VLP-16 parent="support_link3" name="velodyne" topic="/velodyne_points" hz="10" samples="1024" gpu="true" lasers="33" max_range="30" classify="true">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </VLP-16>
+  </xacro:if>
+  <xacro:unless value="$(optenv CLASSIFY 1)">
+    <xacro:include filename="$(find jackal_velodyne)/urdf/VLP-16.urdf.xacro"/>
+    <VLP-16 parent="support_link3" name="velodyne" topic="/velodyne_points" hz="10" samples="1024" gpu="true" lasers="33" max_range="30" classify="false">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </VLP-16>
+  </xacro:unless>
 
   <!--xacro:include filename="$(find jackal_velodyne)/urdf/VLP-16.urdf.xacro"/>
   <VLP-16 parent="support_link3" name="no_gpu_velodyne" topic="/no_gpu_points" hz="10" samples="1024" gpu="false" lasers="33" max_range="30">

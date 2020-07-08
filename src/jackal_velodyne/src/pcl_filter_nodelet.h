@@ -52,6 +52,7 @@ private:
   bool use_inf_;
   double inf_epsilon_;
   std::vector<int> catagories;
+  bool classify = true;
 };
 
 }  // namespace jackal_velodyne

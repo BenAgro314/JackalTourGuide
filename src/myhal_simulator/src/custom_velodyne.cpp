@@ -81,6 +81,8 @@ namespace gazebo
             this->robot_name = _sdf->GetElement("robot_name")->Get<std::string>();
         }
 
+
+
         if (_sdf->HasElement("building_name")){
             this->building_name = _sdf->GetElement("building_name")->Get<std::string>();
         }

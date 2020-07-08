@@ -18,8 +18,9 @@ MESSAGE=""
 LOADWORLD=""
 FILTER=false
 MAPPING=false
+CLASS=true
 
-while getopts t:m:g:l:f:a: option
+while getopts t:m:g:l:f:a:c: option
 do
 case "${option}"
 in
@@ -29,8 +30,11 @@ g) GUI=${OPTARG};; # do you want to use the gui
 l) LOADWORLD=${OPTARG};; # do you want to load a prexisting world or generate a new one
 f) FILTER=${OPTARG};; # pointcloud filtering?
 a) MAPPING=${OPTARG};; # use gmapping?
+c) CLASS=${OPTARG};; # are we classifying points at all?
 esac
 done
+
+export CLASSIFY=$CLASS
 
 
 #1. launch roscore
@@ -52,6 +56,7 @@ rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
 rosparam set use_sim_time true
 rosparam set tour_name $TOUR
+rosparam set classify $CLASSIFY
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 rosparam set start_time $t
 rosparam set filter_status $FILTER

@@ -6,7 +6,8 @@
 #include <sensor_msgs/point_cloud2_iterator.h>
 #include <string>
 #include <tf2_sensor_msgs/tf2_sensor_msgs.h>
-
+#include <cstdlib>
+#include <iostream>
 
 namespace jackal_velodyne
 {
@@ -23,6 +24,10 @@ void PCLFilterNodelet::onInit()
   private_nh_.param<double>("transform_tolerance", tolerance_, 0.01);
   private_nh_.param<double>("min_height", min_height_, std::numeric_limits<double>::min());
   private_nh_.param<double>("max_height", max_height_, std::numeric_limits<double>::max());
+
+  if (!private_nh_.getParam("/classify", this->classify)){
+      this->classify = true;
+  }
 
   private_nh_.param<double>("angle_min", angle_min_, -M_PI);
   private_nh_.param<double>("angle_max", angle_max_, M_PI);
@@ -158,7 +163,8 @@ void PCLFilterNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg
   }
 
   // Iterate through pointcloud
-   sensor_msgs::PointCloud2ConstIterator<int> iter_i(*cloud_out, "class");
+  std::string field = (this->classify) ? "class":"intensity";
+   sensor_msgs::PointCloud2ConstIterator<int> iter_i(*cloud_out, field);
   for (sensor_msgs::PointCloud2ConstIterator<float> iter_x(*cloud_out, "x"), iter_y(*cloud_out, "y"), iter_z(*cloud_out, "z");
       iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z, ++iter_i)
   { 
