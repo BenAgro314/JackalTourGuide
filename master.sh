@@ -37,6 +37,12 @@ done
 export CLASSIFY=$CLASS
 
 
+# ...do something interesting...
+if [ "$CLASS" = false ] ; then
+    FILTER=false
+fi
+
+
 #1. launch roscore
 #2. load parameters 
 #3. generate world
