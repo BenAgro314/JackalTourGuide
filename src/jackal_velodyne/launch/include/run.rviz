@@ -69,7 +69,7 @@ Visualization Manager:
         Min Value: -0.3429943323135376
         Value: true
       Axis: Z
-      Channel Name: class
+      Channel Name: intensity
       Class: rviz/PointCloud2
       Color: 255; 255; 255
       Color Transformer: Intensity

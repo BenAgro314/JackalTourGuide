@@ -300,9 +300,9 @@ namespace gazebo
         msg.fields[2].offset = 8;
         msg.fields[2].datatype = sensor_msgs::PointField::FLOAT32;
         msg.fields[2].count = 1;
-        msg.fields[3].name = "class";
+        msg.fields[3].name = "intensity";
         msg.fields[3].offset = 16;
-        msg.fields[3].datatype = sensor_msgs::PointField::INT32;
+        msg.fields[3].datatype = sensor_msgs::PointField::FLOAT32;
         msg.fields[3].count = 1;
         msg.fields[4].name = "ring";
         msg.fields[4].offset = 20;
@@ -372,7 +372,7 @@ namespace gazebo
 
                     if (point.Z() < 0.05){
                         catagory = 0; //ground
-                        *((int *)(ptr + 16)) = catagory;
+                        *((float *)(ptr + 16)) = catagory;
                         *((uint16_t *)(ptr + 20)) = j; // ring
 
                         ptr += POINT_STEP;
@@ -479,7 +479,7 @@ namespace gazebo
                   
                     
 
-                    *((int *)(ptr + 16)) = catagory;
+                    *((float *)(ptr + 16)) = catagory;
                     *((uint16_t *)(ptr + 20)) = j; // ring
 
                     ptr += POINT_STEP;
