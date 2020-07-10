@@ -20,6 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
   move_base_msgs
   actionlib
   tf2_msgs
+  ros_numpy
 )
 
 
@@ -27,8 +28,14 @@ find_package(gazebo REQUIRED)
 
 
 catkin_package(
-	DEPENDS gazebo_ros pcl_ros roscpp rospy std_msgs rosbag sensor_msgs pcl_conversions nav_msgs geometry_msgs move_base_msgs actionlib tf2_msgs
+	DEPENDS gazebo_ros pcl_ros roscpp rospy std_msgs rosbag sensor_msgs pcl_conversions nav_msgs geometry_msgs move_base_msgs actionlib tf2_msgs ros_numpy
 	INCLUDE_DIRS src/include
+)
+
+catkin_install_python(PROGRAMS
+       	src/data_processing.py
+        src/bag_tools.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 
