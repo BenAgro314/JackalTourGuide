@@ -6,5 +6,5 @@
 /.catkin_tools
 topics.txt
 .pdf
-.catkin_ws
+.catkin_workspace
 

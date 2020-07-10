@@ -19,25 +19,25 @@ lounge_532:
   geometry: g532
   positions: p532
   enclosed: "0"
-  scenario: small_tables_stander_meeting
+  scenario: empty
 
 study_space_546:
   geometry: g546
   positions: p546
   enclosed: "0"
-  scenario: long_term_standers
+  scenario: empty
 
 irm_lab_580:
   geometry: g580
   positions: p580
   enclosed: "0"
-  scenario: mixed_tables_wanderer_study
+  scenario: empty
 
 admin_off_514:
   geometry: g514
   positions: p514
   enclosed: "1"
-  scenario: big_tables_random_walker_study
+  scenario: empty
 
 pace_533:
   geometry: g533
