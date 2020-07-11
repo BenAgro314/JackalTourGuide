@@ -33,6 +33,7 @@ catkin_package(
 )
 
 catkin_install_python(PROGRAMS
+        src/math_utilities.py
        	src/data_processing.py
         src/bag_tools.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
