@@ -14,8 +14,10 @@ import plyfile as ply
 import bag_tools as bt
 import math_utilities as mu
 import plot_utilities as pu
+import pickle
 
 if __name__ == "__main__":
+
 
 	start_time = RealTime.time()
 	
@@ -27,6 +29,7 @@ if __name__ == "__main__":
 	print "Processing data for file", filename
 
 	path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/"
+
 
 	try:
 		bag = rosbag.Bag(path + "raw_data.bag")
@@ -41,10 +44,15 @@ if __name__ == "__main__":
 			print ("Creation of the classifed_frames directory failed")
 			exit()
 
+	
+	pickle_dict = {}
+
 	print "Reading lidar frames"
 
 	# read in lidar frames
 	frames = bt.read_pointcloud_frames("/velodyne_points", bag)
+
+	pickle_dict['lidar_frames'] = frames
 
 	print "Writing lidar frames"
 
@@ -63,29 +71,45 @@ if __name__ == "__main__":
 	print "Reading poses"
 
 	# read in ground truth pose
-	gt_pose = bt.read_nav_odometry("/ground_truth/state",bag)
+	gt_traj = bt.read_nav_odometry("/ground_truth/state",bag)
+	
 
+	#read in optimal traj
 	optimal_traj = bt.read_nav_odometry("/optimal_path",bag, False)
+	pickle_dict['optimal_traj'] = optimal_traj
 
-
-	# output grond truth pose to .ply file
-	el = ply.PlyElement.describe(bt.trajectory_to_array(gt_pose), "trajectory")
+	# output ground truth pose to .ply file
+	el = ply.PlyElement.describe(bt.trajectory_to_array(gt_traj), "trajectory")
 	ply.PlyData([el]).write(path + "/gt_pose.ply")
+
+	# read in amcl poses if they exist
+	amcl_status = bool(bt.num_messages("/amcl_pose", bag))
 
 	odom_to_base = bt.read_tf_transform("odom","base_link", bag)
 	map_to_odom = bt.read_tf_transform("map","odom", bag)
-
 	odom_to_base = bt.transforms_to_trajectory(odom_to_base)
-	#map_to_odom = bt.transforms_to_trajectory(map_to_odom)
 
-	res = mu.get_interpolations(odom_to_base, map_to_odom)
+	tf_traj = mu.transform_trajectory(odom_to_base, map_to_odom)
+
+	# interplote gt_traj to the times of tf_traj
+	gt_traj = mu.get_interpolations(tf_traj, gt_traj, False)
+	pickle_dict['gt_traj'] = gt_traj
+
+	if (amcl_status):
+		print('amcl')
+		pickle_dict['amcl_traj'] = tf_traj
+	else:
+		print('gmapping')
+		pickle_dict['gmapping_traj'] = tf_traj
 
 
-	transformed = mu.transform_trajectory(odom_to_base, map_to_odom)
+	# pu.plot_trajectory(gt_traj)
+	# pu.plot_trajectory(tf_traj)
+	# pu.show()
 
-	pu.plot_trajectory(gt_pose)
-	pu.plot_trajectory(transformed)
-	#pu.show()
+
+	with open('filename.pickle', 'wb') as handle:
+		pickle.dump(pickle_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 	'''
 	read in:
