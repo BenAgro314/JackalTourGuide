@@ -1,6 +1,6 @@
 #include "puppeteer.hh"
 #include "utilities.hh"
-
+#include "parse_tour.hh"
 #include <ros/forwards.h>
 
 
@@ -27,6 +27,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->ReadSDF();
 
     this->ReadParams();
+     
+    path_pub = nh.advertise<geometry_msgs::PoseStamped>("optimal_path",1000);
 
     auto building = this->world->ModelByName(this->building_name);
 
@@ -40,6 +42,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->static_quadtree = boost::make_shared<QuadTree>(this->building_box);
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
     this->costmap = boost::make_shared<Costmap>(this->building_box, 0.2);
+
+    
     
     happly::PLYData static_objects;
     std::vector<BoxObject> boxes;
@@ -105,6 +109,27 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" +this->start_time +"/static_objects.ply", happly::DataFormat::ASCII);
     }
 
+    // find and publish optimal route
+
+    TourParser parser = TourParser(this->tour_name);
+    auto route = parser.GetRoute();
+    route.insert(route.begin(), ignition::math::Pose3d(ignition::math::Vector3d(0,0,0), ignition::math::Quaterniond(0,0,0,1)));
+
+
+
+    for (int i =0; i< route.size()-1; i++){
+        auto start = route[i];
+        auto end = route[i+1];
+
+        std::vector<ignition::math::Vector3d> path;
+        this->costmap->ThetaStar(start.Pos(), end.Pos(), path);
+        paths.insert(paths.end(),path.begin(),path.end());
+    }
+
+    
+   
+
+
     std::cout << "LOADED ALL VEHICLES\n";
 
 }
@@ -130,6 +155,15 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
                 this->robot_links = this->robot->GetLinks();
                 std::cout << "ADDED ROBOT: " << this->robot->GetName() << std::endl;
             }
+        }
+
+        for (auto pose: paths){
+            geometry_msgs::PoseStamped msg;
+            msg.pose.position.x = pose.X();
+            msg.pose.position.y = pose.Y();
+            msg.pose.position.z = pose.Z();
+            
+            path_pub.publish(msg);
         }
     }
 
@@ -297,7 +331,7 @@ void Puppeteer::ReadParams(){
     int argc = 0;
     char **argv = NULL;
     ros::init(argc, argv, "Puppeteer");
-    ros::NodeHandle nh;
+
 
     if (!nh.getParam("common_vehicle_params", this->vehicle_params)){
         ROS_ERROR("ERROR READING COMMON VEHICLE PARAMS");
@@ -323,5 +357,12 @@ void Puppeteer::ReadParams(){
         std::cout << "ERROR SETTING START TIME\n";
         this->start_time = "";
     }
+
+    if (!nh.getParam("tour_name", this->tour_name)){
+        std::cout << "ERROR READING TOUR NAME\n";
+        this->tour_name = "A_tour";
+        return;
+    }
+
 
 }

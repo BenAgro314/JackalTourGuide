@@ -1,22 +1,30 @@
 #!/usr/bin/env python
 
-import os
 import sys
+sys.path.append('./include')
+
+import os
 import json
 import matplotlib
 import numpy as np
-import bag_tools as bt
+import time as RealTime
+
 import rosbag
 import plyfile as ply
-import math_utilities as ut
+import bag_tools as bt
+import math_utilities as mu
+import plot_utilities as pu
 
 if __name__ == "__main__":
+
+	start_time = RealTime.time()
+	
 	username = os.environ['USER']
 	if ((len(sys.argv)-1) == 0):
 		print "ERROR: must input filename"
 		exit()
 	filename = sys.argv[1]
-	print "Running diagnostics on", filename
+	print "Processing data for file", filename
 
 	path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/"
 
@@ -33,8 +41,12 @@ if __name__ == "__main__":
 			print ("Creation of the classifed_frames directory failed")
 			exit()
 
+	print "Reading lidar frames"
+
 	# read in lidar frames
 	frames = bt.read_pointcloud_frames("/velodyne_points", bag)
+
+	print "Writing lidar frames"
 
 	# write lidar frames to .ply files 
 	for frame in frames:
@@ -48,8 +60,13 @@ if __name__ == "__main__":
 		
 		ply.PlyData([el]).write(path + "classified_frames/" + time + ".ply");
 
+	print "Reading poses"
+
 	# read in ground truth pose
 	gt_pose = bt.read_nav_odometry("/ground_truth/state",bag)
+
+	optimal_traj = bt.read_nav_odometry("/optimal_path",bag, False)
+
 
 	# output grond truth pose to .ply file
 	el = ply.PlyElement.describe(bt.trajectory_to_array(gt_pose), "trajectory")
@@ -61,13 +78,14 @@ if __name__ == "__main__":
 	odom_to_base = bt.transforms_to_trajectory(odom_to_base)
 	#map_to_odom = bt.transforms_to_trajectory(map_to_odom)
 
-	res = ut.get_interpolations(odom_to_base, map_to_odom)
-	print len(odom_to_base),len(res)
-	print odom_to_base[0].header.stamp.to_sec(), res[0].header.stamp.to_sec()
+	res = mu.get_interpolations(odom_to_base, map_to_odom)
 
-	transformed = ut.transform_trajectory(odom_to_base, map_to_odom)
 
-	print len(transformed)
+	transformed = mu.transform_trajectory(odom_to_base, map_to_odom)
+
+	pu.plot_trajectory(gt_pose)
+	pu.plot_trajectory(transformed)
+	#pu.show()
 
 	'''
 	read in:
@@ -86,4 +104,8 @@ if __name__ == "__main__":
 	'''
 
 	bag.close()
+
+	duration = RealTime.time() - start_time
+
+	print "Data processed in", "{:.2f}".format(duration) ,"seconds"
 

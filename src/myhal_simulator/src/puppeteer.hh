@@ -19,6 +19,7 @@
 #include <std_srvs/Empty.h>
 #include "frame.hh"
 #include "gazebo/msgs/msgs.hh"
+#include <geometry_msgs/PoseStamped.h>
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
@@ -67,10 +68,15 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ignition::math::Pose3d sensor_pose;
 
-        std::string user_name, start_time;
+        std::string user_name, start_time, tour_name;
 
         boost::shared_ptr<Costmap> costmap;
 
+        ros::NodeHandle nh;
+
+        std::vector<ignition::math::Vector3d> paths;
+
+        ros::Publisher path_pub;
         
     public: 
         

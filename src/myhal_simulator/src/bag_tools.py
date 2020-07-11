@@ -36,19 +36,22 @@ def read_pointcloud_frames(topic_name, bagfile):
 
     return frames
 
-def read_nav_odometry(topic_name, bagfile):
+def read_nav_odometry(topic_name, bagfile, nav_msg = True):
     '''returns an array of geometry_msgs/PoseStamped'''
 
     arr = []
 
     for topic,msg,t in bagfile.read_messages(topics = [topic_name]):
-        #print(type(msg))
-        geo_msg = PoseStamped()
-        geo_msg.header = msg.header
-        geo_msg.pose = msg.pose.pose
-        arr.append(geo_msg)
-        #pose = (msg.pose.pose.position.x,msg.pose.pose.position.y,msg.pose.pose.position.z, msg.pose.pose.orientation.x,msg.pose.pose.orientation.y,msg.pose.pose.orientation.z,msg.pose.pose.orientation.w, msg.header.stamp.to_sec())
-        #arr.append(pose)
+ 
+        if (not nav_msg):
+            arr.append(msg)
+        else: 
+            geo_msg = PoseStamped()
+            geo_msg.header = msg.header
+            geo_msg.pose = msg.pose.pose
+            arr.append(geo_msg)
+            #pose = (msg.pose.pose.position.x,msg.pose.pose.position.y,msg.pose.pose.position.z, msg.pose.pose.orientation.x,msg.pose.pose.orientation.y,msg.pose.pose.orientation.z,msg.pose.pose.orientation.w, msg.header.stamp.to_sec())
+            #arr.append(pose)
 
     #arr = numpy.array(arr, dtype = [('pos_x',numpy.double),('pos_y',numpy.double),('pos_z',numpy.double),('rot_x',numpy.double),('rot_y',numpy.double),('rot_z',numpy.double),('rot_w',numpy.double), ('time',numpy.double)])
     return arr

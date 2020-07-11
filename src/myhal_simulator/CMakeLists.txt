@@ -34,6 +34,7 @@ catkin_package(
 
 catkin_install_python(PROGRAMS
         src/math_utilities.py
+        src/plot_utilities.py
        	src/data_processing.py
         src/bag_tools.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -67,11 +68,11 @@ target_link_libraries(world_entities sdfstring utilities ${catkin_LIBRARIES} ${G
 add_library(quadtree src/include/quadtree.cpp)
 target_link_libraries(quadtree utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
-add_library(puppeteer src/puppeteer.cpp)
-target_link_libraries(puppeteer utilities quadtree vehicles costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
 add_library(parse_tour src/include/parse_tour.cpp)
 target_link_libraries(parse_tour costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
+add_library(puppeteer src/puppeteer.cpp)
+target_link_libraries(puppeteer parse_tour utilities quadtree vehicles costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_executable(world_factory src/world_factory.cpp) 
 target_link_libraries(world_factory world_entities parse_tour costmap ${catkin_LIBRARIES})
