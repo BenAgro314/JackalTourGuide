@@ -8,23 +8,6 @@ from geometry_msgs.msg import TransformStamped
 import rospy
 import numpy as np
 
-def compute_distances(traj):
-	dist_list = [0]
-	dist = 0
-	
-	prev = traj[0]
-
-	for pose in traj[1:]:
-		dx = pose['pos_x'] - prev['pos_x']
-		dy = pose['pos_y'] - prev['pos_y']
-
-		dist += np.sqrt(dx**2 + dy**2)
-
-		dist_list.append(dist)
-
-		prev = pose
-
-	return (dist_list,dist)
 
 def get_interpolations(target_times, trajectory, transform = True):
 	'''
