@@ -71,10 +71,17 @@ if __name__ == "__main__":
 	# read in ground truth pose
 	gt_traj = bt.read_nav_odometry("/ground_truth/state",bag)
 	
-
 	#read in optimal traj
 	optimal_traj = bt.read_nav_odometry("/optimal_path",bag, False)
 	pickle_dict['optimal_traj'] = bt.trajectory_to_array(optimal_traj)
+
+	#read in tour waypoints
+	waypoints = bt.read_nav_odometry("/tour_data", bag, False)
+	pickle_dict['waypoints'] = bt.trajectory_to_array(waypoints)
+
+	#read in move_base results
+	results = bt.read_action_result('/move_base/result', bag)
+	pickle_dict['action_results'] = results
 
 	# output ground truth pose to .ply file
 	el = ply.PlyElement.describe(bt.trajectory_to_array(gt_traj), "trajectory")

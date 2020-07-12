@@ -6,6 +6,7 @@ from sensor_msgs.msg import PointCloud2
 from nav_msgs.msg import Odometry
 from tf2_msgs.msg import TFMessage
 from geometry_msgs.msg import PoseStamped
+from move_base_msgs.msg import MoveBaseActionResult
 
 def trajectory_to_array(traj):
     ''' given a list of PoseStamped messages, return a structured numpy array'''
@@ -58,10 +59,7 @@ def read_nav_odometry(topic_name, bagfile, nav_msg = True):
 
 def read_tf_transform(parent_frame, child_frame, bagfile, static = False):
     ''' returns a list of time stamped transforms between parent frame and child frame '''
-
-
     arr = []
-
     if (static):
         topic_name = "/tf_static"
     else:
@@ -74,6 +72,18 @@ def read_tf_transform(parent_frame, child_frame, bagfile, static = False):
                 arr.append(transform)
 
     #arr = numpy.array(arr, dtype = [('pos_x',numpy.double),('pos_y',numpy.double),('pos_z',numpy.double),('rot_x',numpy.double),('rot_y',numpy.double),('rot_z',numpy.double),('rot_w',numpy.double), ('time',numpy.double)])
+    return arr
+
+def read_action_result(topic_name, bagfile):
+    ''' reads move_base action result info. Returns an array of the times and status of each message '''
+    
+    arr = []
+    
+    for topic,msg,t in bagfile.read_messages(topics = [topic_name]):
+        arr.append((msg.header.stamp.to_sec(), msg.status.status))
+
+    arr = numpy.array(arr, dtype = [('time', numpy.double), ('status', numpy.int8)])
+
     return arr
     
 def transforms_to_trajectory(transforms):
@@ -88,3 +98,5 @@ def transforms_to_trajectory(transforms):
         traj.append(geo_msg)
 
     return traj
+
+

@@ -74,7 +74,7 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ros::NodeHandle nh;
 
-        std::vector<ignition::math::Vector3d> paths;
+        std::vector<std::vector<ignition::math::Vector3d>> paths;
 
         ros::Publisher path_pub;
         

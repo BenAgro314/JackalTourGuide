@@ -123,11 +123,11 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
         std::vector<ignition::math::Vector3d> path;
         this->costmap->ThetaStar(start.Pos(), end.Pos(), path);
-        paths.insert(paths.end(),path.begin(),path.end());
+        
+        paths.push_back(path);
+        //paths.insert(paths.end(),path.begin(),path.end());
     }
 
-    
-   
 
 
     std::cout << "LOADED ALL VEHICLES\n";
@@ -156,14 +156,19 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
                 std::cout << "ADDED ROBOT: " << this->robot->GetName() << std::endl;
             }
         }
-
-        for (auto pose: paths){
-            geometry_msgs::PoseStamped msg;
-            msg.pose.position.x = pose.X();
-            msg.pose.position.y = pose.Y();
-            msg.pose.position.z = pose.Z();
+       
+        double i = 0;
+        for (auto path: paths){
             
-            path_pub.publish(msg);
+            for (auto pose: path){
+                geometry_msgs::PoseStamped msg;
+                msg.pose.position.x = pose.X();
+                msg.pose.position.y = pose.Y();
+                msg.pose.position.z = pose.Z();
+                msg.header.stamp = ros::Time(i);
+                path_pub.publish(msg);
+            }
+            i++;
         }
     }
 

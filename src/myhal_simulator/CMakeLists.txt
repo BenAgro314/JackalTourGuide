@@ -32,13 +32,7 @@ catkin_package(
 	INCLUDE_DIRS src/include
 )
 
-catkin_install_python(PROGRAMS
-        src/math_utilities.py
-        src/plot_utilities.py
-       	src/data_processing.py
-        src/bag_tools.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+
 
 
 link_directories(src/include ${GAZEBO_LIBRARY_DIRS})
