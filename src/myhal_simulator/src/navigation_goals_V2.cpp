@@ -137,8 +137,8 @@ int main(int argc, char ** argv){
     shutdown_msg.data = true;
     shutdown_pub.publish(shutdown_msg);
     
-    const char *cstr = shutdown_file.c_str();
-    system(cstr);
+    //const char *cstr = shutdown_file.c_str();
+    //system(cstr);
     
 
     

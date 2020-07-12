@@ -66,6 +66,7 @@ rosparam set classify $CLASSIFY
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 rosparam set start_time $t
 rosparam set filter_status $FILTER
+rosparam set gmapping_status $MAPPING
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
 LOGFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
