@@ -3,6 +3,7 @@
 #include "sensor_msgs/Image.h"
 #include "parse_tour.hh"
 #include <geometry_msgs/PoseStamped.h>
+#include <std_msgs/Bool.h>
 
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
@@ -46,6 +47,7 @@ int main(int argc, char ** argv){
     ros::init(argc, argv, "simple_navigation_goals");
 	ros::NodeHandle nh;
 	ros::Publisher pub = nh.advertise<geometry_msgs::PoseStamped>("tour_data", 1000);
+    ros::Publisher shutdown_pub = nh.advertise<std_msgs::Bool>("shutdown_signal", 1000);
 
     std::string tour_name("test1");
 
@@ -131,6 +133,9 @@ int main(int argc, char ** argv){
     }
     
     
+    std_msgs::Bool shutdown_msg;
+    shutdown_msg.data = true;
+    shutdown_pub.publish(shutdown_msg);
     
     const char *cstr = shutdown_file.c_str();
     system(cstr);
