@@ -9,6 +9,8 @@ import rospy
 import numpy as np
 
 
+
+
 def get_interpolations(target_times, trajectory, transform = True):
 	'''
 	given two trajectories, interploate the poses in trajectory to the times given in target_times (another trajectory)

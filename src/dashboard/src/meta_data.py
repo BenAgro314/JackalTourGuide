@@ -34,11 +34,12 @@ class MetaHandler:
     def modify_table(self):
 
         self.table.setdefault("tour_names", {})
-        self.table.setdefault("filter_status", {True: [], False: []})
+        self.table.setdefault("filter_status", {'true': [], 'false': []})
         self.table.setdefault("localization_technique", {})
-        self.table.setdefault("success_status", {True: [], False: []})
+        self.table.setdefault("success_status", {'true': [], 'false': []})
         self.table.setdefault("scenarios", {})
-
+        self.table.setdefault("times", [])
+      
         # tour names
         if (self.tour_name in self.table['tour_names']):
             self.table['tour_names'][self.tour_name].append(self.start_time)
@@ -46,6 +47,7 @@ class MetaHandler:
             self.table['tour_names'][self.tour_name] = [self.start_time]
         
         # filter status
+        
         self.table['filter_status'][self.filter_status].append(self.start_time)
 
         # localization technique
@@ -63,7 +65,7 @@ class MetaHandler:
         
         # succcess status
 
-        self.table['filter_status'][self.successful].append(self.start_time)
+        self.table['success_status'][self.successful].append(self.start_time)
 
         # scenarios
 
@@ -79,6 +81,8 @@ class MetaHandler:
                     self.table['scenarios'][scenario] = [self.start_time]
 
             taken.append(scenario)
+
+        self.table['times'].append(self.start_time)
         
 
     def on_shutdown(self, msg):
@@ -87,6 +91,7 @@ class MetaHandler:
         self.modify_table()
         self.run_json.seek(0)
         self.run_json.truncate()
+
 
         json.dump(self.table, self.run_json, indent = 4)
         self.run_json.close()  
@@ -97,9 +102,9 @@ class MetaHandler:
         self.username = os.environ['USER']
         self.start_time = rospy.get_param("/start_time")
         self.tour_name = rospy.get_param("/tour_name")
-        self.filter_status = rospy.get_param("/filter_status")
-        self.classify_status = rospy.get_param("/classify")
-        self.gmapping_status = rospy.get_param("/classify")
+        self.filter_status = 'true' if rospy.get_param("/filter_status") else 'false'
+        self.classify_status = 'true' if rospy.get_param("/classify") else 'false'
+        self.gmapping_status = rospy.get_param("/gmapping_status") 
 
         room_names = rospy.get_param("/room_names")
         scenario_names = rospy.get_param("/room_names")
@@ -116,23 +121,23 @@ class MetaHandler:
 
         #print self.room_params
         #print self.scenario_params
-        # print(self.username)
+        #print(self.username)
         # print(self.start_time)
         # print(self.tour_name)
-        # print(self.filter_status)
-        # print(self.gmapping_status)
-        # print(self.classify_status)
+        # print("filter:",type(self.filter_status))
+        # print(type(self.gmapping_status))
+        # print(type(self.classify_status))
 
     def start_subscribers(self):
         rospy.Subscriber("/shutdown_signal", Bool, self.on_shutdown)
         self.tour_results = []
-        self.successful = True
+        self.successful = 'true'
         rospy.Subscriber("/move_base/result", MoveBaseActionResult, self.on_result)
 
     def on_result(self, msg):
         self.tour_results.append(msg)
         if msg.status.status != 3:
-            self.successful = False
+            self.successful = 'false'
 
 
 if __name__ == "__main__":
