@@ -7,7 +7,9 @@ killall gzserver
 killall gzclient
 
 sleep 0.5
-rosrun myhal_simulator process_bag $TIME
-echo "Running bag diagnostics"
-rosrun myhal_simulator bag_diagnostics $TIME $FILTER
-echo "Bag diagnostics completed"
+echo "Running data_processing.py"
+rosrun myhal_simulator data_processing.py $TIME
+#rosrun myhal_simulator process_bag $TIME
+#echo "Running bag diagnostics"
+#rosrun myhal_simulator bag_diagnostics $TIME $FILTER
+#echo "Bag diagnostics completed"

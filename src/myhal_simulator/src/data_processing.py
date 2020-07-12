@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 
 import sys
-sys.path.append('./include')
-
 import os
-import json
-import matplotlib
 import numpy as np
 import time as RealTime
+import pickle
 
 import rosbag
 import plyfile as ply
 import bag_tools as bt
 import math_utilities as mu
 import plot_utilities as pu
-import pickle
+
 
 if __name__ == "__main__":
 
@@ -29,6 +26,7 @@ if __name__ == "__main__":
 	print "Processing data for file", filename
 
 	path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/"
+	logs_path = path + "logs-" + filename + "/"
 
 
 	try:
@@ -68,7 +66,7 @@ if __name__ == "__main__":
 		
 		ply.PlyData([el]).write(path + "classified_frames/" + time + ".ply");
 
-	print "Reading poses"
+	print "Reading trajectories"
 
 	# read in ground truth pose
 	gt_traj = bt.read_nav_odometry("/ground_truth/state",bag)
@@ -76,7 +74,7 @@ if __name__ == "__main__":
 
 	#read in optimal traj
 	optimal_traj = bt.read_nav_odometry("/optimal_path",bag, False)
-	pickle_dict['optimal_traj'] = optimal_traj
+	pickle_dict['optimal_traj'] = bt.trajectory_to_array(optimal_traj)
 
 	# output ground truth pose to .ply file
 	el = ply.PlyElement.describe(bt.trajectory_to_array(gt_traj), "trajectory")
@@ -85,30 +83,33 @@ if __name__ == "__main__":
 	# read in amcl poses if they exist
 	amcl_status = bool(bt.num_messages("/amcl_pose", bag))
 
+	
 	odom_to_base = bt.read_tf_transform("odom","base_link", bag)
 	map_to_odom = bt.read_tf_transform("map","odom", bag)
 	odom_to_base = bt.transforms_to_trajectory(odom_to_base)
-
 	tf_traj = mu.transform_trajectory(odom_to_base, map_to_odom)
 
 	# interplote gt_traj to the times of tf_traj
+	
 	gt_traj = mu.get_interpolations(tf_traj, gt_traj, False)
-	pickle_dict['gt_traj'] = gt_traj
-
+	
+	pickle_dict['gt_traj'] = bt.trajectory_to_array(gt_traj)
+	
 	if (amcl_status):
-		print('amcl')
-		pickle_dict['amcl_traj'] = tf_traj
+		print "Saving amcl_traj"
+		pickle_dict['amcl_traj'] = bt.trajectory_to_array(tf_traj)
+		
 	else:
-		print('gmapping')
-		pickle_dict['gmapping_traj'] = tf_traj
+		print "Saving gmapping_traj"
+		pickle_dict['gmapping_traj'] = bt.trajectory_to_array(tf_traj)
 
 
 	# pu.plot_trajectory(gt_traj)
 	# pu.plot_trajectory(tf_traj)
 	# pu.show()
 
-
-	with open('filename.pickle', 'wb') as handle:
+	print "Dumping data to", logs_path + "processed_data.pickle"
+	with open(logs_path + 'processed_data.pickle', 'wb') as handle:
 		pickle.dump(pickle_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 	'''

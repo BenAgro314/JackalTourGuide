@@ -429,17 +429,17 @@
 		</include>
 		<include>
 			<name>door_1</name>
-			<pose>-14.624989 9.030960 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-14.624989 9.030960 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_2</name>
-			<pose>-10.775058 12.475000 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-10.775058 12.475000 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_3</name>
-			<pose>-7.761390 8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-7.761390 8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -469,7 +469,7 @@
 		</include>
 		<include>
 			<name>door_9</name>
-			<pose>-14.625002 6.214056 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-14.625002 6.214056 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -479,17 +479,17 @@
 		</include>
 		<include>
 			<name>door_11</name>
-			<pose>-14.625007 -2.443840 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-14.625007 -2.443840 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_12</name>
-			<pose>-14.625002 -5.329808 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-14.625002 -5.329808 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_13</name>
-			<pose>-15.625002 -7.097462 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-15.625002 -7.097462 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -504,12 +504,12 @@
 		</include>
 		<include>
 			<name>door_16</name>
-			<pose>-12.150050 5.775003 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-12.150050 5.775003 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_17</name>
-			<pose>-12.167990 -5.775000 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-12.167990 -5.775000 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -544,17 +544,17 @@
 		</include>
 		<include>
 			<name>door_24</name>
-			<pose>2.925000 -17.742519 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>2.925000 -17.742519 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_25</name>
-			<pose>4.583714 -8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>4.583714 -8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_26</name>
-			<pose>6.431060 -8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>6.431060 -8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
