@@ -51,8 +51,6 @@ class MetaHandler:
         self.table['filter_status'][self.filter_status].append(self.start_time)
 
         # localization technique
-
-
         if (self.gmapping_status):
             tech = "gmapping"
         else:
@@ -87,13 +85,11 @@ class MetaHandler:
 
     def on_shutdown(self, msg):
 
-        
         self.modify_table()
         self.run_json.seek(0)
         self.run_json.truncate()
 
-
-        json.dump(self.table, self.run_json, indent = 4)
+        json.dump(self.table, self.run_json, indent = 4, sort_keys=True)
         self.run_json.close()  
         shutdown_script = "/home/"+self.username+"/catkin_ws/shutdown.sh"
         subprocess.call(shutdown_script, shell = True)

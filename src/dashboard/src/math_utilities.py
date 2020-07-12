@@ -9,7 +9,19 @@ import rospy
 import numpy as np
 
 
+def date_to_int(date):
 
+	d_list = date.split('-')
+	split_date = {}
+	labels = ['year','month','day,','hour','minute','second']
+	conversions = [31556952, 2629746, 86400, 3600, 60, 1]
+	res = 0
+	for i in range(len(d_list)):
+		split_date[labels[i]] = int(d_list[i])
+		res += conversions[i]*int(d_list[i])
+
+	return (res, split_date)
+	   
 
 def get_interpolations(target_times, trajectory, transform = True):
 	'''
@@ -147,7 +159,8 @@ def interpolate_transform(time, trans1, trans2):
 
 
 if __name__ == "__main__":
-	print "testing"
+	print date_to_int("2020-07-12-11-07-56")
+	print date_to_int('2020-07-12-18-01-25')
 
 
 
