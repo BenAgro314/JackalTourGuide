@@ -8,9 +8,9 @@ import pickle
 
 import rosbag
 import plyfile as ply
-import bag_tools as bt
-import math_utilities as mu
-import plot_utilities as pu
+from utilities import bag_tools as bt
+from utilities import math_utilities as mu
+from utilities import plot_utilities as pu
 
 
 if __name__ == "__main__":

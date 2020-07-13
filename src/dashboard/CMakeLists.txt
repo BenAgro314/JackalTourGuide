@@ -27,15 +27,16 @@ catkin_package(
    LIBRARIES dashboard
    CATKIN_DEPENDS actionlib geometry_msgs move_base_msgs nav_msgs pcl_conversions pcl_ros ros_numpy rosbag roscpp rospy sensor_msgs std_msgs tf2_msgs
    DEPENDS system_lib
+   INCLUDE_DIRS src/utilities
 )
 
 catkin_install_python(PROGRAMS
-        src/math_utilities.py
-        src/plot_utilities.py
+        src/utilities/math_utilities.py
+        src/utilities/plot_utilities.py
        	src/data_processing.py
-        src/bag_tools.py
+        src/utilities/bag_tools.py
         src/meta_data.py
-        src/query.py
+        src/utilities/query.py
         src/dashboard.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

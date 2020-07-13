@@ -59,7 +59,7 @@ class Query:
 
         res = res.intersection(time_set)
 
-        return res
+        return list(res)
         
 
     def set_from_dict(self, fieldname, attribute):
@@ -76,8 +76,6 @@ class Query:
 
     def delete_old_runs(self):
         ''' delete runs that no longer exist from json table'''
-        print 'Deleting old runs, this may take a while'
-
 
         self.remove_from_dict('localization_technique')
         self.remove_from_dict('tour_names')
