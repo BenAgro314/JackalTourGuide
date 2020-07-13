@@ -26,7 +26,7 @@
   - list of used scenarios *(TODO: list scenario information)*
   - number of runs that fall under a given query
   
-```python
+```bash
 >>> from src.dashboard import * # TODO: add this to PYTHONSTARTUP env variable
 >>> dashboard = Dashboard()
 >>> series1 = Series(name = "series1", tour_name = 'A_tour', filter_status = 'true')
@@ -40,5 +40,5 @@
 2020-06-25-20-50-16
 2020-06-23-10-32-54
 >>> dashboard.series_stats("series1", PlotTypes.translation_error)
-Average translation error: 0.05 m 
+average translation error: 0.05 m 
 ```
