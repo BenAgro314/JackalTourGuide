@@ -15,14 +15,18 @@ class Query:
 
         self.files = os.listdir(self.path+'/simulated_runs/')
 
+        self.open_json()
+        self.add_new_runs()
+        
+
+    def open_json(self):
         try:
             self.run_json = open(self.path + "run_data.json", "r+")
             self.table = json.load(self.run_json)
         except:
-            print "Cannot Find JSON file, aborting"
-            exit()
+            self.run_json = open(self.path + "run_data.json", "w")
+            self.init_table()
 
-        
 
     def find_runs(self, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None):
         '''
@@ -78,6 +82,8 @@ class Query:
     def delete_old_runs(self):
         ''' delete runs that no longer exist from json table'''
 
+     
+
         self.remove_from_dict('localization_technique')
         self.remove_from_dict('tour_names')
         self.remove_from_dict('scenarios')
@@ -91,7 +97,65 @@ class Query:
                 self.table['times'].remove(time)
 
         self.update_json()
+        self.open_json()
 
+    def init_table(self):
+        self.table = {}
+        self.table.setdefault("tour_names", {})
+        self.table.setdefault("filter_status", {'true': [], 'false': []})
+        self.table.setdefault("localization_technique", {})
+        self.table.setdefault("success_status", {'true': [], 'false': []})
+        self.table.setdefault("scenarios", {})
+        self.table.setdefault("times", [])
+
+    def add_new_runs(self):
+        # find all files in self.files that have meta.json file that are not in the table
+        for file in self.files:
+            path = self.path + "simulated_runs/" + file + "/logs-" + file + "/meta.json"
+            if (os.path.exists(path) and (file not in self.table['times'])):
+                print "adding file " + file + " to run_data.json"
+
+                # load in json
+                meta_json = open(path, 'r')
+                data = json.load(meta_json)
+                # tour names
+                if (data['tour_names'] in self.table['tour_names']):
+                    self.table['tour_names'][data['tour_names']].append(file)
+                else:
+                    self.table['tour_names'][data['tour_names']] = [file]
+                
+                # filter status
+                
+                self.table['filter_status'][data['filter_status']].append(file)
+
+                if (data['localization_technique'] in self.table['localization_technique']):
+                    self.table['localization_technique'][data['localization_technique']].append(file)
+                else:
+                    self.table['localization_technique'][data['localization_technique']] = [file]
+                
+                # succcess status
+
+                self.table['success_status'][data['success_status']].append(file)
+
+                # scenarios
+
+                taken = []
+
+                for scenario in data['scenarios']:
+                    
+
+                    if (scenario not in taken):
+                        if scenario in self.table['scenarios']:
+                            self.table['scenarios'][scenario].append(file)
+                        else:
+                            self.table['scenarios'][scenario] = [file]
+
+                    taken.append(scenario)
+
+                self.table['times'].append(file)
+
+        self.update_json()
+        self.open_json()
     
     def remove_from_dict(self, field_name):
         attributes = self.table[field_name].copy()
@@ -115,5 +179,5 @@ if __name__ == "__main__":
     print 'testing query'
   
     Q = Query()
-    Q.delete_old_runs()
-    print Q.find_runs(tour_name = 'short_test', earliest_date='2020-07-12-18-06-40')
+    #Q.delete_old_runs()
+    #print Q.find_runs(tour_name = 'short_test', earliest_date='2020-07-12-18-06-40')

@@ -17,80 +17,90 @@ class MetaHandler:
 
         self.read_params()
 
-        self.path = "/home/" + self.username + "/Myhal_Simulation/"
+        self.path = "/home/" + self.username + "/Myhal_Simulation/simulated_runs/" + self.start_time + "/logs-" +self.start_time + "/"
 
-        
-        try:
-            self.run_json = open(self.path + "run_data.json", "r+")
-            self.table = json.load(self.run_json)
-        except:
-            self.run_json = open(self.path + "run_data.json", "w")
-            self.table = {}
+        self.meta_json = open(self.path + "meta.json", 'w')
         
         self.start_subscribers()
 
         rospy.spin()
 
-    def modify_table(self):
+    def create_table(self):
+        self.table = {}
+        self.table['tour_names'] = self.tour_name
+        self.table['filter_status'] = self.filter_status
 
-        self.table.setdefault("tour_names", {})
-        self.table.setdefault("filter_status", {'true': [], 'false': []})
-        self.table.setdefault("localization_technique", {})
-        self.table.setdefault("success_status", {'true': [], 'false': []})
-        self.table.setdefault("scenarios", {})
-        self.table.setdefault("times", [])
-      
-        # tour names
-        if (self.tour_name in self.table['tour_names']):
-            self.table['tour_names'][self.tour_name].append(self.start_time)
-        else:
-            self.table['tour_names'][self.tour_name] = [self.start_time]
-        
-        # filter status
-        
-        self.table['filter_status'][self.filter_status].append(self.start_time)
-
-        # localization technique
         if (self.gmapping_status):
             tech = "gmapping"
         else:
             tech = "amcl"
 
-        if (tech in self.table['localization_technique']):
-            self.table['localization_technique'][tech].append(self.start_time)
-        else:
-            self.table['localization_technique'][tech] = [self.start_time]
-        
-        # succcess status
-
-        self.table['success_status'][self.successful].append(self.start_time)
-
-        # scenarios
-
-        taken = []
-
+        self.table['localization_technique'] = tech
+        self.table['success_status'] = self.successful
+        self.table['scenarios'] = []
         for name in self.room_params:
-            scenario = self.room_params[name]['scenario']
+            self.table['scenarios'].append(self.room_params[name]['scenario'])
+        
 
-            if (scenario not in taken):
-                if scenario in self.table['scenarios']:
-                    self.table['scenarios'][scenario].append(self.start_time)
-                else:
-                    self.table['scenarios'][scenario] = [self.start_time]
+    # def modify_table(self):
 
-            taken.append(scenario)
+    #     self.table.setdefault("tour_names", {})
+    #     self.table.setdefault("filter_status", {'true': [], 'false': []})
+    #     self.table.setdefault("localization_technique", {})
+    #     self.table.setdefault("success_status", {'true': [], 'false': []})
+    #     self.table.setdefault("scenarios", {})
+    #     self.table.setdefault("times", [])
+      
+    #     # tour names
+    #     if (self.tour_name in self.table['tour_names']):
+    #         self.table['tour_names'][self.tour_name].append(self.start_time)
+    #     else:
+    #         self.table['tour_names'][self.tour_name] = [self.start_time]
+        
+    #     # filter status
+        
+    #     self.table['filter_status'][self.filter_status].append(self.start_time)
 
-        self.table['times'].append(self.start_time)
+    #     # localization technique
+    #     if (self.gmapping_status):
+    #         tech = "gmapping"
+    #     else:
+    #         tech = "amcl"
+
+    #     if (tech in self.table['localization_technique']):
+    #         self.table['localization_technique'][tech].append(self.start_time)
+    #     else:
+    #         self.table['localization_technique'][tech] = [self.start_time]
+        
+    #     # succcess status
+
+    #     self.table['success_status'][self.successful].append(self.start_time)
+
+    #     # scenarios
+
+    #     taken = []
+
+    #     for name in self.room_params:
+    #         scenario = self.room_params[name]['scenario']
+
+    #         if (scenario not in taken):
+    #             if scenario in self.table['scenarios']:
+    #                 self.table['scenarios'][scenario].append(self.start_time)
+    #             else:
+    #                 self.table['scenarios'][scenario] = [self.start_time]
+
+    #         taken.append(scenario)
+
+    #     self.table['times'].append(self.start_time)
         
 
     def on_shutdown(self, msg):
 
-        self.modify_table()
-        self.run_json.seek(0)
-        self.run_json.truncate()
+        self.create_table()
+        
 
-        json.dump(self.table, self.run_json, indent = 4, sort_keys=True)
-        self.run_json.close()  
+        json.dump(self.table, self.meta_json, indent = 4, sort_keys=True)
+        # self.run_json.close()  
         shutdown_script = "/home/"+self.username+"/catkin_ws/shutdown.sh"
         subprocess.call(shutdown_script, shell = True)
 
