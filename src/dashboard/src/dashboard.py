@@ -168,6 +168,7 @@ class Dashboard:
         self.display = Display(rows, cols)
 
     def show_display(self):
+        self.display.series_list = []
         for name in self.series_table:
             self.display.add_series(self.series_table[name][0])
         self.display.display()
@@ -188,6 +189,9 @@ class Dashboard:
 
         for name in l:
             print name
+
+def help():
+    pass
 
 if __name__ == "__main__":
     D = Dashboard()
