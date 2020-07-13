@@ -4,6 +4,7 @@ import math_utilities as mu
 import json
 import os
 import numpy
+import copy
 
 class Query:
 
@@ -106,6 +107,9 @@ class Query:
         self.run_json.truncate()
         json.dump(self.table, self.run_json, indent = 4, sort_keys=True)
         self.run_json.close()  
+
+    def get_table(self):
+        return copy.deepcopy(self.table)
 
 if __name__ == "__main__":
     print 'testing query'
