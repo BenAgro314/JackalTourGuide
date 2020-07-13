@@ -101,6 +101,8 @@ class MetaHandler:
         self.filter_status = 'true' if rospy.get_param("/filter_status") else 'false'
         self.classify_status = 'true' if rospy.get_param("/classify") else 'false'
         self.gmapping_status = rospy.get_param("/gmapping_status") 
+        repeat = rospy.get_param("/repeat")
+        rospy.set_param("/repeat", repeat-1)
 
         room_names = rospy.get_param("/room_names")
         scenario_names = rospy.get_param("/room_names")

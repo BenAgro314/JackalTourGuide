@@ -4,13 +4,7 @@ myInvocation="$(printf %q "$BASH_SOURCE")$((($#)) && printf ' %q' "$@")"
 t=$(date +'%Y-%m-%d-%H-%M-%S')
 
 echo "Folder Name: $t"
-sleep 1
 
-killall gzserver
-killall gzclient
-killall rviz
-killall roscore
-killall rosmaster
 
 GUI=false
 TOUR="A_tour"
@@ -19,8 +13,9 @@ LOADWORLD=""
 FILTER=false
 MAPPING=false
 CLASS=true
+REPEAT=1
 
-while getopts t:m:g:l:f:a:c: option
+while getopts t:m:g:l:f:a:c:r: option
 do
 case "${option}"
 in
@@ -31,8 +26,25 @@ l) LOADWORLD=${OPTARG};; # do you want to load a prexisting world or generate a 
 f) FILTER=${OPTARG};; # pointcloud filtering?
 a) MAPPING=${OPTARG};; # use gmapping?
 c) CLASS=${OPTARG};; # are we classifying points at all?
+r) REPEAT=${OPTARG};; # how many times to loop this trial?
 esac
 done
+
+if [ "$REPEAT" -lt "1" ]
+then
+    echo "Done repeating, shutting down"
+    exit 1
+fi
+
+echo "$REPEAT trials remaining"
+
+sleep 1
+
+killall gzserver
+killall gzclient
+killall rviz
+killall roscore
+killall rosmaster
 
 export CLASSIFY=$CLASS
 
@@ -60,6 +72,7 @@ rosparam load src/myhal_simulator/params/room_params_V2.yaml
 rosparam load src/myhal_simulator/params/scenario_params_V2.yaml
 rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
+rosparam set repeat $REPEAT
 rosparam set use_sim_time true
 rosparam set tour_name $TOUR
 rosparam set classify $CLASSIFY
@@ -67,6 +80,7 @@ rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 rosparam set start_time $t
 rosparam set filter_status $FILTER
 rosparam set gmapping_status $MAPPING
+rosparam set invocation $myInvocation
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
 LOGFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
