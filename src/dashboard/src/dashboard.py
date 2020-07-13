@@ -14,14 +14,15 @@ class PlotType(enum.Enum):
     rotation_error = 'rotation_error'
     trajectory_plot = 'trajectory_plot'
     path_diff = 'path_diff'
+    empty = "empty"
 
 class Series:
 
-    def __init__(self, series_name, query, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None):
+    def __init__(self, series_name, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None):
         self.series_name = series_name
         self.username = os.environ['USER']
         self.path = '/home/' + self.username + "/Myhal_Simulation/simulated_runs" 
-        self.query = query
+        self.query = Q.Query()
         self.files = self.query.find_runs(tour_name, filter_status, localization_technique, success_status, scenarios, earliest_date, latest_date)
         self.load_data()
         
@@ -67,25 +68,29 @@ class Display():
 
     def display(self):
         fig, axs = plt.subplots(self.rows,self.cols)
+        axs = np.array(axs)
+        i = 0
 
-        for i in range(len(self.plot_types)):
-            r = i%(self.rows)
-            c = (i-(r*self.rows))%self.cols
-            self.plot(axs[r][c], self.plot_types[i])
+        for ax in axs.reshape(-1):
+            plot_type = PlotType.empty if (i >= len(self.plot_types)) else self.plot_types[i]
+            self.plot(ax, plot_type )
+            i+=1
 
         plt.show()
 
-    def plot(self, axs, plot_type):
+    def plot(self, ax, plot_type):
+        if (plot_type == PlotType.empty):
+            return
+        ax.plot(np.linspace(0, 2 * np.pi, 400), np.linspace(0, 2 * np.pi, 400))
         pass
 
 if __name__ == "__main__":
 
-    query = Q.Query()
-    query.delete_old_runs()
+    Q.Query().delete_old_runs()
 
-    s1 = Series("series1", query)
+    s1 = Series("series1")
 
-    display = Display(1,1)
+    display = Display(1,2)
     display.add_series(s1)
     display.add_plot_type(PlotType.translation_error)
     display.display()
