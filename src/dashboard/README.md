@@ -26,7 +26,7 @@
   - list of used scenarios *(TODO: list scenario information)*
   - number of runs that fall under a given query
   
-```bash
+```python
 >>> from src.dashboard import * # TODO: add this to PYTHONSTARTUP env variable
 >>> dashboard = Dashboard()
 >>> series1 = Series(name = "series1", tour_name = 'A_tour', filter_status = 'true')
