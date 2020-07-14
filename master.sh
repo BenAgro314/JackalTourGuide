@@ -72,7 +72,8 @@ rosparam load src/myhal_simulator/params/room_params_V2.yaml
 rosparam load src/myhal_simulator/params/scenario_params_V2.yaml
 rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
-rosparam set repeat $REPEAT
+rosparam set localization_test false
+# rosparam set repeat $REPEAT
 rosparam set use_sim_time true
 rosparam set tour_name $TOUR
 rosparam set classify $CLASSIFY
@@ -80,18 +81,26 @@ rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 rosparam set start_time $t
 rosparam set filter_status $FILTER
 rosparam set gmapping_status $MAPPING
-rosparam set invocation $myInvocation
+
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
 LOGFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
+PARAMFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/params.yaml"
 touch $LOGFILE
 echo -e "Trial Notes: $MESSAGE\nFILTER: $FILTER\nMAPPING $MAPPING" >> $LOGFILE
 echo -e "Command used: $myInvocation" >> $LOGFILE
-echo -e "\nPARAMS: \n" >> $LOGFILE
-echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/room_params_V2.yaml)" >> $LOGFILE
-echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/scenario_params_V2.yaml)" >> $LOGFILE
-echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/plugin_params.yaml)" >> $LOGFILE
+# cp "src/myhal_simulator/params/room_params_V2.yaml" "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/room_params_V2.yaml"
+# cp "src/myhal_simulator/params/scenario_params_V2.yaml" "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/scenario_params_V2.yaml"
+# echo -e "\nPARAMS: \n" >> $LOGFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/room_params_V2.yaml)" > $PARAMFILE
+echo -e "\n" >> $PARAMFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/scenario_params_V2.yaml)" >> $PARAMFILE
+echo -e "\n" >> $PARAMFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/plugin_params.yaml)" >> $PARAMFILE
+echo -e "\n" >> $PARAMFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/jackal_velodyne/launch/include/pointcloud_filter.launch)" >> $LOGFILE
+echo -e "\n" >> $PARAMFILE
+echo -e "tour_name: $TOUR" >> $PARAMFILE
 
 sleep 0.1
 
@@ -107,10 +116,12 @@ fi
 cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/"
 
 #rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" & # Limiting data to remain under rosbag buffer
-rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" /clock /velodyne_points /move_base/local_costmap/costmap /move_base/global_costmap/costmap /ground_truth/state /map /move_base/NavfnROS/plan /amcl_pose /tf /tf_static /move_base/result /tour_data /optimal_path &
+rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" /clock /shutdown_signal /velodyne_points /move_base/local_costmap/costmap /move_base/global_costmap/costmap /ground_truth/state /map /move_base/NavfnROS/plan /amcl_pose /tf /tf_static /move_base/result /tour_data /optimal_path &
 rosrun jackal_velodyne diagnostics &
 roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER mapping:=$MAPPING
-
+sleep 0.5
+echo "Running data_processing.py"
+rosrun dashboard data_processing.py $t
 
 
 

@@ -25,7 +25,8 @@
 
         <include file="$(find jackal_velodyne)/launch/include/amcl.launch" />
     </group>
-
+    
+    <node pkg="dashboard" type="meta_data.py" name="meta_data" output="screen"/>
 
 
 </launch>

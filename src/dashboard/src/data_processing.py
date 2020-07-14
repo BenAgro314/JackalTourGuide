@@ -32,8 +32,12 @@ if __name__ == "__main__":
 	try:
 		bag = rosbag.Bag(path + "raw_data.bag")
 	except:
-		print "ERROR: invalid filename"
-		exit()
+		try:
+			bag = rosbag.Bag(path + "localization_test.bag")
+		except:
+			print "ERROR: invalid filename"
+			exit()
+		
 
 	if (not os.path.isdir(path + "classified_frames")):
 		try:
@@ -50,9 +54,11 @@ if __name__ == "__main__":
 	# read in lidar frames
 	frames = bt.read_pointcloud_frames("/velodyne_points", bag)
 
+
+
 	pickle_dict['lidar_frames'] = frames
 
-	print "Writing lidar frames"
+	print "Writing",len(frames),"lidar frames"
 
 	# write lidar frames to .ply files 
 	for frame in frames:
