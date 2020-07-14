@@ -34,8 +34,10 @@ class Series:
                 ind = np.random.randint(0,len(Series.colors.keys()))
                 self.color_list.append(Series.colors[Series.colors.keys()[ind]])
                 Series.colors.pop(Series.colors.keys()[ind])
-                if (len(Series.colors.keys()) == 0):
+                if (len(Series.colors.keys()) <= 0):
                     Series.colors = mcolors.TABLEAU_COLORS
+
+
     
 
         self.name = name

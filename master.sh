@@ -48,10 +48,12 @@ killall rosmaster
 
 export CLASSIFY=$CLASS
 
+c_method="ground_truth"
 
 # ...do something interesting...
 if [ "$CLASS" = false ] ; then
     FILTER=false
+    c_method="none"
 fi
 
 
@@ -73,6 +75,7 @@ rosparam load src/myhal_simulator/params/scenario_params_V2.yaml
 rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
 rosparam set localization_test false
+rosparam set class_method $c_method
 # rosparam set repeat $REPEAT
 rosparam set use_sim_time true
 rosparam set tour_name $TOUR
@@ -89,16 +92,13 @@ PARAMFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/params.yaml"
 touch $LOGFILE
 echo -e "Trial Notes: $MESSAGE\nFILTER: $FILTER\nMAPPING $MAPPING" >> $LOGFILE
 echo -e "Command used: $myInvocation" >> $LOGFILE
-# cp "src/myhal_simulator/params/room_params_V2.yaml" "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/room_params_V2.yaml"
-# cp "src/myhal_simulator/params/scenario_params_V2.yaml" "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/scenario_params_V2.yaml"
-# echo -e "\nPARAMS: \n" >> $LOGFILE
+echo -e "\nPointcloud filter params: \n" >> $LOGFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/jackal_velodyne/launch/include/pointcloud_filter.launch)" >> $LOGFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/room_params_V2.yaml)" > $PARAMFILE
 echo -e "\n" >> $PARAMFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/scenario_params_V2.yaml)" >> $PARAMFILE
 echo -e "\n" >> $PARAMFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/plugin_params.yaml)" >> $PARAMFILE
-echo -e "\n" >> $PARAMFILE
-echo -e "$(cat /home/$USER/catkin_ws/src/jackal_velodyne/launch/include/pointcloud_filter.launch)" >> $LOGFILE
 echo -e "\n" >> $PARAMFILE
 echo -e "tour_name: $TOUR" >> $PARAMFILE
 
@@ -108,8 +108,10 @@ WORLDFILE="/home/$USER/catkin_ws/src/myhal_simulator/worlds/myhal_sim.world"
 
 if [[ -z $LOADWORLD ]]; then
     rosrun myhal_simulator world_factory
+    rosparam set load_world "none"
 else
     WORLDFILE="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/logs-$LOADWORLD/myhal_sim.world"
+    rosparam set load_world $LOADWORLD
     echo "Loading world $WORLDFILE"
 fi
 

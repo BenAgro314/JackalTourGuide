@@ -35,7 +35,9 @@ class MetaHandler:
             tech = "gmapping"
         else:
             tech = "amcl"
-
+        self.table['class_method'] = self.class_method
+        self.table['localization_test'] = self.localization_test
+        self.table['load_world'] = self.load_world
         self.table['localization_technique'] = tech
         self.table['success_status'] = self.successful
         self.table['scenarios'] = []
@@ -45,28 +47,23 @@ class MetaHandler:
         
 
     def on_shutdown(self, msg):
-
         self.create_table()
-        
-
         json.dump(self.table, self.meta_json, indent = 4, sort_keys=True)
-        # self.run_json.close()  
+        self.meta_json.close()  
         shutdown_script = "/home/"+self.username+"/catkin_ws/shutdown.sh"
         subprocess.call(shutdown_script, shell = True)
 
     def read_params(self):
         
         self.username = os.environ['USER']
-        self.localization_test = rospy.get_param("/localization_test")
-
-
+        self.localization_test = 'true' if rospy.get_param("/localization_test") else 'false'
+        self.class_method = rospy.get_param("/class_method")
+        self.load_world = rospy.get_param("/load_world")
         self.start_time = rospy.get_param("/start_time")
         self.tour_name = rospy.get_param("/tour_name")
         self.filter_status = 'true' if rospy.get_param("/filter_status") else 'false'
-        self.classify_status = 'true' if rospy.get_param("/classify") else 'false'
+        #self.classify_status = 'true' if rospy.get_param("/classify") else 'false'
         self.gmapping_status = rospy.get_param("/gmapping_status") 
-        # repeat = rospy.get_param("/repeat")
-        # rospy.set_param("/repeat", repeat-1)
 
         room_names = rospy.get_param("/room_names")
         scenario_names = rospy.get_param("/room_names")

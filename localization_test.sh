@@ -30,10 +30,12 @@ until rostopic list; do sleep 0.5; done #wait until rosmaster has started
 
 INFILE="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/raw_data.bag"
 
+c_method="hugues_annotations"
 
 LIDARTOPIC="/hugues_points"
 if [ "$GT" == "true" ]; then
     LIDARTOPIC="/velodyne_points"
+    c_method="ground_truth"
 fi
 
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
@@ -47,6 +49,8 @@ rosparam set filter_status $FILTER
 rosparam set gmapping_status $MAPPING
 rosparam set start_time $t
 rosparam set classify true
+rosparam set class_method $c_method
+rosparam set load_world $LOADWORLD
 rosparam load /home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/logs-$LOADWORLD/params.yaml
 
 

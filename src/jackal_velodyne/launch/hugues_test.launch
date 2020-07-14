@@ -23,7 +23,9 @@
         <!-- Run the map server -->
         <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
-        <include file="$(find jackal_velodyne)/launch/include/amcl.launch" />
+        <include file="$(find jackal_velodyne)/launch/include/amcl.launch">
+            <arg name="map_frame" value="hugues_map"/>
+        </include>
     </group>
     
     <node pkg="dashboard" type="meta_data.py" name="meta_data" output="screen"/>

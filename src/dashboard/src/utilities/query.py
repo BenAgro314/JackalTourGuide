@@ -28,12 +28,10 @@ class Query:
             self.init_table()
 
 
-    def find_runs(self, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None):
+    def find_runs(self, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None):
         '''
         given a set of conditions, return a list of all runs that satisfy those conditions,
         '''
-
-        # find the intersections of the sets of runs that satisfy each conditions
 
         res = set(self.files)
 
@@ -41,6 +39,9 @@ class Query:
         res = res.intersection(self.set_from_dict('filter_status', filter_status))
         res = res.intersection(self.set_from_dict('success_status', success_status))
         res = res.intersection(self.set_from_dict('localization_technique', localization_technique))
+        res = res.intersection(self.set_from_dict('localization_test', localization_test))
+        res = res.intersection(self.set_from_dict('class_method', class_method))
+        res = res.intersection(self.set_from_dict('load_world', load_world))
 
         for scenario in scenarios:
             res = res.intersection(self.set_from_dict('scenarios', scenario))
@@ -82,19 +83,41 @@ class Query:
     def delete_old_runs(self):
         ''' delete runs that no longer exist from json table'''
 
-     
+        # look at the lits of files, find which ones no longer exist, and remove them from the dictionary
+        self.files = os.listdir(self.path+'/simulated_runs/')
 
-        self.remove_from_dict('localization_technique')
-        self.remove_from_dict('tour_names')
-        self.remove_from_dict('scenarios')
-        self.remove_from_dict('success_status')
-        self.remove_from_dict('filter_status')
+        def remove_from_subdict(field, run):
+            for key in self.table[field]:
+                k_runs = self.table[field][key][:]
+                for kr in k_runs:
+                    if (kr == run):
+                        self.table[field][key].remove(kr)
 
         times = self.table['times'][:]
 
         for time in times:
             if (time not in self.files):
+                remove_from_subdict('localization_technique', time)
+                remove_from_subdict('tour_names', time)
+                remove_from_subdict('scenarios', time)
+                remove_from_subdict('success_status', time)
+                remove_from_subdict('filter_status', time)
+                remove_from_subdict('localization_test', time)
+                remove_from_subdict('class_method', time)
+                remove_from_subdict('load_world', time)
                 self.table['times'].remove(time)
+
+        # self.remove_from_dict('localization_technique')
+        # self.remove_from_dict('tour_names')
+        # self.remove_from_dict('scenarios')
+        # self.remove_from_dict('success_status')
+        # self.remove_from_dict('filter_status')
+
+        # times = self.table['times'][:]
+
+        # for time in times:
+        #     if (time not in self.files):
+        #         self.table['times'].remove(time)
 
         self.update_json()
         self.open_json()
@@ -106,10 +129,20 @@ class Query:
         self.table.setdefault("localization_technique", {})
         self.table.setdefault("success_status", {'true': [], 'false': []})
         self.table.setdefault("scenarios", {})
+        self.table.setdefault("class_method", {})
+        self.table.setdefault("localization_test", {'true':[],'false':[]})
+        self.table.setdefault("load_world", {})
         self.table.setdefault("times", [])
 
     def add_new_runs(self):
         # find all files in self.files that have meta.json file that are not in the table
+
+        def create_or_append(key, field):
+            if (key in self.table[field]):
+                self.table[field][key].append(file)
+            else:
+                self.table[field][key] = [file]
+
         for file in self.files:
             path = self.path + "simulated_runs/" + file + "/logs-" + file + "/meta.json"
             if (os.path.exists(path) and (file not in self.table['times'])):
@@ -119,19 +152,13 @@ class Query:
                 meta_json = open(path, 'r')
                 data = json.load(meta_json)
                 # tour names
-                if (data['tour_names'] in self.table['tour_names']):
-                    self.table['tour_names'][data['tour_names']].append(file)
-                else:
-                    self.table['tour_names'][data['tour_names']] = [file]
+                create_or_append(data['tour_names'], 'tour_names')
                 
                 # filter status
                 
                 self.table['filter_status'][data['filter_status']].append(file)
 
-                if (data['localization_technique'] in self.table['localization_technique']):
-                    self.table['localization_technique'][data['localization_technique']].append(file)
-                else:
-                    self.table['localization_technique'][data['localization_technique']] = [file]
+                create_or_append(data['localization_technique'], 'localization_technique')
                 
                 # succcess status
 
@@ -142,28 +169,31 @@ class Query:
                 taken = []
 
                 for scenario in data['scenarios']:
-                    
-
                     if (scenario not in taken):
-                        if scenario in self.table['scenarios']:
-                            self.table['scenarios'][scenario].append(file)
-                        else:
-                            self.table['scenarios'][scenario] = [file]
-
+                        create_or_append(scenario, 'scenarios')
                     taken.append(scenario)
 
                 self.table['times'].append(file)
 
+                self.table['localization_test'][data['localization_test']].append(file)
+
+                create_or_append(data['class_method'], 'class_method')
+                create_or_append(data['load_world'], 'load_world')
+
+                
+
         self.update_json()
         self.open_json()
+
     
-    def remove_from_dict(self, field_name):
-        attributes = self.table[field_name].copy()
-        for att in attributes:
-            dates = attributes[att][:]
-            for date in dates:
-                if (date not in self.files):
-                    self.table[field_name][att].remove(date)
+    
+    # def remove_from_dict(self, field_name):
+    #     attributes = self.table[field_name].copy()
+    #     for att in attributes:
+    #         dates = attributes[att][:]
+    #         for date in dates:
+    #             if (date not in self.files):
+    #                 self.table[field_name][att].remove(date)
 
 
     def update_json(self):
