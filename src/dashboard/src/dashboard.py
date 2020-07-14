@@ -2,6 +2,7 @@
 
 import os
 import numpy as np
+import json
 from utilities import math_utilities as mu
 from utilities import plot_utilities as pu 
 from utilities import query as Q
@@ -9,6 +10,7 @@ import pickle
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import enum
+import copy
 
 class InfoType(enum.Enum):
     translation_error = 'translation_error'
@@ -18,12 +20,38 @@ class InfoType(enum.Enum):
     text = 'text'
     empty = "empty"
 
+
+class Run:
+
+    def __init__(self, name, data, meta):
+        self.name = name
+        self.data = data
+        self.meta = meta
+
+    def get_data(self,key):
+        return self.data[key]
+
+    def keys(self):
+        return self.data.keys()
+
+    def __str__(self):
+        res = 'Name: ' + self.name + "\n"
+        for key,value in self.meta.items():
+            if (type(value) == type([])):
+                res += key + "\n"
+                for i in value:
+                    res += '\t' + i + '\n'
+            else:
+                res += key + ": " + str(value) + "\n"
+
+        return res
+
 class Series:
 
     colors = mcolors.BASE_COLORS
     num_colors = 3
 
-    def __init__(self, name, clist = [], tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None):
+    def __init__(self, name, clist = [], tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None):
         self.color_list = []
 
 
@@ -37,45 +65,54 @@ class Series:
                 if (len(Series.colors.keys()) <= 0):
                     Series.colors = mcolors.TABLEAU_COLORS
 
-
-    
-
         self.name = name
         self.username = os.environ['USER']
         self.path = '/home/' + self.username + "/Myhal_Simulation/simulated_runs" 
         self.query = Q.Query()
-        self.files = self.query.find_runs(tour_name, filter_status, localization_technique, success_status, scenarios, earliest_date, latest_date)
+        self.files = self.query.find_runs(tour_name, filter_status, localization_technique, success_status, scenarios, earliest_date, latest_date, localization_test, class_method, load_world)
         self.load_data()
         
+    def __str__(self):
+        res = 'Name: ' + self.name + '\nQuery:\n'
+        for char,val in self.query.chars.items():
+            if not val:
+                val = str(val)
+            res+= '\t' + char + ": " + val + "\n"
+
+        res += "Run List:\n"
+
+        for r in self.files:
+            res += '\t' + r + '\n'
+
+        res += "Colors:\n"
+        for c in self.color_list:
+            res += "\t" + str(c) + "\n"
+        
+
+        return res
+
+    def get_run(self, name):
+        if name in self.data_table:
+            return self.data_table[name]
+        else:
+            print 'Run name ' + name + ' not found in series'
+            return None
 
     def load_data(self):
-        '''
-        fills the dictionary self.data_table
-        keys: dates
-        values: the processed data for those dates
-
-        processed data contains:
-             - waypoints
-             - optimal_traj
-             - action_results
-             - gt_traj
-             - amcl_traj or gmapping_traj
-             - 
-        '''
         
         self.data_table= {}
 
         for date in self.files:
-            filepath = "/home/" + self.username + "/Myhal_Simulation/simulated_runs/" + date + "/logs-" + date + "/processed_data.pickle"
-            with open(filepath, 'rb') as handle:
+            filepath = "/home/" + self.username + "/Myhal_Simulation/simulated_runs/" + date + "/logs-" + date 
+            meta = json.load(open(filepath + "/meta.json"))
+            with open(filepath+ "/processed_data.pickle", 'rb') as handle:
                 data = pickle.load(handle)
-                self.data_table[date] = data
+                self.data_table[date] = Run(date,data, meta)
 
     def set_colors(self, colors):
+        '''Input a list of colors from matplotlib (in order of priority) for this series to use'''
         self.color_list = colors
 
-    def run_list(self):
-        return self.files
 
 class Display:
 
@@ -85,8 +122,12 @@ class Display:
         self.series_list = []
         self.plot_types = []
 
+
+    def dim(self):
+        return (self.rows,self.cols)
+
     def size(self):
-        return self.rows*self.cols
+        return self.rows * self.cols
 
     def add_series(self,series):
         self.series_list.append(series)
@@ -116,8 +157,8 @@ class Display:
             for series in self.series_list:
                 for date in series.data_table:
                     data = series.data_table[date]
-                    gt_traj = data['gt_traj']
-                    loc_traj = data['amcl_traj'] if ('amcl_traj' in data) else data['gmapping_traj']
+                    gt_traj = data.get_data('gt_traj')
+                    loc_traj = data.get_data('amcl_traj') if ('amcl_traj' in data.keys()) else data.get_data('gmapping_traj')
                     ax.plot(pu.list_distances(gt_traj)[0], pu.translation_error(loc_traj,gt_traj), label = series.name, color = series.color_list[0])
 
         if (plot_type == InfoType.yaw_error):
@@ -126,8 +167,8 @@ class Display:
             for series in self.series_list:
                 for date in series.data_table:
                     data = series.data_table[date]
-                    gt_traj = data['gt_traj']
-                    loc_traj = data['amcl_traj'] if ('amcl_traj' in data) else data['gmapping_traj']
+                    gt_traj = data.get_data('gt_traj')
+                    loc_traj = data.get_data('amcl_traj') if ('amcl_traj' in data.keys()) else data.get_data('gmapping_traj')
                     ax.plot(pu.list_distances(gt_traj)[0], pu.yaw_error(loc_traj,gt_traj), label = series.name, color = series.color_list[0])
 
         if (plot_type == InfoType.trajectory_plot):
@@ -136,64 +177,115 @@ class Display:
             for series in self.series_list:
                 for date in series.data_table:
                     data = series.data_table[date]
-                    gt_traj = data['gt_traj']
-                    loc_traj = data['amcl_traj'] if ('amcl_traj' in data) else data['gmapping_traj']
+                    gt_traj = data.get_data('gt_traj')
+                    loc_traj = data.get_data('amcl_traj') if ('amcl_traj' in data.keys()) else data.get_data('gmapping_traj')
                     ax.plot(gt_traj['pos_x'],gt_traj['pos_y'],  label = series.name+" ground truth", color = series.color_list[0])
                     ax.plot(loc_traj['pos_x'],loc_traj['pos_y'],  label = series.name+" localization", color = series.color_list[1])
 
         ax.legend()
 
 class Dashboard:
+    '''A class for displaying and analyzing information from simulated runs'''
 
     def __init__(self):
+        
         self.series_table = {}
+        self.runs = {}
         self.display = None
         self.query = Q.Query()
+
+    def __str__(self):
+
+        if (len(self.series_table.keys()) == 0):
+            res = "No series in display\n"
+        else:
+            res = "Series:\n"
+
+        for s in self.series_table:
+            res += '\t- ' + s + '\n'
+
+        if not self.display:
+            res += "No display initialized"
+        else:
+
+            res += "Display shape: " + str(self.display.dim()) + '\n'
+
+            res += 'Plot Types:\n'
+            for p in self.display.plot_types:
+                res += '\t' +p.value + '\n'
+        
+        return res
     
-    def delete_old_runs(self):
+    def get_series(self, name):
+        '''returns the series of the desired name if it exists'''
+        if name in self.series_table:
+            return self.series_table[name]
+        else:
+            print 'Series name ' + name + ' not found in dashboard'
+            return None
+
+    
+    def get_run(self, name):
+        '''returns run of name name if it exists'''
+
+        if name in self.runs:
+            return self.runs[name]
+        else:
+            print 'Run name ' + name + ' not found in dashboard'
+            return None
+
+    def clean_runs(self):
+        '''Cleans deleted runs from run_data.json'''
         self.query.delete_old_runs()
 
     def add_series(self, series, aggregate = False):
-        self.series_table[series.name] = (series,aggregate)
+        '''Add a series to the Dashboard. (NOTE: aggregate not implemented yet). Pass aggregate = True if series values should be averaged for plots'''
+        self.series_table[series.name] = series
+        for name, run in series.data_table.items():
+            self.runs[name] = run
 
-    def add_plot_type(self, plot_type):
+    def remove_series(self, series_name):
+        '''remove a series by a given name'''
+        if series_name not in self.series_table:
+            print 'Series name ' + series_name + ' not found in dashboard'
+            return None
+
+        for name,run in copy.deepcopy(self.runs):
+            if name in self.series_table[series].data_table:
+                self.runs.pop(name)
+
+        self.series_table.pop(series_name)
+
+    def add_plot(self, plot_type):
+        ''' add a desired plot type to the Dashboard's display'''
         if (not self.display):
-            print 'A display has yet to be initialized'
-            return
+            print 'A display has yet to be initialized, initializing a (1,1) display'
+            self.init_display()
+            
 
         if (len(self.display.plot_types) + 1  > (self.display.size())):
             print 'Too many plot types for desired display dimensions, please run Dashboard.resize_display(rows, cols)'
         
         self.display.add_plot_type(plot_type)
 
-    def create_display(self, rows = 1, cols = 1):
+    def init_display(self, rows = 1, cols = 1):
         self.display = Display(rows, cols)
 
-    def show_display(self):
+    def show(self):
         self.display.series_list = []
         for name in self.series_table:
-            self.display.add_series(self.series_table[name][0])
+            self.display.add_series(self.series_table[name])
         self.display.display()
 
-    def resize_display(self, rows, cols):
+    def resize(self, rows, cols):
         if (not self.display):
-            print 'A display has yet to be initialized'
-            return
+            print 'A display has yet to be initialized, initializing a (' + str(rows) + ", " + str(cols) + ") sized display"
+            self.init_display(rows,cols)
+            return 
 
         self.display.rows = rows
         self.display.cols = cols
 
-    def list_runs(self, series):
-        if (type(series) == type('string')):
-            l = self.series_table[series][0].run_list()
-        else:
-            l = series.run_list()
-
-        for name in l:
-            print name
-
-def help():
-    pass
 
 if __name__ == "__main__":
     D = Dashboard()

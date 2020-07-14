@@ -32,7 +32,17 @@ class Query:
         '''
         given a set of conditions, return a list of all runs that satisfy those conditions,
         '''
-
+        self.chars = {}
+        self.chars['tour_name'] = tour_name
+        self.chars['filter_status'] = filter_status
+        self.chars['localization_technique'] = localization_technique
+        self.chars['success_status'] = success_status
+        self.chars['scenarios'] = scenarios
+        self.chars['earliest_date'] = earliest_date
+        self.chars['latest_date'] = latest_date
+        self.chars['localization_test'] = localization_test
+        self.chars['class_method'] = class_method
+        self.chars['load_world'] = load_world
         res = set(self.files)
 
         res = res.intersection(self.set_from_dict('tour_names', tour_name))
