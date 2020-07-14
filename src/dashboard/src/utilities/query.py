@@ -17,7 +17,16 @@ class Query:
 
         self.open_json()
         self.add_new_runs()
+        self.chars = {}
         
+    def reload(self):
+        self.update_json()
+        self.files = os.listdir(self.path+'/simulated_runs/')
+        self.open_json()
+        self.add_new_runs()
+        self.delete_old_runs()
+        if (self.chars):
+            return self.find_runs(self.chars['tour_name'], self.chars['filter_status'], self.chars['localization_technique'], self.chars['success_status'], self.chars['scenarios'], self.chars['earliest_date'], self.chars['latest_date'], self.chars['localization_test'], self.chars['class_method'], self.chars['load_world'])
 
     def open_json(self):
         try:
@@ -32,7 +41,7 @@ class Query:
         '''
         given a set of conditions, return a list of all runs that satisfy those conditions,
         '''
-        self.chars = {}
+       
         self.chars['tour_name'] = tour_name
         self.chars['filter_status'] = filter_status
         self.chars['localization_technique'] = localization_technique
@@ -116,18 +125,6 @@ class Query:
                 remove_from_subdict('class_method', time)
                 remove_from_subdict('load_world', time)
                 self.table['times'].remove(time)
-
-        # self.remove_from_dict('localization_technique')
-        # self.remove_from_dict('tour_names')
-        # self.remove_from_dict('scenarios')
-        # self.remove_from_dict('success_status')
-        # self.remove_from_dict('filter_status')
-
-        # times = self.table['times'][:]
-
-        # for time in times:
-        #     if (time not in self.files):
-        #         self.table['times'].remove(time)
 
         self.update_json()
         self.open_json()

@@ -113,6 +113,10 @@ class Series:
         '''Input a list of colors from matplotlib (in order of priority) for this series to use'''
         self.color_list = colors
 
+    def reload(self):
+        self.files = self.query.reload()
+        self.load_data()
+
 
 class Display:
 
@@ -215,6 +219,10 @@ class Dashboard:
                 res += '\t' +p.value + '\n'
         
         return res
+
+    def reload(self):
+        for name,series in self.series_table.items():
+            series.reload()
     
     def get_series(self, name):
         '''returns the series of the desired name if it exists'''
