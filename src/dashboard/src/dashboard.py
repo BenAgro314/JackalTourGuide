@@ -1,32 +1,159 @@
 #!/usr/bin/env python
 
 import os
-import numpy as np
 import json
 from utilities import math_utilities as mu
 from utilities import plot_utilities as pu 
 from utilities import query as Q
+import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import enum
 import copy
 
-class Plot(enum.Enum):
-    translation_error = 'translation_error'
-    yaw_error = 'yaw_error'
-    trajectory_plot = 'trajectory_plot'
-    path_diff = 'path_diff'
-    text = 'text'
-    empty = "empty"
+class Plot:
 
+    def __init__(self, ax, series_list):
+        self.ax = ax
+
+        self.series = {}
+        for s in series_list:
+            self.series[s.name] = s
+
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        self.label()
+        
+       
+    def label(self):
+        pass
+
+    def collect_data(self):
+        pass
+
+    def init_axis(self):
+        self.collect_data()
+        for i in range(len(self.data['x_data'])):
+            self.ax.plot(self.data['x_data'][i], self.data['y_data'][i], self.data['line'][i], label = self.data['series_name'][i], color = self.data['color'][i])
+
+        self.ax.legend()
+    
+    def aggregate(self, series):
+        
+        pass
+
+    def __str__(self):
+        res = self.ax.get_title() + ", (x label: " + self.ax.get_xlabel() + ", y label: " + self.ax.get_ylabel() + ")"
+        return res
+
+    def add_series(series):
+        self.series[series.name] = series
+
+class TranslationError(Plot):
+    
+    def label(self):
+        self.ax.set_title("Translation Error")
+        self.ax.set(xlabel='Distance Travelled (m)', ylabel = 'Translation Error (m)')
+
+    def collect_data(self, aggregate = False):
+        
+
+        
+
+        for name, series in self.series.items():    
+
+            max_dist = 0
+            temp_data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+
+            for n,run in series.data_table.items():
+                gt_traj = run.get_data('gt_traj')
+                loc_traj = run.get_data('amcl_traj') if ('amcl_traj' in run.keys()) else run.get_data('gmapping_traj')
+                dists = pu.list_distances(gt_traj)
+                temp_data['x_data'].append(dists[0])
+                max_dist = max(max_dist, dists[1])
+                temp_data['y_data'].append(pu.translation_error(loc_traj,gt_traj))
+                temp_data['series_name'].append(name)
+                temp_data['color'].append(series.color_list[0])
+                temp_data['line'].append('-')
+
+            if aggregate:
+                x_bins = np.linspace(0,max_dist, max_dist/0.1)
+                for i in range(len(temp_data['x_data'])):
+                    #print len(temp_data['x_data'][i])
+                    dists = temp_data['x_data'][i]
+                    diffs = temp_data['y_data'][i]
+
+                    last_ind = 0
+
+
+                    for j in range(len(dists)):
+                        x = dists[j]
+                        y = diffs[j]
+                        if (x < 0 or x > max_dist):
+                            continue
+
+            for key in self.data:
+                self.data[key] += temp_data[key]
+
+        # find the largest distance travelled. 
+        # split the x axis into discrete points
+        # find the nearest interpolation to those points for every difference value
+        
+
+class YawError(Plot):
+
+    def label(self):
+        self.ax.set_title("Yaw Error")
+        self.ax.set(xlabel='Distance Travelled (m)', ylabel = 'Yaw Error (m)')
+
+    def collect_data(self):
+
+        for name, series in self.series.items():    
+            for n,run in series.data_table.items():
+                gt_traj = run.get_data('gt_traj')
+                loc_traj = run.get_data('amcl_traj') if ('amcl_traj' in run.keys()) else run.get_data('gmapping_traj')
+                self.data['x_data'].append(pu.list_distances(gt_traj)[0])
+                self.data['y_data'].append(pu.yaw_error(loc_traj,gt_traj))
+                self.data['series_name'].append(name)
+                self.data['color'].append(series.color_list[0])
+                self.data['line'].append('-')
+
+class TrajectoryPlot(Plot):
+    def label(self):
+        self.ax.set_title('Trajectory Plot')
+        self.ax.set(xlabel='x position (m)', ylabel = 'y position (m)')
+
+    def collect_data(self):
+
+        for name, series in self.series.items():    
+            for n,run in series.data_table.items():
+                gt_traj = run.get_data('gt_traj')
+                loc_traj = run.get_data('amcl_traj') if ('amcl_traj' in run.keys()) else run.get_data('gmapping_traj')
+                self.data['x_data'].append(gt_traj['pos_x'])
+                self.data['y_data'].append(gt_traj['pos_y'])
+                self.data['series_name'].append(series.name+" ground truth")
+                self.data['color'].append(series.color_list[0])
+                self.data['line'].append('-')
+                self.data['x_data'].append(loc_traj['pos_x'])
+                self.data['y_data'].append(loc_traj['pos_y'])
+                self.data['series_name'].append(series.name+" localization")
+                self.data['color'].append(series.color_list[1])
+                self.data['line'].append('--')
+
+class PathDifference(Plot):
+    def label(self):
+        self.ax.set_title("Path Difference")
+        self.ax.set(xlabel='Series', ylabel = 'Average percent difference from optimal path length (%)')
 
 class Run:
+
+    colors = mcolors.CSS4_COLORS
 
     def __init__(self, name, data, meta):
         self.name = name
         self.data = data
         self.meta = meta
+
 
     def get_data(self,key):
         return self.data[key]
@@ -46,10 +173,26 @@ class Run:
 
         return res
 
+    def show(self, plot_type, color_list = []):
+        ''' Given the desired plot_type class, and a list of colors by priority, plot this run'''
+        fig, axs = plt.subplots(1,1)
+
+        series_rep = Series("Run: " + self.name, color_list, earliest_date=self.name, latest_date=self.name)
+        if (plot_type):
+            p = plot_type(axs, [series_rep])
+            p.init_axis()
+        else:
+            print 'No type specified for plot'
+
+        fig.show()
+
+    def play(self):
+        pass
+
 class Series:
 
     colors = mcolors.BASE_COLORS
-    num_colors = 3
+    num_colors = 2
 
     def __init__(self, name, color_list = [], tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None):
         self.color_list = color_list
@@ -117,7 +260,6 @@ class Series:
         self.files = self.query.reload()
         self.load_data()
 
-
 class Display:
 
     def __init__(self, rows = 1, cols = 1):
@@ -143,50 +285,16 @@ class Display:
         fig, axs = plt.subplots(self.rows,self.cols)
         axs = np.array(axs)
         i = 0
-
         for ax in axs.reshape(-1):
-            plot_type = Plot.empty if (i >= len(self.plot_types)) else self.plot_types[i]
-            self.plot(ax, plot_type )
+            if (i>= len(self.plot_types)):
+                print 'Not enough plot types specified for the desired display dimensions. There will be blanks'
+            else:
+                plot_type = self.plot_types[i]
+                p = plot_type(ax, self.series_list)
+                p.init_axis()
+
             i+=1
-
-        plt.show()
-
-    def plot(self, ax, plot_type):
-        if (plot_type == Plot.empty):
-            return
-
-        if (plot_type == Plot.translation_error):
-            ax.set_title('Translation Error')
-            ax.set(xlabel='Distance Travelled (m)', ylabel = 'Translation Error (m)')
-            for series in self.series_list:
-                for date in series.data_table:
-                    data = series.data_table[date]
-                    gt_traj = data.get_data('gt_traj')
-                    loc_traj = data.get_data('amcl_traj') if ('amcl_traj' in data.keys()) else data.get_data('gmapping_traj')
-                    ax.plot(pu.list_distances(gt_traj)[0], pu.translation_error(loc_traj,gt_traj), label = series.name, color = series.color_list[0])
-
-        if (plot_type == Plot.yaw_error):
-            ax.set_title('Yaw Error')
-            ax.set(xlabel='Distance Travelled (m)', ylabel = 'Yaw Error (m)')
-            for series in self.series_list:
-                for date in series.data_table:
-                    data = series.data_table[date]
-                    gt_traj = data.get_data('gt_traj')
-                    loc_traj = data.get_data('amcl_traj') if ('amcl_traj' in data.keys()) else data.get_data('gmapping_traj')
-                    ax.plot(pu.list_distances(gt_traj)[0], pu.yaw_error(loc_traj,gt_traj), label = series.name, color = series.color_list[0])
-
-        if (plot_type == Plot.trajectory_plot):
-            ax.set_title('Trajectory Plot')
-            ax.set(xlabel='x position (m)', ylabel = 'y position (m)')
-            for series in self.series_list:
-                for date in series.data_table:
-                    data = series.data_table[date]
-                    gt_traj = data.get_data('gt_traj')
-                    loc_traj = data.get_data('amcl_traj') if ('amcl_traj' in data.keys()) else data.get_data('gmapping_traj')
-                    ax.plot(gt_traj['pos_x'],gt_traj['pos_y'],  label = series.name+" ground truth", color = series.color_list[0])
-                    ax.plot(loc_traj['pos_x'],loc_traj['pos_y'],  label = series.name+" localization", color = series.color_list[1])
-
-        ax.legend()
+        fig.show()
 
 class Dashboard:
     '''A class for displaying and analyzing information from simulated runs'''
@@ -213,10 +321,13 @@ class Dashboard:
         else:
 
             res += "Display shape: " + str(self.display.dim()) + '\n'
-
+            
             res += 'Plot Types:\n'
+            f,a = plt.subplots(1,1)
+           
             for p in self.display.plot_types:
-                res += '\t' +p.value + '\n'
+                res += '\t' + str(p(a,[]))+ '\n'
+            plt.close()
         
         return res
 
@@ -272,7 +383,8 @@ class Dashboard:
             
 
         if (len(self.display.plot_types) + 1  > (self.display.size())):
-            print 'Too many plot types for desired display dimensions, please run Dashboard.resize_display(rows, cols)'
+            print 'Too many plot types for desired display dimensions, automatically adding row to display. Please run Dashboard.resize(rows, cols) for different display size'
+            self.resize(self.display.rows+1, self.display.cols)
         
         self.display.add_plot_type(plot_type)
 
@@ -280,9 +392,12 @@ class Dashboard:
         self.display = Display(rows, cols)
 
     def show(self):
+        '''Show the current display with the desired plot types and series'''
+
         self.display.series_list = []
         for name in self.series_table:
             self.display.add_series(self.series_table[name])
+        print self
         self.display.display()
 
     def resize(self, rows, cols):
@@ -305,9 +420,9 @@ if __name__ == "__main__":
     D.add_series(s2)
 
     D.list_runs('gmapping')
-    D.add_plot_type(Plot.translation_error)
-    D.add_plot_type(Plot.trajectory_plot)
-    D.add_plot_type(Plot.yaw_error)
+    D.add_plot_type(TranslationError)
+    D.add_plot_type(TrajectoryPlot)
+    D.add_plot_type(YawError)
     D.show_display()
     
 
