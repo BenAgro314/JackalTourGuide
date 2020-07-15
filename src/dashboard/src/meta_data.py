@@ -14,6 +14,7 @@ from nav_msgs.msg import Odometry
 class MetaHandler:
 
     def __init__(self):
+        
         rospy.init_node('meta_data')
 
         self.read_params()

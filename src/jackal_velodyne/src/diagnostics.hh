@@ -11,6 +11,7 @@
 #include "sensor_msgs/PointCloud2.h"
 #include "sensor_msgs/Image.h"
 #include "nav_msgs/Odometry.h"
+#include "std_msgs/Bool.h"
 #include <utility>
 #include <iostream>
 #include <fstream>
@@ -36,11 +37,12 @@ class Doctor{
 
         ros::Subscriber sub;
 
+        ros::Publisher shutdown_pub;
+
         std::string username;
 
         std::string filepath;
 
-        std::string shutdown_file;
 
         std::string start_time = "ERROR SETTING START TIME";
 
@@ -81,7 +83,6 @@ Doctor::Doctor(){
 
     this->ReadParams();
 
-    this->shutdown_file = "/home/" + this->username + "/catkin_ws/shutdown.sh";
 
     this->filepath = "/home/" + this->username + "/Myhal_Simulation/simulated_runs/" + start_time + "/";
 
@@ -90,19 +91,8 @@ Doctor::Doctor(){
     ROS_INFO_STREAM("\nJACKAL DIAGNOSTICS RUNNING. OUTPUT CAN BE FOUND AT: " << this->filepath << "/logs-"+start_time+"/log.txt");
 
     this->log_file << "Tour Name: " << this->tour_name << std::endl;
-
-    // if (this->rooms.size() > 0){
-    //     this->log_file << "\nRoom Info:\n";
-    //     for (auto room_map: this->rooms){
-    //         this->log_file << "\nname: " << room_map["name"] << std::endl;
-    //         this->log_file << "scenario: " << room_map["scenario"] << std::endl;
-    //         this->log_file << "enclosed: " << room_map["enclosed"] << std::endl;
-    //         this->log_file << "geometry: " << room_map["geometry"] << std::endl;
-    //         this->log_file << "positions: " << room_map["positions"] << std::endl;
-    //     }
-    // }
     
-
+    this->shutdown_pub = this->nh.advertise<std_msgs::Bool>("shutdown_signal", 1000);
     this->sub = this->nh.subscribe<nav_msgs::Odometry>("ground_truth/state", 1000, std::bind(&Doctor::GroundTruthCallback, this, std::placeholders::_1), ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
 
     ros::spin();
@@ -171,8 +161,9 @@ void Doctor::GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg){
             this->log_file << "Tour failed: robot got stuck\n";
 
             this->log_file.close();
-            const char *cstr = this->shutdown_file.c_str();
-            system(cstr);
+            std_msgs::Bool shutdown_msg;
+            shutdown_msg.data = true;
+            this->shutdown_pub.publish(shutdown_msg);
         }
        
         
