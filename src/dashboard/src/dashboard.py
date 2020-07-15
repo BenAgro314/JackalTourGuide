@@ -12,7 +12,7 @@ import matplotlib.colors as mcolors
 import enum
 import copy
 
-class InfoType(enum.Enum):
+class Plot(enum.Enum):
     translation_error = 'translation_error'
     yaw_error = 'yaw_error'
     trajectory_plot = 'trajectory_plot'
@@ -51,11 +51,11 @@ class Series:
     colors = mcolors.BASE_COLORS
     num_colors = 3
 
-    def __init__(self, name, clist = [], tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None):
-        self.color_list = []
+    def __init__(self, name, color_list = [], tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None):
+        self.color_list = color_list
 
 
-        if (len(self.color_list) <= Series.num_colors):
+        if (len(self.color_list) < Series.num_colors):
             print Series.num_colors,'colors not specified, selecting randomly'
 
             for i in range(Series.num_colors):
@@ -145,17 +145,17 @@ class Display:
         i = 0
 
         for ax in axs.reshape(-1):
-            plot_type = InfoType.empty if (i >= len(self.plot_types)) else self.plot_types[i]
+            plot_type = Plot.empty if (i >= len(self.plot_types)) else self.plot_types[i]
             self.plot(ax, plot_type )
             i+=1
 
         plt.show()
 
     def plot(self, ax, plot_type):
-        if (plot_type == InfoType.empty):
+        if (plot_type == Plot.empty):
             return
 
-        if (plot_type == InfoType.translation_error):
+        if (plot_type == Plot.translation_error):
             ax.set_title('Translation Error')
             ax.set(xlabel='Distance Travelled (m)', ylabel = 'Translation Error (m)')
             for series in self.series_list:
@@ -165,7 +165,7 @@ class Display:
                     loc_traj = data.get_data('amcl_traj') if ('amcl_traj' in data.keys()) else data.get_data('gmapping_traj')
                     ax.plot(pu.list_distances(gt_traj)[0], pu.translation_error(loc_traj,gt_traj), label = series.name, color = series.color_list[0])
 
-        if (plot_type == InfoType.yaw_error):
+        if (plot_type == Plot.yaw_error):
             ax.set_title('Yaw Error')
             ax.set(xlabel='Distance Travelled (m)', ylabel = 'Yaw Error (m)')
             for series in self.series_list:
@@ -175,7 +175,7 @@ class Display:
                     loc_traj = data.get_data('amcl_traj') if ('amcl_traj' in data.keys()) else data.get_data('gmapping_traj')
                     ax.plot(pu.list_distances(gt_traj)[0], pu.yaw_error(loc_traj,gt_traj), label = series.name, color = series.color_list[0])
 
-        if (plot_type == InfoType.trajectory_plot):
+        if (plot_type == Plot.trajectory_plot):
             ax.set_title('Trajectory Plot')
             ax.set(xlabel='x position (m)', ylabel = 'y position (m)')
             for series in self.series_list:
@@ -258,7 +258,7 @@ class Dashboard:
             print 'Series name ' + series_name + ' not found in dashboard'
             return None
 
-        for name,run in copy.deepcopy(self.runs):
+        for name,run in self.runs.copy().items():
             if name in self.series_table[series].data_table:
                 self.runs.pop(name)
 
@@ -305,9 +305,9 @@ if __name__ == "__main__":
     D.add_series(s2)
 
     D.list_runs('gmapping')
-    D.add_plot_type(InfoType.translation_error)
-    D.add_plot_type(InfoType.trajectory_plot)
-    D.add_plot_type(InfoType.yaw_error)
+    D.add_plot_type(Plot.translation_error)
+    D.add_plot_type(Plot.trajectory_plot)
+    D.add_plot_type(Plot.yaw_error)
     D.show_display()
     
 
