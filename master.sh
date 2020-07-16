@@ -46,14 +46,20 @@ killall rviz
 killall roscore
 killall rosmaster
 
-export GTCLASSIFY=$GTCLASS
-
 c_method="ground_truth"
 
-# ...do something interesting...
-if [ "$GTCLASS" = false ] ; then
-    c_method="online_predictions"
+if [ "$FILTER" = false ] ; then
+    c_method="none"
+    GTCLASS=false
+else
+    if [ "$GTCLASS" = false ] ; then
+        c_method="online_predictions"
+    else 
+        c_method="ground_truth"
+    fi
 fi
+
+export GTCLASSIFY=$GTCLASS
 
 
 #1. launch roscore

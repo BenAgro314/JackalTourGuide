@@ -25,6 +25,10 @@ void PCLFilterNodelet::onInit()
   private_nh_.param<double>("min_height", min_height_, std::numeric_limits<double>::min());
   private_nh_.param<double>("max_height", max_height_, std::numeric_limits<double>::max());
 
+  if (!private_nh_.getParam("/filter_status", this->filter_status)){
+    this->filter_status = true;
+  }
+
   private_nh_.param<double>("angle_min", angle_min_, -M_PI);
   private_nh_.param<double>("angle_max", angle_max_, M_PI);
   private_nh_.param<double>("angle_increment", angle_increment_, M_PI / 180.0);
@@ -36,7 +40,7 @@ void PCLFilterNodelet::onInit()
   int concurrency_level;
   private_nh_.param<int>("concurrency_level", concurrency_level, 1);
   private_nh_.param<bool>("use_inf", use_inf_, true);
-  private_nh_.param<std::vector<int>>("catagories", catagories, {0,1,2,3,4,5});
+  private_nh_.param<std::vector<int>>("catagories", catagories, {0,1,2,3,4,5,6});
   // Check if explicitly single threaded, otherwise, let nodelet manager dictate thread pool size
   if (concurrency_level == 1)
   {
@@ -165,7 +169,7 @@ void PCLFilterNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg
       iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z, ++iter_i)
   { 
 
-    if (std::find(catagories.begin(), catagories.end(), *iter_i) == catagories.end()){
+    if (this->filter_status && std::find(catagories.begin(), catagories.end(), *iter_i) == catagories.end()){
       continue;
     }
 
