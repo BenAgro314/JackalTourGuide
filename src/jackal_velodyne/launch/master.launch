@@ -7,6 +7,7 @@
   <arg name="filter" default="false" />
   <arg name="mapping" default="false" />
   <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
+  <arg name="gt_classify" default="true" />
 
   <!-- Short-term hack to support the original front_laser:=true argument for spawning
        the simulator. This will be removed in favour of using the config:=x arg instead. -->
@@ -47,6 +48,7 @@
   <include file="$(find jackal_velodyne)/launch/include/pointcloud_filter.launch">
     <arg name="filter" value="$(arg filter)" />
     <arg name="mapping" value="$(arg mapping)" />
+    <arg name="gt_classify" value="$(arg gt_classify)" />
   </include>
 
   <!-- Spawn Jackal -->

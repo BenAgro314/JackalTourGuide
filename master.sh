@@ -12,7 +12,7 @@ MESSAGE=""
 LOADWORLD=""
 FILTER=false
 MAPPING=false
-CLASS=true
+GTCLASS=true
 REPEAT=1
 
 while getopts t:m:g:l:f:a:c:r: option
@@ -25,7 +25,7 @@ g) GUI=${OPTARG};; # do you want to use the gui
 l) LOADWORLD=${OPTARG};; # do you want to load a prexisting world or generate a new one
 f) FILTER=${OPTARG};; # pointcloud filtering?
 a) MAPPING=${OPTARG};; # use gmapping?
-c) CLASS=${OPTARG};; # are we classifying points at all?
+c) GTCLASS=${OPTARG};; # are we using ground truth classifications
 r) REPEAT=${OPTARG};; # how many times to loop this trial?
 esac
 done
@@ -46,14 +46,13 @@ killall rviz
 killall roscore
 killall rosmaster
 
-export CLASSIFY=$CLASS
+export GTCLASSIFY=$GTCLASS
 
 c_method="ground_truth"
 
 # ...do something interesting...
-if [ "$CLASS" = false ] ; then
-    FILTER=false
-    c_method="none"
+if [ "$GTCLASS" = false ] ; then
+    c_method="online_predictions"
 fi
 
 
@@ -79,7 +78,7 @@ rosparam set class_method $c_method
 # rosparam set repeat $REPEAT
 rosparam set use_sim_time true
 rosparam set tour_name $TOUR
-rosparam set classify $CLASSIFY
+# rosparam set classify $GTCLASSIFY
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 rosparam set start_time $t
 rosparam set filter_status $FILTER
@@ -120,7 +119,7 @@ cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/"
 #rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" & # Limiting data to remain under rosbag buffer
 rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" /clock /shutdown_signal /velodyne_points /move_base/local_costmap/costmap /move_base/global_costmap/costmap /ground_truth/state /map /move_base/NavfnROS/plan /amcl_pose /tf /tf_static /move_base/result /tour_data /optimal_path /classified_points &
 rosrun jackal_velodyne diagnostics &
-roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER mapping:=$MAPPING
+roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER mapping:=$MAPPING gt_classify:=$GTCLASS
 sleep 0.5
 echo "Running data_processing.py"
 rosrun dashboard data_processing.py $t

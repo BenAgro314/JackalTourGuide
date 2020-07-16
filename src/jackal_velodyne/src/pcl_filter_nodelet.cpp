@@ -25,10 +25,6 @@ void PCLFilterNodelet::onInit()
   private_nh_.param<double>("min_height", min_height_, std::numeric_limits<double>::min());
   private_nh_.param<double>("max_height", max_height_, std::numeric_limits<double>::max());
 
-  if (!private_nh_.getParam("/classify", this->classify)){
-      this->classify = true;
-  }
-
   private_nh_.param<double>("angle_min", angle_min_, -M_PI);
   private_nh_.param<double>("angle_max", angle_max_, M_PI);
   private_nh_.param<double>("angle_increment", angle_increment_, M_PI / 180.0);
@@ -163,8 +159,8 @@ void PCLFilterNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg
   }
 
   // Iterate through pointcloud
-  std::string field = (this->classify) ? "intensity":"intensity";
-   sensor_msgs::PointCloud2ConstIterator<float> iter_i(*cloud_out, field);
+  
+   sensor_msgs::PointCloud2ConstIterator<float> iter_i(*cloud_out, "intensity");
   for (sensor_msgs::PointCloud2ConstIterator<float> iter_x(*cloud_out, "x"), iter_y(*cloud_out, "y"), iter_z(*cloud_out, "z");
       iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z, ++iter_i)
   { 

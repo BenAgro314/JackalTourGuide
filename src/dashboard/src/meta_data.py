@@ -63,7 +63,6 @@ class MetaHandler:
         self.start_time = rospy.get_param("/start_time")
         self.tour_name = rospy.get_param("/tour_name")
         self.filter_status = 'true' if rospy.get_param("/filter_status") else 'false'
-        #self.classify_status = 'true' if rospy.get_param("/classify") else 'false'
         self.gmapping_status = rospy.get_param("/gmapping_status") 
 
         room_names = rospy.get_param("/room_names")

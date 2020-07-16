@@ -15,7 +15,7 @@ from scipy import interpolate
 
 class Plot:
 
-    def __init__(self, ax, series_list):
+    def __init__(self, ax, series_list, aggregate = False):
         self.ax = ax
 
         self.series = {}
@@ -23,6 +23,7 @@ class Plot:
             self.series[s.name] = s
 
         self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        self.aggregate = aggregate
         self.label()
         
        
@@ -38,10 +39,6 @@ class Plot:
             self.ax.plot(self.data['x_data'][i], self.data['y_data'][i], self.data['line'][i], label = self.data['series_name'][i], color = self.data['color'][i])
 
         self.ax.legend()
-    
-    def aggregate(self, series):
-        
-        pass
 
     def __str__(self):
         res = self.ax.get_title() + ", (x label: " + self.ax.get_xlabel() + ", y label: " + self.ax.get_ylabel() + ")"
@@ -56,7 +53,7 @@ class TranslationError(Plot):
         self.ax.set_title("Translation Error")
         self.ax.set(xlabel='Distance Travelled (m)', ylabel = 'Translation Error (m)')
 
-    def collect_data(self, aggregate = False):
+    def collect_data(self):
         for name, series in self.series.items():    
 
             max_dist = 0
@@ -73,26 +70,41 @@ class TranslationError(Plot):
                 temp_data['color'].append(series.color_list[0])
                 temp_data['line'].append('-')
 
-            if aggregate:
-                x_bins = np.linspace(0,max_dist, max_dist/0.1)
+            if self.aggregate:
+                
+                x_bins = list(np.linspace(0,max_dist, max_dist/0.1))
+                y_store = [0]*len(x_bins)
+
                 for i in range(len(temp_data['x_data'])):
-                    #print len(temp_data['x_data'][i])
                     dists = temp_data['x_data'][i]
                     min_x = dists[0]
                     max_x = dists[-1]
-                    print min_x
-                    print max_x
                     diffs = temp_data['y_data'][i]
-
                     f = interpolate.interp1d(dists,diffs);
 
+                    j = 0
+                    for x in x_bins:
+                        if (x <= max_x and x >= min_x):
+                            if (y_store[j] != 0):
+                                y_store[j][0]+=f(x)
+                                y_store[j][1]+=1
+                            else:
+                                y_store[j] = [f(x), 1] # [0] stores diff sums, [1] stores number of additions
+                        j+=1
+
+                temp_data['x_data'] = [x_bins]
+                y_data = [0]*len(x_bins)
+                for i in range(len(y_store)):
+                    y_data[i] = float(y_store[i][0])/(float(y_store[i][1]))
+
+                temp_data['y_data'] = [y_data]
+
+                temp_data['series_name'] = [name]
+                temp_data['color'] = [series.color_list[0]]
+                temp_data['line']= ['-']
 
             for key in self.data:
                 self.data[key] += temp_data[key]
-
-        # find the largest distance travelled. 
-        # split the x axis into discrete points
-        # find the nearest interpolation to those points for every difference value
         
 
 class YawError(Plot):
@@ -102,16 +114,57 @@ class YawError(Plot):
         self.ax.set(xlabel='Distance Travelled (m)', ylabel = 'Yaw Error (m)')
 
     def collect_data(self):
-
         for name, series in self.series.items():    
+
+            max_dist = 0
+            temp_data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+
             for n,run in series.data_table.items():
                 gt_traj = run.get_data('gt_traj')
                 loc_traj = run.get_data('amcl_traj') if ('amcl_traj' in run.keys()) else run.get_data('gmapping_traj')
-                self.data['x_data'].append(pu.list_distances(gt_traj)[0])
-                self.data['y_data'].append(pu.yaw_error(loc_traj,gt_traj))
-                self.data['series_name'].append(name)
-                self.data['color'].append(series.color_list[0])
-                self.data['line'].append('-')
+                dists = pu.list_distances(gt_traj)
+                temp_data['x_data'].append(dists[0])
+                max_dist = max(max_dist, dists[1])
+                temp_data['y_data'].append(pu.yaw_error(loc_traj,gt_traj))
+                temp_data['series_name'].append(name)
+                temp_data['color'].append(series.color_list[0])
+                temp_data['line'].append('-')
+
+            if self.aggregate:
+                
+                x_bins = list(np.linspace(0,max_dist, max_dist/0.1))
+                y_store = [0]*len(x_bins)
+
+                for i in range(len(temp_data['x_data'])):
+                    dists = temp_data['x_data'][i]
+                    min_x = dists[0]
+                    max_x = dists[-1]
+                    diffs = temp_data['y_data'][i]
+                    f = interpolate.interp1d(dists,diffs);
+
+                    j = 0
+                    for x in x_bins:
+                        if (x <= max_x and x >= min_x):
+                            if (y_store[j] != 0):
+                                y_store[j][0]+=f(x)
+                                y_store[j][1]+=1
+                            else:
+                                y_store[j] = [f(x), 1] # [0] stores diff sums, [1] stores number of additions
+                        j+=1
+
+                temp_data['x_data'] = [x_bins]
+                y_data = [0]*len(x_bins)
+                for i in range(len(y_store)):
+                    y_data[i] = float(y_store[i][0])/(float(y_store[i][1]))
+
+                temp_data['y_data'] = [y_data]
+
+                temp_data['series_name'] = [name]
+                temp_data['color'] = [series.color_list[0]]
+                temp_data['line']= ['-']
+
+            for key in self.data:
+                self.data[key] += temp_data[key]
 
 class TrajectoryPlot(Plot):
     def label(self):
@@ -174,7 +227,7 @@ class Run:
 
         series_rep = Series("Run: " + self.name, color_list, earliest_date=self.name, latest_date=self.name)
         if (plot_type):
-            p = plot_type(axs, [series_rep])
+            p = plot_type(axs, [series_rep], False)
             p.init_axis()
         else:
             print 'No type specified for plot'
@@ -273,8 +326,8 @@ class Display:
     def add_series(self,series):
         self.series_list.append(series)
 
-    def add_plot_type(self, plot_type):
-        self.plot_types.append(plot_type)
+    def add_plot_type(self, plot_type, aggregate = False):
+        self.plot_types.append((plot_type, aggregate))
 
     def display(self):
         fig, axs = plt.subplots(self.rows,self.cols)
@@ -284,8 +337,8 @@ class Display:
             if (i>= len(self.plot_types)):
                 print 'Not enough plot types specified for the desired display dimensions. There will be blanks'
             else:
-                plot_type = self.plot_types[i]
-                p = plot_type(ax, self.series_list)
+                plot_type = self.plot_types[i][0]
+                p = plot_type(ax, self.series_list, self.plot_types[i][1])
                 p.init_axis()
 
             i+=1
@@ -321,7 +374,7 @@ class Dashboard:
             f,a = plt.subplots(1,1)
            
             for p in self.display.plot_types:
-                res += '\t' + str(p(a,[]))+ '\n'
+                res += '\t' + str(p[0](a,[]))+ '\n'
             plt.close()
         
         return res
@@ -370,7 +423,7 @@ class Dashboard:
 
         self.series_table.pop(series_name)
 
-    def add_plot(self, plot_type):
+    def add_plot(self, plot_type, aggregate = False):
         ''' add a desired plot type to the Dashboard's display'''
         if (not self.display):
             print 'A display has yet to be initialized, initializing a (1,1) display'
@@ -381,7 +434,7 @@ class Dashboard:
             print 'Too many plot types for desired display dimensions, automatically adding row to display. Please run Dashboard.resize(rows, cols) for different display size'
             self.resize(self.display.rows+1, self.display.cols)
         
-        self.display.add_plot_type(plot_type)
+        self.display.add_plot_type(plot_type, aggregate)
 
     def init_display(self, rows = 1, cols = 1):
         self.display = Display(rows, cols)
