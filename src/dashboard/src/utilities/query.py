@@ -157,7 +157,11 @@ class Query:
 
                 # load in json
                 meta_json = open(path, 'r')
-                data = json.load(meta_json)
+                try:
+                    data = json.load(meta_json)
+                except:
+                    print file + " has a malformed meta.json file"
+                    continue
                 # tour names
                 create_or_append(data['tour_names'], 'tour_names')
                 
