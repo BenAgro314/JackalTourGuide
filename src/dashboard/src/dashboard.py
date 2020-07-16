@@ -12,6 +12,7 @@ import matplotlib.colors as mcolors
 import enum
 import copy
 from scipy import interpolate
+import subprocess 
 
 class Plot:
 
@@ -234,8 +235,16 @@ class Run:
 
         fig.show()
 
-    def play(self):
-        pass
+    def visualize(self, rate = 1):
+        '''play the bag file of this run along with rviz'''
+        username = os.environ['USER']
+        ls = os.listdir("/home/"+username+"/Myhal_Simulation/simulated_runs/" + self.name)
+        if ('raw_data.bag' in ls):
+            shutdown_script = "/home/"+username+"/catkin_ws/visualize_bag.sh -l " + self.name + " -r " + str(rate)
+        else:
+            shutdown_script = "/home/"+username+"/catkin_ws/visualize_bag.sh -l " + self.name + " -r " + str(rate) + " -n localization_test.bag"
+        subprocess.call(shutdown_script, shell = True)
+
 
 class Series:
 

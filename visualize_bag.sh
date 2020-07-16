@@ -6,17 +6,19 @@ killall rosmaster
 
 LOADWORLD=""
 RATE=1
+NAME="raw_data.bag"
 
-while getopts l:r: option
+while getopts l:r:n: option
 do
 case "${option}"
 in
 l) LOADWORLD=${OPTARG};; 
 r) RATE=${OPTARG};; 
+n) NAME=${OPTARG};; 
 esac
 done
 
-BAGPATH="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/raw_data.bag"
+BAGPATH="/home/$USER/Myhal_Simulation/simulated_runs/$LOADWORLD/$NAME"
 
 roscore -p $ROSPORT&
 
