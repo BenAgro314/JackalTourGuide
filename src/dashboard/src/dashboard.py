@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import enum
 import copy
+from scipy import interpolate
 
 class Plot:
 
@@ -56,10 +57,6 @@ class TranslationError(Plot):
         self.ax.set(xlabel='Distance Travelled (m)', ylabel = 'Translation Error (m)')
 
     def collect_data(self, aggregate = False):
-        
-
-        
-
         for name, series in self.series.items():    
 
             max_dist = 0
@@ -81,16 +78,14 @@ class TranslationError(Plot):
                 for i in range(len(temp_data['x_data'])):
                     #print len(temp_data['x_data'][i])
                     dists = temp_data['x_data'][i]
+                    min_x = dists[0]
+                    max_x = dists[-1]
+                    print min_x
+                    print max_x
                     diffs = temp_data['y_data'][i]
 
-                    last_ind = 0
+                    f = interpolate.interp1d(dists,diffs);
 
-
-                    for j in range(len(dists)):
-                        x = dists[j]
-                        y = diffs[j]
-                        if (x < 0 or x > max_dist):
-                            continue
 
             for key in self.data:
                 self.data[key] += temp_data[key]
