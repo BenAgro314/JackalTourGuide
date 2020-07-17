@@ -6,37 +6,27 @@ t=$(date +'%Y-%m-%d-%H-%M-%S')
 echo "Folder Name: $t"
 
 
-GUI=false
-TOUR="A_tour"
-MESSAGE=""
-LOADWORLD=""
-FILTER=false
-MAPPING=false
-GTCLASS=true
-REPEAT=1
+GUI=false # -v flag
+TOUR="A_tour" # -t (arg) flag
+LOADWORLD="" # -l (arg) flag
+FILTER=false # -f flag
+MAPPING=false # -m flag
+GTCLASS=false # -g flag 
 
-while getopts t:m:g:l:f:a:c:r: option
+while getopts t:vl:fmg option
 do
 case "${option}"
 in
 t) TOUR=${OPTARG};; # What tour is being used 
-m) MESSAGE=${OPTARG};; # A message to add to the log file
-g) GUI=${OPTARG};; # do you want to use the gui
+v) GUI=true;; # using gui?
 l) LOADWORLD=${OPTARG};; # do you want to load a prexisting world or generate a new one
-f) FILTER=${OPTARG};; # pointcloud filtering?
-a) MAPPING=${OPTARG};; # use gmapping?
-c) GTCLASS=${OPTARG};; # are we using ground truth classifications
-r) REPEAT=${OPTARG};; # how many times to loop this trial?
+f) FILTER=true;; # pointcloud filtering?
+m) MAPPING=true;; # use gmapping?
+g) GTCLASS=true;; # are we using ground truth classifications, or online_classifications
 esac
 done
 
-if [ "$REPEAT" -lt "1" ]
-then
-    echo "Done repeating, shutting down"
-    exit 1
-fi
-
-echo "$REPEAT trials remaining"
+echo -e "TOUR: $TOUR\nGUI: $GUI\nLOADWORLD: $LOADWORLD\nFILTER: $FILTER\nMAPPING: $MAPPING\nGTCLASS: $GTCLASS"
 
 sleep 1
 
@@ -81,10 +71,8 @@ rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
 rosparam set localization_test false
 rosparam set class_method $c_method
-# rosparam set repeat $REPEAT
 rosparam set use_sim_time true
 rosparam set tour_name $TOUR
-# rosparam set classify $GTCLASSIFY
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 rosparam set start_time $t
 rosparam set filter_status $FILTER
@@ -94,11 +82,13 @@ mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
 LOGFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
 PARAMFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/params.yaml"
+PCLFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/pcl.txt"
 touch $LOGFILE
-echo -e "Trial Notes: $MESSAGE\nFILTER: $FILTER\nMAPPING $MAPPING" >> $LOGFILE
 echo -e "Command used: $myInvocation" >> $LOGFILE
 echo -e "\nPointcloud filter params: \n" >> $LOGFILE
-echo -e "$(cat /home/$USER/catkin_ws/src/jackal_velodyne/launch/include/pointcloud_filter.launch)" >> $LOGFILE
+echo -e "TOUR: $TOUR\nGUI: $GUI\nLOADWORLD: $LOADWORLD\nFILTER: $FILTER\nMAPPING: $MAPPING\nGTCLASS: $GTCLASS"  >> $LOGFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/jackal_velodyne/launch/include/pointcloud_filter2.launch)" >> $PCLFILE
+
 echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/room_params_V2.yaml)" > $PARAMFILE
 echo -e "\n" >> $PARAMFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/scenario_params_V2.yaml)" >> $PARAMFILE
