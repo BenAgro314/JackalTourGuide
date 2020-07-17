@@ -37,11 +37,19 @@ class Query:
             self.init_table()
 
 
-    def find_runs(self, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None):
+    def find_runs(self, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
         '''
         given a set of conditions, return a list of all runs that satisfy those conditions,
         '''
-       
+        if (date is not None):
+            res = set()
+            for d in self.table['times']:
+                if (date == d):
+                    res.add(d)
+                    return list(res)
+            return []
+
+        
         self.chars['tour_name'] = tour_name
         self.chars['filter_status'] = filter_status
         self.chars['localization_technique'] = localization_technique

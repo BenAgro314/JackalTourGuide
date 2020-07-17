@@ -226,7 +226,7 @@ class Run:
         ''' Given the desired plot_type class, and a list of colors by priority, plot this run'''
         fig, axs = plt.subplots(1,1)
 
-        series_rep = Series("Run: " + self.name, color_list, earliest_date=self.name, latest_date=self.name)
+        series_rep = Series("Run: " + self.name, color_list, date = self.name)
         if (plot_type):
             p = plot_type(axs, [series_rep], False)
             p.init_axis()
@@ -251,7 +251,7 @@ class Series:
     colors = mcolors.BASE_COLORS
     num_colors = 2
 
-    def __init__(self, name, color_list = [], tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None):
+    def __init__(self, name, color_list = [], tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
         self.color_list = color_list
 
 
@@ -269,7 +269,7 @@ class Series:
         self.username = os.environ['USER']
         self.path = '/home/' + self.username + "/Myhal_Simulation/simulated_runs" 
         self.query = Q.Query()
-        self.files = self.query.find_runs(tour_name, filter_status, localization_technique, success_status, scenarios, earliest_date, latest_date, localization_test, class_method, load_world)
+        self.files = self.query.find_runs(tour_name, filter_status, localization_technique, success_status, scenarios, earliest_date, latest_date, localization_test, class_method, load_world, date)
         self.load_data()
         
     def __str__(self):
