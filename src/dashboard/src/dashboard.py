@@ -295,15 +295,15 @@ class Run:
 class Series:
 
     colors = mcolors.BASE_COLORS
+    colors.pop('w')
     num_colors = 2
 
-    def __init__(self, name, color_list = [], tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
+    def __init__(self, name, color_list = None, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
         self.color_list = color_list
 
-
-        if (len(self.color_list) < Series.num_colors):
+        if (color_list is None) :
+            self.color_list = []
             print Series.num_colors,'colors not specified, selecting randomly'
-
             for i in range(Series.num_colors):
                 ind = np.random.randint(0,len(Series.colors.keys()))
                 self.color_list.append(Series.colors[Series.colors.keys()[ind]])
