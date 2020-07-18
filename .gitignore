@@ -9,3 +9,4 @@ topics.txt
 .catkin_workspace
 /notebooks
 .swp
+.pyc

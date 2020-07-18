@@ -37,7 +37,7 @@ class Query:
             self.init_table()
 
 
-    def find_runs(self, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
+    def find_runs(self, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = None, earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
         '''
         given a set of conditions, return a list of all runs that satisfy those conditions,
         '''
@@ -54,7 +54,7 @@ class Query:
         self.chars['filter_status'] = filter_status
         self.chars['localization_technique'] = localization_technique
         self.chars['success_status'] = success_status
-        self.chars['scenarios'] = scenarios
+        self.chars['scenarios'] = [] if (scenarios is None) else scenarios
         self.chars['earliest_date'] = earliest_date
         self.chars['latest_date'] = latest_date
         self.chars['localization_test'] = localization_test

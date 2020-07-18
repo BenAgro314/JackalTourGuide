@@ -298,7 +298,7 @@ class Series:
     colors.pop('w')
     num_colors = 2
 
-    def __init__(self, name, color_list = None, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
+    def __init__(self, name, color_list = None, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = None, earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
         self.color_list = color_list
 
         if (color_list is None or len(color_list) < 2):
@@ -460,8 +460,9 @@ class Dashboard:
         '''Cleans deleted runs from run_data.json'''
         self.query.delete_old_runs()
 
-    def add_series(self, series, aggregate = False):
+    def add_series(self, name, color_list = None, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = None,  earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
         '''Add a series to the Dashboard. (NOTE: aggregate not implemented yet). Pass aggregate = True if series values should be averaged for plots'''
+        series = Series(name, color_list, tour_name, filter_status, localization_technique, success_status, scenarios, earliest_date, latest_date, localization_test, class_method, load_world, date)
         self.series_table[series.name] = series
         for name, run in series.data_table.items():
             self.runs[name] = run
