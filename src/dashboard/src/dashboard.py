@@ -194,6 +194,52 @@ class PathDifference(Plot):
         self.ax.set_title("Path Difference")
         self.ax.set(xlabel='Series', ylabel = 'Average percent difference from optimal path length (%)')
 
+    def init_axis(self):
+        self.collect_data()
+        self.ax.bar(self.data['x_data'], self.data['y_data'])
+        
+    def collect_data(self):
+        
+        for name, series in self.series.items():
+            self.data['x_data'].append(series.name)
+            # find average path difference for the runs of the current series
+            avg_diff = 0
+            for date,run in series.data_table.items():
+                data = run.data
+                meta = run.meta
+                optimal_dist = pu.list_distances(data['optimal_traj'])[1]
+                gt_dist = pu.list_distances(data['gt_traj'])[1]
+                avg_diff += ((gt_dist-optimal_dist)/optimal_dist)*100
+
+            avg_diff/=len(series.data_table)
+            self.data['y_data'].append(avg_diff)
+            
+class SuccessRate(Plot):
+     def label(self):
+        self.ax.set_title("Success Rate")
+        self.ax.set(xlabel='Series', ylabel = 'Success Rate (%)')
+
+
+     def init_axis(self):
+        self.collect_data()
+        self.ax.bar(self.data['x_data'], self.data['y_data'])
+        
+     def collect_data(self):
+        
+        for name, series in self.series.items():
+            self.data['x_data'].append(series.name)
+            
+            rate = 0
+            for date,run in series.data_table.items():
+                data = run.data
+                meta = run.meta
+                if (meta['success_status'] == 'true'):
+                    rate += 1
+                    
+            rate/=len(series.data_table)
+            self.data['y_data'].append(rate*100)
+    
+            
 class Run:
 
     colors = mcolors.CSS4_COLORS

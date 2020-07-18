@@ -9,7 +9,7 @@ import pickle
 
 import bag_tools as bt
 import math_utilities as mu
-import plot_utilities as pu
+#import plot_utilities as pu
 from scipy.spatial.transform import Rotation as R
 
 def list_distances(traj, min_time = -1, max_time = -1):
