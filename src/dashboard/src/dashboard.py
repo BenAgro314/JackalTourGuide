@@ -268,7 +268,7 @@ class Run:
 
         return res
 
-    def show(self, plot_type, color_list = []):
+    def show(self, plot_type, color_list = None):
         ''' Given the desired plot_type class, and a list of colors by priority, plot this run'''
         fig, axs = plt.subplots(1,1)
 
@@ -301,7 +301,7 @@ class Series:
     def __init__(self, name, color_list = None, tour_name = None, filter_status = None, localization_technique = None, success_status = None, scenarios = [], earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
         self.color_list = color_list
 
-        if (color_list is None) :
+        if (color_list is None or len(color_list) < 2):
             self.color_list = []
             print Series.num_colors,'colors not specified, selecting randomly'
             for i in range(Series.num_colors):
