@@ -48,6 +48,9 @@ class Plot:
     def add_series(series):
         self.series[series.name] = series
 
+    def info(self):
+        pass
+
 class TranslationError(Plot):
     
     def label(self):
@@ -107,6 +110,27 @@ class TranslationError(Plot):
             for key in self.data:
                 self.data[key] += temp_data[key]
         
+    def info(self):
+        res = ""
+        self.data.clear()
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        self.aggregate = True
+        self.collect_data()
+        self.aggregate = False
+
+        for i in range(len(self.data['series_name'])):
+            x = self.data['x_data'][i]
+            y = self.data['y_data'][i]
+            avg_error = 0
+            for j in range(len(self.data['x_data'][i])-1):
+
+               avg_error += ((y[j]+y[j+1])/2.0)*(x[j+1]-x[j])
+            
+            avg_error = avg_error/(x[-1]-x[0])
+
+            res+= "Series: " + self.data['series_name'][i] + " has an average translation error of {:.3f} m\n".format(avg_error)
+
+        return res
 
 class YawError(Plot):
 
@@ -165,7 +189,30 @@ class YawError(Plot):
                 temp_data['line']= ['-']
 
             for key in self.data:
-                self.data[key] += temp_data[key]
+               self.data[key] += temp_data[key]
+               
+    def info(self):
+        res = ""
+        self.data.clear()
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        self.aggregate = True
+        self.collect_data()
+        self.aggregate = False
+
+        for i in range(len(self.data['series_name'])):
+            x = self.data['x_data'][i]
+            y = self.data['y_data'][i]
+            avg_error = 0
+            for j in range(len(self.data['x_data'][i])-1):
+
+               avg_error += ((y[j]+y[j+1])/2.0)*(x[j+1]-x[j])
+            
+            avg_error = avg_error/(x[-1]-x[0])
+
+            res+= "Series: " + self.data['series_name'][i] + " has an average yaw error of {:.5f} rad\n".format(avg_error)
+            
+        return res
+
 
 class TrajectoryPlot(Plot):
     def label(self):
@@ -188,6 +235,11 @@ class TrajectoryPlot(Plot):
                 self.data['series_name'].append(series.name+" localization")
                 self.data['color'].append(series.color_list[1])
                 self.data['line'].append('--')
+
+
+    def info(self):
+        res = "Trajectory plot: no printable info available"
+        return res
 
 class PathDifference(Plot):
     def label(self):
@@ -213,7 +265,18 @@ class PathDifference(Plot):
 
             avg_diff/=len(series.data_table)
             self.data['y_data'].append(avg_diff)
-            
+
+    def info(self):
+        if (len(self.data['x_data']) == 0):
+            self.collect_data()
+        
+        res = ""
+        for i in range(len(self.data['x_data'])):
+            series = self.data['x_data'][i]
+            diff = self.data['y_data'][i]
+            res += "Series: " + str(series) + " has a path that deviates {:.3f} % from the optimal path\n".format(diff)
+
+        return res
 class SuccessRate(Plot):
      def label(self):
         self.ax.set_title("Success Rate")
@@ -370,7 +433,7 @@ class Display:
         self.cols = cols
         self.series_list = []
         self.plot_types = []
-
+        self.plots = []
 
     def dim(self):
         return (self.rows,self.cols)
@@ -394,6 +457,7 @@ class Display:
             else:
                 plot_type = self.plot_types[i][0]
                 p = plot_type(ax, self.series_list, self.plot_types[i][1])
+                self.plots.append(p)
                 p.init_axis()
 
             i+=1
@@ -467,6 +531,14 @@ class Dashboard:
         for name, run in series.data_table.items():
             self.runs[name] = run
 
+    def change_series(self, old_name, new_series):
+        '''remove series named old_name and replace with new_series'''
+        self.remove_series(old_name)
+        self.series_table[new_series.name] = new_series
+        for name, run in new_series.data_table.items():
+            self.runs[name] = run
+
+           
     def remove_series(self, series_name):
         '''remove a series by a given name'''
         if series_name not in self.series_table:
@@ -474,7 +546,7 @@ class Dashboard:
             return None
 
         for name,run in self.runs.copy().items():
-            if name in self.series_table[series].data_table:
+            if name in self.series_table[series_name].data_table:
                 self.runs.pop(name)
 
         self.series_table.pop(series_name)
