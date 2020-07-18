@@ -2,11 +2,11 @@
 /build
 /data
 /devel
-.vscode
+*.vscode
 /.catkin_tools
 topics.txt
-.pdf
+*.pdf
 .catkin_workspace
 /notebooks
-.swp
-.pyc
+*.swp
+*.pyc
