@@ -70,7 +70,7 @@ class Query:
         res = res.intersection(self.set_from_dict('class_method', class_method))
         res = res.intersection(self.set_from_dict('load_world', load_world))
 
-        for scenario in scenarios:
+        for scenario in self.chars['scenarios']:
             res = res.intersection(self.set_from_dict('scenarios', scenario))
 
         time_set = set()
