@@ -12,6 +12,21 @@ room_names:
   - proj_rm_556
   - hallway1
 
+# currently available scenarios:
+# no_tables_wanderer_crowd
+# big_tables_random_walker_study
+# small_tables_stander_meeting
+# mixed_tables_no_people
+# big_tables_no_people
+# small_tables_no_people
+# small_tables_random_walker_study
+# mixed_tables_follower_tour
+# mixed_tables_wanderer_study
+# no_tables_boid_crowd
+# empty
+# dense_boids
+# dense_wanderers
+# long_term_standers
 
 # specify the geometry, position of tables, whether or not the room is enclosed, and the room scenario here  
 # note: the gXXX and pXXX refer to variables below
