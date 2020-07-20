@@ -34,8 +34,11 @@ class Run:
         return self.data.keys()
 
 class Plot:
+    ''' The parent class of all plot types '''
 
     def __init__(self, aggregate = False):
+        '''Optional argument
+        aggregate (bool): if True, the data for all runs in a given series will be averaged, default = False'''
         self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         self.aggregate = aggregate
         self.series_list = []
@@ -571,8 +574,14 @@ class Display:
             i+=1
 
 class Dashboard:
+    ''' An interface between the user and Myhal Simulation data '''
 
-    def __init__(self,verbosity = logging.DEBUG, rows = 1, cols =1):
+    def __init__(self,verbosity = logging.INFO, rows = 1, cols =1):
+        '''Optional arguments
+        verbosity: specified the level of logging to STOUT, logging.DEBUG, logging.INFO, logging.WARNING ..., default = logging.INFO
+        rows: the number of rows on the plot display, default = 1
+        cols: the number of columns on the plot display, default = 1
+        '''
     
         logging.basicConfig(level=verbosity, format = '%(levelname)s - %(message)s')
         self.handler = RunHandler()
@@ -596,7 +605,7 @@ class Dashboard:
                             continue
                         scens[i] = scens[i].encode('utf-8')
                         i+=1    
-                    run_l.append(scens)
+                    run_l.append(',\n'.join(scens))
                     continue
                 run_l.append(run.meta[f])
             c+=1
@@ -722,6 +731,7 @@ class Dashboard:
         print tabulate([run_l], headers=header)
 
     def list_dirs(self):
+        ''' list all directories in the experimental folder and whether or not they are a valid run '''
         header = ['Name', 'Is Valid Run']
         res = []
         for name in self.handler.dirs:
