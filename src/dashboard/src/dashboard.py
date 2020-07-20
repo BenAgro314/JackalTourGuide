@@ -1,18 +1,17 @@
 #!/usr/bin/env python
 
-import os
-import json
-from utilities import math_utilities as mu
 from utilities import plot_utilities as pu 
 from utilities import query as Q
 import numpy as np
-import pickle
+import cPickle as pickle
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import enum
 import copy
 from scipy import interpolate
 import subprocess 
+import os
+import json
 
 class Plot:
 
@@ -304,7 +303,6 @@ class SuccessRate(Plot):
     
             
 class Run:
-
     colors = mcolors.CSS4_COLORS
 
     def __init__(self, name, data, meta):

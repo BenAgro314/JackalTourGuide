@@ -1,3 +1,3 @@
 #!/usr/bin/env python
 
-from .src.dashboard import *
+from .src.run_handler import *

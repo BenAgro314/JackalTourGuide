@@ -2,9 +2,13 @@
 
 from utilities import math_utilities as mu
 from utilities import plot_utilities as pu
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+from tabulate import tabulate
+import scipy.interpolate as interpolate
 from itertools import cycle
+import subprocess
 import cPickle as pickle
 import time
 import json
@@ -295,7 +299,7 @@ class SuccessRate(Plot):
         
      def collect_data(self):
         
-        for series in self.series:
+        for series in self.series_list:
             self.data['x_data'].append(series.name)
             
             rate = 0
@@ -313,8 +317,8 @@ class RunHandler:
     def __init__(self):
         '''Handles the storage, searching, and modification of runs in the run_data.json file'''
         # initialize variables 
-        username = os.environ['USER']
-        self.filepath = '/home/' +username +'/Myhal_Simulation/'
+        self.username = os.environ['USER']
+        self.filepath = '/home/' + self.username +'/Myhal_Simulation/'
         try:
             self.json_f = open(self.filepath+'run_data.json', 'r+')
             self.table = json.load(self.json_f)
@@ -506,7 +510,7 @@ class Display:
         self.rows = rows 
         self.cols = cols 
         self.plots = []
-        self.series_list = []
+        self.series_map = {}
 
     def dim(self):
         return (self.rows,self.cols)
@@ -515,40 +519,193 @@ class Display:
         return self.rows * self.cols
 
     def add_series(self,series):
-        self.series_list.append(series)
+        self.series_map[series.name] = series
 
     def add_plot(self, plot):
+        if (len(self.plots) >= self.size()):
+            self.rows+=1
+            logging.info('Adding row to display to accept plot')
         self.plots.append(plot)
 
+
     def display(self):
+        self.init_plots()
+        plt.show()
+
+    def init_plots(self):
         fig, axs = plt.subplots(self.rows,self.cols)
         axs = np.array(axs)
         i = 0
         for ax in axs.reshape(-1):
+            if (i >= len(self.plots)):
+                break
             self.plots[i].add_ax(ax)
-            self.plots[i].series_list = self.series_list
+            self.plots[i].series_list = self.series_map.values()
             self.plots[i].init_axis()
             i+=1
-        
-        plt.show()
-
 
 class Dashboard:
 
-    def __init__(self):
-        self.H = RunHandler()
-        self.series_map = {}
+    def __init__(self, rows = 1, cols =1):
+        self.handler = RunHandler()
+        self.display = Display(rows,cols)
+
+    def list_runs(self, num = 10):
+        ''' displays meta data for the num most recent runs '''
+        l = self.handler.run_map.keys()
+        l.sort()
+        header = ['Name', 'Filtering Status', 'Classification Method', 'Tour Name', 'Success Status', 'Localization Method', 'Scenarios' , 'Localization Test']
+        fields = ['filter_status','class_method','tour_names', 'success_status', 'localization_technique', 'scenarios', 'localization_test']
+        res = []
+        c = 0
+        for name in l:
+            if (c == num):
+                break
+            c+=1
+            run = self.handler.run_map[name]
+            run_l = [name]
+            for f in fields:
+                if (f == 'scenarios'):
+                    scens = run.meta[f]
+                    i = 0
+                    while (i < len(scens)):
+                        if (scens.count(scens[i]) > 1):
+                            scens.pop(i)
+                            continue
+                        scens[i] = scens[i].encode('utf-8')
+                        i+=1    
+                    run_l.append(scens)
+                    continue
+                run_l.append(run.meta[f])
+
+            res.append(run_l)
+
+        print tabulate(res,headers=header)
+            
+    def add_series(self, name, colors = None, tour_names = None, filter_status = None, localization_technique = None, success_status = None, scenarios = None, earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
+        ''' adds a series to the Dashboard '''
+        series = Series(name, self.handler.search(tour_names, filter_status, localization_technique, success_status, scenarios, earliest_date ,latest_date, localization_test, class_method, load_world, date), colors)
+
+        self.display.add_series(series)
+
+    def add_plot(self, plot):
+        ''' add a plot type to the dashboard '''
+        self.display.add_plot(plot)
+
+    def remove_series(self, name):
+        ''' remove named series from dashboard '''
+        if (name in self.display.series_map):
+            self.display.series_map.pop(name)
+        else:
+            logging.info('Series ' + name + ' not found in display')
+
+    def clear_series(self):
+        self.display.series_map.clear()
+
+    def clear_plots(self):
+        self.display.plots = []
+
+    def clear(self):
+        self.clear_plots()
+        self.clear_series()
+
+    def remove_plot(self, plot_class):
+        ''' remove the given plot class from the dashboard '''
+        i = 0
+        while (i < len(self.display.plots)):
+            if (isinstance(self.display.plots[i],plot_class)):
+                self.display.plots.pop(i)
+                continue
+            i+=1
+
+    def resize(self, rows, cols):
+        ''' resizes the display of this dashboard '''
+        self.display.rows= rows
+        self.display.cols = cols
+
+    def show(self, save = False, path = '.'):
+        ''' show current display as a plot, save the plot to path if given '''
+        self.display.display()
+
+    def visualize_run(self, name, rate = 1):
+        ''' play the bag file of the named run with a pre-configured rviz file '''
+        ls = os.listdir(self.handler.filepath + '/simulated_runs/' + name)
+        username = self.handler.username
+        if ('raw_data.bag' in ls):
+            script = "/home/"+username+"/catkin_ws/visualize_bag.sh -l " + name + " -r " + str(rate)
+        else:
+            script = "/home/"+username+"/catkin_ws/visualize_bag.sh -l " + name + " -r " + str(rate) + " -n localization_test.bag"
+        subprocess.call(script, shell = True)
+
+    def run_info(self, name):
+        ''' print the meta data of the named run '''
+        header = ['Name', 'Filtering Status', 'Classification Method', 'Tour Name', 'Success Status', 'Localization Method', 'Scenarios' , 'Localization Test']
+        fields = ['filter_status','class_method','tour_names', 'success_status', 'localization_technique', 'scenarios', 'localization_test']
+        if (name not in self.handler.run_map):
+            logging.info('Run ' + name + ' not found')
+            return
+        
+        run = self.handler.run_map[name]
+        run_l = [name]
+        for f in fields:
+            if (f == 'scenarios'):
+                scens = run.meta[f]
+                i = 0
+                while (i < len(scens)):
+                    if (scens.count(scens[i]) > 1):
+                        scens.pop(i)
+                        continue
+                    scens[i] = scens[i].encode('utf-8')
+                    i+=1    
+                run_l.append(scens)
+                continue
+
+            run_l.append(run.meta[f])
+
+        print tabulate([run_l], headers=header)
+
+    def plot_run(self, name, plot_type, colors = None, save = False, filepath = '.'):
+        ''' plot the named run with the given plot type (not on the display), return the plot'''
+        if (isinstance(plot_type, Plot)):
+            T = plot_type
+        else:
+            T = plot_type()
+        if (name not in self.handler.run_map):
+            logging.info('Run ' + name + ' not found')
+        temp_display = Display(1,1)
+        temp_display.add_plot(T)
+        temp_display.add_series(Series(name, self.handler.search(date = name), colors))
+        temp_display.display()
+        return temp_display.plots[0]
+
+    def plot_info(self, plot_class):
+        ''' return textual information about the desired plot type '''
+        found = False
+        for plot in self.display.plots:
+            if (isinstance(plot, plot_class)):
+                found = True
+                print plot.info()
+
+        if (not found):
+            logging.info('Plot type not found in display')
 
 if __name__ == "__main__":
-    H = RunHandler()
+    ''' TODO: implement saving of plots ''' 
+    #H = RunHandler()
 
-    s = Series('s', H.search(date = '2020-07-17-12-47-30')) 
-
-    d = Display(1,1)
-    d.add_series(s)
-    d.add_plot(TranslationError())
-    d.add_series(s)
-    d.display()
+    #s = Series('s', H.search(date = '2020-07-17-12-47-30')) 
+    #b = Series('b', H.search(date = '2020-07-17-13-39-30'))
+    #d = Display(2,2)
+    #d.add_series(s)
+    #d.add_series(b)
+    #d.add_plot(TranslationError())
+    #d.add_series(s)
+    #d.add_plot(TrajectoryPlot())
+    #d.add_plot(YawError())
+    #d.add_plot(PathDifference())
+    #d.display()
+    d = Dashboard()
+    d.list_runs()
 
 
 

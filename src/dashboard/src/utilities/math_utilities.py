@@ -10,7 +10,7 @@ import numpy as np
 
 
 def date_to_int(date):
-
+    ''' returns a tuple (int represenaiton of date, [years, months, day ...) '''
     d_list = date.split('-')
     split_date = {}
     labels = ['year','month','day,','hour','minute','second']
