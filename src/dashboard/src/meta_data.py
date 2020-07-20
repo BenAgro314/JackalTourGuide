@@ -48,6 +48,9 @@ class MetaHandler:
         
 
     def on_shutdown(self, msg):
+        
+        if (not msg.data):
+            self.successful = 'false'
         self.create_table()
         json.dump(self.table, self.meta_json, indent = 4, sort_keys=True)
         self.meta_json.close()  

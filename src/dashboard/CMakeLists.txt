@@ -36,7 +36,6 @@ catkin_install_python(PROGRAMS
        	src/data_processing.py
         src/utilities/bag_tools.py
         src/meta_data.py
-        src/utilities/query.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

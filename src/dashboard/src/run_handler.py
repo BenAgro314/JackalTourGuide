@@ -19,7 +19,6 @@ import logging
 import psutil
 import shutil
 
-logging.basicConfig(level=logging.DEBUG, format = '%(levelname)s - %(message)s')
 
 class Run:
 
@@ -573,7 +572,9 @@ class Display:
 
 class Dashboard:
 
-    def __init__(self, rows = 1, cols =1):
+    def __init__(self,verbosity = logging.DEBUG, rows = 1, cols =1):
+    
+        logging.basicConfig(level=verbosity, format = '%(levelname)s - %(message)s')
         self.handler = RunHandler()
         self.display = Display(rows,cols)
 

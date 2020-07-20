@@ -39,6 +39,8 @@ class Doctor{
 
         ros::Publisher shutdown_pub;
 
+        ros::Publisher failure_pub;
+
         std::string username;
 
         std::string filepath;
@@ -162,7 +164,7 @@ void Doctor::GroundTruthCallback(const nav_msgs::Odometry::ConstPtr& msg){
 
             this->log_file.close();
             std_msgs::Bool shutdown_msg;
-            shutdown_msg.data = true;
+            shutdown_msg.data = false; // because the robot was unsuccessful
             this->shutdown_pub.publish(shutdown_msg);
         }
        
