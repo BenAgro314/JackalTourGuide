@@ -17,6 +17,7 @@ import numpy as np
 import copy
 import logging
 import psutil
+import shutil
 
 logging.basicConfig(level=logging.DEBUG, format = '%(levelname)s - %(message)s')
 
@@ -319,6 +320,7 @@ class RunHandler:
         # initialize variables 
         self.username = os.environ['USER']
         self.filepath = '/home/' + self.username +'/Myhal_Simulation/'
+
         try:
             self.json_f = open(self.filepath+'run_data.json', 'r+')
             self.table = json.load(self.json_f)
@@ -339,15 +341,16 @@ class RunHandler:
         # add new runs 
         logging.info('Loading run metadata') 
         t1 = time.time()
-        run_list = os.listdir(self.filepath + 'simulated_runs/')
+        self.dirs = os.listdir(self.filepath + 'simulated_runs/')
         self.run_map = {}
+        self.run_inds = []
 
-        for name in run_list:
+        for name in self.dirs:
             self.read_run(name)
 
         # clean old runs
         for name in self.table['times']:
-            if (name not in run_list):
+            if (name not in self.dirs):
                 self.delete_run(name)
 
         # rewrite to run_data.json
@@ -362,15 +365,37 @@ class RunHandler:
         self.json_f.close()
         self.json_f = open(self.filepath+'run_data.json', 'r+')
 
+    def user_remove_file(self, name):
+        ''' lets the user remove a run from the simulated runs folder '''
+        if (name in self.dirs):
+            self.dirs.remove(name)
+            if (name in self.table['times']):
+                self.delete_run(name) 
+                self.update_json()
+            shutil.rmtree(self.filepath + 'simulated_runs/' + name)
+            logging.info(name + ' successfully removed')
+        else:
+            logging.info('Directory ' + name + ' does not exist')
+
     def delete_run(self, name):
+        if (name not in self.table['times']):
+            logging.debug('Cannot delete ' + name + ' from run_data.json')
+            return
         self.table['times'].remove(name)
         for key, value in self.table.items():
             if (key == 'times'):
                 continue
-            
             for k,v in value.items():
                 if name in v:
                     v.remove(name)
+        if (name in self.run_map):
+            run = self.run_map.pop(name)
+            del run
+            logging.debug('Removed pickled data for ' + name)
+        if (name in self.run_inds):
+            self.run_inds.remove(name)
+            logging.debug('Removed ' + name + ' from run_inds')
+
         logging.info('Deleted ' + name + ' from run_data.json')
 
     def read_run(self, name):
@@ -400,6 +425,8 @@ class RunHandler:
         
 
         self.run_map[name] = Run(name, meta_d)
+        self.run_inds.append(name)
+        self.run_inds.sort(reverse = True)
 
         if (name in self.table['times']):
             return
@@ -550,20 +577,14 @@ class Dashboard:
         self.handler = RunHandler()
         self.display = Display(rows,cols)
 
-    def list_runs(self, num = 10):
-        ''' displays meta data for the num most recent runs '''
-        l = self.handler.run_map.keys()
-        l.sort()
-        header = ['Name', 'Filtering Status', 'Classification Method', 'Tour Name', 'Success Status', 'Localization Method', 'Scenarios' , 'Localization Test']
+    def list_runs_helper(self, l):
+        header = ['Index','Name', 'Filtering Status', 'Classification Method', 'Tour Name', 'Success Status', 'Localization Method', 'Scenarios' , 'Localization Test']
         fields = ['filter_status','class_method','tour_names', 'success_status', 'localization_technique', 'scenarios', 'localization_test']
         res = []
         c = 0
         for name in l:
-            if (c == num):
-                break
-            c+=1
             run = self.handler.run_map[name]
-            run_l = [name]
+            run_l = [c, name]
             for f in fields:
                 if (f == 'scenarios'):
                     scens = run.meta[f]
@@ -577,13 +598,23 @@ class Dashboard:
                     run_l.append(scens)
                     continue
                 run_l.append(run.meta[f])
-
+            c+=1
             res.append(run_l)
 
         print tabulate(res,headers=header)
+
+
+    def list_runs(self, num = 10):
+        ''' displays meta data for the num most recent runs '''
+        l = self.handler.run_inds[:num]
+        self.list_runs_helper(l)
             
-    def add_series(self, name, colors = None, tour_names = None, filter_status = None, localization_technique = None, success_status = None, scenarios = None, earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None):
+    def add_series(self, name, colors = None, tour_names = None, filter_status = None, localization_technique = None, success_status = None, scenarios = None, earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None, min_ind = None, max_ind = None, ind = None):
         ''' adds a series to the Dashboard '''
+        latest_date = self.ind_to_date(min_ind)
+        earliest_date = self.ind_to_date(max_ind)
+        date = self.ind_to_date(ind)
+
         series = Series(name, self.handler.search(tour_names, filter_status, localization_technique, success_status, scenarios, earliest_date ,latest_date, localization_test, class_method, load_world, date), colors)
 
         self.display.add_series(series)
@@ -627,8 +658,28 @@ class Dashboard:
         ''' show current display as a plot, save the plot to path if given '''
         self.display.display()
 
-    def visualize_run(self, name, rate = 1):
+    def ind_to_date(self, ind):
+        if (ind is not None and (ind >=0 and ind < len(self.handler.run_inds))):
+            date = self.handler.run_inds[ind]
+        else:
+            date = None
+        return date
+
+    def nori_to_date(self, name_or_ind):
+        if (type(name_or_ind) == int):
+            name = self.ind_to_date(name_or_ind)
+        else:
+            name = name_or_ind
+        return name
+
+
+    def visualize_run(self, name_or_ind, rate = 1):
         ''' play the bag file of the named run with a pre-configured rviz file '''
+        name = self.nori_to_date(name_or_ind)
+        if (name is None or not os.path.isdir(self.handler.filepath + '/simulated_runs/' + name)):
+            logging.info('Invalid name or index')
+            return
+
         ls = os.listdir(self.handler.filepath + '/simulated_runs/' + name)
         username = self.handler.username
         if ('raw_data.bag' in ls):
@@ -637,8 +688,13 @@ class Dashboard:
             script = "/home/"+username+"/catkin_ws/visualize_bag.sh -l " + name + " -r " + str(rate) + " -n localization_test.bag"
         subprocess.call(script, shell = True)
 
-    def run_info(self, name):
+    def run_info(self, name_or_ind):
         ''' print the meta data of the named run '''
+        name = self.nori_to_date(name_or_ind)
+        if (name is None):
+            logging.info('Invalid name or index')
+            return
+
         header = ['Name', 'Filtering Status', 'Classification Method', 'Tour Name', 'Success Status', 'Localization Method', 'Scenarios' , 'Localization Test']
         fields = ['filter_status','class_method','tour_names', 'success_status', 'localization_technique', 'scenarios', 'localization_test']
         if (name not in self.handler.run_map):
@@ -664,8 +720,48 @@ class Dashboard:
 
         print tabulate([run_l], headers=header)
 
-    def plot_run(self, name, plot_type, colors = None, save = False, filepath = '.'):
+    def list_dirs(self):
+        header = ['Name', 'Is Valid Run']
+        res = []
+        for name in self.handler.dirs:
+            if (name in self.handler.run_inds):
+                res.insert(0, [name, 'true'])
+            else:
+                res.append([name, 'false'])
+
+        print tabulate(res, headers = header)
+
+    def remove_dir(self, name):
+        if name not in self.handler.dirs:
+            logging.info(name + ' does not exist and cannot be deleted')
+            return
+        confirm = raw_input('Type DEL to confirm you want to delete ' + name + '\n')
+        if (confirm == 'DEL'):
+            self.handler.user_remove_file(name)
+
+    def remove_series_dirs(self, name):
+        if (name not in self.display.series_map):
+            logging.info('Series ' + name + ' does not exist in the dashboard')
+        
+        series = self.display.series_map[name]
+        runs = series.runs
+        for i in range(len(runs)):
+            runs[i] = runs[i].name
+        print 'Runs to be removed:'
+        self.list_runs_helper(runs)
+        confirm = raw_input('Input DEL to confirm series deletion\n')
+        if (confirm == 'DEL'):
+            for run in runs:
+                self.handler.user_remove_file(run)
+            self.remove_series(name)
+        logging.info('Series ' + name + ' sucessfully deleted')
+
+    def plot_run(self, name_or_ind, plot_type, colors = None, save = False, filepath = '.'):
         ''' plot the named run with the given plot type (not on the display), return the plot'''
+        name = self.nori_to_date(name_or_ind)
+        if (name is None):
+            logging.info('Invalid name or index')
+            return
         if (isinstance(plot_type, Plot)):
             T = plot_type
         else:
@@ -675,6 +771,7 @@ class Dashboard:
         temp_display = Display(1,1)
         temp_display.add_plot(T)
         temp_display.add_series(Series(name, self.handler.search(date = name), colors))
+
         temp_display.display()
         return temp_display.plots[0]
 
