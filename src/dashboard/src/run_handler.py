@@ -19,6 +19,19 @@ import logging
 import psutil
 import shutil
 
+class bc:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+    @classmethod
+    def color(cls, text, color):
+        return color + text + bc.ENDC
 
 class Run:
 
@@ -49,7 +62,6 @@ class Plot:
         self.label()
         
     def init_axis(self):
-        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         self.collect_data()
         for i in range(len(self.data['x_data'])):
             self.ax.plot(self.data['x_data'][i], self.data['y_data'][i], self.data['line'][i], label = self.data['series_name'][i], color = self.data['color'][i])
@@ -69,6 +81,7 @@ class TranslationError(Plot):
         self.ax.set(xlabel='Distance Travelled (m)', ylabel = 'Translation Error (m)')
 
     def collect_data(self):
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         for series in self.series_list:
             name = series.name
 
@@ -141,7 +154,7 @@ class TranslationError(Plot):
             
             avg_error = avg_error/(x[-1]-x[0])
 
-            res+= "Series: " + self.data['series_name'][i] + " has an average translation error of {:.3f} m\n".format(avg_error)
+            res+= "Series: " + bc.color(self.data['series_name'][i],bc.HEADER) + " has an average translation error of {:.3f} m\n".format(avg_error)
 
         return res
 
@@ -152,6 +165,7 @@ class YawError(Plot):
         self.ax.set(xlabel='Distance Travelled (m)', ylabel = 'Yaw Error (m)')
 
     def collect_data(self):
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         for series in self.series_list:
             name = series.name
 
@@ -224,7 +238,7 @@ class YawError(Plot):
             
             avg_error = avg_error/(x[-1]-x[0])
 
-            res+= "Series: " + self.data['series_name'][i] + " has an average yaw error of {:.5f} rad\n".format(avg_error)
+            res+= "Series: " + bc.color(self.data['series_name'][i],bc.HEADER) + " has an average yaw error of {:.5f} rad\n".format(avg_error)
             
         return res
 
@@ -236,7 +250,6 @@ class TrajectoryPlot(Plot):
         self.ax.set(xlabel='x position (m)', ylabel = 'y position (m)')
 
     def init_axis(self):
-        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         self.collect_data()
         for i in range(len(self.data['x_data'])):
             self.ax.plot(self.data['x_data'][i], self.data['y_data'][i], self.data['line'][i], label = self.data['series_name'][i], color = self.data['color'][i])
@@ -244,6 +257,7 @@ class TrajectoryPlot(Plot):
         self.ax.legend()
 
     def collect_data(self):
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         for series in self.series_list:
             for run in series.runs:
                 gt_traj = run.get_data('gt_traj')
@@ -271,12 +285,11 @@ class PathDifference(Plot):
         self.ax.set(xlabel='Series', ylabel = 'Average percent difference from optimal path length (%)')
 
     def init_axis(self):
-        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         self.collect_data()
         self.ax.bar(self.data['x_data'], self.data['y_data'])
         
     def collect_data(self):
-        
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         for series in self.series_list:
             self.data['x_data'].append(series.name)
             # find average path difference for the runs of the current series
@@ -299,7 +312,7 @@ class PathDifference(Plot):
         for i in range(len(self.data['x_data'])):
             series = self.data['x_data'][i]
             diff = self.data['y_data'][i]
-            res += "Series: " + str(series) + " has a path that deviates {:.3f} % from the optimal path\n".format(diff)
+            res += "Series: " + bc.color(str(series), bc.HEADER) + " has a path that deviates {:.3f} % from the optimal path\n".format(diff)
 
         return res
 
@@ -311,12 +324,11 @@ class SuccessRate(Plot):
 
 
     def init_axis(self):
-       self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
        self.collect_data()
        self.ax.bar(self.data['x_data'], self.data['y_data'])
        
     def collect_data(self):
-       
+       self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
        for series in self.series_list:
            self.data['x_data'].append(series.name)
            
@@ -329,6 +341,18 @@ class SuccessRate(Plot):
                    
            rate/=len(series.runs)
            self.data['y_data'].append(rate*100)
+
+    def info(self):
+        if (len(self.data['x_data']) == 0):
+            self.collect_data()
+
+        res = ""
+        for i in range(len(self.data['x_data'])):
+            series = self.data['x_data'][i]
+            succ = self.data['y_data'][i]
+            res += "Series: " + bc.color(str(series), bc.HEADER) + " has a success rate of {:.3f} %\n".format(succ)
+
+        return res
 
 class RunHandler:
 
@@ -603,13 +627,13 @@ class Dashboard:
         self.display = Display(rows,cols)
 
     def list_runs_helper(self, l):
-        header = ['Index','Name', 'Filtering Status', 'Classification Method', 'Tour Name', 'Success Status', 'Localization Method', 'Scenarios' , 'Localization Test']
+        header = [bc.color('Index',bc.BOLD),bc.color('Name',bc.BOLD), bc.color('Filtering Status',bc.BOLD), bc.color('Classification Method',bc.BOLD), bc.color('Tour Name',bc.BOLD), bc.color('Success Status',bc.BOLD), bc.color('Localization Method',bc.BOLD), bc.color('Scenarios',bc.BOLD) , bc.color('Localization Test',bc.BOLD)]
         fields = ['filter_status','class_method','tour_names', 'success_status', 'localization_technique', 'scenarios', 'localization_test']
         res = []
         c = 0
         for name in l:
             run = self.handler.run_map[name]
-            run_l = [c, name]
+            run_l = [c, bc.color(name, bc.WARNING)]
             for f in fields:
                 if (f == 'scenarios'):
                     scens = run.meta[f]
@@ -722,14 +746,14 @@ class Dashboard:
             logging.info('Invalid name or index')
             return
 
-        header = ['Name', 'Filtering Status', 'Classification Method', 'Tour Name', 'Success Status', 'Localization Method', 'Scenarios' , 'Localization Test']
+        header = [bc.color('Name',bc.BOLD), bc.color('Filtering Status',bc.BOLD), bc.color('Classification Method',bc.BOLD), bc.color('Tour Name',bc.BOLD), bc.color('Success Status',bc.BOLD), bc.color('Localization Method',bc.BOLD), bc.color('Scenarios',bc.BOLD) , bc.color('Localization Test',bc.BOLD)]
         fields = ['filter_status','class_method','tour_names', 'success_status', 'localization_technique', 'scenarios', 'localization_test']
         if (name not in self.handler.run_map):
             logging.info('Run ' + name + ' not found')
             return
         
         run = self.handler.run_map[name]
-        run_l = [name]
+        run_l = [bc.color(name,bc.WARNING)]
         for f in fields:
             if (f == 'scenarios'):
                 scens = run.meta[f]
@@ -749,11 +773,11 @@ class Dashboard:
 
     def list_dirs(self):
         ''' list all directories in the experimental folder and whether or not they are a valid run '''
-        header = ['Name', 'Is Valid Run']
+        header = [bc.color('Name',bc.BOLD), bc.color('Is Valid Run',bc.BOLD)]
         res = []
         for name in self.handler.dirs:
             if (name in self.handler.run_inds):
-                res.insert(0, [name, 'true'])
+                res.insert(0, [bc.color(name, bc.WARNING), 'true'])
             else:
                 res.append([name, 'false'])
 
@@ -810,7 +834,7 @@ class Dashboard:
         found = False
         for plot in self.display.plots:
             if (isinstance(plot, plot_class)):
-                print plot.__class__.__name__ + ": " 
+                print bc.color(plot.__class__.__name__ + ": ",bc.BOLD)
                 found = True
                 print plot.info()
 

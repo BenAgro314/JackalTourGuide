@@ -1,0 +1,6 @@
+// The Round Table
+digraph {
+	ben
+	A
+	ben -> A
+}
