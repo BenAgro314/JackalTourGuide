@@ -42,16 +42,17 @@ class Plot:
         self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         self.aggregate = aggregate
         self.series_list = []
+        self.ax = None
 
     def add_ax(self, ax):
         self.ax = ax
         self.label()
         
     def init_axis(self):
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         self.collect_data()
         for i in range(len(self.data['x_data'])):
             self.ax.plot(self.data['x_data'][i], self.data['y_data'][i], self.data['line'][i], label = self.data['series_name'][i], color = self.data['color'][i])
-
         self.ax.legend()
 
     def __str__(self):
@@ -125,9 +126,10 @@ class TranslationError(Plot):
         res = ""
         self.data.clear()
         self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        temp = self.aggregate
         self.aggregate = True
         self.collect_data()
-        self.aggregate = False
+        self.aggregate = temp
 
         for i in range(len(self.data['series_name'])):
             x = self.data['x_data'][i]
@@ -207,9 +209,10 @@ class YawError(Plot):
         res = ""
         self.data.clear()
         self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        temp = self.aggregate
         self.aggregate = True
         self.collect_data()
-        self.aggregate = False
+        self.aggregate = temp
 
         for i in range(len(self.data['series_name'])):
             x = self.data['x_data'][i]
@@ -227,12 +230,20 @@ class YawError(Plot):
 
 
 class TrajectoryPlot(Plot):
+
     def label(self):
         self.ax.set_title('Trajectory Plot')
         self.ax.set(xlabel='x position (m)', ylabel = 'y position (m)')
 
-    def collect_data(self):
+    def init_axis(self):
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        self.collect_data()
+        for i in range(len(self.data['x_data'])):
+            self.ax.plot(self.data['x_data'][i], self.data['y_data'][i], self.data['line'][i], label = self.data['series_name'][i], color = self.data['color'][i])
+        self.ax.axis('equal')
+        self.ax.legend()
 
+    def collect_data(self):
         for series in self.series_list:
             for run in series.runs:
                 gt_traj = run.get_data('gt_traj')
@@ -254,11 +265,13 @@ class TrajectoryPlot(Plot):
         return res
 
 class PathDifference(Plot):
+
     def label(self):
         self.ax.set_title("Path Difference")
         self.ax.set(xlabel='Series', ylabel = 'Average percent difference from optimal path length (%)')
 
     def init_axis(self):
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
         self.collect_data()
         self.ax.bar(self.data['x_data'], self.data['y_data'])
         
@@ -277,7 +290,7 @@ class PathDifference(Plot):
 
             avg_diff/=len(series.runs)
             self.data['y_data'].append(avg_diff)
-
+    
     def info(self):
         if (len(self.data['x_data']) == 0):
             self.collect_data()
@@ -291,29 +304,31 @@ class PathDifference(Plot):
         return res
 
 class SuccessRate(Plot):
-     def label(self):
-        self.ax.set_title("Success Rate")
-        self.ax.set(xlabel='Series', ylabel = 'Success Rate (%)')
+
+    def label(self):
+       self.ax.set_title("Success Rate")
+       self.ax.set(xlabel='Series', ylabel = 'Success Rate (%)')
 
 
-     def init_axis(self):
-        self.collect_data()
-        self.ax.bar(self.data['x_data'], self.data['y_data'])
-        
-     def collect_data(self):
-        
-        for series in self.series_list:
-            self.data['x_data'].append(series.name)
-            
-            rate = 0
-            for run in series.runs:
-                data = run.data
-                meta = run.meta
-                if (meta['success_status'] == 'true'):
-                    rate += 1
-                    
-            rate/=len(series.runs)
-            self.data['y_data'].append(rate*100)
+    def init_axis(self):
+       self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+       self.collect_data()
+       self.ax.bar(self.data['x_data'], self.data['y_data'])
+       
+    def collect_data(self):
+       
+       for series in self.series_list:
+           self.data['x_data'].append(series.name)
+           
+           rate = 0
+           for run in series.runs:
+               data = run.data
+               meta = run.meta
+               if (meta['success_status'] == 'true'):
+                   rate += 1
+                   
+           rate/=len(series.runs)
+           self.data['y_data'].append(rate*100)
 
 class RunHandler:
 
@@ -613,14 +628,13 @@ class Dashboard:
 
         print tabulate(res,headers=header)
 
-
     def list_runs(self, num = 10):
         ''' displays meta data for the num most recent runs '''
         l = self.handler.run_inds[:num]
         self.list_runs_helper(l)
             
     def add_series(self, name, colors = None, tour_names = None, filter_status = None, localization_technique = None, success_status = None, scenarios = None, earliest_date = None, latest_date = None, localization_test = None, class_method = None, load_world = None, date = None, min_ind = None, max_ind = None, ind = None):
-        ''' adds a series to the Dashboard '''
+        ''' adds a series to the dashboard, where all runs in the series adhere to all specified parameters'''
         latest_date = self.ind_to_date(min_ind)
         earliest_date = self.ind_to_date(max_ind)
         date = self.ind_to_date(ind)
@@ -630,7 +644,7 @@ class Dashboard:
         self.display.add_series(series)
 
     def add_plot(self, plot):
-        ''' add a plot type to the dashboard '''
+        ''' add a plot to the dashboard '''
         self.display.add_plot(plot)
 
     def remove_series(self, name):
@@ -641,12 +655,15 @@ class Dashboard:
             logging.info('Series ' + name + ' not found in display')
 
     def clear_series(self):
+        ''' remove all series from the dashboard '''
         self.display.series_map.clear()
 
     def clear_plots(self):
+        ''' remove all plots from the dashboard '''
         self.display.plots = []
 
     def clear(self):
+        ''' remove all plots and series ''' 
         self.clear_plots()
         self.clear_series()
 
@@ -723,7 +740,7 @@ class Dashboard:
                         continue
                     scens[i] = scens[i].encode('utf-8')
                     i+=1    
-                run_l.append(scens)
+                run_l.append(',\n'.join(scens))
                 continue
 
             run_l.append(run.meta[f])
@@ -743,6 +760,7 @@ class Dashboard:
         print tabulate(res, headers = header)
 
     def remove_dir(self, name):
+        ''' remove names directory from experiments folder if it exists '''
         if name not in self.handler.dirs:
             logging.info(name + ' does not exist and cannot be deleted')
             return
@@ -751,6 +769,7 @@ class Dashboard:
             self.handler.user_remove_file(name)
 
     def remove_series_dirs(self, name):
+        ''' remove all the directories of a given series '''   
         if (name not in self.display.series_map):
             logging.info('Series ' + name + ' does not exist in the dashboard')
         
@@ -791,6 +810,7 @@ class Dashboard:
         found = False
         for plot in self.display.plots:
             if (isinstance(plot, plot_class)):
+                print plot.__class__.__name__ + ": " 
                 found = True
                 print plot.info()
 
@@ -799,22 +819,7 @@ class Dashboard:
 
 if __name__ == "__main__":
     ''' TODO: implement saving of plots ''' 
-    #H = RunHandler()
-
-    #s = Series('s', H.search(date = '2020-07-17-12-47-30')) 
-    #b = Series('b', H.search(date = '2020-07-17-13-39-30'))
-    #d = Display(2,2)
-    #d.add_series(s)
-    #d.add_series(b)
-    #d.add_plot(TranslationError())
-    #d.add_series(s)
-    #d.add_plot(TrajectoryPlot())
-    #d.add_plot(YawError())
-    #d.add_plot(PathDifference())
-    #d.display()
-    d = Dashboard()
-    d.list_runs()
-
+    pass
 
 
     
