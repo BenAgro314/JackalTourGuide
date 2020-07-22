@@ -2,8 +2,8 @@
 
 TIME=$(rosparam get start_time)
 FILTER=$(rosparam get filter_status)
-# REPEAT=$(rosparam get repeat)
 
+echo "Shutting down run $TIME"
 
 rosnode kill -a
 killall rosmaster

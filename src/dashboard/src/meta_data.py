@@ -5,6 +5,10 @@ import os
 import numpy as np
 import rospy
 import subprocess
+import signal
+import sys
+import shutil
+import logging
 
 from std_msgs.msg import Bool
 from move_base_msgs.msg import MoveBaseActionResult
@@ -18,12 +22,13 @@ class MetaHandler:
         rospy.init_node('meta_data')
 
         self.read_params()
-
+        self.file = "/home/" + self.username + "/Myhal_Simulation/simulated_runs/" + self.start_time 
         self.path = "/home/" + self.username + "/Myhal_Simulation/simulated_runs/" + self.start_time + "/logs-" +self.start_time + "/"
-
         self.meta_json = open(self.path + "meta.json", 'w')
-        
         self.start_subscribers()
+
+        signal.signal(signal.SIGINT, self.termination_callback)
+        signal.signal(signal.SIGTERM, self.termination_callback)
 
         rospy.spin()
 
@@ -44,11 +49,19 @@ class MetaHandler:
         self.table['scenarios'] = []
         for name in self.room_params:
             self.table['scenarios'].append(self.room_params[name]['scenario'])
-        
-        
+
+
+    def termination_callback(self, signal, frame):
+        ''' If we recieve a signal that the program has terminated early, delete the log file '''
+        if (os.path.isdir(self.file)):
+            shutil.rmtree(self.file)
+            logging.warning('Deleting ' + self.file + ' due to early shutdown')
+
+        self.meta_json.close()  
+        shutdown_script = "/home/"+self.username+"/catkin_ws/shutdown.sh"
+        subprocess.call(shutdown_script, shell = True)
 
     def on_shutdown(self, msg):
-        
         if (not msg.data):
             self.successful = 'false'
         self.create_table()
