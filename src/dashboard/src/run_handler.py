@@ -793,10 +793,22 @@ class Dashboard:
 
         print tabulate(res, headers = header)
 
-    def remove_dir(self, name):
+    def remove_dir(self, name = None, clear_old = False):
         ''' remove names directory from experiments folder if it exists '''
+        if (clear_old and name is None):
+            confirm = raw_input('Type DEL to confirm you want to delete all old runs\n')
+            if (confirm != 'DEL'):
+                return
+
+            dirs = self.handler.dirs[:]
+            for dir in dirs:
+                if (not os.path.isdir(self.handler.filepath + 'simulated_runs/'  + dir) or dir in self.handler.run_map):
+                    continue 
+                self.handler.user_remove_file(dir) 
+            return
+
         if name not in self.handler.dirs:
-            logging.info(name + ' does not exist and cannot be deleted')
+            logging.info(str(name) + ' does not exist and cannot be deleted')
             return
         confirm = raw_input('Type DEL to confirm you want to delete ' + name + '\n')
         if (confirm == 'DEL'):
@@ -852,7 +864,6 @@ class Dashboard:
             logging.info('Plot type not found in display')
 
 if __name__ == "__main__":
-    ''' TODO: implement saving of plots ''' 
     pass
 
 
