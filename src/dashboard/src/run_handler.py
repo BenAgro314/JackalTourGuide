@@ -75,6 +75,7 @@ class Plot:
         self.series_list.append(series)
 
 class TranslationError(Plot):
+    ''' A plot of the difference between the predicted position and actual position of the robot at a given point in time, w.r.t the distance travelled '''
     
     def label(self):
         self.ax.set_title("Translation Error")
@@ -159,6 +160,7 @@ class TranslationError(Plot):
         return res
 
 class YawError(Plot):
+    ''' A plot of the difference between the predicted yaw and the actual yaw of the robot at a given point in time w.r.t the distance travelled'''
 
     def label(self):
         self.ax.set_title("Yaw Error")
@@ -244,6 +246,7 @@ class YawError(Plot):
 
 
 class TrajectoryPlot(Plot):
+    '''A plot of the birds-eye view of the robots trajectory'''
 
     def label(self):
         self.ax.set_title('Trajectory Plot')
@@ -279,6 +282,7 @@ class TrajectoryPlot(Plot):
         return res
 
 class PathDifference(Plot):
+    ''' A plot of the percent difference between the robots path and the optimal path to complete the tour. This plot is only meaningfull if only successfull trials are included '''  
 
     def label(self):
         self.ax.set_title("Path Difference")
@@ -317,6 +321,7 @@ class PathDifference(Plot):
         return res
 
 class SuccessRate(Plot):
+    ''' A plot of the success rate of a given series (a successful run is one where the robot completes the whole tour '''
 
     def label(self):
        self.ax.set_title("Success Rate")
