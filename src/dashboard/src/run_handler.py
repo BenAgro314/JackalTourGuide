@@ -666,7 +666,7 @@ class Display:
         self.init_plots()
         if (path is not None):
             try:
-                plt.savefig(path)
+                plt.savefig(path, bbox_inches='tight')
             except:
                 logging.error('Could not save plot')
         plt.show()
