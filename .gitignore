@@ -9,3 +9,4 @@ topics.txt
 .catkin_workspace
 *.swp
 *.pyc
+/.ipynb_checkpoints
