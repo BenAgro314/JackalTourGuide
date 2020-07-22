@@ -350,23 +350,24 @@ class PathDifference(Plot):
 
     def init_axis(self):
         self.collect_data()
-        self.ax.bar(self.data['x_data'], self.data['y_data'])
+        self.ax.bar(self.data['x_data'], self.data['y_data'], color = self.data['color'], yerr = self.data['yerr'])
         
     def collect_data(self):
-        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': [], 'yerr': []}
         for series in self.series_list:
             self.data['x_data'].append(series.name)
+            self.data['color'].append(series.colors[0])
             # find average path difference for the runs of the current series
-            avg_diff = 0
+            diffs = []
             for run in series.runs:
                 data = run.data
                 meta = run.meta
                 optimal_dist = pu.list_distances(data['optimal_traj'])[1]
                 gt_dist = pu.list_distances(data['gt_traj'])[1]
-                avg_diff += ((gt_dist-optimal_dist)/optimal_dist)*100
+                diffs.append(((gt_dist-optimal_dist)/optimal_dist)*100)
 
-            avg_diff/=len(series.runs)
-            self.data['y_data'].append(avg_diff)
+            self.data['y_data'].append(np.average(diffs))
+            self.data['yerr'].append(np.std(diffs))
     
     def info(self):
         if (len(self.data['x_data']) == 0):
