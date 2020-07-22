@@ -601,8 +601,13 @@ class Display:
         self.plots.append(plot)
 
 
-    def display(self):
+    def display(self, path = None):
         self.init_plots()
+        if (path is not None):
+            try:
+                plt.savefig(path)
+            except:
+                logging.error('Could not save plot')
         plt.show()
 
     def init_plots(self):
@@ -710,9 +715,9 @@ class Dashboard:
         self.display.rows= rows
         self.display.cols = cols
 
-    def show(self, save = False, path = '.'):
+    def show(self, path = None):
         ''' show current display as a plot, save the plot to path if given '''
-        self.display.display()
+        self.display.display(path)
 
     def ind_to_date(self, ind):
         if (ind is not None and (ind >=0 and ind < len(self.handler.run_inds))):
@@ -815,7 +820,7 @@ class Dashboard:
             self.remove_series(name)
         logging.info('Series ' + name + ' sucessfully deleted')
 
-    def plot_run(self, name_or_ind, plot_type, colors = None, save = False, filepath = '.'):
+    def plot_run(self, name_or_ind, plot_type, colors = None, filepath = None):
         ''' plot the named run with the given plot type (not on the display), return the plot'''
         name = self.nori_to_date(name_or_ind)
         if (name is None):
@@ -831,7 +836,7 @@ class Dashboard:
         temp_display.add_plot(T)
         temp_display.add_series(Series(name, self.handler.search(date = name), colors))
 
-        temp_display.display()
+        temp_display.display(filepath)
         return temp_display.plots[0]
 
     def plot_info(self, plot_class):
