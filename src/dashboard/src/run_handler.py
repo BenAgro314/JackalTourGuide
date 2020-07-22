@@ -77,7 +77,8 @@ class Plot:
         self.series_list.append(series)
 
 class TEBoxPlot(Plot):
-    ''' A box plot for transation error: x axis = series, y axis = translation error '''
+    ''' A box plot for translation error: x axis = series, y axis = translation error '''
+
     def label(self):
         self.ax.set_title("Translation Error")
         self.ax.set(xlabel='Series', ylabel = 'Translation Error (m)')
@@ -104,6 +105,34 @@ class TEBoxPlot(Plot):
                 
             self.data['y_data'].append(s_dist)
 
+class YEBoxPlot(Plot):
+    ''' A box plot for yaw error: x axis = series, y axis = yaw error '''
+
+    def label(self):
+        self.ax.set_title("Yaw Error")
+        self.ax.set(xlabel='Series', ylabel = 'Yaw Error (m)')
+
+    def init_axis(self):
+        self.collect_data()
+        bplot = self.ax.boxplot(self.data['y_data'], labels = self.data['x_data'], patch_artist = True, showfliers=False)
+        for patch, color in zip(bplot['boxes'], self.data['color']):
+            patch.set_facecolor(color)
+
+    def collect_data(self):
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        for series in self.series_list:
+            name = series.name
+            self.data['x_data'].append(name)
+            self.data['color'].append(series.colors[0])
+            s_dist = []
+
+            for run in series.runs:
+                gt_traj = run.get_data('gt_traj')
+                loc_traj = run.get_data('amcl_traj') if ('amcl_traj' in run.keys()) else run.get_data('gmapping_traj')
+                error = pu.yaw_error(loc_traj,gt_traj)
+                s_dist += list(error)
+                
+            self.data['y_data'].append(s_dist)
 
 class TranslationError(Plot):
     ''' A plot of the difference between the predicted position and actual position of the robot at a given point in time, w.r.t the distance travelled '''
