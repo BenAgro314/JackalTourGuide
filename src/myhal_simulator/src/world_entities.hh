@@ -89,6 +89,20 @@ namespace myhal{
             std::string CreateSDF();
     };
 
+    class Camera: public Model{
+
+        public:
+            
+            std::string filepath;
+            bool save;
+
+            Camera(std::string name, ignition::math::Pose3d _pose, std::string path = "");
+
+            std::string CreateSDF();
+
+
+    };
+
     class TableGroup{
 
         public:

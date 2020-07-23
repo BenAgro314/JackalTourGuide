@@ -807,9 +807,9 @@ class Dashboard:
         ls = os.listdir(self.handler.filepath + '/simulated_runs/' + name)
         username = self.handler.username
         if ('raw_data.bag' in ls):
-            script = "/home/"+username+"/catkin_ws/visualize_bag.sh -l " + name + " -r " + str(rate)
+            script = "/home/"+username+"/catkin_ws/scripts/visualize_bag.sh -l " + name + " -r " + str(rate)
         else:
-            script = "/home/"+username+"/catkin_ws/visualize_bag.sh -l " + name + " -r " + str(rate) + " -n localization_test.bag"
+            script = "/home/"+username+"/catkin_ws/scripts/visualize_bag.sh -l " + name + " -r " + str(rate) + " -n localization_test.bag"
         subprocess.call(script, shell = True)
 
     def run_info(self, name_or_ind):

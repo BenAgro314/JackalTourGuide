@@ -257,11 +257,103 @@ std::string BoundaryBox::CreateSDF()
     model->AddSubtag(link);
 
     std::stringstream sdf;
-
     sdf << model->WriteTag(2);
-
     return sdf.str();
 }
+
+///Camera
+
+
+Camera::Camera(std::string name, ignition::math::Pose3d _pose, std::string path): Model(name, _pose, "", 0.1, 0.1){
+    this->name = name;
+    if (path == ""){
+        this->save = false;
+    }else{
+        this->save = true;
+    }
+    this->filepath = path;
+}
+
+std::string Camera::CreateSDF(){
+
+    std::shared_ptr<HeaderTag> model = std::make_shared<HeaderTag>("model");
+    model->AddAttribute("name", this->name);
+
+    std::string pose_string = std::to_string(this->pose.Pos().X()) + " " + std::to_string(this->pose.Pos().Y()) + " " + std::to_string(this->pose.Pos().Z()) + " " + std::to_string(this->pose.Rot().Roll()) + " " + std::to_string(this->pose.Rot().Pitch()) + " " + std::to_string(this->pose.Rot().Yaw());
+
+    std::shared_ptr<DataTag> pose_tag = std::make_shared<DataTag>("pose", pose_string);
+    std::shared_ptr<DataTag> static_tag = std::make_shared<DataTag>("static", "true");
+    model->AddSubtag(pose_tag);
+    model->AddSubtag(static_tag);
+
+    std::shared_ptr<HeaderTag> link = std::make_shared<HeaderTag>("link");
+    link->AddAttribute("name", this->name + "_link");
+
+    std::shared_ptr<HeaderTag> visual = std::make_shared<HeaderTag>("visual");
+    visual->AddAttribute("name", this->name + "_visual");
+
+    std::shared_ptr<HeaderTag> geometry = std::make_shared<HeaderTag>("geometry");
+    std::shared_ptr<HeaderTag> box = std::make_shared<HeaderTag>("box");
+
+    std::string size_string = "0.1 0.1 0.1";
+    std::shared_ptr<DataTag> size = std::make_shared<DataTag>("size", size_string);
+
+    box->AddSubtag(size);
+    geometry->AddSubtag(box);
+    visual->AddSubtag(geometry);
+    link->AddSubtag(visual);
+
+    auto sensor = std::make_shared<HeaderTag>("sensor");
+    sensor->AddAttribute("name", "my_camera"); 
+    sensor->AddAttribute("type", "camera"); 
+    
+    auto always_on = std::make_shared<DataTag>("always_on", "1");
+    auto update_rate = std::make_shared<DataTag>("update_rate", "30");
+    sensor->AddSubtag(always_on);
+    sensor->AddSubtag(update_rate);
+
+    auto camera = std::make_shared<HeaderTag>("camera");
+    auto save = std::make_shared<HeaderTag>("save");
+
+    std::string sv;
+    if (this->save){
+        sv = "true";
+    } else{
+        sv = "false";
+    }
+
+    save->AddAttribute("enabled",sv);
+    auto path = std::make_shared<DataTag>("path", this->filepath + this->name);
+    save->AddSubtag(path);
+    camera->AddSubtag(save);
+
+    auto hfov = std::make_shared<DataTag>("horizontal_fov", "1.047");
+    camera->AddSubtag(hfov);
+
+    auto img = std::make_shared<HeaderTag>("image");
+    auto w = std::make_shared<DataTag>("width","1920");
+    auto h = std::make_shared<DataTag>("height","1080");
+    img->AddSubtag(w);
+    img->AddSubtag(h);
+    camera->AddSubtag(img);
+
+    auto clip = std::make_shared<HeaderTag>("clip");
+    auto near = std::make_shared<DataTag>("near","0.1");
+    auto far = std::make_shared<DataTag>("far","100");
+    clip->AddSubtag(near);
+    clip->AddSubtag(far);
+    camera->AddSubtag(clip);
+
+    sensor->AddSubtag(camera);
+    link->AddSubtag(sensor);
+    model->AddSubtag(link);
+
+    std::stringstream sdf;
+    sdf << model->WriteTag(2);
+    return sdf.str();
+
+}
+
 
 ///TableGroup
 
@@ -280,9 +372,6 @@ TableGroup::TableGroup(std::shared_ptr<Model> _table_model, std::shared_ptr<Mode
     int start = ignition::math::Rand::IntUniform(0,3);
 
     // make sitter plugin:
-
-    
-
 
     for (int i = start; i < start+num_chairs; i++){
         std::shared_ptr<Model> new_chair = std::make_shared<IncludeModel>("chair", table_model->pose, this->chair_model->model_file, this->chair_model->GetWidth(), this->chair_model->GetWidth());

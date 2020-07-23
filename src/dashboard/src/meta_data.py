@@ -62,7 +62,7 @@ class MetaHandler:
             logging.warning('Deleting ' + self.file + ' due to early shutdown')
 
         self.meta_json.close()  
-        shutdown_script = "/home/"+self.username+"/catkin_ws/shutdown.sh"
+        shutdown_script = "/home/"+self.username+"/catkin_ws/scripts/shutdown.sh"
         subprocess.call(shutdown_script, shell = True)
 
     def unix_term(self, sig, frame):

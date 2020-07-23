@@ -71,6 +71,5 @@
     <arg name="mapping" value="$(arg mapping)" />
  </include-->
 
-  <include file="$(find lego-loam)/lego-loam/launch/run.launch" />
   
 </launch>

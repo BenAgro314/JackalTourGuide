@@ -45,6 +45,7 @@ void WorldHandler::Load(){
     this->WriteToFile("myhal_sim.world");
 
     std::cout << "WORLD CREATED!\n";
+
 }
 
 WorldHandler::WorldHandler(){
