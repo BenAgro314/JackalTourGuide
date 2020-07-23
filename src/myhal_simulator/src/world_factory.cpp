@@ -25,6 +25,12 @@ void WorldHandler::Load(){
 
     this->LoadParams();
 
+    std::cout << "Adding cameras\n";
+
+    this->AddCameras();
+
+    std::cout << "Done adding cameras\n";
+
     std::cout << "Filling Rooms\n";
     
     for (auto r_info: this->rooms){
@@ -40,11 +46,42 @@ void WorldHandler::Load(){
         door->AddToWorld(this->world_string);
     }
 
+
     std::cout << "Writing to file\n";
+
 
     this->WriteToFile("myhal_sim.world");
 
     std::cout << "WORLD CREATED!\n";
+
+}
+
+void WorldHandler::AddCameras(){
+
+
+    // Iterate through all non-empty rooms and add a camera 
+
+    int i = 0;
+    
+    for (auto r_info: this->rooms){
+        std::string scenario = r_info->scenario;
+        if (scenario == "empty"){
+            continue;
+        }
+        std::string r_name = this->room_names[i];
+        std::cout << "Adding camera to room " << r_name  << "\n";
+        auto box = r_info->room->boundary;
+        auto min_x = box.Min().X();
+        auto min_y = box.Min().Y();
+        auto max_x = box.Max().X();
+        auto max_y = box.Max().Y();
+        
+        auto cam = myhal::Camera(r_name, ignition::math::Pose3d(min_x-2,min_y-2,10,0, 0.785, 0.785), "/tmp/");
+        cam.AddToWorld(this->world_string);
+
+        i++;
+    }   
+    
 
 }
 
@@ -378,13 +415,12 @@ void WorldHandler::LoadParams(){
 
     /// READ ROOM INFO
 
-    std::vector<std::string> room_names;
-    if (!nh.getParam("room_names", room_names)){
+    if (!nh.getParam("room_names", this->room_names)){
         std::cout << "ERROR READING ROOM NAMES\n";
         return;
     }
 
-    for (auto name: room_names){
+    for (auto name: this->room_names){
         //std::cout << name << std::endl;
         
         std::map<std::string, std::string> info;

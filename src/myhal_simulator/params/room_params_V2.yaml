@@ -27,6 +27,7 @@ room_names:
 # dense_boids
 # dense_wanderers
 # long_term_standers
+# empty_film
 
 # specify the geometry, position of tables, whether or not the room is enclosed, and the room scenario here  
 # note: the gXXX and pXXX refer to variables below
@@ -34,13 +35,13 @@ lounge_532:
   geometry: g532
   positions: p532
   enclosed: "0"
-  scenario: empty
+  scenario: big_tables_no_people
 
 study_space_546:
   geometry: g546
   positions: p546
   enclosed: "0"
-  scenario: empty
+  scenario: empty_film
 
 irm_lab_580:
   geometry: g580

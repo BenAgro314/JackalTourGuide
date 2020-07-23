@@ -121,15 +121,13 @@ namespace myhal{
 
         protected:
 
-           
-            ignition::math::Box boundary; 
-            
             std::string building_name;
             bool enclosed;
 
-
         public: 
 
+            ignition::math::Box boundary; 
+            
             std::vector<ignition::math::Box> walls;
 
             std::vector<ignition::math::Pose3d> route;

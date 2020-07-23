@@ -90,12 +90,13 @@ class WorldHandler{
 
         void FillRoom(std::shared_ptr<RoomInfo> room_info);
 
+        void AddCameras();
+
         std::string world_string;
 
         std::vector<std::shared_ptr<myhal::Model>> world_models;
 
-        // filled by parameters 
-
+        std::vector<std::string> room_names; //to name the cameras effectivly
 
         //TODO: change these to not be pointers
         //std::map<std::string, std::shared_ptr<SDFPlugin>> vehicle_plugins; //one per actor
@@ -124,6 +125,7 @@ class WorldHandler{
         std::vector<std::shared_ptr<myhal::Model>> doors; 
 
         std::shared_ptr<Costmap> costmap;
+
 };
 
 
