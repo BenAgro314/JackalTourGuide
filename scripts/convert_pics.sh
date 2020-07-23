@@ -1,24 +1,33 @@
 #!/bin/bash
 
-
 NAME='camera'
-PREFIX='/tmp/'
-REMOVE=false
+LOAD=""
 
-while getopts rn:p: option
+while getopts n:l: option
 do
 case "${option}"
 in
-p) PREFIX=${OPTARG};;
+l) LOAD=${OPTARG};;
 n) NAME=${OPTARG};;
-r) REMOVE=true;;
 esac
 done
 
-ffmpeg -r 30 -pattern_type glob -i "${PREFIX}${NAME}/default_${NAME}_${NAME}_link_my_camera*.jpg" -c:v libx264 "/home/$USER/Myhal_Simulation/plots/${NAME}.mp4"
+if [ -z $LOAD ];
+then 
+    echo "No file given, exiting"
+    exit 1
+fi
 
-if $REMOVE;
+PATH="/home/$USER/Myhal_Simulation/simulated_runs/$LOAD/logs-$LOAD/videos/"
+
+
+echo /usr/bin/ffmpeg -r 30 -pattern_type glob -i "${PATH}${NAME}/default_${NAME}_${NAME}_link_my_camera*.jpg" -c:v libx264 "${PATH}${NAME}.mp4"
+
+/usr/bin/ffmpeg -r 30 -pattern_type glob -i "${PATH}${NAME}/default_${NAME}_${NAME}_link_my_camera*.jpg" -c:v libx264 "${PATH}${NAME}.mp4"
+
+if [ $? -eq 0 ];
 then
-    rm -rf "/tmp/${NAME}"
+    echo -e "Removing jpg files\n"
+    /bin/rm -rf "${PATH}${NAME}"
 fi
 

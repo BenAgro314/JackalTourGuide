@@ -83,6 +83,7 @@ rosparam set camera_pos "[false, false, true , false]" # represents [top left, t
 
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
+mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/videos/"
 LOGFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
 PARAMFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/params.yaml"
 PCLFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/pcl.txt"

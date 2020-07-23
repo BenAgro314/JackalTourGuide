@@ -98,6 +98,8 @@ class WorldHandler{
 
         std::vector<bool> camera_pos;
 
+        std::string start_time;
+
         std::vector<std::string> room_names; //to name the cameras effectivly
 
         //TODO: change these to not be pointers

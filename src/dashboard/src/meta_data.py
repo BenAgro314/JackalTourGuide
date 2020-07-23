@@ -74,7 +74,7 @@ class MetaHandler:
             logging.warning('Deleting ' + self.file + ' due to early shutdown')
 
         self.meta_json.close()  
-        shutdown_script = "/home/"+self.username+"/catkin_ws/shutdown.sh"
+        shutdown_script = "/home/"+self.username+"/catkin_ws/scripts/shutdown.sh"
         subprocess.call(shutdown_script, shell = True)
 
     def on_shutdown(self, msg):
@@ -84,7 +84,7 @@ class MetaHandler:
         self.create_table()
         json.dump(self.table, self.meta_json, indent = 4, sort_keys=True)
         self.meta_json.close()  
-        shutdown_script = "/home/"+self.username+"/catkin_ws/shutdown.sh"
+        shutdown_script = "/home/"+self.username+"/catkin_ws/scripts/shutdown.sh"
         subprocess.call(shutdown_script, shell = True)
         sys.exit()
 

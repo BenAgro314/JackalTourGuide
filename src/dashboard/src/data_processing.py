@@ -6,9 +6,10 @@ import numpy as np
 import time as RealTime
 import pickle
 import json
-
+import subprocess
 import rosbag
 import plyfile as ply
+import shutil
 from utilities import bag_tools as bt
 from utilities import math_utilities as mu
 from utilities import plot_utilities as pu
@@ -138,25 +139,29 @@ if __name__ == "__main__":
     with open(logs_path + 'processed_data.pickle', 'wb') as handle:
         pickle.dump(pickle_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    '''
-    read in:
-        - gt_pose
-        - amcl_pose
-        - gmapping_pose
-        - hughes_pose
-
-        - path data (TODO: publish path data)
-
-
-    output:
-        - raw trajectory (to json)
-        - interpolated pose differences (to json + matplotlib + pickle)
-        - path differences 
-    '''
-
     bag.close()
 
     duration = RealTime.time() - start_time
+    
+    # TODO: convert image files to .mp4 and save 
+
+    vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/"
+    
+    vid_dirs = os.listdir(vid_path)
+    
+    
+    for dir in vid_dirs:
+        print "jpg files -> mp4 for " + dir
+
+        FNULL = open(os.devnull, 'w')
+        command = 'ffmpeg -r 30 -pattern_type glob -i ' + '"'+ vid_path + dir + '/default_' + dir + "_" + dir + '_link_my_camera*.jpg" -c:v libx264 ' + '"' +  vid_path + dir + '.mp4"'
+        print "running:\n" + command
+        retcode = subprocess.call(command, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
+        if (retcode == 0): # a success
+           shutil.rmtree(vid_path + dir) 
+        FNULL.close()
+        
+
 
     print "Data processed in", "{:.2f}".format(duration) ,"seconds"
 

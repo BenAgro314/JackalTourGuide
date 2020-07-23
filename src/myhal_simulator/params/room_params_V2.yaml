@@ -35,7 +35,7 @@ lounge_532:
   geometry: g532
   positions: p532
   enclosed: "0"
-  scenario: big_tables_no_people
+  scenario: empty_film
 
 study_space_546:
   geometry: g546

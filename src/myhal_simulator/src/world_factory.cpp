@@ -62,6 +62,12 @@ void WorldHandler::AddCameras(){
     // Iterate through all non-empty rooms and add a camera 
 
     int i = 0;
+
+    std::string path = "/tmp/";
+    if (this->start_time != ""){
+        path = "/home/" + this->user_name + "/Myhal_Simulation/" + "/simulated_runs/" + this->start_time + "/logs-" + this->start_time + "/videos/";
+    }
+
     
     for (auto r_info: this->rooms){
         std::string scenario = r_info->scenario;
@@ -95,7 +101,7 @@ void WorldHandler::AddCameras(){
                 yaw = 2.356;
             }
 
-            auto cam = myhal::Camera(r_name + "_" + std::to_string(j), ignition::math::Pose3d(x, y, 12,0, 0.785, yaw), "/tmp/");
+            auto cam = myhal::Camera(r_name + "_" + std::to_string(j), ignition::math::Pose3d(x, y, 12,0, 0.785, yaw), path);
             cam.AddToWorld(this->world_string);
         }
 
@@ -133,6 +139,11 @@ void WorldHandler::LoadParams(){
     if (const char * user = std::getenv("USER")){
         this->user_name = user;
     } 
+
+    if (!nh.getParam("start_time", this->start_time)){
+        std::cout << "ERROR READING START TIME: ANY VIDEOS WILL BE SAVED TO /tmp/\n";
+        this->start_time = "";
+    }
 
     if (!nh.getParam("tour_name", this->tour_name)){
         std::cout << "ERROR READING TOUR NAME\n";
@@ -255,8 +266,6 @@ void WorldHandler::LoadParams(){
     }
 
     /// READ PLUGIN INFO
-
- 
     
     std::vector<std::string> plugin_names;
     if (!nh.getParam("plugin_names", plugin_names)){
