@@ -27,6 +27,8 @@ class MetaHandler:
         self.meta_json = open(self.path + "meta.json", 'w')
         self.start_subscribers()
 
+
+        self.shutting_down = False
         signal.signal(signal.SIGINT, self.unix_term)
         signal.signal(signal.SIGTERM, self.unix_term)
         rospy.on_shutdown(self.ros_term)
@@ -53,6 +55,8 @@ class MetaHandler:
 
     def ros_term(self):
         ''' If we recieve a ros shutdown signal, delete the log file '''
+        if (self.shutting_down):
+            return
         if (os.path.isdir(self.file)):
             shutil.rmtree(self.file)
             logging.warning('Deleting ' + self.file + ' due to early shutdown')
@@ -63,6 +67,8 @@ class MetaHandler:
 
     def unix_term(self, sig, frame):
         ''' If we recieve a signal that the program has terminated early, delete the log file '''
+        if (self.shutting_down):
+            return
         if (os.path.isdir(self.file)):
             shutil.rmtree(self.file)
             logging.warning('Deleting ' + self.file + ' due to early shutdown')
@@ -72,6 +78,7 @@ class MetaHandler:
         subprocess.call(shutdown_script, shell = True)
 
     def on_shutdown(self, msg):
+        self.shutting_down = True  
         if (not msg.data):
             self.successful = 'false'
         self.create_table()
@@ -79,6 +86,7 @@ class MetaHandler:
         self.meta_json.close()  
         shutdown_script = "/home/"+self.username+"/catkin_ws/shutdown.sh"
         subprocess.call(shutdown_script, shell = True)
+        sys.exit()
 
     def read_params(self):
         
