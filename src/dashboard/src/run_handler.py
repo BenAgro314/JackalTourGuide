@@ -664,15 +664,16 @@ class Display:
 
     def display(self, path = None):
         self.init_plots()
+        self.fig.set_size_inches((30,15), forward = False)
         if (path is not None):
             try:
-                plt.savefig(path, bbox_inches='tight')
+                plt.savefig(path, dpi = 200, bbox_inches='tight')
             except:
                 logging.error('Could not save plot')
         plt.show()
 
     def init_plots(self):
-        fig, axs = plt.subplots(self.rows,self.cols)
+        self.fig, axs = plt.subplots(self.rows,self.cols)
         axs = np.array(axs)
         i = 0
         for ax in axs.reshape(-1):
