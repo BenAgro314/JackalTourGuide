@@ -110,11 +110,11 @@
  
 
 
-		<model name="lounge_532">
-			<pose>-10.000000 -9.000000 10.000000 0.000000 0.785000 0.785000</pose>
+		<model name="lounge_532_0">
+			<pose>-10.500000 4.500000 12.000000 0.000000 0.785000 -0.785000</pose>
 			<static>true</static>
-			<link name="lounge_532_link">
-				<visual name="lounge_532_visual">
+			<link name="lounge_532_0_link">
+				<visual name="lounge_532_0_visual">
 					<geometry>
 						<box>
 							<size>0.1 0.1 0.1</size>
@@ -126,7 +126,7 @@
 					<update_rate>30</update_rate>
 					<camera>
 						<save enabled="true">
-							<path>/tmp/lounge_532</path>
+							<path>/tmp/lounge_532_0</path>
 						</save>
 						<horizontal_fov>1.047</horizontal_fov>
 						<image>
@@ -141,11 +141,11 @@
 				</sensor>
 			</link>
 		</model>
-		<model name="study_space_546">
-			<pose>-10.000000 -21.000000 10.000000 0.000000 0.785000 0.785000</pose>
+		<model name="lounge_532_1">
+			<pose>9.500000 4.500000 12.000000 0.000000 0.785000 -2.356000</pose>
 			<static>true</static>
-			<link name="study_space_546_link">
-				<visual name="study_space_546_visual">
+			<link name="lounge_532_1_link">
+				<visual name="lounge_532_1_visual">
 					<geometry>
 						<box>
 							<size>0.1 0.1 0.1</size>
@@ -157,7 +157,69 @@
 					<update_rate>30</update_rate>
 					<camera>
 						<save enabled="true">
-							<path>/tmp/study_space_546</path>
+							<path>/tmp/lounge_532_1</path>
+						</save>
+						<horizontal_fov>1.047</horizontal_fov>
+						<image>
+							<width>1920</width>
+							<height>1080</height>
+						</image>
+						<clip>
+							<near>0.1</near>
+							<far>100</far>
+						</clip>
+					</camera>
+				</sensor>
+			</link>
+		</model>
+		<model name="lounge_532_2">
+			<pose>-10.500000 -9.500000 12.000000 0.000000 0.785000 0.785000</pose>
+			<static>true</static>
+			<link name="lounge_532_2_link">
+				<visual name="lounge_532_2_visual">
+					<geometry>
+						<box>
+							<size>0.1 0.1 0.1</size>
+						</box>
+					</geometry>
+				</visual>
+				<sensor name="my_camera" type="camera">
+					<always_on>1</always_on>
+					<update_rate>30</update_rate>
+					<camera>
+						<save enabled="true">
+							<path>/tmp/lounge_532_2</path>
+						</save>
+						<horizontal_fov>1.047</horizontal_fov>
+						<image>
+							<width>1920</width>
+							<height>1080</height>
+						</image>
+						<clip>
+							<near>0.1</near>
+							<far>100</far>
+						</clip>
+					</camera>
+				</sensor>
+			</link>
+		</model>
+		<model name="lounge_532_3">
+			<pose>9.500000 -9.500000 12.000000 0.000000 0.785000 2.356000</pose>
+			<static>true</static>
+			<link name="lounge_532_3_link">
+				<visual name="lounge_532_3_visual">
+					<geometry>
+						<box>
+							<size>0.1 0.1 0.1</size>
+						</box>
+					</geometry>
+				</visual>
+				<sensor name="my_camera" type="camera">
+					<always_on>1</always_on>
+					<update_rate>30</update_rate>
+					<camera>
+						<save enabled="true">
+							<path>/tmp/lounge_532_3</path>
 						</save>
 						<horizontal_fov>1.047</horizontal_fov>
 						<image>
@@ -173,53 +235,22 @@
 			</link>
 		</model>
 		<include>
-			<name>table2_56</name>
+			<name>table2_58</name>
 			<pose>-4.000000 0.000000 0.000000 0.000000 -0.000000 1.570700</pose>
 			<uri>model://table_conference_2</uri>
 		</include>
 		<include>
-			<name>chair_58</name>
-			<pose>-2.317025 -0.000162 0.000000 0.000000 -0.000000 -2.977382</pose>
-			<uri>model://chair_1</uri>
-		</include>
-		<actor name="sitter_59">
-			<pose>-2.317025 -0.000162 0.650000 0.000000 -0.000000 -2.977382</pose>
-			<skin>
-				<filename>sitting.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="vehicle_type" filename="sitter">
-			</plugin>
-			<plugin name="chair" filename="chair_58">
-			</plugin>
-		</actor>
-		<include>
 			<name>table1_60</name>
-			<pose>3.000000 0.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>3.000000 0.000000 0.000000 0.000000 -0.000000 1.570700</pose>
 			<uri>model://table_conference_1</uri>
 		</include>
 		<include>
 			<name>chair_62</name>
-			<pose>3.000000 -1.678128 0.000000 0.000000 -0.000000 0.828332</pose>
+			<pose>4.678886 -0.000162 0.000000 0.000000 -0.000000 -2.365413</pose>
 			<uri>model://chair_2</uri>
 		</include>
-		<actor name="sitter_66">
-			<pose>3.000000 -1.678128 0.650000 0.000000 -0.000000 0.828332</pose>
+		<actor name="sitter_63">
+			<pose>4.678886 -0.000162 0.650000 0.000000 -0.000000 -2.365413</pose>
 			<skin>
 				<filename>sitting.dae</filename>
 			</skin>
@@ -245,71 +276,14 @@
 			</plugin>
 		</actor>
 		<include>
-			<name>chair_63</name>
-			<pose>5.647729 0.000000 0.000000 0.000000 -0.000000 -2.578416</pose>
-			<uri>model://chair_2</uri>
+			<name>table1_64</name>
+			<pose>-4.000000 -3.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<uri>model://table_conference_1</uri>
 		</include>
-		<actor name="sitter_67">
-			<pose>5.647729 0.000000 0.650000 0.000000 -0.000000 -2.578416</pose>
-			<skin>
-				<filename>sitting.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="vehicle_type" filename="sitter">
-			</plugin>
-			<plugin name="chair" filename="chair_63">
-			</plugin>
-		</actor>
 		<include>
-			<name>chair_64</name>
-			<pose>3.000000 1.510073 0.000000 0.000000 -0.000000 2.992854</pose>
-			<uri>model://chair_2</uri>
-		</include>
-		<actor name="sitter_68">
-			<pose>3.000000 1.510073 0.650000 0.000000 -0.000000 2.992854</pose>
-			<skin>
-				<filename>sitting.dae</filename>
-			</skin>
-			<animation name="walking">
-				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="talking">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="standing">
-				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<animation name="sitting">
-				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
-				<interpolate_x>true</interpolate_x>
-			</animation>
-			<plugin name="vehicle_type" filename="sitter">
-			</plugin>
-			<plugin name="chair" filename="chair_64">
-			</plugin>
-		</actor>
-		<include>
-			<name>chair_74</name>
-			<pose>4.917191 -3.000000 0.000000 0.000000 -0.000000 -0.744634</pose>
-			<uri>model://chair_3</uri>
+			<name>table2_66</name>
+			<pose>3.000000 -3.000000 0.000000 0.000000 -0.000000 0.000000</pose>
+			<uri>model://table_conference_2</uri>
 		</include>
 		<model name="box_30">
 			<pose>17.250000 -20.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
@@ -625,17 +599,17 @@
 		</model>
 		<include>
 			<name>door_2</name>
-			<pose>-10.775058 12.475000 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-10.775058 12.475000 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_4</name>
-			<pose>6.935080 8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>6.935080 8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_5</name>
-			<pose>12.624992 14.208450 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>12.624992 14.208450 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -645,7 +619,7 @@
 		</include>
 		<include>
 			<name>door_7</name>
-			<pose>18.478948 16.484045 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>18.478948 16.484045 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -680,7 +654,7 @@
 		</include>
 		<include>
 			<name>door_15</name>
-			<pose>-10.281770 -14.475003 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-10.281770 -14.475003 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -695,12 +669,12 @@
 		</include>
 		<include>
 			<name>door_18</name>
-			<pose>-16.625004 -14.047594 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-16.625004 -14.047594 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_19</name>
-			<pose>-12.624997 -10.048217 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-12.624997 -10.048217 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -710,12 +684,12 @@
 		</include>
 		<include>
 			<name>door_21</name>
-			<pose>10.625002 3.385427 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>10.625002 3.385427 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_22</name>
-			<pose>9.193120 -5.774995 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>9.193120 -5.774995 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -740,17 +714,17 @@
 		</include>
 		<include>
 			<name>door_27</name>
-			<pose>9.399440 -8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>9.399440 -8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_28</name>
-			<pose>13.352706 -14.475002 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>13.352706 -14.475002 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_29</name>
-			<pose>12.624998 -7.129598 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>12.624998 -7.129598 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 

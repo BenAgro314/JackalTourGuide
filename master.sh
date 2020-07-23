@@ -64,20 +64,22 @@ roscore -p $ROSPORT&
 until rostopic list; do sleep 0.5; done #wait until rosmaster has started 
 
 rosparam load src/myhal_simulator/params/common_vehicle_params.yaml
-rosparam set gt_class $GTCLASS
 rosparam load src/myhal_simulator/params/animation_params.yaml
 rosparam load src/myhal_simulator/params/room_params_V2.yaml
 rosparam load src/myhal_simulator/params/scenario_params_V2.yaml
 rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
+rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
+
+rosparam set gt_class $GTCLASS
 rosparam set localization_test false
 rosparam set class_method $c_method
 rosparam set use_sim_time true
 rosparam set tour_name $TOUR
-rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 rosparam set start_time $t
 rosparam set filter_status $FILTER
 rosparam set gmapping_status $MAPPING
+rosparam set camera_pos "[false, false, true , false]" # represents [top left, top right, bot left, bot right]
 
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"

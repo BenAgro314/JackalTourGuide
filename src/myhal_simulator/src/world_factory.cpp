@@ -75,11 +75,33 @@ void WorldHandler::AddCameras(){
         auto min_y = box.Min().Y();
         auto max_x = box.Max().X();
         auto max_y = box.Max().Y();
-        
-        auto cam = myhal::Camera(r_name, ignition::math::Pose3d(min_x-2,min_y-2,10,0, 0.785, 0.785), "/tmp/");
-        cam.AddToWorld(this->world_string);
+
+        for (int j = 0; j < this->camera_pos.size(); j++){
+            auto status = this->camera_pos[j];
+            if (!status){
+                continue;
+            }
+             
+            auto x = ((j % 2) == 0) ? (min_x-2.5) : (max_x+2.5);
+            auto y = (j < 2) ? (max_y + 2.5) : (min_y - 2.5);
+            double yaw = 0;
+            if (j == 0){
+                yaw = -0.785;
+            } else if (j == 1){
+                yaw = -2.356;
+            } else if (j == 2){
+                yaw = 0.785;
+            } else{
+                yaw = 2.356;
+            }
+
+            auto cam = myhal::Camera(r_name + "_" + std::to_string(j), ignition::math::Pose3d(x, y, 12,0, 0.785, yaw), "/tmp/");
+            cam.AddToWorld(this->world_string);
+        }
+
 
         i++;
+
     }   
     
 
@@ -97,6 +119,13 @@ void WorldHandler::LoadParams(){
     char **argv = NULL;
     ros::init(argc, argv, "WorldHandler");
     ros::NodeHandle nh;
+
+    // READ camera info
+
+    if (!nh.getParam("camera_pos", this->camera_pos)){
+        std::cout << "ERROR READING CAMERA POS: SETTING TO ALL FALSE\n";
+        this->camera_pos = {false, false, false, false};
+    }
 
     // READ BUILDING INFO
 

@@ -20,6 +20,9 @@ rosparam load src/myhal_simulator/params/model_params.yaml
 rosparam load src/myhal_simulator/params/common_vehicle_params.yaml
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 rosparam set tour_name $TOUR
+
+rosparam set camera_pos "[true, true, true , true]" # represents [top left, top right, bot left, bot right]
+
 #t=$(date +'%Y-%m-%d-%H-%M-%S')
 #rosparam set start_time $t
 #mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"

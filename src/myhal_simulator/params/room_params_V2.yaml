@@ -41,7 +41,7 @@ study_space_546:
   geometry: g546
   positions: p546
   enclosed: "0"
-  scenario: empty_film
+  scenario: empty
 
 irm_lab_580:
   geometry: g580

@@ -96,6 +96,8 @@ class WorldHandler{
 
         std::vector<std::shared_ptr<myhal::Model>> world_models;
 
+        std::vector<bool> camera_pos;
+
         std::vector<std::string> room_names; //to name the cameras effectivly
 
         //TODO: change these to not be pointers
