@@ -130,19 +130,13 @@ if __name__ == "__main__":
         print "Saving gmapping_traj"
         pickle_dict['gmapping_traj'] = bt.trajectory_to_array(tf_traj)
 
-
-    # pu.plot_trajectory(gt_traj)
-    # pu.plot_trajectory(tf_traj)
-    # pu.show()
-
     print "Dumping data to", logs_path + "processed_data.pickle"
     with open(logs_path + 'processed_data.pickle', 'wb') as handle:
         pickle.dump(pickle_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    bag.close()
-
     
     # TODO: convert image files to .mp4 and save 
+
+    duration = bt.bag_metadata(bag)['duration']
 
     vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/"
     
@@ -150,17 +144,20 @@ if __name__ == "__main__":
     
     for dir in vid_dirs:
         num_pics = len(os.listdir(vid_path + dir + "/"))
+        fps = int(num_pics/duration) 
         
-        print "Converting " + str(num_pics) +  " .jpg files at 30 fps to create " + dir + ".mp4 that is: " + str(num_pics/30.0) + "s long"
+        print "Converting " + str(num_pics) +  " .jpg files at " + str(fps) + " fps to create " + dir + ".mp4 that is: " + str(num_pics/float(fps)) + "s long"
 
         FNULL = open(os.devnull, 'w')
-        command = 'ffmpeg -r 30 -pattern_type glob -i ' + '"'+ vid_path + dir + '/default_' + dir + "_" + dir + '_link_my_camera*.jpg" -c:v libx264 ' + '"' +  vid_path + dir + '.mp4"'
+        command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ vid_path + dir + '/default_' + dir + "_" + dir + '_link_my_camera*.jpg" -c:v libx264 ' + '"' +  vid_path + dir + '.mp4"'
         #print "running:\n" + command
         retcode = subprocess.call(command, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
         if (retcode == 0): # a success
            #shutil.rmtree(vid_path + dir) 
            pass
         FNULL.close()
+
+    bag.close()
         
     duration = RealTime.time() - start_time
     

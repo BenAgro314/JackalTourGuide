@@ -52,7 +52,7 @@ irm_lab_580:
 admin_off_514:
   geometry: g514
   positions: p514
-  enclosed: "0"
+  enclosed: "1"
   scenario: empty
 
 pace_533:

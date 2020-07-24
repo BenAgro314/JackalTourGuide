@@ -122,12 +122,9 @@
 					</geometry>
 				</visual>
 				<sensor name="my_camera" type="camera">
-					<always_on>1</always_on>
-					<update_rate>30</update_rate>
-					<topic>log_video/lounge_532_2</topic>
 					<camera>
 						<save enabled="true">
-							<path>/home/default/Myhal_Simulation//simulated_runs/2020-07-24-06-56-28/logs-2020-07-24-06-56-28/videos/lounge_532_2</path>
+							<path>/home/default/Myhal_Simulation/simulated_runs/2020-07-24-08-19-04/logs-2020-07-24-08-19-04/videos/lounge_532_2</path>
 						</save>
 						<horizontal_fov>1.047</horizontal_fov>
 						<image>
@@ -139,11 +136,14 @@
 							<far>100</far>
 						</clip>
 					</camera>
+					<always_on>1</always_on>
+					<update_rate>30</update_rate>
+					<topic>log_video/lounge_532_2</topic>
 				</sensor>
 			</link>
 		</model>
-		<actor name="actor_basic_wanderer_55">
-			<pose>2.498895 -5.495546 1.000000 0.000000 -0.000000 2.663972</pose>
+		<actor name="actor_basic_wanderer_35">
+			<pose>5.515786 -5.614637 1.000000 0.000000 -0.000000 2.856527</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -168,8 +168,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_56">
-			<pose>-5.104091 -2.366776 1.000000 0.000000 -0.000000 2.158567</pose>
+		<actor name="actor_basic_wanderer_36">
+			<pose>-1.488930 -1.994701 1.000000 0.000000 -0.000000 2.702432</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -194,8 +194,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_58">
-			<pose>-4.738375 -2.502707 1.000000 0.000000 -0.000000 0.371112</pose>
+		<actor name="actor_basic_wanderer_37">
+			<pose>1.638912 -6.014702 1.000000 0.000000 -0.000000 0.601624</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -220,8 +220,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_59">
-			<pose>3.473206 1.591508 1.000000 0.000000 -0.000000 -0.742991</pose>
+		<actor name="actor_basic_wanderer_38">
+			<pose>-4.397318 -2.270452 1.000000 0.000000 -0.000000 0.475464</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -246,8 +246,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_60">
-			<pose>1.682390 -0.516174 1.000000 0.000000 -0.000000 2.936401</pose>
+		<actor name="actor_basic_wanderer_39">
+			<pose>-2.634876 0.412855 1.000000 0.000000 -0.000000 -1.720357</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -272,8 +272,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_61">
-			<pose>-6.085404 1.184780 1.000000 0.000000 -0.000000 -1.916502</pose>
+		<actor name="actor_basic_wanderer_40">
+			<pose>-5.406963 1.022244 1.000000 0.000000 -0.000000 2.138896</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -298,8 +298,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_62">
-			<pose>3.444324 -1.733031 1.000000 0.000000 -0.000000 0.631594</pose>
+		<actor name="actor_basic_wanderer_41">
+			<pose>3.594398 -4.284931 1.000000 0.000000 -0.000000 2.965496</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -324,8 +324,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_63">
-			<pose>0.667620 -2.691642 1.000000 0.000000 -0.000000 2.034595</pose>
+		<actor name="actor_basic_wanderer_42">
+			<pose>0.947877 -5.518771 1.000000 0.000000 -0.000000 -2.303134</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -350,8 +350,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_64">
-			<pose>-0.646185 1.428225 1.000000 0.000000 -0.000000 2.089662</pose>
+		<actor name="actor_basic_wanderer_43">
+			<pose>-6.764665 -2.535028 1.000000 0.000000 -0.000000 2.323518</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -376,8 +376,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_65">
-			<pose>-3.464154 -4.788320 1.000000 0.000000 -0.000000 -1.648107</pose>
+		<actor name="actor_basic_wanderer_44">
+			<pose>3.444722 0.914596 1.000000 0.000000 -0.000000 1.614999</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -402,8 +402,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_66">
-			<pose>-3.118440 -2.083151 1.000000 0.000000 -0.000000 -1.523131</pose>
+		<actor name="actor_basic_wanderer_45">
+			<pose>-7.170211 -6.239159 1.000000 0.000000 -0.000000 1.204397</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -428,8 +428,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_67">
-			<pose>-0.981386 -1.946600 1.000000 0.000000 -0.000000 -3.022356</pose>
+		<actor name="actor_basic_wanderer_46">
+			<pose>-6.491890 -4.570944 1.000000 0.000000 -0.000000 0.952386</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -454,8 +454,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_68">
-			<pose>1.320100 -0.698116 1.000000 0.000000 -0.000000 1.093147</pose>
+		<actor name="actor_basic_wanderer_47">
+			<pose>-0.883116 -0.539141 1.000000 0.000000 -0.000000 -2.828696</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -480,8 +480,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_69">
-			<pose>4.364545 -5.322281 1.000000 0.000000 -0.000000 1.967240</pose>
+		<actor name="actor_basic_wanderer_48">
+			<pose>-0.650119 1.622990 1.000000 0.000000 -0.000000 -1.036694</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -506,8 +506,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_70">
-			<pose>2.602985 -3.408176 1.000000 0.000000 -0.000000 -1.582950</pose>
+		<actor name="actor_basic_wanderer_49">
+			<pose>5.753825 -2.496556 1.000000 0.000000 -0.000000 -1.913717</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -532,8 +532,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_71">
-			<pose>-7.613391 -6.601911 1.000000 0.000000 -0.000000 0.387592</pose>
+		<actor name="actor_basic_wanderer_50">
+			<pose>-7.797202 1.707784 1.000000 0.000000 -0.000000 -1.083222</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -558,8 +558,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_72">
-			<pose>-7.260997 -0.246354 1.000000 0.000000 -0.000000 2.755609</pose>
+		<actor name="actor_basic_wanderer_51">
+			<pose>-3.781071 -4.846595 1.000000 0.000000 -0.000000 -2.305165</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -584,8 +584,8 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_73">
-			<pose>-7.225865 -4.922923 1.000000 0.000000 -0.000000 2.847259</pose>
+		<actor name="actor_basic_wanderer_52">
+			<pose>4.459324 -0.318080 1.000000 0.000000 -0.000000 -1.400270</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -610,8 +610,34 @@
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
 		</actor>
-		<actor name="actor_basic_wanderer_74">
-			<pose>4.216182 -6.593149 1.000000 0.000000 -0.000000 -0.255607</pose>
+		<actor name="actor_basic_wanderer_53">
+			<pose>-3.651819 -1.056878 1.000000 0.000000 -0.000000 2.850705</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="wanderer">
+			</plugin>
+		</actor>
+		<actor name="actor_basic_wanderer_54">
+			<pose>6.350295 -4.153432 1.000000 0.000000 -0.000000 -0.376045</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -688,279 +714,19 @@
 				</collision>
 			</link>
 		</model>
-		<model name="box_34">
-			<pose>-10.700000 -5.725000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_34_link">
-				<collision name="box_34_collision">
-					<geometry>
-						<box>
-							<size>3.400000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_35">
-			<pose>-10.700000 5.725000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_35_link">
-				<collision name="box_35_collision">
-					<geometry>
-						<box>
-							<size>3.400000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_36">
-			<pose>-12.525000 0.000000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_36_link">
-				<collision name="box_36_collision">
-					<geometry>
-						<box>
-							<size>0.250000 11.700000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_37">
-			<pose>-8.875000 0.000000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_37_link">
-				<collision name="box_37_collision">
-					<geometry>
-						<box>
-							<size>0.250000 11.700000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_38">
-			<pose>-17.350000 -2.915000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_38_link">
-				<collision name="box_38_collision">
-					<geometry>
-						<box>
-							<size>5.300000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_39">
-			<pose>-17.350000 2.725000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_39_link">
-				<collision name="box_39_collision">
-					<geometry>
-						<box>
-							<size>5.300000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_40">
-			<pose>-20.125000 -0.095000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_40_link">
-				<collision name="box_40_collision">
-					<geometry>
-						<box>
-							<size>0.250000 5.890000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_41">
-			<pose>-14.575000 -0.095000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_41_link">
-				<collision name="box_41_collision">
-					<geometry>
-						<box>
-							<size>0.250000 5.890000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_42">
-			<pose>-10.750000 -20.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_42_link">
-				<collision name="box_42_collision">
-					<geometry>
-						<box>
-							<size>2.500000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_43">
-			<pose>-10.750000 -14.875000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_43_link">
-				<collision name="box_43_collision">
-					<geometry>
-						<box>
-							<size>2.500000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_44">
-			<pose>-12.125000 -17.500000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_44_link">
-				<collision name="box_44_collision">
-					<geometry>
-						<box>
-							<size>0.250000 5.500000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_45">
-			<pose>-9.375000 -17.500000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_45_link">
-				<collision name="box_45_collision">
-					<geometry>
-						<box>
-							<size>0.250000 5.500000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_46">
-			<pose>-18.400000 -20.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_46_link">
-				<collision name="box_46_collision">
-					<geometry>
-						<box>
-							<size>3.200000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_47">
-			<pose>-18.400000 -12.875000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_47_link">
-				<collision name="box_47_collision">
-					<geometry>
-						<box>
-							<size>3.200000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_48">
-			<pose>-20.125000 -16.500000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_48_link">
-				<collision name="box_48_collision">
-					<geometry>
-						<box>
-							<size>0.250000 7.500000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_49">
-			<pose>-16.675000 -16.500000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_49_link">
-				<collision name="box_49_collision">
-					<geometry>
-						<box>
-							<size>0.250000 7.500000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_50">
-			<pose>-2.150000 -9.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_50_link">
-				<collision name="box_50_collision">
-					<geometry>
-						<box>
-							<size>9.700000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_51">
-			<pose>-2.150000 -4.875000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_51_link">
-				<collision name="box_51_collision">
-					<geometry>
-						<box>
-							<size>9.700000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_52">
-			<pose>-7.125000 -7.000000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_52_link">
-				<collision name="box_52_collision">
-					<geometry>
-						<box>
-							<size>0.250000 4.500000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_53">
-			<pose>2.825000 -7.000000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_53_link">
-				<collision name="box_53_collision">
-					<geometry>
-						<box>
-							<size>0.250000 4.500000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
 		<include>
 			<name>door_0</name>
-			<pose>-10.987250 16.475000 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-10.987250 16.475000 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_1</name>
-			<pose>-14.624989 9.030960 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-14.624989 9.030960 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_2</name>
-			<pose>-10.775058 12.475000 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-10.775058 12.475000 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -970,7 +736,7 @@
 		</include>
 		<include>
 			<name>door_4</name>
-			<pose>6.935080 8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>6.935080 8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -985,7 +751,7 @@
 		</include>
 		<include>
 			<name>door_7</name>
-			<pose>18.478948 16.484045 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>18.478948 16.484045 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -995,12 +761,12 @@
 		</include>
 		<include>
 			<name>door_9</name>
-			<pose>-14.625002 6.214056 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-14.625002 6.214056 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_10</name>
-			<pose>-14.625002 3.346128 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-14.625002 3.346128 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -1020,12 +786,12 @@
 		</include>
 		<include>
 			<name>door_14</name>
-			<pose>-14.061730 -14.474920 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-14.061730 -14.474920 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_15</name>
-			<pose>-10.281770 -14.475003 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-10.281770 -14.475003 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -1045,12 +811,12 @@
 		</include>
 		<include>
 			<name>door_19</name>
-			<pose>-12.624997 -10.048217 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-12.624997 -10.048217 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_20</name>
-			<pose>13.031310 5.774995 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>13.031310 5.774995 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -1060,7 +826,7 @@
 		</include>
 		<include>
 			<name>door_22</name>
-			<pose>9.193120 -5.774995 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>9.193120 -5.774995 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -1070,7 +836,7 @@
 		</include>
 		<include>
 			<name>door_24</name>
-			<pose>2.925000 -17.742519 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>2.925000 -17.742519 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -1085,12 +851,12 @@
 		</include>
 		<include>
 			<name>door_27</name>
-			<pose>9.399440 -8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>9.399440 -8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_28</name>
-			<pose>13.352706 -14.475002 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>13.352706 -14.475002 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>

@@ -7,6 +7,11 @@ from nav_msgs.msg import Odometry
 from tf2_msgs.msg import TFMessage
 from geometry_msgs.msg import PoseStamped
 from move_base_msgs.msg import MoveBaseActionResult
+import yaml
+
+def bag_metadata(bagfile):
+    res = yaml.load(bagfile._get_yaml_info())
+    return res
 
 def trajectory_to_array(traj):
     ''' given a list of PoseStamped messages, return a structured numpy array'''
