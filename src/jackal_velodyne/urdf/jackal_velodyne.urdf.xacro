@@ -374,11 +374,11 @@
     <origin xyz="0 0 0" rpy="0 0 0" />
   </VLP-16-->
   
-  <xacro:include filename="$(find kinect_v2)/urdf/kinect_v2.urdf.xacro" />
+  <!--xacro:include filename="$(find kinect_v2)/urdf/kinect_v2.urdf.xacro" />
     <xacro:kinect_v2  parent="support_link3">
         <origin xyz="0 0 -0.04"
                 rpy="0 0 0" />
-   </xacro:kinect_v2>
+   </xacro:kinect_v2-->
   
 <!-- default samples = 1024 -->
   <!-- VHDL-32E -->

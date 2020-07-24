@@ -153,8 +153,7 @@ if __name__ == "__main__":
         #print "running:\n" + command
         retcode = subprocess.call(command, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
         if (retcode == 0): # a success
-           #shutil.rmtree(vid_path + dir) 
-           pass
+           shutil.rmtree(vid_path + dir) 
         FNULL.close()
 
     bag.close()
