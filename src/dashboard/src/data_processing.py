@@ -141,7 +141,6 @@ if __name__ == "__main__":
 
     bag.close()
 
-    duration = RealTime.time() - start_time
     
     # TODO: convert image files to .mp4 and save 
 
@@ -149,20 +148,21 @@ if __name__ == "__main__":
     
     vid_dirs = os.listdir(vid_path)
     
-    
     for dir in vid_dirs:
-        print "jpg files -> mp4 for " + dir
+        num_pics = len(os.listdir(vid_path + dir + "/"))
+        
+        print "Converting " + str(num_pics) +  " .jpg files at 30 fps to create " + dir + ".mp4 that is: " + str(num_pics/30.0) + "s long"
 
         FNULL = open(os.devnull, 'w')
         command = 'ffmpeg -r 30 -pattern_type glob -i ' + '"'+ vid_path + dir + '/default_' + dir + "_" + dir + '_link_my_camera*.jpg" -c:v libx264 ' + '"' +  vid_path + dir + '.mp4"'
-        print "running:\n" + command
+        #print "running:\n" + command
         retcode = subprocess.call(command, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
         if (retcode == 0): # a success
            #shutil.rmtree(vid_path + dir) 
            pass
         FNULL.close()
         
-
-
+    duration = RealTime.time() - start_time
+    
     print "Data processed in", "{:.2f}".format(duration) ,"seconds"
 
