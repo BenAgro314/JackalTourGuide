@@ -35,7 +35,7 @@ lounge_532:
   geometry: g532
   positions: p532
   enclosed: "0"
-  scenario: empty
+  scenario: no_tables_wanderer_crowd
 
 study_space_546:
   geometry: g546
@@ -52,7 +52,7 @@ irm_lab_580:
 admin_off_514:
   geometry: g514
   positions: p514
-  enclosed: "1"
+  enclosed: "0"
   scenario: empty
 
 pace_533:
@@ -64,13 +64,13 @@ pace_533:
 study_space_545:
   geometry: g545
   positions: p545
-  enclosed: "1"
+  enclosed: "0"
   scenario: empty
 
 proj_rm_564:
   geometry: g564
   positions: p564
-  enclosed: "1"
+  enclosed: "0"
   scenario: empty
 
 inter_teaching_lab_570:
@@ -82,19 +82,19 @@ inter_teaching_lab_570:
 proj_rm_552:
   geometry: g552
   positions: p552
-  enclosed: "1"
+  enclosed: "0"
   scenario: empty
 
 proj_rm_556:
   geometry: g556
   positions: p556
-  enclosed: "1"
+  enclosed: "0"
   scenario: empty
 
 hallway1:
   geometry: g1
   positions: p1
-  enclosed: "1"
+  enclosed: "0"
   scenario: empty
 
 # Specify the contents of each geometry and position here 

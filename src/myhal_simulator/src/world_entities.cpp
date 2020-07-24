@@ -309,8 +309,10 @@ std::string Camera::CreateSDF(){
     
     auto always_on = std::make_shared<DataTag>("always_on", "1");
     auto update_rate = std::make_shared<DataTag>("update_rate", "30");
+    auto topic = std::make_shared<DataTag>("topic", "log_video/" + this->name);
     sensor->AddSubtag(always_on);
     sensor->AddSubtag(update_rate);
+    sensor->AddSubtag(topic);
 
     auto camera = std::make_shared<HeaderTag>("camera");
     auto save = std::make_shared<HeaderTag>("save");
