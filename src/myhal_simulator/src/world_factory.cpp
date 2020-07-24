@@ -58,7 +58,6 @@ void WorldHandler::Load(){
 
 void WorldHandler::AddCameras(){
 
-
     // Iterate through all non-empty rooms and add a camera 
 
     int i = 0;
@@ -72,6 +71,7 @@ void WorldHandler::AddCameras(){
     for (auto r_info: this->rooms){
         std::string scenario = r_info->scenario;
         if (scenario == "empty"){
+            i++;
             continue;
         }
         std::string r_name = this->room_names[i];
@@ -497,9 +497,11 @@ void WorldHandler::LoadParams(){
 
 void WorldHandler::FillRoom(std::shared_ptr<RoomInfo> room_info){
 
+    if ( this->scenarios.find(room_info->scenario) == this->scenarios.end()){
+        std::cout << "ERROR: YOU HAVE SPECIFIED A SCENARIO THAT DOESN'T EXIST" << std::endl;
+        return;
+    }
     auto scenario = this->scenarios[room_info->scenario];
-
-    
     
     int num_models = (int) (scenario->model_percentage*((room_info->positions.size())));
     
