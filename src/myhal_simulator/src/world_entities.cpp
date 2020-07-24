@@ -263,7 +263,6 @@ std::string BoundaryBox::CreateSDF()
 
 ///Camera
 
-
 Camera::Camera(std::string name, ignition::math::Pose3d _pose, std::string path): Model(name, _pose, "", 0.1, 0.1){
     this->name = name;
     if (path == ""){

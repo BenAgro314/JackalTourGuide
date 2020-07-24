@@ -18,6 +18,8 @@ import copy
 import logging
 import psutil
 import shutil
+import yaml
+from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 plt.style.use('seaborn-bright')
 
@@ -797,7 +799,85 @@ class Dashboard:
         return name
 
 
-    def visualize_run(self, name_or_ind, rate = 1):
+    def run_video(self, name_or_ind, play = False):
+        ''' create a pre-editited video file of the run from within the gazebo sim '''
+
+        # load in ground truth run trajectory
+        name = self.nori_to_date(name_or_ind)
+        if (name is None or not os.path.isdir(self.handler.filepath + '/simulated_runs/' + name)):
+            logging.info('Invalid name or index')
+            return
+        print name
+        run = self.handler.search(date = name)[0]
+        gt_traj = run.get_data('gt_traj')
+        vid_path = self.handler.filepath + 'simulated_runs/' + name + '/logs-' + name + '/videos/'
+        av_rooms = os.listdir(vid_path)
+        if ("dashboard_clip.mp4" in av_rooms):
+            logging.info("This video clip already exists")
+            if (play):
+                logging.info("playing the video clip")
+                subprocess.call("xdg-open " + vid_path + "dashboard_clip.mp4", shell = True)
+            return
+        
+        param_path = '/home/' + self.handler.username + '/catkin_ws/src/myhal_simulator/params/room_params_V2.yaml'
+        # load in room data
+        room_data = yaml.load(open(param_path))
+        #return room_data
+        room_names = room_data['room_names']
+        geo_map = {}
+        for n in room_names:
+            found = False
+            a = ""
+            for av in av_rooms:
+               if (n in av):
+                   a = av
+                   found = True
+                   break
+            if (not found):
+                continue
+            geo_map[a] = room_data[room_data[n]['geometry']]
+
+        center_map = {}
+        for room, box in geo_map.items():
+            center_map[room] = ((box['x_min'] + box['x_max'])/2, (box['y_min'] + box['y_max'])/2)
+
+        def find_closest_room(ind):
+            min_dist = 10e9
+            res = None
+            for room, center in center_map.items():
+                dist = np.hypot(center[0]-gt_traj[ind]['pos_x'], center[1] - gt_traj[ind]['pos_y'])
+                if (dist < min_dist):
+                    res = room
+                    min_dist = dist
+
+            return res
+
+        curr_room = find_closest_room(0) 
+        L = [[curr_room, [0, 0]]]
+        
+        for i in range(len(gt_traj)):
+            t = gt_traj['time'][i]
+            next_room = find_closest_room(i)
+            if (next_room != curr_room):
+                L[-1][1][1] = t
+                L.append([next_room, [t, 0]])
+                curr_room = next_room
+
+        L[-1][1][1] = gt_traj['time'][len(gt_traj)-1]
+
+        res_clips = []
+        for clip in L:
+            vid = VideoFileClip(vid_path + clip[0]) 
+            vid = vid.subclip(clip[1][0], clip[1][1])
+            res_clips.append(vid)
+
+        res_clip = concatenate_videoclips(res_clips)
+        res_clip.write_videofile(vid_path + 'dashboard_clip.mp4')
+
+        if (play):
+            subprocess.call("xdg-open " + vid_path + "dashboard_clip.mp4", shell = True)
+
+    def rviz_run(self, name_or_ind, rate = 1):
         ''' play the bag file of the named run with a pre-configured rviz file '''
         name = self.nori_to_date(name_or_ind)
         if (name is None or not os.path.isdir(self.handler.filepath + '/simulated_runs/' + name)):
@@ -810,6 +890,7 @@ class Dashboard:
             script = "/home/"+username+"/catkin_ws/scripts/visualize_bag.sh -l " + name + " -r " + str(rate)
         else:
             script = "/home/"+username+"/catkin_ws/scripts/visualize_bag.sh -l " + name + " -r " + str(rate) + " -n localization_test.bag"
+
         subprocess.call(script, shell = True)
 
     def run_info(self, name_or_ind):
