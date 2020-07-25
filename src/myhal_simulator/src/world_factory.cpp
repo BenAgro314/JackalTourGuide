@@ -64,7 +64,7 @@ void WorldHandler::AddCameras(){
 
     std::string path = "/tmp/";
     if (this->start_time != ""){
-        path = "/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" + this->start_time + "/videos/";
+        path = "/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" + this->start_time + "/videos/static/";
     }
 
     

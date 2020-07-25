@@ -146,9 +146,7 @@ if __name__ == "__main__":
     fpv_vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/fpv/"
     
     static_vid_dirs = os.listdir(static_vid_path) if os.path.isdir(static_vid_path) else []
-    print static_vid_dirs
     fpv_vid_dirs = os.listdir(fpv_vid_path) if os.path.isdir(fpv_vid_path) else []
-    print fpv_vid_dirs
     vid_dirs = static_vid_dirs + fpv_vid_dirs
 
     for i in range(len(vid_dirs)):
@@ -163,7 +161,6 @@ if __name__ == "__main__":
         else: 
             command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ fpv_vid_path + dir + '/default_jackal_base_link_viewbot*.jpg" -c:v libx264 ' + '"' +  fpv_vid_path + dir + '.mp4"'
 
-        print "running:\n" + command
         retcode = subprocess.call(command, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
         if (retcode == 0): # a success
             shutil.rmtree(vid_path + dir) 

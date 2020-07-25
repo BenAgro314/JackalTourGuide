@@ -81,8 +81,10 @@ rosparam set filter_status $FILTER
 rosparam set gmapping_status $MAPPING
 rosparam set camera_pos "[false, false, true , false]" # represents [top left, top right, bot left, bot right]
 
+  
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
+mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/videos/"
 STATICVIDEOPATH="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/videos/static/"
 FPVVIDEOPATH="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/videos/fpv/"
 mkdir $STATICVIDEOPATH
