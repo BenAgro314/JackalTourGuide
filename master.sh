@@ -83,7 +83,10 @@ rosparam set camera_pos "[false, false, true , false]" # represents [top left, t
 
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
-mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/videos/"
+STATICVIDEOPATH="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/videos/static/"
+FPVVIDEOPATH="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/videos/fpv/"
+mkdir $STATICVIDEOPATH
+mkdir $FPVVIDEOPATH
 LOGFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
 PARAMFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/params.yaml"
 PCLFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/pcl.txt"
@@ -92,7 +95,6 @@ echo -e "Command used: $myInvocation" >> $LOGFILE
 echo -e "\nPointcloud filter params: \n" >> $LOGFILE
 echo -e "TOUR: $TOUR\nGUI: $GUI\nLOADWORLD: $LOADWORLD\nFILTER: $FILTER\nMAPPING: $MAPPING\nGTCLASS: $GTCLASS"  >> $LOGFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/jackal_velodyne/launch/include/pointcloud_filter2.launch)" >> $PCLFILE
-
 echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/room_params_V2.yaml)" > $PARAMFILE
 echo -e "\n" >> $PARAMFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/scenario_params_V2.yaml)" >> $PARAMFILE
@@ -119,7 +121,7 @@ cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/"
 #rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" & # Limiting data to remain under rosbag buffer
 rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" /clock /shutdown_signal /velodyne_points /move_base/local_costmap/costmap /move_base/global_costmap/costmap /ground_truth/state /map /move_base/NavfnROS/plan /amcl_pose /tf /tf_static /move_base/result /tour_data /optimal_path /classified_points &
 rosrun jackal_velodyne diagnostics &
-roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER mapping:=$MAPPING gt_classify:=$GTCLASS
+roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER mapping:=$MAPPING gt_classify:=$GTCLASS filepath:=$FPVVIDEOPATH
 sleep 0.5
 echo "Running data_processing.py"
 rosrun dashboard data_processing.py $t

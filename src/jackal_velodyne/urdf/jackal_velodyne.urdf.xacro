@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <robot name="jackal" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="filepath" default = "/tmp" />
+  <xacro:property name="filepath" value = "$(arg filepath)" />
   <xacro:property name="PI" value="3.1415926535897931" />
 
   <xacro:property name="wheelbase" value="0.262" />
@@ -381,18 +383,18 @@
    </xacro:kinect_v2>
   
    <!--xacro:include filename="$(find jackal_velodyne)/urdf/first_person.urdf.xacro" /-->
-  <xacro:include filename="$(find jackal_velodyne)/urdf/viewbot.urdf.xacro" />
-    <xacro:viewbot_link  name="first_person" parent="support_link3">
+  <xacro:include  filename="$(find jackal_velodyne)/urdf/viewbot.urdf.xacro" />
+    <xacro:viewbot_link filepath="${filepath}" name="first_person" parent="support_link3">
         <origin xyz="0 0 0"
                 rpy="0 0 0" />
     </xacro:viewbot_link>
 
-    <xacro:viewbot_link  name="third_person_rear" parent="base_link">
+    <xacro:viewbot_link filepath="${filepath}" name="third_person_rear" parent="base_link">
         <origin xyz="-4 0 1"
                 rpy="0 0.2 0" />
     </xacro:viewbot_link>
 
-    <xacro:viewbot_link  name="third_person" parent="base_link">
+    <xacro:viewbot_link  filepath="${filepath}" name="third_person" parent="base_link">
         <origin xyz="4 0 1"
                 rpy="0 0.2 3.14" />
     </xacro:viewbot_link>

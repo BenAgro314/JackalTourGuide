@@ -3,10 +3,13 @@
  <gazebo reference="viewbot">
   <material>Gazebo/Grey</material>
   </gazebo>
-<xacro:macro name="viewbot" params="link_name topic_name">
+<xacro:macro name="viewbot" params="filepath link_name topic_name">
   <gazebo reference="${link_name}">
         <sensor name="viewbot" type="camera">
             <camera>
+                <save enabled="true">
+                    <path>${filepath}${topic_name}</path>
+                </save>
                 <horizontal_fov>1.047</horizontal_fov>
                 <image>
                     <width>1920</width>
@@ -19,28 +22,28 @@
             </camera>
             <always_on>1</always_on>
             <update_rate>30</update_rate>
-            <plugin name = "camera_controller" filename = "libgazebo_ros_camera.so">
-                <alwaysOn>true</alwaysOn>
-                <updateRate>0.0</updateRate>
-                <cameraName>${topic_name}</cameraName>
-                <imageTopicName>image_raw</imageTopicName>
-                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-                <frameName>${link_name}</frameName>
-                <hackBaseline>0.0</hackBaseline>
-                <distortionK1>0.0</distortionK1>
-                <distortionK2>0.0</distortionK2>
-                <distortionK3>0.0</distortionK3>
-                <distortionT1>0.0</distortionT1>
-                <distortionT2>0.0</distortionT2>
-                <CxPrime>0</CxPrime>
-                <Cx>0.0</Cx>
-                <Cy>0.0</Cy>
-                <focalLength>0.0</focalLength>
-            </plugin>
         </sensor>
     <material value="Gazebo/Red" />
   </gazebo>
 </xacro:macro>
-
-
 </robot>
+
+
+<!--plugin name = "camera_controller" filename = "libgazebo_ros_camera.so">
+    <alwaysOn>true</alwaysOn>
+    <updateRate>0.0</updateRate>
+    <cameraName>${topic_name}</cameraName>
+    <imageTopicName>image_raw</imageTopicName>
+    <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+    <frameName>${link_name}</frameName>
+    <hackBaseline>0.0</hackBaseline>
+    <distortionK1>0.0</distortionK1>
+    <distortionK2>0.0</distortionK2>
+    <distortionK3>0.0</distortionK3>
+    <distortionT1>0.0</distortionT1>
+    <distortionT2>0.0</distortionT2>
+    <CxPrime>0</CxPrime>
+    <Cx>0.0</Cx>
+    <Cy>0.0</Cy>
+    <focalLength>0.0</focalLength>
+</plugin-->

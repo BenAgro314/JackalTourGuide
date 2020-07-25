@@ -28,6 +28,10 @@ if __name__ == "__main__":
     print "Processing data for file", filename
 
     path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/"
+    if (not os.path.isdir(path)):
+        print 'File ' + path + ' has been deleted, aborting data processing'
+        exit()
+
     logs_path = path + "logs-" + filename + "/"
 
     # load in meta data
@@ -138,11 +142,36 @@ if __name__ == "__main__":
 
     duration = bt.bag_metadata(bag)['duration']
 
-    vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/"
+    static_vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/static/"
+    fpv_vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/fpv/"
     
-    vid_dirs = os.listdir(vid_path)
-    
-    for dir in vid_dirs:
+    static_vid_dirs = os.listdir(static_vid_path) if os.path.isdir(static_vid_path) else []
+    print static_vid_dirs
+    fpv_vid_dirs = os.listdir(fpv_vid_path) if os.path.isdir(fpv_vid_path) else []
+    print fpv_vid_dirs
+    vid_dirs = static_vid_dirs + fpv_vid_dirs
+
+    for i in range(len(vid_dirs)):
+        dir = vid_dirs[i]
+        vid_path = static_vid_path if (i < len(static_vid_dirs)) else fpv_vid_path
+        num_pics = len(os.listdir(vid_path + dir + "/"))
+        fps = int(num_pics/duration) 
+        print "Converting " + str(num_pics) +  " .jpg files at " + str(fps) + " fps to create " + dir + ".mp4 that is: " + str(num_pics/float(fps)) + "s long"
+        FNULL = open(os.devnull, 'w')
+        if (i < len(static_vid_dirs)):
+            command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ static_vid_path + dir + '/default_' + dir + "_" + dir + '_link_my_camera*.jpg" -c:v libx264 ' + '"' +  static_vid_path + dir + '.mp4"'
+        else: 
+            command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ fpv_vid_path + dir + '/default_jackal_base_link_viewbot*.jpg" -c:v libx264 ' + '"' +  fpv_vid_path + dir + '.mp4"'
+
+        print "running:\n" + command
+        retcode = subprocess.call(command, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
+        if (retcode == 0): # a success
+            shutil.rmtree(vid_path + dir) 
+        else:
+            print 'Video creation failed'
+        FNULL.close()
+
+    for dir in static_vid_dirs:
         num_pics = len(os.listdir(vid_path + dir + "/"))
         fps = int(num_pics/duration) 
         

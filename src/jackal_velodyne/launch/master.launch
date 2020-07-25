@@ -8,6 +8,7 @@
   <arg name="mapping" default="false" />
   <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
   <arg name="gt_classify" default="true" />
+  <arg name="filepath" default="/tmp/" />
 
   <!-- Short-term hack to support the original front_laser:=true argument for spawning
        the simulator. This will be removed in favour of using the config:=x arg instead. -->
@@ -33,7 +34,8 @@
   <param name="robot_description"
          command="$(find jackal_description)/scripts/env_run
                     $(find jackal_description)/urdf/configs/$(arg config)
-                    $(find xacro)/xacro $(find jackal_velodyne)/urdf/jackal_velodyne.urdf.xacro
+                    $(find xacro)/xacro 
+                    $(find jackal_velodyne)/urdf/jackal_velodyne.urdf.xacro filepath:=$(arg filepath)
                     --inorder" />
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />

@@ -810,7 +810,7 @@ class Dashboard:
         print name
         run = self.handler.search(date = name)[0]
         gt_traj = run.get_data('gt_traj')
-        vid_path = self.handler.filepath + 'simulated_runs/' + name + '/logs-' + name + '/videos/'
+        vid_path = self.handler.filepath + 'simulated_runs/' + name + '/logs-' + name + '/videos/static/'
         av_rooms = os.listdir(vid_path)
         if ("dashboard_clip.mp4" in av_rooms):
             logging.info("This video clip already exists")
