@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot name="viewbot_link" xmlns:xacro="http://ros.org/wiki/xacro">
+<xacro:include filename="$(find jackal_velodyne)/urdf/viewbot.gazebo.xacro" />
+    <xacro:property name="M_PI" value="3.14159" />
+
+    <xacro:macro name="viewbot_link" params=" name parent *origin">
+        <joint name="viewbot_joint" type="fixed">
+            <xacro:insert_block name="origin" />
+            <parent link="${parent}" />
+            <child link="viewbot_base_link" />
+        </joint>
+        <link name="viewbot_base_link"/>
+
+        <!-- gazebo extensions -->
+        <xacro:viewbot link_name="viewbot_base_link" topic_name="${name}"/>
+
+    </xacro:macro>
+</robot>

@@ -380,6 +380,23 @@
                 rpy="0 0 0" />
    </xacro:kinect_v2>
   
+   <!--xacro:include filename="$(find jackal_velodyne)/urdf/first_person.urdf.xacro" /-->
+  <xacro:include filename="$(find jackal_velodyne)/urdf/viewbot.urdf.xacro" />
+    <xacro:viewbot_link  name="first_person" parent="support_link3">
+        <origin xyz="0 0 0"
+                rpy="0 0 0" />
+    </xacro:viewbot_link>
+
+    <xacro:viewbot_link  name="third_person_rear" parent="base_link">
+        <origin xyz="-4 0 1"
+                rpy="0 0.2 0" />
+    </xacro:viewbot_link>
+
+    <xacro:viewbot_link  name="third_person" parent="base_link">
+        <origin xyz="4 0 1"
+                rpy="0 0.2 3.14" />
+    </xacro:viewbot_link>
+
 <!-- default samples = 1024 -->
   <!-- VHDL-32E -->
 <!--   <xacro:include filename="$(find velodyne_description)/urdf/HDL-32E.urdf.xacro"/>
