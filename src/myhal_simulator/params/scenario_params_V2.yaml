@@ -45,7 +45,7 @@ no_tables_boid_crowd:
 
 big_tables_random_walker_study:
   pop_density: "0.08"
-  table_percentage: "0.8"
+  table_percentage: "0.5"
   actor: actor_basic_random_walker
   model_list: big_tables
   table_group_list: big_table_group
