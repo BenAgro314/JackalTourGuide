@@ -35,13 +35,13 @@ lounge_532:
   geometry: g532
   positions: p532
   enclosed: "0"
-  scenario: big_tables_random_walker_study
+  scenario: empty_film
 
 study_space_546:
   geometry: g546
   positions: p546
   enclosed: "0"
-  scenario: small_tables_random_walker_study
+  scenario: empty
 
 irm_lab_580:
   geometry: g580

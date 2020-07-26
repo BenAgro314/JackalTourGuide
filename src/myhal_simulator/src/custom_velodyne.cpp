@@ -513,13 +513,22 @@ namespace gazebo
         this->last_update = ros::Time::now();
         if (gazebo::physics::has_world("default")){
             this->world = gazebo::physics::get_world("default");
-            std::cout << "SENSOR FOUND WORLD\n";
+            std::cout << "SENSOR FOUND WORLD, proceeding\n";
         } else {
             std::cout << "FAILED TO FIND WORLD\n";
             return;
         }
-        
-        auto building = this->world->ModelByName(this->building_name);
+    
+        gazebo::physics::ModelPtr building;
+        //auto building = this->world->ModelByName(this->building_name);
+        // there is some error on the above line when including the viewbots
+        for (unsigned int i = 0; i < world->ModelCount(); ++i) {
+            auto model = world->ModelByIndex(i);
+            if (model->GetName() == this->building_name){
+                building = model;
+                std::cout << "Added building to sensor plugin\n";
+            }
+        }
         
         this->building_box = building->BoundingBox();
         this->building_box.Min().X()-=1;
@@ -532,9 +541,11 @@ namespace gazebo
         
         for (unsigned int i = 0; i < this->world->ModelCount(); ++i) {
             auto model = this->world->ModelByIndex(i);
+            if (model->GetName() == "" || model == nullptr){
+                std::cout << "NULL model found\n";
+            }
+                
             auto act = boost::dynamic_pointer_cast<gazebo::physics::Actor>(model);
-
-            
 
             if (act){
                 this->actors.push_back(act);

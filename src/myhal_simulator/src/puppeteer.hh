@@ -77,6 +77,12 @@ class Puppeteer: public gazebo::WorldPlugin{
         std::vector<std::vector<ignition::math::Vector3d>> paths;
 
         ros::Publisher path_pub;
+
+		ros::ServiceClient pauseGazebo;
+
+        ros::ServiceClient playGazebo;
+
+        std_srvs::Empty emptySrv;
         
     public: 
         

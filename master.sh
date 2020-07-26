@@ -127,7 +127,7 @@ roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:
 sleep 0.5
 echo "Running data_processing.py"
 rosrun dashboard data_processing.py $t
-
+exit 1
 
 
 

@@ -1,13 +1,14 @@
 <launch>
-
   
   <arg name="use_sim_time" default="true" />
-  <arg name="gui" default="false" /> <!-- adjust gui and headless to speed up simulation by removing the gazebo gui -->
+  <arg name="gui" default="true" /> 
   <arg name="headless" default="true" />
-  <!--arg name="world_name" default="$(find jackal_velodyne)/worlds/sandbox.world" /-->
-  <arg name="world_name" default="$(find myhal_simulator)/worlds/myhal_sim.world" />
+  <arg name="world_name" default="$(find jackal_velodyne)/worlds/sandbox.world" />
   <arg name="filter" default="false" />
   <arg name="mapping" default="false" />
+  <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
+  <arg name="gt_classify" default="true" />
+  <arg name="filepath" default="/tmp/" />
 
   <!-- Short-term hack to support the original front_laser:=true argument for spawning
        the simulator. This will be removed in favour of using the config:=x arg instead. -->
@@ -33,7 +34,8 @@
   <param name="robot_description"
          command="$(find jackal_description)/scripts/env_run
                     $(find jackal_description)/urdf/configs/$(arg config)
-                    $(find xacro)/xacro $(find jackal_velodyne)/urdf/jackal_velodyne.urdf.xacro
+                    $(find xacro)/xacro 
+                    $(find jackal_velodyne)/urdf/jackal_velodyne.urdf.xacro filepath:=$(arg filepath)
                     --inorder" />
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
@@ -44,32 +46,34 @@
     <arg name="joystick" value="false"/>
   </include>
 
-   <include file="$(find jackal_velodyne)/launch/include/pointcloud_filter.launch">
+    <!-- here we may wish to launch the pointcloud filter -->
+  <include file="$(find jackal_velodyne)/launch/include/pointcloud_filter2.launch">
+    <arg name="filter" value="$(arg filter)" />
+    <arg name="mapping" value="$(arg mapping)" />
+    <arg name="gt_classify" value="$(arg gt_classify)" />
   </include>
 
   <!-- Spawn Jackal -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
               args="-urdf -model jackal -param robot_description -x 0 -y 0 -z 0.5" />
 
-  <!-- Rviz -->
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find jackal_velodyne)/launch/include/run.rviz" />
+  <group if="$(arg gui)">
+      <node pkg="rviz" type="rviz" name="rviz" args="-d $(find jackal_velodyne)/launch/include/run.rviz" />
+  </group>
 
-
-  <!--group if="$(arg mapping)">
+  <group if="$(arg mapping)">
     <include file="$(find jackal_velodyne)/launch/include/gmapping.launch"/>
   </group>
 
   <group unless="$(arg mapping)">
-     
-    <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
+     <!-- Run the map server -->
     <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
-    
      <include file="$(find jackal_velodyne)/launch/include/amcl.launch" />
   </group>
-
-  <include file="$(find jackal_velodyne)/launch/include/move_base.launch">
-    <arg name="mapping" value="$(arg mapping)" />
- </include-->
-
+  
+  <!--- Run Move Base -->
+ <include file="$(find jackal_velodyne)/launch/include/move_base.launch">
+  <arg name="mapping" value="$(arg mapping)" />
+ </include>
   
 </launch>

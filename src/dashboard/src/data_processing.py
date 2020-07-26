@@ -36,9 +36,12 @@ if __name__ == "__main__":
 
     # load in meta data
 
+    if (not os.path.exists(logs_path + "meta.json")):
+        print 'meta.json is missing, aborting data processing'
+        exit()
+
     file = open(logs_path + "meta.json", "r")
     meta_data = json.load(file)
-
 
     localization_test = True if (meta_data['localization_test'] == 'true') else False
 

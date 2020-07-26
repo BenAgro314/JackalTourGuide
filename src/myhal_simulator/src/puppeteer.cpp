@@ -3,8 +3,6 @@
 #include "parse_tour.hh"
 #include <ros/forwards.h>
 
-
-
 GZ_REGISTER_WORLD_PLUGIN(Puppeteer);
 
 //PUPPETEER CLASS
@@ -13,13 +11,12 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     //note: world name is default
 
     this->world = _world;
-
-   
-    
     this->sdf = _sdf;
     this->update_connection = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&Puppeteer::OnUpdate, this, std::placeholders::_1));
 
+
     this->user_name = "default";
+
     if (const char * user = std::getenv("USER")){
         this->user_name = user;
     } 
@@ -27,6 +24,10 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->ReadSDF();
 
     this->ReadParams();
+
+    //the below calls can't be using this plugin because it means it will pause itself:
+    //this->pauseGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
+    //this->playGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
      
     path_pub = nh.advertise<geometry_msgs::PoseStamped>("optimal_path",1000);
 
@@ -37,17 +38,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->building_box.Min().Y()-=1;
     this->building_box.Max().X()+=1;
     this->building_box.Max().Y()+=1;
-    //std::printf("%f, %f, %f, %f\n", building_box.Min().X(), building_box.Min().Y(), building_box.Max().X(), building_box.Max().Y());
-    //std::cout << "min_x: " << building_box.Min().X() << " max_y: " << building_box.Max().Y() << std::endl;
     this->static_quadtree = boost::make_shared<QuadTree>(this->building_box);
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
     this->costmap = boost::make_shared<Costmap>(this->building_box, 0.2);
-
-    
-    
-    happly::PLYData static_objects;
-    std::vector<BoxObject> boxes;
-
     
     for (unsigned int i = 0; i < world->ModelCount(); ++i) {
         auto model = world->ModelByIndex(i);
@@ -73,11 +66,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                 std::vector<gazebo::physics::CollisionPtr> collision_boxes = link->GetCollisions();
                 for (gazebo::physics::CollisionPtr collision_box: collision_boxes){
 
-                    
-                    
                     this->collision_entities.push_back(collision_box);
                     auto box = collision_box->BoundingBox();
-                    boxes.push_back(BoxObject(box, -1));
                     
                     box.Max().Z() = 0;
                     box.Min().Z() = 0;
@@ -92,57 +82,41 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
                         box.Max().Y()+=0.2;
                         this->costmap->AddObject(box);
                     }
-                    
-                    
                 }
-                    
             }
-            
         }
-
-    
-       
     }
 
-    AddBoxes(static_objects, boxes);
-    if (this->start_time != ""){
-        static_objects.write("/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" +this->start_time +"/static_objects.ply", happly::DataFormat::ASCII);
+    if (this->tour_name != ""){
+        TourParser parser = TourParser(this->tour_name);
+        auto route = parser.GetRoute();
+        route.insert(route.begin(), ignition::math::Pose3d(ignition::math::Vector3d(0,0,0), ignition::math::Quaterniond(0,0,0,1)));
+
+        for (int i =0; i< route.size()-1; i++){
+            auto start = route[i];
+            auto end = route[i+1];
+            std::vector<ignition::math::Vector3d> path;
+            this->costmap->ThetaStar(start.Pos(), end.Pos(), path);
+            this->paths.push_back(path);
+        }
     }
-
-    // find and publish optimal route
-
-    TourParser parser = TourParser(this->tour_name);
-    auto route = parser.GetRoute();
-    route.insert(route.begin(), ignition::math::Pose3d(ignition::math::Vector3d(0,0,0), ignition::math::Quaterniond(0,0,0,1)));
-
-
-
-    for (int i =0; i< route.size()-1; i++){
-        auto start = route[i];
-        auto end = route[i+1];
-
-        std::vector<ignition::math::Vector3d> path;
-        this->costmap->ThetaStar(start.Pos(), end.Pos(), path);
-        
-        paths.push_back(path);
-        //paths.insert(paths.end(),path.begin(),path.end());
-    }
-
-
 
     std::cout << "LOADED ALL VEHICLES\n";
 
 }
 
 void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
+
     double dt = (_info.simTime - this->last_update).Double();
 
     if (dt < 1/this->update_freq){
         return;
     }
-
     this->last_update = _info.simTime;
 
+    //if (!this->world->IsPaused()){
+    //    this->pauseGazebo.call(this->emptySrv);
+    //}
 
     if ((this->robot_name != "") && this->robot == nullptr){
         for (unsigned int i = 0; i < world->ModelCount(); ++i) {
@@ -156,24 +130,23 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
                 std::cout << "ADDED ROBOT: " << this->robot->GetName() << std::endl;
             }
         }
-       
-        double i = 0;
-        for (auto path: paths){
-            
-            for (auto pose: path){
-                geometry_msgs::PoseStamped msg;
-                msg.pose.position.x = pose.X();
-                msg.pose.position.y = pose.Y();
-                msg.pose.position.z = pose.Z();
-                msg.header.stamp = ros::Time(i);
-                path_pub.publish(msg);
+        
+        if (this->tour_name != ""){
+            double i = 0;
+            for (auto path: this->paths){
+                for (auto pose: path){
+                    geometry_msgs::PoseStamped msg;
+                    msg.pose.position.x = pose.X();
+                    msg.pose.position.y = pose.Y();
+                    msg.pose.position.z = pose.Z();
+                    msg.header.stamp = ros::Time(i);
+                    path_pub.publish(msg);
+                }
+                i++;
             }
-            i++;
         }
     }
 
-
-    // reconstruct vehicle_quad tree
 
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
 
@@ -187,13 +160,11 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
     }
 
     for (auto vehicle: this->vehicles){
-        // query quad tree
+    
         std::vector<boost::shared_ptr<Vehicle>> near_vehicles;
-
         std::vector<gazebo::physics::EntityPtr> near_objects;
-
+        
         auto vehicle_pos = vehicle->GetPose();
-
         auto min = ignition::math::Vector3d(vehicle_pos.Pos().X() - 2, vehicle_pos.Pos().Y() - 2, 0);
         auto max = ignition::math::Vector3d(vehicle_pos.Pos().X() + 2, vehicle_pos.Pos().Y() + 2, 0);
         auto query_range = ignition::math::Box(min,max);
@@ -219,17 +190,21 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
 
         vehicle->OnUpdate(_info, dt, near_vehicles, near_objects);
     }
+    
+    //if (this->world->IsPaused()){
+    //    this->playGazebo.call(this->emptySrv);
+    //}
 
 }
 
 void Puppeteer::ReadSDF(){
+
     if (this->sdf->HasElement("building_name")){
         this->building_name =this->sdf->GetElement("building_name")->Get<std::string>();
     }
     
     if (this->sdf->HasElement("robot_name")){
         this->robot_name = this->sdf->GetElement("robot_name")->Get<std::string>();
-        //std::cout << this->robot_name << std::endl;
     }
 
 }
@@ -237,13 +212,9 @@ void Puppeteer::ReadSDF(){
 boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr actor){
 
     boost::shared_ptr<Vehicle> res;
-   
     auto sdf = actor->GetSDF();
-
     std::map<std::string, std::string> actor_info; 
-
     auto attribute = sdf->GetElement("plugin");
-        
 	while (attribute){
 		actor_info[attribute->GetAttribute("name")->GetAsString()] = attribute->GetAttribute("filename")->GetAsString();
 		attribute = attribute->GetNextElement("plugin");
@@ -358,14 +329,16 @@ void Puppeteer::ReadParams(){
         boid_params["FOV_radius"] =  3;
     }
 
+    /*
     if (!nh.getParam("start_time", this->start_time)){
         std::cout << "ERROR SETTING START TIME\n";
         this->start_time = "";
     }
+    */
 
     if (!nh.getParam("tour_name", this->tour_name)){
         std::cout << "ERROR READING TOUR NAME\n";
-        this->tour_name = "A_tour";
+        this->tour_name = "";
         return;
     }
 
