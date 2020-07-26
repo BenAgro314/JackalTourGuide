@@ -33,8 +33,6 @@ catkin_package(
 )
 
 
-
-
 link_directories(src/include ${GAZEBO_LIBRARY_DIRS})
 include_directories(src/include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 
@@ -88,6 +86,12 @@ target_link_libraries(navigation_goals_V2 parse_tour ${catkin_LIBRARIES} ${GAZEB
 
 add_executable(bag_creator src/bag_creator.cpp) 
 target_link_libraries(bag_creator utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
+add_library(custom_camera src/custom_camera.cpp)
+target_link_libraries(custom_camera
+  ${catkin_LIBRARIES}
+  ${GAZEBO_LIBRARIES}
+)
 
 add_library(custom_velodyne src/custom_velodyne.cpp)
 target_link_libraries(custom_velodyne

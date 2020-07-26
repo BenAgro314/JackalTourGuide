@@ -1,4 +1,3 @@
-
 #include "custom_velodyne.hh"
 
 #include <algorithm>
