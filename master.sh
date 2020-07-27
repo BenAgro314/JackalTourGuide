@@ -80,6 +80,7 @@ rosparam set start_time $t
 rosparam set filter_status $FILTER
 rosparam set gmapping_status $MAPPING
 rosparam set camera_pos "[false, false, true , false]" # represents [top left, top right, bot left, bot right]
+rosparam set min_step 0.0001
 
   
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"

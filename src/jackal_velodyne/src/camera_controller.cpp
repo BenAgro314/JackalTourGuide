@@ -34,6 +34,11 @@ void CameraController::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf) {
         return;
     }
 
+    if (!this->nh.getParam("min_step", this->min_step)) {
+        this->min_step = 0.0001;
+    }
+    print_color("Min step size: " + std::to_string(this->min_step), EMPHGREEN);
+
     std::string command = "mkdir " + this->filepath;
     std::system(command.c_str());
     this->fps = (double) this->parentSensor->UpdateRate();
@@ -62,7 +67,7 @@ void CameraController::OnNewFrame(const unsigned char *_image,
         double curr_step = this->p_eng->GetMaxStepSize();
         double frac = (this->avg_dt)/(1/this->fps);
         double new_step = curr_step/frac;
-        this->p_eng->SetMaxStepSize(std::max(new_step, 0.0001));
+        this->p_eng->SetMaxStepSize(std::max(new_step, this->min_step));
     }
 
     this->last_update_time = ros::Time::now();  

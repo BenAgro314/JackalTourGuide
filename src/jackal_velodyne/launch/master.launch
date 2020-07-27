@@ -42,10 +42,25 @@
 
 
   <!-- Control -->
-  <include file="$(find jackal_control)/launch/control.launch" />
-  <!--include file="$(find jackal_control)/launch/teleop.launch">
-    <arg name="joystick" value="false"/>
-  </include-->
+  <!--include file="$(find jackal_control)/launch/control.launch" /-->
+
+  <rosparam command="load" file="$(find jackal_control)/config/control.yaml" />
+
+  <group if="$(optenv JACKAL_CONTROL_EXTRAS 0)" >
+    <rosparam command="load" file="$(env JACKAL_CONTROL_EXTRAS_PATH)" />
+  </group>
+
+  <node name="controller_spawner" pkg="controller_manager" type="spawner"
+        args="jackal_joint_publisher jackal_velocity_controller --timeout -1" />
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+    <rosparam command="load" file="$(find jackal_control)/config/robot_localization.yaml" />
+  </node>
+
+  <node pkg="twist_mux" type="twist_mux" name="twist_mux">
+    <rosparam command="load" file="$(find jackal_control)/config/twist_mux.yaml" />
+    <remap from="cmd_vel_out" to="jackal_velocity_controller/cmd_vel"/>
+  </node>
 
   <include file="$(find jackal_velodyne)/launch/include/pointcloud_filter2.launch">
     <arg name="filter" value="$(arg filter)" />
@@ -85,3 +100,7 @@
   <node pkg="dashboard" type="meta_data.py" name="meta_data" output="screen"/>
   
 </launch>
+
+<!--include file="$(find jackal_control)/launch/teleop.launch">
+    <arg name="joystick" value="false"/>
+</include-->

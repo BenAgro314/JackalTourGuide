@@ -54,6 +54,8 @@ class CameraController: public CameraPlugin {
 
         double fps;
 
+        double min_step;
+
     protected: 
             
         virtual void OnNewFrame(const unsigned char *_image, unsigned int _width, unsigned int _height, unsigned int _depth, const std::string &_format);
