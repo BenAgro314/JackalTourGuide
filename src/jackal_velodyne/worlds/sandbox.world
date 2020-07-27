@@ -98,10 +98,10 @@
     </gui>
 
 
-    <plugin name = "puppeteer" filename = "libpuppeteer.so">
+    <!--plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
       <robot_name>jackal</robot_name>
-    </plugin>
+    </plugin-->
 
  
     <include>
@@ -110,6 +110,44 @@
       <uri>model://myhal_V3</uri>
   </include>
 
+
+    <model name="box">
+			<pose>0 1 1 0.000000 -0.000000 0.000000</pose>
+			<static>true</static>
+			<link name="link">
+				<collision name="coll">
+					<geometry>
+						<box>
+							<size>1 1 1</size>
+						</box>
+					</geometry>
+				</collision>
+                <visual name="visual">
+                            <geometry>
+                            <box>
+                                <size>1 1 1</size>
+                            </box>
+                        </geometry>
+                      <material script="Gazebo/WoodPallet"/>
+                </visual>
+        <sensor name='cam_sensor1' type='camera' always_on='1' update_rate='10'>
+                <camera>
+                    <horizontal_fov>1.047</horizontal_fov>
+                    <image>
+                        <width>1920</width>
+                        <height>1080</height>
+                    </image>
+                    <clip>
+                        <near>0.1</near>
+                        <far>100</far>
+                    </clip>
+                </camera>
+          <plugin name='camera_dump' filename='libcam_dump.so'/>
+        </sensor>
+			</link>
+
+
+    </model>
 
 
    

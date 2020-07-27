@@ -226,6 +226,11 @@
             # 1: Single threaded
             # 2: inf : Parallelism level
             concurrency_level: 0
+
+            # TO IGNORE ALL MOVING PEPOLE:
+            #catagories:
+            #    - 0
+        
             </rosparam>
         </node>
 

@@ -1,4 +1,3 @@
-
 #pragma once
 
 // Use the same source code for CPU and GPU plugins

@@ -67,6 +67,11 @@
     <run_depend>tf2_sensor_msgs</run_depend>
 
     
+<build_depend>gazebo_plugins</build_depend>
+<run_depend>gazebo_plugins</run_depend>
+
+<build_depend>gazebo_ros</build_depend>
+<run_depend>gazebo_ros</run_depend>
 
 <export>
   <nodelet plugin="${prefix}/nodelets.xml" />

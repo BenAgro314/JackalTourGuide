@@ -13,11 +13,11 @@
         <!-- gazebo extensions -->
         <!--xacro:viewbot filepath="${filepath}" link_name="${name}_base_link" topic_name="${name}"/-->
         <gazebo reference="${name}_base_link">
-            <sensor name="viewbot" type="camera">
+            <sensor name="${name}_viewbot" type="camera">
                 <camera>
-                    <!--save enabled="true">
+                    <save enabled="true">
                         <path>${filepath}${name}</path>
-                    </save-->
+                    </save>
                     <horizontal_fov>1.047</horizontal_fov>
                     <image>
                         <width>1920</width>
@@ -28,7 +28,8 @@
                         <far>100</far>
                     </clip>
                 </camera>
-                <plugin name="${name}_controller" filename="libcustom_camera.so">
+                  <plugin name='camera_controller' filename='libcamera_controller.so'/>
+                <!--plugin name="${name}_controller" filename="libcustom_camera.so">
                     <alwaysOn>true</alwaysOn>
                     <updateRate>0.0</updateRate>
                     <cameraName>${name}</cameraName>
@@ -45,7 +46,7 @@
                     <Cx>0.0</Cx>
                     <Cy>0.0</Cy>
                     <focalLength>0.0</focalLength>
-                </plugin>
+                </plugin-->
                 <always_on>1</always_on>
                 <update_rate>30</update_rate>
             </sensor>

@@ -61,9 +61,13 @@
     <build_depend>ros_numpy</build_depend>
     <build_export_depend>ros_numpy</build_export_depend>
     <exec_depend>ros_numpy</exec_depend>
+
+    <build_depend>gazebo_plugins</build_depend>
+    <build_export_depend>gazebo_plugins</build_export_depend>
+    <exec_depend>gazebo_plugins</exec_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <gazebo_ros plugin_path="${prefix}/lib" gazebo_media_path="${prefix}" />
+      <gazebo_ros plugin_path="${prefix}/lib" gazebo_media_path="${prefix}" />
   </export>
 
 
