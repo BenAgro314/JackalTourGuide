@@ -171,11 +171,11 @@ namespace gazebo
 
 		std::vector<gazebo::physics::LinkPtr> robot_links;
 
-		ros::ServiceClient pauseGazebo;
+		//ros::ServiceClient pauseGazebo;
 
-        ros::ServiceClient playGazebo;
+        //ros::ServiceClient playGazebo;
 
-        std_srvs::Empty emptySrv;
+        //std_srvs::Empty emptySrv;
 
 		ros::NodeHandle nh;
 

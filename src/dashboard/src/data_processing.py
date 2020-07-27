@@ -164,10 +164,6 @@ if __name__ == "__main__":
         FNULL = open(os.devnull, 'w')
         
         command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ vid_path + dir + '/' + dir + '-*.jpg" -c:v libx264 ' + '"' +  vid_path + dir + '.mp4"'
-       # if (i < len(static_vid_dirs)):
-       #     command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ static_vid_path + dir + '/my_camera-*.jpg" -c:v libx264 ' + '"' +  static_vid_path + dir + '.mp4"'
-       # else: 
-       #     command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ fpv_vid_path + dir + '/' + dir + '_viewbot-*.jpg" -c:v libx264 ' + '"' +  fpv_vid_path + dir + '.mp4"'
 
         retcode = subprocess.call(command, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
         if (retcode == 0): # a success

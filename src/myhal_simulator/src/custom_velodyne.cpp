@@ -188,8 +188,8 @@ namespace gazebo
         char **argv = NULL;
         ros::init(argc, argv, "CustomSensor");
 
-        this->pauseGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
-        this->playGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
+        //this->pauseGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
+        //this->playGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
 
         // Sensor generation off by default
         parent_ray_sensor_->SetActive(false);
@@ -228,7 +228,9 @@ namespace gazebo
     {   
         
         if (!this->world->IsPaused()){
-            this->pauseGazebo.call(this->emptySrv);
+            //this->pauseGazebo.call(this->emptySrv);
+            this->world->SetPaused(true);
+            std::cout << "pause: " << ros::Time::now() << std::endl;
         }
         //load vehicle
 
@@ -502,7 +504,9 @@ namespace gazebo
         pub_.publish(msg);
 
         if (this->world->IsPaused()){
-            this->playGazebo.call(this->emptySrv);
+            std::cout << "play: " << ros::Time::now() << std::endl;
+            //this->playGazebo.call(this->emptySrv);
+            this->world->SetPaused(false);
         }
     }
 
