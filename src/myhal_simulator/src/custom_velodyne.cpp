@@ -229,7 +229,7 @@ namespace gazebo
         
         if (!this->world->IsPaused()){
             //this->pauseGazebo.call(this->emptySrv);
-            this->world->SetPaused(true);
+            //this->world->SetPaused(true);
             std::cout << "pause: " << ros::Time::now() << std::endl;
         }
         //load vehicle
@@ -504,7 +504,7 @@ namespace gazebo
         pub_.publish(msg);
 
         if (this->world->IsPaused()){
-            std::cout << "play: " << ros::Time::now() << std::endl;
+            //std::cout << "play: " << ros::Time::now() << std::endl;
             //this->playGazebo.call(this->emptySrv);
             this->world->SetPaused(false);
         }
