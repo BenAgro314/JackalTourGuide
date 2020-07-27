@@ -24,6 +24,11 @@ void print_color(std::string text, std::string color, bool newline = true){
     }
 }
 
+double rolling_avg(double avg, double new_sample, double n){
+    return (avg*(n-1)/n) + new_sample/n;
+}
+
+
 namespace gazebo {
 
 class CameraController: public CameraPlugin {
@@ -35,17 +40,19 @@ class CameraController: public CameraPlugin {
 
         std::string filepath;
 
-		ros::ServiceClient pause_gazebo;
-
-        ros::ServiceClient play_gazebo;
-
-        std_srvs::Empty empty_srv;
-
 		ros::Time last_update;
 
 		physics::WorldPtr world;
 
         int save_count = 0;
+
+        ros::Time last_update_time;
+
+        physics::PhysicsEnginePtr p_eng;        
+
+        double avg_dt = 0;
+
+        double fps;
 
     protected: 
             

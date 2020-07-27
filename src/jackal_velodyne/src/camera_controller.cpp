@@ -23,15 +23,12 @@ void CameraController::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf) {
     
     ros::init(argc, argv, this->parentSensor->Name());
     
-    this->pause_gazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
-
-    this->play_gazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
-    
     this->last_update = ros::Time::now();
 
     if (gazebo::physics::has_world("default")){
         this->world = gazebo::physics::get_world("default");
         print_color(this->parentSensor->Name() + " found world!", EMPHBLUE);
+        this->p_eng = this->world->Physics();
     } else {
         print_color(this->parentSensor->Name() + " failed to find world, aborting", EMPHRED);    
         return;
@@ -39,6 +36,7 @@ void CameraController::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf) {
 
     std::string command = "mkdir " + this->filepath;
     std::system(command.c_str());
+    this->fps = (double) this->parentSensor->UpdateRate();
 
 }
 
@@ -48,10 +46,26 @@ void CameraController::OnNewFrame(const unsigned char *_image,
         unsigned int _depth, 
         const std::string &_format) {
 
+    //std::cout << "ROS: " << this->last_update_time << " "; 
+    //std::cout << "Gazebo: " << this->parentSensor->LastUpdateTime() << std::endl;
+    
     if (!this->world->IsPaused()){
         this->world->SetPaused(true);
     }
 
+    if (this->save_count == 0){
+        this->last_update_time = ros::Time::now();
+    } else {
+        double dt = (ros::Time::now() - this->last_update_time).toSec();
+        this->avg_dt = rolling_avg(this->avg_dt, dt, (double) this->save_count);
+
+        double curr_step = this->p_eng->GetMaxStepSize();
+        double frac = (this->avg_dt)/(1/this->fps);
+        double new_step = curr_step/frac;
+        this->p_eng->SetMaxStepSize(std::max(new_step, 0.0001));
+    }
+
+    this->last_update_time = ros::Time::now();  
 
     char name[1024];
     snprintf(name, sizeof(name), "%s-%05d.jpg",
