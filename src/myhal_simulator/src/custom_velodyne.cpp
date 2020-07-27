@@ -183,7 +183,7 @@ namespace gazebo
 
         
         this->LoadWorld();
-
+        
         int argc = 0;
         char **argv = NULL;
         ros::init(argc, argv, "CustomSensor");
@@ -226,7 +226,10 @@ namespace gazebo
 
     void GazeboRosVelodyneLaser::OnScan(ConstLaserScanStampedPtr &_msg)
     {   
-        this->pauseGazebo.call(this->emptySrv);
+        
+        if (!this->world->IsPaused()){
+            this->pauseGazebo.call(this->emptySrv);
+        }
         //load vehicle
 
         double dt = ros::Time::now().toSec() - this->last_update.toSec();
@@ -497,7 +500,10 @@ namespace gazebo
 
         // Publish output
         pub_.publish(msg);
-        this->playGazebo.call(this->emptySrv);
+
+        if (this->world->IsPaused()){
+            this->playGazebo.call(this->emptySrv);
+        }
     }
 
     void GazeboRosVelodyneLaser::laserQueueThread()

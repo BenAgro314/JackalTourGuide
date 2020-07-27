@@ -303,24 +303,23 @@ std::string Camera::CreateSDF(){
     link->AddSubtag(visual);
 
     auto sensor = std::make_shared<HeaderTag>("sensor");
-    sensor->AddAttribute("name", "my_camera"); 
+    sensor->AddAttribute("name", this->name); 
     sensor->AddAttribute("type", "camera"); 
     
 
     auto camera = std::make_shared<HeaderTag>("camera");
     auto save = std::make_shared<HeaderTag>("save");
 
-    std::string sv;
+    /*std::string sv;
     if (this->save){
         sv = "true";
     } else{
         sv = "false";
-    }
+    }*/
 
-    save->AddAttribute("enabled",sv);
-    auto path = std::make_shared<DataTag>("path", this->filepath + this->name);
-    save->AddSubtag(path);
-    camera->AddSubtag(save);
+    //save->AddAttribute("enabled",sv);
+    //save->AddSubtag(path);
+    //camera->AddSubtag(save);
 
     auto hfov = std::make_shared<DataTag>("horizontal_fov", "1.047");
     camera->AddSubtag(hfov);
@@ -341,9 +340,17 @@ std::string Camera::CreateSDF(){
 
     sensor->AddSubtag(camera);
 
+    auto plugin = std::make_shared<HeaderTag>("plugin");
+    plugin->AddAttribute("name", "camera_controller");
+    plugin->AddAttribute("filename", "libcamera_controller.so");
+
+    auto path = std::make_shared<DataTag>("filepath", this->filepath + this->name + "/");
+    plugin->AddSubtag(path);
+
     auto always_on = std::make_shared<DataTag>("always_on", "1");
     auto update_rate = std::make_shared<DataTag>("update_rate", "30");
     //auto topic = std::make_shared<DataTag>("topic", "log_video/" + this->name);
+    sensor->AddSubtag(plugin);
     sensor->AddSubtag(always_on);
     sensor->AddSubtag(update_rate);
     //sensor->AddSubtag(topic);

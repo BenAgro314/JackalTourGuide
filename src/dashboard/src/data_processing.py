@@ -162,10 +162,12 @@ if __name__ == "__main__":
         fps = int(num_pics/duration) 
         print "Converting " + str(num_pics) +  " .jpg files at " + str(fps) + " fps to create " + dir + ".mp4 that is: {:.2f}s long".format(num_pics/float(fps))
         FNULL = open(os.devnull, 'w')
-        if (i < len(static_vid_dirs)):
-            command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ static_vid_path + dir + '/default_' + dir + "_" + dir + '_link_my_camera*.jpg" -c:v libx264 ' + '"' +  static_vid_path + dir + '.mp4"'
-        else: 
-            command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ fpv_vid_path + dir + '/default_jackal_base_link_' + dir + '_viewbot*.jpg" -c:v libx264 ' + '"' +  fpv_vid_path + dir + '.mp4"'
+        
+        command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ vid_path + dir + '/' + dir + '-*.jpg" -c:v libx264 ' + '"' +  vid_path + dir + '.mp4"'
+       # if (i < len(static_vid_dirs)):
+       #     command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ static_vid_path + dir + '/my_camera-*.jpg" -c:v libx264 ' + '"' +  static_vid_path + dir + '.mp4"'
+       # else: 
+       #     command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ fpv_vid_path + dir + '/' + dir + '_viewbot-*.jpg" -c:v libx264 ' + '"' +  fpv_vid_path + dir + '.mp4"'
 
         retcode = subprocess.call(command, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
         if (retcode == 0): # a success
