@@ -352,7 +352,10 @@ class PathDifference(Plot):
 
     def init_axis(self):
         self.collect_data()
-        self.ax.bar(self.data['x_data'], self.data['y_data'], color = self.data['color'], yerr = self.data['yerr'])
+        #self.ax.bar(self.data['x_data'], self.data['y_data'], color = self.data['color'], yerr = self.data['yerr'])
+        bplot = self.ax.boxplot(self.data['y_data'], labels = self.data['x_data'], patch_artist = True, showfliers=False)
+        for patch, color in zip(bplot['boxes'], self.data['color']):
+            patch.set_facecolor(color)
         
     def collect_data(self):
         self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': [], 'yerr': []}
@@ -370,8 +373,9 @@ class PathDifference(Plot):
                     continue
                 diffs.append(((gt_dist-optimal_dist)/optimal_dist)*100)
 
-            self.data['y_data'].append(np.average(diffs))
-            self.data['yerr'].append(np.std(diffs))
+            #self.data['y_data'].append(np.average(diffs))
+            self.data['y_data'].append(diffs)
+            #self.data['yerr'].append(np.std(diffs))
     
     def info(self):
         if (len(self.data['x_data']) == 0):
