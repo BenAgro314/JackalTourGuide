@@ -366,6 +366,8 @@ class PathDifference(Plot):
                 meta = run.meta
                 optimal_dist = pu.list_distances(data['optimal_traj'])[1]
                 gt_dist = pu.list_distances(data['gt_traj'])[1]
+                if ((gt_dist-optimal_dist) < 0):
+                    continue
                 diffs.append(((gt_dist-optimal_dist)/optimal_dist)*100)
 
             self.data['y_data'].append(np.average(diffs))
@@ -569,7 +571,8 @@ class RunHandler:
                 logging.critical('TOO MUCH RAM TAKEN TO LOAD DATA')
                 exit()
         except:
-            logging.warning('Could no deserialize processed_data.pickle for ' + name)
+            logging.warning('Could not deserialize processed_data.pickle for ' + name + ', removing from run_data.json')
+            self.delete_run(name)
             return False
 
         self.run_map[name].data = data_d
