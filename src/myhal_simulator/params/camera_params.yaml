@@ -1,7 +1,7 @@
-#camera_names:
-    #- third_person_rear
-    #- third_person_front
-    #- static1
+camera_names:
+    - third_person_rear
+    - third_person_front
+    - static1
 
 third_person_rear:
     - 1 # (bool) is the pose relative to the robot or not
