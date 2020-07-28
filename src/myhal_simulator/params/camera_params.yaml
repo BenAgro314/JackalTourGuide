@@ -12,14 +12,14 @@ third_person_rear:
 
 third_person_front:
     - 1 
-    - 5
-    - -6
-    - 4
-    - 50.0 # orbiting period
+    - 0
+    - -15
+    - 10
+    - 70.0 # orbiting period
 
 static1:
     - 0
-    - -8
+    - 8
     - -7
     - 10
     - 0 # orbiting period

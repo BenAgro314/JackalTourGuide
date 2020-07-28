@@ -57,7 +57,6 @@ void WorldHandler::Load(){
 }
 
 void WorldHandler::AddCameras(){
-
     
     for (auto info: this->cam_info){
         std::string name = "CAM_";
@@ -71,63 +70,6 @@ void WorldHandler::AddCameras(){
         auto cam = myhal::Camera(name, pose, path);
         cam.AddToWorld(this->world_string);
     }
-    /*
-    int i = 0;
-
-    std::string path = "/tmp/";
-    std::string smart_path = path;
-    if (this->start_time != ""){
-        path = "/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" + this->start_time + "/videos/static/";
-        smart_path = "/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" + this->start_time + "/videos/fpv/";
-    }
-
-    if (this->camera_pos[4]){
-        auto smart_cam = myhal::Camera("smart_cam", ignition::math::Pose3d(0, 0, 3,0, 0.785, 0), smart_path);
-        smart_cam.AddToWorld(this->world_string);
-    }
-    
-    for (auto r_info: this->rooms){
-        std::string scenario = r_info->scenario;
-        if (scenario == "empty"){
-            i++;
-            continue;
-        }
-        std::string r_name = this->room_names[i];
-        std::cout << "Adding camera to room " << r_name  << "\n";
-        auto box = r_info->room->boundary;
-        auto min_x = box.Min().X();
-        auto min_y = box.Min().Y();
-        auto max_x = box.Max().X();
-        auto max_y = box.Max().Y();
-
-        for (int j = 0; j <= 3; j++){
-            auto status = this->camera_pos[j];
-            if (!status){
-                continue;
-            }
-             
-            auto x = ((j % 2) == 0) ? (min_x-2.5) : (max_x+2.5);
-            auto y = (j < 2) ? (max_y + 2.5) : (min_y - 2.5);
-            double yaw = 0;
-            if (j == 0){
-                yaw = -0.785;
-            } else if (j == 1){
-                yaw = -2.356;
-            } else if (j == 2){
-                yaw = 0.785;
-            } else{
-                yaw = 2.356;
-            }
-
-            auto cam = myhal::Camera(r_name + "_" + std::to_string(j), ignition::math::Pose3d(x, y, 12,0, 0.785, yaw), path);
-            cam.AddToWorld(this->world_string);
-        }
-
-
-        i++;
-
-    }*/   
-    
 
 }
 

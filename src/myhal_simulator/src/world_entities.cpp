@@ -288,38 +288,12 @@ std::string Camera::CreateSDF(){
     std::shared_ptr<HeaderTag> link = std::make_shared<HeaderTag>("link");
     link->AddAttribute("name", this->name + "_link");
 
-    std::shared_ptr<HeaderTag> visual = std::make_shared<HeaderTag>("visual");
-    visual->AddAttribute("name", this->name + "_visual");
-
-    std::shared_ptr<HeaderTag> geometry = std::make_shared<HeaderTag>("geometry");
-    std::shared_ptr<HeaderTag> box = std::make_shared<HeaderTag>("box");
-
-    std::string size_string = "0.1 0.1 0.1";
-    std::shared_ptr<DataTag> size = std::make_shared<DataTag>("size", size_string);
-
-    box->AddSubtag(size);
-    geometry->AddSubtag(box);
-    visual->AddSubtag(geometry);
-    //link->AddSubtag(visual);
-
     auto sensor = std::make_shared<HeaderTag>("sensor");
     sensor->AddAttribute("name", this->name); 
     sensor->AddAttribute("type", "camera"); 
-    
 
     auto camera = std::make_shared<HeaderTag>("camera");
     auto save = std::make_shared<HeaderTag>("save");
-
-    /*std::string sv;
-    if (this->save){
-        sv = "true";
-    } else{
-        sv = "false";
-    }*/
-
-    //save->AddAttribute("enabled",sv);
-    //save->AddSubtag(path);
-    //camera->AddSubtag(save);
 
     auto hfov = std::make_shared<DataTag>("horizontal_fov", "1.047");
     camera->AddSubtag(hfov);
@@ -349,11 +323,9 @@ std::string Camera::CreateSDF(){
 
     auto always_on = std::make_shared<DataTag>("always_on", "1");
     auto update_rate = std::make_shared<DataTag>("update_rate", "24");
-    //auto topic = std::make_shared<DataTag>("topic", "log_video/" + this->name);
     sensor->AddSubtag(plugin);
     sensor->AddSubtag(always_on);
     sensor->AddSubtag(update_rate);
-    //sensor->AddSubtag(topic);
 
     link->AddSubtag(sensor);
     model->AddSubtag(link);
