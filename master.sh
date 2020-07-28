@@ -5,10 +5,10 @@ t=$(date +'%Y-%m-%d-%H-%M-%S')
 
 echo "Folder Name: $t"
 
-MINSTEP=0.0005
+MINSTEP=0.0002
 echo "Min step size: $MINSTEP"
-CAMSETUP="[true, true, false, false, true]" 
-echo "CAMSETUP: $CAMSETUP" # represents [top left, top right, bot left, bot right, smart]
+CAMSETUP="[false, false, false, false, true]" 
+#echo "CAMSETUP: $CAMSETUP" # represents [top left, top right, bot left, bot right, smart]
 
 GUI=false # -v flag
 TOUR="A_tour" # -t (arg) flag
@@ -73,6 +73,7 @@ rosparam load src/myhal_simulator/params/room_params_V2.yaml
 rosparam load src/myhal_simulator/params/scenario_params_V2.yaml
 rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
+rosparam load src/myhal_simulator/params/camera_params.yaml
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 
 rosparam set gt_class $GTCLASS
@@ -83,7 +84,7 @@ rosparam set tour_name $TOUR
 rosparam set start_time $t
 rosparam set filter_status $FILTER
 rosparam set gmapping_status $MAPPING
-rosparam set camera_pos "$CAMSETUP" 
+#rosparam set camera_pos "$CAMSETUP" 
 rosparam set min_step $MINSTEP
 
 
@@ -93,8 +94,8 @@ mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/videos/"
 STATICVIDEOPATH="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/videos/static/"
 FPVVIDEOPATH="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/videos/fpv/"
-mkdir $STATICVIDEOPATH
-mkdir $FPVVIDEOPATH
+#mkdir $STATICVIDEOPATH
+#mkdir $FPVVIDEOPATH
 LOGFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/log.txt"
 PARAMFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/params.yaml"
 PCLFILE="/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/pcl.txt"

@@ -45,7 +45,7 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         gazebo::physics::ModelPtr robot = nullptr;
 
-        SmartCamPtr smart_cam = nullptr;
+        std::vector<SmartCamPtr> cams;
 
         gazebo::physics::EntityPtr building; 
 

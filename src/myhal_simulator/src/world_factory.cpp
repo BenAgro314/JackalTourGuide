@@ -58,8 +58,20 @@ void WorldHandler::Load(){
 
 void WorldHandler::AddCameras(){
 
-    // Iterate through all non-empty rooms and add a camera 
+    
+    for (auto info: this->cam_info){
+        std::string name = "CAM_";
+        // we will encode camera information in it's name
+        name += std::to_string(info->relative) + "_"; 
+        name += std::to_string(info->period); 
 
+        auto pose = ignition::math::Pose3d(info->x, info->y, info->z, 0,0,0,0);
+        auto path = "/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" + this->start_time + "/videos/";
+
+        auto cam = myhal::Camera(name, pose, path);
+        cam.AddToWorld(this->world_string);
+    }
+    /*
     int i = 0;
 
     std::string path = "/tmp/";
@@ -114,7 +126,7 @@ void WorldHandler::AddCameras(){
 
         i++;
 
-    }   
+    }*/   
     
 
 }
@@ -134,9 +146,22 @@ void WorldHandler::LoadParams(){
 
     // READ camera info
 
-    if (!nh.getParam("camera_pos", this->camera_pos)){
-        std::cout << "ERROR READING CAMERA POS: SETTING TO ALL FALSE\n";
-        this->camera_pos = {false, false, false, false, false};
+    std::vector<std::string> camera_names;
+    if (!nh.getParam("camera_names", camera_names)){
+        std::cout << "ERROR READING CAMERA NAMES" << std::endl;
+    }
+
+    for (auto name: camera_names){
+        std::vector<double> info;
+        if (!nh.getParam(name, info)){
+            std::cout << "MIS-NAMED CAMERA" << std::endl;
+            continue;
+        }
+        if (info.size() < 5){
+            std::cout << "Camera info is malformed" << std::endl;
+        }
+        auto cam = std::make_shared<CamInfo>((bool) info[0], info[1], info[2], info[3], info[4]);
+        this->cam_info.push_back(cam);
     }
 
     // READ BUILDING INFO

@@ -8,6 +8,17 @@
 #include "frame.hh"
 #include "costmap.hh"
 
+class CamInfo{
+    
+    public:
+        bool relative;
+        double x,y,z;
+        double period;
+
+        CamInfo(bool rel, double x, double y, double z, double T): relative(rel), x(x), y(y), z(z), period(T) {}
+
+};
+
 class RoomInfo{
 
     public:
@@ -96,11 +107,13 @@ class WorldHandler{
 
         std::vector<std::shared_ptr<myhal::Model>> world_models;
 
-        std::vector<bool> camera_pos;
+        //std::vector<bool> camera_pos;
 
         std::string start_time;
 
         std::vector<std::string> room_names; //to name the cameras effectivly
+
+        std::vector<std::shared_ptr<CamInfo>> cam_info;
 
         //TODO: change these to not be pointers
         //std::map<std::string, std::shared_ptr<SDFPlugin>> vehicle_plugins; //one per actor

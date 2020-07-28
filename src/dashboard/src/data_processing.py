@@ -145,20 +145,16 @@ if __name__ == "__main__":
 
     duration = bt.bag_metadata(bag)['duration']
 
-    static_vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/static/"
-    fpv_vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/fpv/"
-    
-    static_vid_dirs = os.listdir(static_vid_path) if os.path.isdir(static_vid_path) else []
-    fpv_vid_dirs = os.listdir(fpv_vid_path) if os.path.isdir(fpv_vid_path) else []
-    vid_dirs = static_vid_dirs + fpv_vid_dirs
+    vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/"
+    vid_dirs = os.listdir(vid_path) if os.path.isdir(vid_path) else []
 
-    for i in range(len(vid_dirs)):
-        dir = vid_dirs[i]
-        vid_path = static_vid_path if (i < len(static_vid_dirs)) else fpv_vid_path
+    for dir in vid_dirs:
+
         try:
             num_pics = len(os.listdir(vid_path + dir + "/"))
         except:
             continue
+
         fps = int(num_pics/duration) 
         print "Converting " + str(num_pics) +  " .jpg files at " + str(fps) + " fps to create " + dir + ".mp4 that is: {:.2f}s long".format(num_pics/float(fps))
         FNULL = open(os.devnull, 'w')
@@ -178,3 +174,32 @@ if __name__ == "__main__":
     
     print "Data processed in", "{:.2f}".format(duration) ,"seconds"
 
+
+
+
+    #static_vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/static/"
+    #fpv_vid_path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/logs-" + filename + "/videos/fpv/"
+    #
+    #static_vid_dirs = os.listdir(static_vid_path) if os.path.isdir(static_vid_path) else []
+    #fpv_vid_dirs = os.listdir(fpv_vid_path) if os.path.isdir(fpv_vid_path) else []
+    #vid_dirs = static_vid_dirs + fpv_vid_dirs
+
+    #for i in range(len(vid_dirs)):
+    #    dir = vid_dirs[i]
+    #    vid_path = static_vid_path if (i < len(static_vid_dirs)) else fpv_vid_path
+    #    try:
+    #        num_pics = len(os.listdir(vid_path + dir + "/"))
+    #    except:
+    #        continue
+    #    fps = int(num_pics/duration) 
+    #    print "Converting " + str(num_pics) +  " .jpg files at " + str(fps) + " fps to create " + dir + ".mp4 that is: {:.2f}s long".format(num_pics/float(fps))
+    #    FNULL = open(os.devnull, 'w')
+    #    
+    #    command = 'ffmpeg -r ' + str(fps) + ' -pattern_type glob -i ' + '"'+ vid_path + dir + '/' + dir + '-*.jpg" -c:v libx264 ' + '"' +  vid_path + dir + '.mp4"'
+
+    #    retcode = subprocess.call(command, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
+    #    if (retcode == 0): # a success
+    #        shutil.rmtree(vid_path + dir) 
+    #    else:
+    #        print 'Video creation failed'
+    #    FNULL.close()

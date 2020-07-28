@@ -27,17 +27,18 @@ class SmartCam{
 
         ignition::math::Pose3d target_pose;
 
-        double radius = 3;
+        ignition::math::Vector3d pos;
 
-        double height = 3;
+        bool relative;
+
+        double period;
 
     public:
 
-        SmartCam(gazebo::physics::ModelPtr self);
+        SmartCam(gazebo::physics::ModelPtr self, bool relative, ignition::math::Vector3d pos, double period);
 
-        void OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, ignition::math::Pose3d view_target); 
+        void OnUpdate(double dt, ignition::math::Pose3d view_target); 
 
-        ignition::math::Vector3d relative_pos = ignition::math::Vector3d(0,6,4);
 
 };
 

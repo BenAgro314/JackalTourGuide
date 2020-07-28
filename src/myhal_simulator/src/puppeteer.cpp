@@ -54,9 +54,17 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
             continue;
         } 
 
-        if (model->GetName() == "smart_cam"){
-            std::cout << "MADE SMART CAM\n";
-            this->smart_cam = boost::make_shared<SmartCam>(model);
+        if (model->GetName().substr(0,3) == "CAM"){
+            // extract information from name of camera
+            std::string s = model->GetName();
+            int pos = 0;
+            std::string token;
+            bool relative = (bool) std::stoi(s.substr(4,1));
+            double period = std::stod(s.substr(6));
+
+            auto init_pose = model->WorldPose().Pos();
+            auto smart_cam = boost::make_shared<SmartCam>(model, relative, init_pose, period);
+            this->cams.push_back(smart_cam);
             continue;
         }
 
@@ -145,14 +153,12 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         }
     }
 
-    if (this->robot != nullptr && this->smart_cam != nullptr){
+    if (this->robot != nullptr){
         auto tar = this->robot->WorldPose();
         tar.Pos().Z() = 0;
-        auto rp = this->smart_cam->relative_pos;
-        auto rt = ignition::math::Quaterniond(0,0,0.01);
-        rp = rt.RotateVector(rp);
-        this->smart_cam->relative_pos = rp;
-        this->smart_cam->OnUpdate(_info, dt, tar);
+        for (auto cam: this->cams){
+            cam->OnUpdate(dt, tar);
+        }
     }
 
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);

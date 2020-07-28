@@ -300,7 +300,7 @@ std::string Camera::CreateSDF(){
     box->AddSubtag(size);
     geometry->AddSubtag(box);
     visual->AddSubtag(geometry);
-    link->AddSubtag(visual);
+    //link->AddSubtag(visual);
 
     auto sensor = std::make_shared<HeaderTag>("sensor");
     sensor->AddAttribute("name", this->name); 

@@ -377,7 +377,9 @@
                 rpy="0 0 0" />
    </xacro:kinect_v2>
   
-   <xacro:include  filename="$(find jackal_velodyne)/urdf/viewbot.urdf.xacro" />
+</robot>
+
+   <!--xacro:include  filename="$(find jackal_velodyne)/urdf/viewbot.urdf.xacro" />
     <xacro:viewbot_link filepath="${filepath}" name="first_person" parent="support_link3">
         <origin xyz="0 0 0"
                 rpy="0 0 0" />
@@ -391,10 +393,8 @@
     <xacro:viewbot_link  filepath="${filepath}" name="third_person" parent="base_link">
         <origin xyz="6 0 2"
                 rpy="0 0.2 3.14" />
-    </xacro:viewbot_link>
+    </xacro:viewbot_link-->
   
-</robot>
-
   <!--xacro:include filename="$(find jackal_velodyne)/urdf/VLP-16.urdf.xacro"/>
   <VLP-16 parent="support_link3" name="no_gpu_velodyne" topic="/no_gpu_points" hz="10" samples="1024" gpu="false" lasers="33" max_range="30">
     <origin xyz="0 0 0" rpy="0 0 0" />

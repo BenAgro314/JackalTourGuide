@@ -2,19 +2,25 @@
 #include "Perlin.h"
 #include <thread>
 
+SmartCam::SmartCam(gazebo::physics::ModelPtr self, bool relative, ignition::math::Vector3d pos, double period): self(self), relative(relative), pos(pos), period(period) {}
 
-SmartCam::SmartCam(gazebo::physics::ModelPtr self){
-    this->self = self;
-}
+void SmartCam::OnUpdate(double dt, ignition::math::Pose3d view_target){
 
-void SmartCam::OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, ignition::math::Pose3d view_target){
-    auto self_pos = view_target.Pos() + relative_pos;
+    auto self_pos = this->pos;
+    if (this->relative){
+        if (this->period > 0){
+            auto dyaw = (dt/this->period)*6.28;
+            auto rt = ignition::math::Quaterniond(0,0,dyaw);
+            this->pos = rt.RotateVector(this->pos);
+        }
+        self_pos = view_target.Pos() + this->pos;
+    }
+    
     auto heading = view_target.Pos() - self_pos;
     heading.Normalize();
     double yaw = std::atan2(heading.Y(), heading.X());
     double pitch = -std::atan2(heading.Z(), std::hypot(heading.X(),heading.Y()));
     self->SetWorldPose(ignition::math::Pose3d(self_pos, ignition::math::Quaterniond(0,pitch,yaw)));
-    //self->WorldPose().Rot() = ignition::math::Quaterniond(0, pitch, yaw);
 }
 
 
