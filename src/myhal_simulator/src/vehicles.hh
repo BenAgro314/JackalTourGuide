@@ -17,6 +17,29 @@
 #define COH 1
 #define SEP 2
 
+class SmartCam{
+
+    protected:
+
+        ignition::math::Pose3d pose;
+
+        gazebo::physics::ModelPtr self = nullptr;
+
+        ignition::math::Pose3d target_pose;
+
+        double radius = 3;
+
+        double height = 3;
+
+    public:
+
+        SmartCam(gazebo::physics::ModelPtr self);
+
+        void OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, ignition::math::Pose3d view_target); 
+
+        ignition::math::Vector3d relative_pos = ignition::math::Vector3d(0,6,4);
+
+};
 
 class Vehicle{
 

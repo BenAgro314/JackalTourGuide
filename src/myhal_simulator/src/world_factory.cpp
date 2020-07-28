@@ -63,10 +63,16 @@ void WorldHandler::AddCameras(){
     int i = 0;
 
     std::string path = "/tmp/";
+    std::string smart_path = path;
     if (this->start_time != ""){
         path = "/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" + this->start_time + "/videos/static/";
+        smart_path = "/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" + this->start_time + "/videos/fpv/";
     }
 
+    if (this->camera_pos[4]){
+        auto smart_cam = myhal::Camera("smart_cam", ignition::math::Pose3d(0, 0, 3,0, 0.785, 0), smart_path);
+        smart_cam.AddToWorld(this->world_string);
+    }
     
     for (auto r_info: this->rooms){
         std::string scenario = r_info->scenario;
@@ -82,7 +88,7 @@ void WorldHandler::AddCameras(){
         auto max_x = box.Max().X();
         auto max_y = box.Max().Y();
 
-        for (int j = 0; j < this->camera_pos.size(); j++){
+        for (int j = 0; j <= 3; j++){
             auto status = this->camera_pos[j];
             if (!status){
                 continue;
@@ -130,7 +136,7 @@ void WorldHandler::LoadParams(){
 
     if (!nh.getParam("camera_pos", this->camera_pos)){
         std::cout << "ERROR READING CAMERA POS: SETTING TO ALL FALSE\n";
-        this->camera_pos = {false, false, false, false};
+        this->camera_pos = {false, false, false, false, false};
     }
 
     // READ BUILDING INFO

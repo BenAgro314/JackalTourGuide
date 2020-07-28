@@ -22,6 +22,7 @@
 #include <geometry_msgs/PoseStamped.h>
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
+typedef boost::shared_ptr<SmartCam> SmartCamPtr;
 
 class Puppeteer: public gazebo::WorldPlugin{
 
@@ -43,6 +44,8 @@ class Puppeteer: public gazebo::WorldPlugin{
         std::string robot_name = "";
 
         gazebo::physics::ModelPtr robot = nullptr;
+
+        SmartCamPtr smart_cam = nullptr;
 
         gazebo::physics::EntityPtr building; 
 
@@ -78,11 +81,6 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ros::Publisher path_pub;
 
-		ros::ServiceClient pauseGazebo;
-
-        ros::ServiceClient playGazebo;
-
-        std_srvs::Empty emptySrv;
         
     public: 
         

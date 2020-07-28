@@ -25,10 +25,6 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     this->ReadParams();
 
-    //the below calls can't be using this plugin because it means it will pause itself:
-    //this->pauseGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
-    //this->playGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
-     
     path_pub = nh.advertise<geometry_msgs::PoseStamped>("optimal_path",1000);
 
     auto building = this->world->ModelByName(this->building_name);
@@ -57,6 +53,12 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
             this->vehicle_quadtree->Insert(new_node);
             continue;
         } 
+
+        if (model->GetName() == "smart_cam"){
+            std::cout << "MADE SMART CAM\n";
+            this->smart_cam = boost::make_shared<SmartCam>(model);
+            continue;
+        }
 
        
         if (model->GetName() != "ground_plane"){
@@ -114,10 +116,6 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
     }
     this->last_update = _info.simTime;
 
-    //if (!this->world->IsPaused()){
-    //    this->pauseGazebo.call(this->emptySrv);
-    //}
-
     if ((this->robot_name != "") && this->robot == nullptr){
         for (unsigned int i = 0; i < world->ModelCount(); ++i) {
             auto model = world->ModelByIndex(i);
@@ -147,6 +145,15 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         }
     }
 
+    if (this->robot != nullptr && this->smart_cam != nullptr){
+        auto tar = this->robot->WorldPose();
+        tar.Pos().Z() = 0;
+        auto rp = this->smart_cam->relative_pos;
+        auto rt = ignition::math::Quaterniond(0,0,0.01);
+        rp = rt.RotateVector(rp);
+        this->smart_cam->relative_pos = rp;
+        this->smart_cam->OnUpdate(_info, dt, tar);
+    }
 
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
 
@@ -191,10 +198,6 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         vehicle->OnUpdate(_info, dt, near_vehicles, near_objects);
     }
     
-    //if (this->world->IsPaused()){
-    //    this->playGazebo.call(this->emptySrv);
-    //}
-
 }
 
 void Puppeteer::ReadSDF(){

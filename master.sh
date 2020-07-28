@@ -5,6 +5,10 @@ t=$(date +'%Y-%m-%d-%H-%M-%S')
 
 echo "Folder Name: $t"
 
+MINSTEP=0.0005
+echo "Min step size: $MINSTEP"
+CAMSETUP="[true, true, false, false, true]" 
+echo "CAMSETUP: $CAMSETUP" # represents [top left, top right, bot left, bot right, smart]
 
 GUI=false # -v flag
 TOUR="A_tour" # -t (arg) flag
@@ -79,8 +83,9 @@ rosparam set tour_name $TOUR
 rosparam set start_time $t
 rosparam set filter_status $FILTER
 rosparam set gmapping_status $MAPPING
-rosparam set camera_pos "[false, false, true , false]" # represents [top left, top right, bot left, bot right]
-rosparam set min_step 0.0001
+rosparam set camera_pos "$CAMSETUP" 
+rosparam set min_step $MINSTEP
+
 
   
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"

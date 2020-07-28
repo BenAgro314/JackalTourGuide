@@ -51,7 +51,7 @@
   </group>
 
   <node name="controller_spawner" pkg="controller_manager" type="spawner"
-        args="jackal_joint_publisher jackal_velocity_controller --timeout -1" />
+        args="jackal_joint_publisher jackal_velocity_controller --no-timeout" />
 
   <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
     <rosparam command="load" file="$(find jackal_control)/config/robot_localization.yaml" />
