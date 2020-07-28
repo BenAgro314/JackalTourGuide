@@ -9,15 +9,6 @@
   <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
   <arg name="gt_classify" default="true" />
 
-  <!-- Launch Gazebo with the specified world -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="debug" value="0" />
-    <arg name="gui" value="$(arg gui)" />
-    <arg name="use_sim_time" value="$(arg use_sim_time)" />
-    <arg name="headless" value="$(arg headless)" />
-    <arg name="world_name" value="$(arg world_name)" />
-  </include>
-
   <!-- Load Jackal's description-->
   <param name="robot_description"
          command="$(find jackal_description)/scripts/env_run

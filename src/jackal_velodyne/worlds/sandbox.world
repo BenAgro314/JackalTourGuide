@@ -98,57 +98,66 @@
     </gui>
 
 
-    <!--plugin name = "puppeteer" filename = "libpuppeteer.so">
+    <plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
       <robot_name>jackal</robot_name>
-    </plugin-->
+    </plugin>
 
  
     <include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>
-      <uri>model://myhal_V3</uri>
+      <uri>model://10x10Box</uri>
   </include>
 
 
-    <model name="box">
-			<pose>0 1 1 0.000000 -0.000000 0.000000</pose>
+		<model name="box">
+			<pose>0 0 0.5 0.000000 -0.000000 0.000000</pose>
 			<static>true</static>
-			<link name="link">
-				<collision name="coll">
+			<link name="box_34_link">
+				<collision name="box_34_collision">
 					<geometry>
 						<box>
 							<size>1 1 1</size>
 						</box>
 					</geometry>
 				</collision>
-                <visual name="visual">
-                            <geometry>
-                            <box>
-                                <size>1 1 1</size>
-                            </box>
-                        </geometry>
-                      <material script="Gazebo/WoodPallet"/>
-                </visual>
-        <sensor name='cam_sensor1' type='camera' always_on='1' update_rate='10'>
-                <camera>
-                    <horizontal_fov>1.047</horizontal_fov>
-                    <image>
-                        <width>1920</width>
-                        <height>1080</height>
-                    </image>
-                    <clip>
-                        <near>0.1</near>
-                        <far>100</far>
-                    </clip>
-                </camera>
-          <plugin name='camera_dump' filename='libcam_dump.so'/>
-        </sensor>
+				<visual name="visual">
+					<geometry>
+						<box>
+							<size>1 1 1</size>
+						</box>
+					</geometry>
+				</visual>
 			</link>
+		</model>
 
-
-    </model>
-
+		<actor name="actor_basic_wanderer_39">
+			<pose>0 0 1.000000 0.000000 -0.000000 1.877947</pose>
+			<skin>
+				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
+			</skin>
+			<animation name="walking">
+				<filename>model://actor/meshes/ANIMATION_walking.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="talking">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="standing">
+				<filename>model://actor/meshes/ANIMATION_talking_a.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<animation name="sitting">
+				<filename>model://actor/meshes/ANIMATION_sitting.dae</filename>
+				<interpolate_x>true</interpolate_x>
+			</animation>
+			<plugin name="max_speed" filename="1">
+			</plugin>
+			<plugin name="vehicle_type" filename="wanderer">
+			</plugin>
+		</actor>
 
    
  

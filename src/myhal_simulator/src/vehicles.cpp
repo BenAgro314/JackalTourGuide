@@ -163,6 +163,11 @@ void Vehicle::AvoidObstacles(std::vector<gazebo::physics::EntityPtr> objects){
             continue;
         }
         ignition::math::Vector3d min_normal = utilities::min_repulsive_vector(this->pose.Pos(), object);
+        //if the person has somehow arrived inside an object, dont count collisions with that object so it can eventually leave
+        if (utilities::inside_box(box, this->pose.Pos())){
+            //std::cout << "debug" << std::endl;
+            continue;
+        }
 	
 		double dist = min_normal.Length();
 		if (dist < this->obstacle_margin){

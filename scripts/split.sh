@@ -123,7 +123,11 @@ cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/"
 #rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" & # Limiting data to remain under rosbag buffer
 rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" /clock /shutdown_signal /velodyne_points /move_base/local_costmap/costmap /move_base/global_costmap/costmap /ground_truth/state /map /move_base/NavfnROS/plan /amcl_pose /tf /tf_static /move_base/result /tour_data /optimal_path /classified_points &
 rosrun jackal_velodyne diagnostics &
-roslaunch jackal_velodyne master.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER mapping:=$MAPPING gt_classify:=$GTCLASS 
+echo "RUNNING PT1"
+roslaunch jackal_velodyne p1.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER mapping:=$MAPPING gt_classify:=$GTCLASS & 
+sleep 5
+echo "RUNNING PT2"
+roslaunch jackal_velodyne p2.launch gui:=$GUI world_name:=$WORLDFILE filter:=$FILTER mapping:=$MAPPING gt_classify:=$GTCLASS 
 sleep 0.5
 echo "Running data_processing.py"
 rosrun dashboard data_processing.py $t
