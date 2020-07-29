@@ -14,7 +14,6 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     this->sdf = _sdf;
     this->update_connection = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&Puppeteer::OnUpdate, this, std::placeholders::_1));
 
-
     this->user_name = "default";
 
     if (const char * user = std::getenv("USER")){
@@ -25,7 +24,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     this->ReadParams();
 
-    path_pub = nh.advertise<geometry_msgs::PoseStamped>("optimal_path",1000);
+    this->path_pub = this->nh.advertise<geometry_msgs::PoseStamped>("optimal_path",1000);
 
     auto building = this->world->ModelByName(this->building_name);
 
@@ -113,6 +112,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     std::cout << "LOADED ALL VEHICLES\n";
 
+    std::cout << "COMMAND: " << this->launch_command << std::endl;
+    std::system(this->launch_command.c_str());
+
 }
 
 void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
@@ -151,6 +153,8 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
                 i++;
             }
         }
+
+        return;
     }
 
     if (this->robot != nullptr){
@@ -214,6 +218,8 @@ void Puppeteer::ReadSDF(){
     
     if (this->sdf->HasElement("robot_name")){
         this->robot_name = this->sdf->GetElement("robot_name")->Get<std::string>();
+    } else{
+        this->robot_name = "";
     }
 
 }
@@ -337,19 +343,48 @@ void Puppeteer::ReadParams(){
         boid_params["FOV_angle"] =  4;
         boid_params["FOV_radius"] =  3;
     }
-
-    /*
-    if (!nh.getParam("start_time", this->start_time)){
-        std::cout << "ERROR SETTING START TIME\n";
-        this->start_time = "";
+    
+    if (!nh.getParam("gt_class", this->gt_class)){
+        std::cout << "ERROR READING gt_class\n";
+        this->gt_class = false;
     }
-    */
+
+    if (!nh.getParam("filter_status", this->filter_status)){
+        std::cout << "ERROR READING filter_status\n";
+        this->filter_status = false;
+    }
+
+    if (!nh.getParam("gmapping_status", this->gmapping_status)){
+        std::cout << "ERROR READING gmapping_status\n";
+        this->gmapping_status = false;
+    }
+
+    //roslaunch jackal_velodyne p2.launch filter:=$FILTER mapping:=$MAPPING gt_classify:=$GTCLASS 
+    if (this->filter_status){
+        this->launch_command += " filter:=true ";
+    } else {
+        this->launch_command += " filter:=false ";
+    }
+    if (this->gt_class){
+        this->launch_command += " gt_classify:=true ";
+    } else{
+        this->launch_command += " gt_classify:=false ";
+    }
+    if (this->gmapping_status){
+        this->launch_command += " mapping:=true &";
+    } else{
+        this->launch_command += " mapping:=false &";
+    }
+
+    std::cout << "COMMAND: " << this->launch_command << std::endl;
 
     if (!nh.getParam("tour_name", this->tour_name)){
         std::cout << "ERROR READING TOUR NAME\n";
         this->tour_name = "";
         return;
     }
+
+
 
 
 }

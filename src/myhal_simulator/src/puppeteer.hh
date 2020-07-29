@@ -20,6 +20,7 @@
 #include "frame.hh"
 #include "gazebo/msgs/msgs.hh"
 #include <geometry_msgs/PoseStamped.h>
+#include "sensor_msgs/PointCloud2.h"
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 typedef boost::shared_ptr<SmartCam> SmartCamPtr;
@@ -80,8 +81,15 @@ class Puppeteer: public gazebo::WorldPlugin{
         std::vector<std::vector<ignition::math::Vector3d>> paths;
 
         ros::Publisher path_pub;
-
         
+        bool filter_status;
+
+        bool gt_class;
+
+        bool gmapping_status;
+
+        std::string launch_command = "roslaunch jackal_velodyne p2.launch";
+
     public: 
         
         void Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf);

@@ -4,10 +4,6 @@
   <arg name="gui" default="false" /> <!-- adjust gui and headless to speed up simulation by removing the gazebo gui -->
   <arg name="headless" default="true" />
   <arg name="world_name" default="$(find myhal_simulator)/worlds/myhal_sim.world" />
-  <arg name="filter" default="false" />
-  <arg name="mapping" default="false" />
-  <arg name="map_file" default="$(find jackal_velodyne)/maps/myhal_map_V3.yaml"/>
-  <arg name="gt_classify" default="true" />
 
   <!-- Launch Gazebo with the specified world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -17,14 +13,11 @@
     <arg name="headless" value="$(arg headless)" />
     <arg name="world_name" value="$(arg world_name)" />
   </include>
+
+  <group if="$(arg gui)">
+      <node pkg="rviz" type="rviz" name="rviz" args="-d $(find jackal_velodyne)/launch/include/run.rviz" />
+  </group>
   
 </launch>
 
 
-
-
-<!--node pkg="jackal_velodyne" type="tf_publisher"    name="tf_publisher"    output="screen"/-->
-
-<!--include file="$(find jackal_control)/launch/teleop.launch">
-    <arg name="joystick" value="false"/>
-</include-->
