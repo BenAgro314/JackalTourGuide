@@ -5,7 +5,7 @@ t=$(date +'%Y-%m-%d-%H-%M-%S')
 
 echo "Folder Name: $t"
 
-MINSTEP=0.0002
+MINSTEP=0.0001
 echo "Min step size: $MINSTEP"
 
 GUI=false # -v flag

@@ -127,7 +127,7 @@
 						</clip>
 					</camera>
 					<plugin name="camera_controller" filename="libcamera_controller.so">
-						<filepath>/home/default/Myhal_Simulation/simulated_runs/2020-07-28-20-40-53/logs-2020-07-28-20-40-53/videos/CAM_1_0.000000/</filepath>
+						<filepath>/home/default/Myhal_Simulation/simulated_runs/2020-07-29-08-59-59/logs-2020-07-29-08-59-59/videos/CAM_1_0.000000/</filepath>
 					</plugin>
 					<always_on>1</always_on>
 					<update_rate>24</update_rate>
@@ -151,7 +151,7 @@
 						</clip>
 					</camera>
 					<plugin name="camera_controller" filename="libcamera_controller.so">
-						<filepath>/home/default/Myhal_Simulation/simulated_runs/2020-07-28-20-40-53/logs-2020-07-28-20-40-53/videos/CAM_1_70.000000/</filepath>
+						<filepath>/home/default/Myhal_Simulation/simulated_runs/2020-07-29-08-59-59/logs-2020-07-29-08-59-59/videos/CAM_1_70.000000/</filepath>
 					</plugin>
 					<always_on>1</always_on>
 					<update_rate>24</update_rate>
@@ -175,7 +175,7 @@
 						</clip>
 					</camera>
 					<plugin name="camera_controller" filename="libcamera_controller.so">
-						<filepath>/home/default/Myhal_Simulation/simulated_runs/2020-07-28-20-40-53/logs-2020-07-28-20-40-53/videos/CAM_0_0.000000/</filepath>
+						<filepath>/home/default/Myhal_Simulation/simulated_runs/2020-07-29-08-59-59/logs-2020-07-29-08-59-59/videos/CAM_0_0.000000/</filepath>
 					</plugin>
 					<always_on>1</always_on>
 					<update_rate>24</update_rate>
@@ -183,88 +183,36 @@
 			</link>
 		</model>
 		<model name="box_30">
-			<pose>-0.500000 -7.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
+			<pose>17.250000 -20.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
 			<static>true</static>
 			<link name="box_30_link">
 				<collision name="box_30_collision">
 					<geometry>
 						<box>
-							<size>15.000000 0.250000 1</size>
+							<size>5.500000 0.250000 1</size>
 						</box>
 					</geometry>
 				</collision>
 			</link>
 		</model>
 		<model name="box_31">
-			<pose>-0.500000 2.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
+			<pose>17.250000 5.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
 			<static>true</static>
 			<link name="box_31_link">
 				<collision name="box_31_collision">
 					<geometry>
 						<box>
-							<size>15.000000 0.250000 1</size>
+							<size>5.500000 0.250000 1</size>
 						</box>
 					</geometry>
 				</collision>
 			</link>
 		</model>
 		<model name="box_32">
-			<pose>-8.125000 -2.500000 -0.500000 0.000000 -0.000000 0.000000</pose>
+			<pose>14.375000 -7.500000 -0.500000 0.000000 -0.000000 0.000000</pose>
 			<static>true</static>
 			<link name="box_32_link">
 				<collision name="box_32_collision">
-					<geometry>
-						<box>
-							<size>0.250000 9.500000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_33">
-			<pose>7.125000 -2.500000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_33_link">
-				<collision name="box_33_collision">
-					<geometry>
-						<box>
-							<size>0.250000 9.500000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_34">
-			<pose>17.250000 -20.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_34_link">
-				<collision name="box_34_collision">
-					<geometry>
-						<box>
-							<size>5.500000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_35">
-			<pose>17.250000 5.125000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_35_link">
-				<collision name="box_35_collision">
-					<geometry>
-						<box>
-							<size>5.500000 0.250000 1</size>
-						</box>
-					</geometry>
-				</collision>
-			</link>
-		</model>
-		<model name="box_36">
-			<pose>14.375000 -7.500000 -0.500000 0.000000 -0.000000 0.000000</pose>
-			<static>true</static>
-			<link name="box_36_link">
-				<collision name="box_36_collision">
 					<geometry>
 						<box>
 							<size>0.250000 25.500000 1</size>
@@ -273,11 +221,11 @@
 				</collision>
 			</link>
 		</model>
-		<model name="box_37">
+		<model name="box_33">
 			<pose>20.125000 -7.500000 -0.500000 0.000000 -0.000000 0.000000</pose>
 			<static>true</static>
-			<link name="box_37_link">
-				<collision name="box_37_collision">
+			<link name="box_33_link">
+				<collision name="box_33_collision">
 					<geometry>
 						<box>
 							<size>0.250000 25.500000 1</size>
@@ -293,7 +241,7 @@
 		</include>
 		<include>
 			<name>door_1</name>
-			<pose>-14.624989 9.030960 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-14.624989 9.030960 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -303,7 +251,7 @@
 		</include>
 		<include>
 			<name>door_3</name>
-			<pose>-7.761390 8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-7.761390 8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -313,7 +261,7 @@
 		</include>
 		<include>
 			<name>door_5</name>
-			<pose>12.624992 14.208450 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>12.624992 14.208450 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -323,17 +271,17 @@
 		</include>
 		<include>
 			<name>door_7</name>
-			<pose>18.478948 16.484045 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>18.478948 16.484045 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_8</name>
-			<pose>15.475004 16.925590 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>15.475004 16.925590 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_9</name>
-			<pose>-14.625002 6.214056 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-14.625002 6.214056 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -343,32 +291,32 @@
 		</include>
 		<include>
 			<name>door_11</name>
-			<pose>-14.625007 -2.443840 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-14.625007 -2.443840 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_12</name>
-			<pose>-14.625002 -5.329808 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-14.625002 -5.329808 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_13</name>
-			<pose>-15.625002 -7.097462 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-15.625002 -7.097462 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_14</name>
-			<pose>-14.061730 -14.474920 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-14.061730 -14.474920 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_15</name>
-			<pose>-10.281770 -14.475003 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-10.281770 -14.475003 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_16</name>
-			<pose>-12.150050 5.775003 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-12.150050 5.775003 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -378,7 +326,7 @@
 		</include>
 		<include>
 			<name>door_18</name>
-			<pose>-16.625004 -14.047594 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-16.625004 -14.047594 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -388,12 +336,12 @@
 		</include>
 		<include>
 			<name>door_20</name>
-			<pose>13.031310 5.774995 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>13.031310 5.774995 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_21</name>
-			<pose>10.625002 3.385427 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>10.625002 3.385427 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -403,7 +351,7 @@
 		</include>
 		<include>
 			<name>door_23</name>
-			<pose>2.924993 -13.796720 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>2.924993 -13.796720 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -413,7 +361,7 @@
 		</include>
 		<include>
 			<name>door_25</name>
-			<pose>4.583714 -8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>4.583714 -8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -428,12 +376,12 @@
 		</include>
 		<include>
 			<name>door_28</name>
-			<pose>13.352706 -14.475002 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>13.352706 -14.475002 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_29</name>
-			<pose>12.624998 -7.129598 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>12.624998 -7.129598 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 
