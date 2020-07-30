@@ -22,6 +22,10 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     this->ReadSDF();
 
+    int argc = 0;
+    char **argv = NULL;
+    ros::init(argc, argv, "Puppeteer");
+
     this->ReadParams();
 
     this->path_pub = this->nh.advertise<geometry_msgs::PoseStamped>("optimal_path",1000);
@@ -106,6 +110,10 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     std::cout << "COMMAND: " << this->launch_command << std::endl;
     std::system(this->launch_command.c_str());
 
+    this->global_path_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1000, &Puppeteer::GlobalPathCallback, this);
+    
+    ros::AsyncSpinner spinner(4); // Use 4 threads
+    spinner.start();
 }
 
 void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
@@ -310,10 +318,6 @@ boost::shared_ptr<Vehicle> Puppeteer::CreateVehicle(gazebo::physics::ActorPtr ac
 }
 
 void Puppeteer::ReadParams(){
-    int argc = 0;
-    char **argv = NULL;
-    ros::init(argc, argv, "Puppeteer");
-
 
     if (!nh.getParam("common_vehicle_params", this->vehicle_params)){
         ROS_ERROR("ERROR READING COMMON VEHICLE PARAMS");
@@ -393,4 +397,42 @@ SmartCamPtr Puppeteer::CreateCamera(gazebo::physics::ModelPtr model){
         new_cam = boost::make_shared<Stalker>(model, model->WorldPose().Pos(), dist); 
     }
     return new_cam;
+}
+
+void Puppeteer::GlobalPathCallback(const nav_msgs::Path::ConstPtr& path){
+    if (this->path_points.size() != 0){
+        for (auto name: this->path_points){
+            this->world->RemoveModel(name);
+        }
+    }
+    this->path_points.clear();
+    int i = 0;
+    for (auto pose: path->poses){
+        auto pos = pose.pose.position;
+        auto name = "path_point_" + std::to_string(i);
+        this->AddPathMarker(name, ignition::math::Vector3d(pos.x, pos.y, pos.z));
+        this->path_points.push_back(name);
+        i++;
+    }
+}
+
+void Puppeteer::AddPathMarker(std::string name, ignition::math::Vector3d pos){
+
+    boost::shared_ptr<sdf::SDF> sdf = boost::make_shared<sdf::SDF>();
+    sdf->SetFromString(
+       "<sdf version ='1.6'>\
+          <model name ='box'>\
+          </model>\
+        </sdf>");
+
+    auto model = sdf->Root()->GetElement("model");
+    model->GetElement("static")->Set(true);
+    model->GetAttribute("name")->SetFromString(name);
+    model->GetElement("pose")->Set(pos);
+    auto link = model->AddElement("link");
+    link->GetAttribute("name")->SetFromString("l_" + name);
+    link->GetElement("visual")->GetElement("geometry")->GetElement("box")->GetElement("size")->Set(ignition::math::Vector3d(0.05, 0.05, 0.01));
+
+    this->world->InsertModelSDF(*sdf);
+
 }

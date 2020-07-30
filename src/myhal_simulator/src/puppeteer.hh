@@ -20,6 +20,7 @@
 #include "frame.hh"
 #include "gazebo/msgs/msgs.hh"
 #include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Path.h>
 #include "sensor_msgs/PointCloud2.h"
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
@@ -78,9 +79,13 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ros::NodeHandle nh;
 
+        ros::Subscriber global_path_sub;
+
         std::vector<std::vector<ignition::math::Vector3d>> paths;
 
         std::vector<ignition::math::Vector3d> robot_traj;
+
+        std::vector<std::string> path_points;
 
         ros::Publisher path_pub;
         
@@ -105,6 +110,10 @@ class Puppeteer: public gazebo::WorldPlugin{
         boost::shared_ptr<Vehicle> CreateVehicle(gazebo::physics::ActorPtr actor);
 
         SmartCamPtr CreateCamera(gazebo::physics::ModelPtr model);
+
+        void GlobalPathCallback(const nav_msgs::Path::ConstPtr& path);
+
+        void AddPathMarker(std::string name, ignition::math::Vector3d pos);
 
 };
 
