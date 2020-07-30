@@ -111,6 +111,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     std::system(this->launch_command.c_str());
 
     this->global_path_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1000, &Puppeteer::GlobalPathCallback, this);
+    this->local_path_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1000, &Puppeteer::LocalPathCallback, this);
     
     ros::AsyncSpinner spinner(4); // Use 4 threads
     spinner.start();
@@ -161,6 +162,22 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         this->robot_traj.back().Z() = 0;
         for (auto cam: this->cams){
             cam->OnUpdate(dt, this->robot_traj);
+        }
+    }
+
+    if (this->plan_queue.size() >= 2){
+        auto to_remove = this->plan_queue.front();
+        if (this->world->EntityByName(to_remove)){
+            this->plan_queue.pop();
+            this->world->RemoveModel(to_remove);
+        }
+    }
+
+    if (this->local_plan_queue.size() >= 2){
+        auto to_remove = this->local_plan_queue.front();
+        if (this->world->EntityByName(to_remove)){
+            this->local_plan_queue.pop();
+            this->world->RemoveModel(to_remove);
         }
     }
 
@@ -400,25 +417,22 @@ SmartCamPtr Puppeteer::CreateCamera(gazebo::physics::ModelPtr model){
 }
 
 void Puppeteer::GlobalPathCallback(const nav_msgs::Path::ConstPtr& path){
-    if (this->path_points.size() != 0){
-        std::cout << "Removing: " << this->path_points.size() << " pts\n";
-        for (auto name: this->path_points){
-            this->world->RemoveModel(name);
-        }
-    }
-    this->path_points.clear();
-    int i = 0;
-    for (auto pose: path->poses){
-        auto pos = pose.pose.position;
-        auto name = "path_point_" + std::to_string(i);
-        this->AddPathMarker(name, ignition::math::Vector3d(pos.x, pos.y, pos.z));
-        this->path_points.push_back(name);
-        i++;
-    }
-    std::cout << "Added: " << i << " pts\n";
+    std::string name = "plan_" + std::to_string(this->num_plans);
+    this->plan_queue.push(name);
+    this->AddPathMarkers(name, path, ignition::math::Vector4d(0,1,0,1)); 
+
+    this->num_plans++;
 }
 
-void Puppeteer::AddPathMarker(std::string name, ignition::math::Vector3d pos){
+void Puppeteer::LocalPathCallback(const nav_msgs::Path::ConstPtr& path){
+    std::string name = "local_plan_" + std::to_string(this->num_local_plans);
+    this->local_plan_queue.push(name);
+    this->AddPathMarkers(name, path, ignition::math::Vector4d(0,0,1,1)); 
+
+    this->num_local_plans++;
+}
+
+void Puppeteer::AddPathMarkers(std::string name, const nav_msgs::Path::ConstPtr& plan, ignition::math::Vector4d color){
 
     boost::shared_ptr<sdf::SDF> sdf = boost::make_shared<sdf::SDF>();
     sdf->SetFromString(
@@ -430,17 +444,25 @@ void Puppeteer::AddPathMarker(std::string name, ignition::math::Vector3d pos){
     auto model = sdf->Root()->GetElement("model");
     model->GetElement("static")->Set(true);
     model->GetAttribute("name")->SetFromString(name);
-    model->GetElement("pose")->Set(pos);
-    auto link = model->AddElement("link");
-    link->GetAttribute("name")->SetFromString("l_" + name);
-    auto cylinder = link->GetElement("visual")->GetElement("geometry")->GetElement("cylinder");
-    cylinder->GetElement("radius")->Set(0.03);
-    cylinder->GetElement("length")->Set(0.001);
-    auto mat = link->GetElement("visual")->GetElement("material");
-    mat->GetElement("ambient")->Set(ignition::math::Vector4d(0,1,0,1));
-    mat->GetElement("diffuse")->Set(ignition::math::Vector4d(0,1,0,1));
-    mat->GetElement("specular")->Set(ignition::math::Vector4d(0,1,0,1));
-    mat->GetElement("emissive")->Set(ignition::math::Vector4d(0,1,0,1));
+
+    int i = 0;
+    for (auto pose: plan->poses){
+        auto p = pose.pose.position;
+        auto pos = ignition::math::Vector3d(p.x, p.y, p.z);
+        auto link = model->AddElement("link");
+        link->GetElement("pose")->Set(pos);
+        link->GetAttribute("name")->SetFromString("l_" + name + std::to_string(i));
+        auto cylinder = link->GetElement("visual")->GetElement("geometry")->GetElement("cylinder");
+        cylinder->GetElement("radius")->Set(0.03);
+        cylinder->GetElement("length")->Set(0.001);
+        auto mat = link->GetElement("visual")->GetElement("material");
+        mat->GetElement("ambient")->Set(color);
+        mat->GetElement("diffuse")->Set(color);
+        mat->GetElement("specular")->Set(color);
+        mat->GetElement("emissive")->Set(color);
+        i++;
+    }
+
 
     this->world->InsertModelSDF(*sdf);
 

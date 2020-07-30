@@ -8,6 +8,7 @@
 #include "gazebo/common/common.hh"
 #include "gazebo/gazebo.hh"
 #include <vector>
+#include <queue>
 #include <map>
 #include <utility>
 #include "quadtree.hh"
@@ -82,11 +83,19 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ros::Subscriber global_path_sub;
 
+        ros::Subscriber local_path_sub;
+
         std::vector<std::vector<ignition::math::Vector3d>> paths;
 
         std::vector<ignition::math::Vector3d> robot_traj;
 
-        std::vector<std::string> path_points;
+        std::queue<std::string> plan_queue;
+
+        std::queue<std::string> local_plan_queue;
+
+        int num_plans = 0;
+
+        int num_local_plans = 0;
 
         ros::Publisher path_pub;
         
@@ -114,7 +123,9 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         void GlobalPathCallback(const nav_msgs::Path::ConstPtr& path);
 
-        void AddPathMarker(std::string name, ignition::math::Vector3d pos);
+        void LocalPathCallback(const nav_msgs::Path::ConstPtr& path);
+
+        void AddPathMarkers(std::string name, const nav_msgs::Path::ConstPtr& plan, ignition::math::Vector4d color);
 
 };
 
