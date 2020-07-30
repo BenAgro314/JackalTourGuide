@@ -112,6 +112,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     this->global_path_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1000, &Puppeteer::GlobalPathCallback, this);
     this->local_path_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1000, &Puppeteer::LocalPathCallback, this);
+    this->goal_sub = this->nh.subscribe("/move_base/goal", 1000, &Puppeteer::GoalCallback, this);
     
     ros::AsyncSpinner spinner(4); // Use 4 threads
     spinner.start();
@@ -177,6 +178,14 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         auto to_remove = this->local_plan_queue.front();
         if (this->world->EntityByName(to_remove)){
             this->local_plan_queue.pop();
+            this->world->RemoveModel(to_remove);
+        }
+    }
+
+    if (this->goal_queue.size() >= 2){
+        auto to_remove = this->goal_queue.front();
+        if (this->world->EntityByName(to_remove)){
+            this->goal_queue.pop();
             this->world->RemoveModel(to_remove);
         }
     }
@@ -431,6 +440,14 @@ void Puppeteer::LocalPathCallback(const nav_msgs::Path::ConstPtr& path){
 
     this->num_local_plans++;
 }
+        
+void Puppeteer::GoalCallback(const move_base_msgs::MoveBaseActionGoal::ConstPtr& goal){
+    std::string name = "goal_" + std::to_string(this->num_goals);
+    this->goal_queue.push(name);
+    this->AddGoalMarker(name, goal, ignition::math::Vector4d(1,0,0,1)); 
+
+    this->num_goals++;
+}
 
 void Puppeteer::AddPathMarkers(std::string name, const nav_msgs::Path::ConstPtr& plan, ignition::math::Vector4d color){
 
@@ -465,5 +482,45 @@ void Puppeteer::AddPathMarkers(std::string name, const nav_msgs::Path::ConstPtr&
 
 
     this->world->InsertModelSDF(*sdf);
+}
 
+
+void Puppeteer::AddGoalMarker(std::string name, const move_base_msgs::MoveBaseActionGoal::ConstPtr& goal, ignition::math::Vector4d color){
+
+    auto p = goal->goal.target_pose.pose.position;
+    auto pos = ignition::math::Vector3d(p.x, p.y, p.z);
+        
+    boost::shared_ptr<sdf::SDF> sdf = boost::make_shared<sdf::SDF>();
+    sdf->SetFromString(
+       "<sdf version ='1.6'>\
+          <model name ='path'>\
+          </model>\
+        </sdf>");
+
+    auto model = sdf->Root()->GetElement("model");
+    model->GetElement("static")->Set(true);
+    model->GetAttribute("name")->SetFromString(name);
+    model->GetElement("pose")->Set(pos);
+
+    auto link1 = model->AddElement("link");
+    link1->GetAttribute("name")->SetFromString("l_1" + name);
+    auto box1 = link1->GetElement("visual")->GetElement("geometry")->GetElement("box");
+    box1->GetElement("size")->Set(ignition::math::Vector3d(0.5, 0.05, 0.001));
+    auto mat1 = link1->GetElement("visual")->GetElement("material");
+    mat1->GetElement("ambient")->Set(color);
+    mat1->GetElement("diffuse")->Set(color);
+    mat1->GetElement("specular")->Set(color);
+    mat1->GetElement("emissive")->Set(color);
+
+    auto link2 = model->AddElement("link");
+    link2->GetAttribute("name")->SetFromString("l_2" + name);
+    auto box2 = link2->GetElement("visual")->GetElement("geometry")->GetElement("box");
+    box2->GetElement("size")->Set(ignition::math::Vector3d(0.05, 0.5, 0.001));
+    auto mat2 = link2->GetElement("visual")->GetElement("material");
+    mat2->GetElement("ambient")->Set(color);
+    mat2->GetElement("diffuse")->Set(color);
+    mat2->GetElement("specular")->Set(color);
+    mat2->GetElement("emissive")->Set(color);
+
+    this->world->InsertModelSDF(*sdf);
 }

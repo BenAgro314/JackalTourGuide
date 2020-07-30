@@ -23,6 +23,7 @@
 #include "gazebo/msgs/msgs.hh"
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
+#include <move_base_msgs/MoveBaseActionGoal.h>
 #include "sensor_msgs/PointCloud2.h"
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
@@ -85,6 +86,8 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ros::Subscriber local_path_sub;
 
+        ros::Subscriber goal_sub;
+
         std::vector<std::vector<ignition::math::Vector3d>> paths;
 
         std::vector<ignition::math::Vector3d> robot_traj;
@@ -93,9 +96,13 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         std::queue<std::string> local_plan_queue;
 
+        std::queue<std::string> goal_queue;
+
         int num_plans = 0;
 
         int num_local_plans = 0;
+        
+        int num_goals = 0;
 
         ros::Publisher path_pub;
         
@@ -104,7 +111,7 @@ class Puppeteer: public gazebo::WorldPlugin{
         bool gt_class;
 
         bool gmapping_status;
-
+    
         std::string launch_command = "roslaunch jackal_velodyne p2.launch";
 
     public: 
@@ -125,7 +132,11 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         void LocalPathCallback(const nav_msgs::Path::ConstPtr& path);
 
+        void GoalCallback(const move_base_msgs::MoveBaseActionGoal::ConstPtr& goal);
+
         void AddPathMarkers(std::string name, const nav_msgs::Path::ConstPtr& plan, ignition::math::Vector4d color);
+
+        void AddGoalMarker(std::string name, const move_base_msgs::MoveBaseActionGoal::ConstPtr& goal, ignition::math::Vector4d color);
 
 };
 
