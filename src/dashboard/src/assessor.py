@@ -22,7 +22,7 @@ class Assessor(object):
         try:
             self.log_file = open("/home/" + self.username +
                                  "/Myhal_Simulation/simulated_runs/"
-                                 + self.start_time + "/log.txt", "a")
+                                 + self.start_time + "/logs-" + self.start_time + "/log.txt", "a")
         except IOError:
             print "Could not find/open log file"
             exit()

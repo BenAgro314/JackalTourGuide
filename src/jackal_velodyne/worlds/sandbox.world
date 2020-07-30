@@ -117,14 +117,23 @@
 			<link name="box_34_link">
 				<visual name="visual">
 					<geometry>
-						<polyline>
+						<!--polyline>
 							<point>0 0</point>
 							<point>1 0</point>
-							<!--point>2 2</point>
-							<point>3 3</point-->
+							<point>1 1</point>
                             <height>1</height>
-                        </polyline>
+                        </polyline-->
+                        <cylinder>
+                            <length>0.001</length>
+                            <radius>0.02</radius>
+                        </cylinder>
 					</geometry>
+                    <material>
+                        <diffuse>0 1 0 1</diffuse>
+                        <emissive>0 1 0 1</emissive>
+                        <ambient>0 1 0 1</ambient>
+                        <specular>0 1 0 1</specular>
+                    </material>
 				</visual>
 			</link>
 		</model>

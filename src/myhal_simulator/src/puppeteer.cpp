@@ -401,6 +401,7 @@ SmartCamPtr Puppeteer::CreateCamera(gazebo::physics::ModelPtr model){
 
 void Puppeteer::GlobalPathCallback(const nav_msgs::Path::ConstPtr& path){
     if (this->path_points.size() != 0){
+        std::cout << "Removing: " << this->path_points.size() << " pts\n";
         for (auto name: this->path_points){
             this->world->RemoveModel(name);
         }
@@ -414,6 +415,7 @@ void Puppeteer::GlobalPathCallback(const nav_msgs::Path::ConstPtr& path){
         this->path_points.push_back(name);
         i++;
     }
+    std::cout << "Added: " << i << " pts\n";
 }
 
 void Puppeteer::AddPathMarker(std::string name, ignition::math::Vector3d pos){
@@ -421,7 +423,7 @@ void Puppeteer::AddPathMarker(std::string name, ignition::math::Vector3d pos){
     boost::shared_ptr<sdf::SDF> sdf = boost::make_shared<sdf::SDF>();
     sdf->SetFromString(
        "<sdf version ='1.6'>\
-          <model name ='box'>\
+          <model name ='path'>\
           </model>\
         </sdf>");
 
@@ -431,7 +433,14 @@ void Puppeteer::AddPathMarker(std::string name, ignition::math::Vector3d pos){
     model->GetElement("pose")->Set(pos);
     auto link = model->AddElement("link");
     link->GetAttribute("name")->SetFromString("l_" + name);
-    link->GetElement("visual")->GetElement("geometry")->GetElement("box")->GetElement("size")->Set(ignition::math::Vector3d(0.05, 0.05, 0.01));
+    auto cylinder = link->GetElement("visual")->GetElement("geometry")->GetElement("cylinder");
+    cylinder->GetElement("radius")->Set(0.03);
+    cylinder->GetElement("length")->Set(0.001);
+    auto mat = link->GetElement("visual")->GetElement("material");
+    mat->GetElement("ambient")->Set(ignition::math::Vector4d(0,1,0,1));
+    mat->GetElement("diffuse")->Set(ignition::math::Vector4d(0,1,0,1));
+    mat->GetElement("specular")->Set(ignition::math::Vector4d(0,1,0,1));
+    mat->GetElement("emissive")->Set(ignition::math::Vector4d(0,1,0,1));
 
     this->world->InsertModelSDF(*sdf);
 
