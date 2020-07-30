@@ -188,9 +188,6 @@ namespace gazebo
         char **argv = NULL;
         ros::init(argc, argv, "CustomSensor");
 
-        //this->pauseGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
-        //this->playGazebo = this->nh.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
-
         // Sensor generation off by default
         parent_ray_sensor_->SetActive(false);
 

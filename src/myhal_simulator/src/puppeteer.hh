@@ -80,6 +80,8 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         std::vector<std::vector<ignition::math::Vector3d>> paths;
 
+        std::vector<ignition::math::Vector3d> robot_traj;
+
         ros::Publisher path_pub;
         
         bool filter_status;
@@ -101,6 +103,8 @@ class Puppeteer: public gazebo::WorldPlugin{
         void ReadParams();
 
         boost::shared_ptr<Vehicle> CreateVehicle(gazebo::physics::ActorPtr actor);
+
+        SmartCamPtr CreateCamera(gazebo::physics::ModelPtr model);
 
 };
 

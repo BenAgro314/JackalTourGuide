@@ -16,4 +16,4 @@ rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
 
 rosparam set use_sim_time true
-roslaunch jackal_velodyne sandbox.launch 
+roslaunch jackal_velodyne sandbox.launch extra_gazebo_args:="-s libdirector.so" gui:=true

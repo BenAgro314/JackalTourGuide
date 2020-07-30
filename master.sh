@@ -53,12 +53,6 @@ fi
 
 export GTCLASSIFY=$GTCLASS
 
-
-#1. launch roscore
-#2. load parameters 
-#3. generate world
-#4. launch world 
-
 echo "Running tour: $TOUR"
 
 roscore -p $ROSPORT&
@@ -73,7 +67,6 @@ rosparam load src/myhal_simulator/params/plugin_params.yaml
 rosparam load src/myhal_simulator/params/model_params.yaml
 rosparam load src/myhal_simulator/params/camera_params.yaml
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
-
 rosparam set gt_class $GTCLASS
 rosparam set localization_test false
 rosparam set class_method $c_method
@@ -83,8 +76,6 @@ rosparam set start_time $t
 rosparam set filter_status $FILTER
 rosparam set gmapping_status $MAPPING
 rosparam set min_step $MINSTEP
-
-
   
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
@@ -120,15 +111,10 @@ fi
 
 cp $WORLDFILE "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t/"
 
-#rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" -a -x "/kinect_V2(.*)" & # Limiting data to remain under rosbag buffer
 rosbag record -O "/home/$USER/Myhal_Simulation/simulated_runs/$t/raw_data.bag" /clock /shutdown_signal /velodyne_points /move_base/local_costmap/costmap /move_base/global_costmap/costmap /ground_truth/state /map /move_base/NavfnROS/plan /amcl_pose /tf /tf_static /move_base/result /tour_data /optimal_path /classified_points &
 rosrun dashboard assessor.py &
-#rosrun jackal_velodyne diagnostics &
 echo -e "\033[1;4;34mRUNNING SIM\033[0m"
-roslaunch jackal_velodyne p1.launch gui:=$GUI world_name:=$WORLDFILE #&
-#sleep 20
-#echo "RUNNING PT2"
-#roslaunch jackal_velodyne p2.launch filter:=$FILTER mapping:=$MAPPING gt_classify:=$GTCLASS 
+roslaunch jackal_velodyne p1.launch gui:=$GUI world_name:=$WORLDFILE #extra_gazebo_args:="-s libdirector.so"
 sleep 0.5
 echo "Running data_processing.py"
 rosrun dashboard data_processing.py $t

@@ -54,16 +54,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         } 
 
         if (model->GetName().substr(0,3) == "CAM"){
-            // extract information from name of camera
-            std::string s = model->GetName();
-            int pos = 0;
-            std::string token;
-            bool relative = (bool) std::stoi(s.substr(4,1));
-            double period = std::stod(s.substr(6));
-
-            auto init_pose = model->WorldPose().Pos();
-            auto smart_cam = boost::make_shared<SmartCam>(model, relative, init_pose, period);
-            this->cams.push_back(smart_cam);
+            this->cams.push_back(this->CreateCamera(model));
             continue;
         }
 
@@ -158,10 +149,10 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
     }
 
     if (this->robot != nullptr){
-        auto tar = this->robot->WorldPose();
-        tar.Pos().Z() = 0;
+        this->robot_traj.push_back(this->robot->WorldPose().Pos());
+        this->robot_traj.back().Z() = 0;
         for (auto cam: this->cams){
-            cam->OnUpdate(dt, tar);
+            cam->OnUpdate(dt, this->robot_traj);
         }
     }
 
@@ -384,7 +375,22 @@ void Puppeteer::ReadParams(){
         return;
     }
 
+}
 
-
-
+SmartCamPtr Puppeteer::CreateCamera(gazebo::physics::ModelPtr model){
+    auto tokens = utilities::split(model->GetName(), '_');
+    SmartCamPtr new_cam;
+    if (tokens[1] == "0"){
+        // sentry
+        new_cam = boost::make_shared<Sentry>(model,model->WorldPose().Pos()); 
+    } else if (tokens[1] == "1"){
+        // hoverer
+        double T = std::stod(tokens[2]);
+        new_cam = boost::make_shared<Hoverer>(model, model->WorldPose().Pos(), T); 
+    } else if (tokens[1] == "2"){
+        // path follower
+        double dist = std::stod(tokens[3]);
+        new_cam = boost::make_shared<Stalker>(model, model->WorldPose().Pos(), dist); 
+    }
+    return new_cam;
 }

@@ -17,6 +17,7 @@
 #define COH 1
 #define SEP 2
 
+/*
 class SmartCam{
 
     protected:
@@ -37,10 +38,75 @@ class SmartCam{
 
         SmartCam(gazebo::physics::ModelPtr self, bool relative, ignition::math::Vector3d pos, double period);
 
-        void OnUpdate(double dt, ignition::math::Pose3d view_target); 
+        virtual void OnUpdate(double dt, ignition::math::Pose3d view_target); 
 
+};*/
+
+
+class SmartCam{
+
+    protected:
+
+        gazebo::physics::ModelPtr self = nullptr; 
+
+        ignition::math::Pose3d target_pose; // what are we looking at right now
+
+        ignition::math::Vector3d heading;
+
+        ignition::math::Vector3d updated_pos;
+
+    public:
+
+        SmartCam(gazebo::physics::ModelPtr self, ignition::math::Vector3d initial_pos);
+
+        virtual void OnUpdate(double dt, std::vector<ignition::math::Vector3d> &robot_traj) = 0;
+
+        void UpdateModel();
 
 };
+
+class Sentry: public SmartCam{
+
+    public:
+
+        using SmartCam::SmartCam;
+
+        void OnUpdate(double dt, std::vector<ignition::math::Vector3d> &robot_traj); 
+
+};
+
+class Hoverer: public SmartCam{
+   
+    protected:
+
+        double T;
+
+        ignition::math::Vector3d relative_pos;
+
+    public:
+        
+        Hoverer(gazebo::physics::ModelPtr self, ignition::math::Vector3d initial_pos, double T);
+
+        void OnUpdate(double dt, std::vector<ignition::math::Vector3d> &robot_traj); 
+};
+
+class Stalker: public SmartCam{
+
+    protected:
+
+        double dist;
+
+        double curr_dist = 0;
+
+        int curr_ind = 0;
+
+    public:
+        
+        Stalker(gazebo::physics::ModelPtr self, ignition::math::Vector3d initial_pos, double dist);
+
+        void OnUpdate(double dt, std::vector<ignition::math::Vector3d> &robot_traj); 
+};
+
 
 class Vehicle{
 
@@ -102,7 +168,7 @@ class Vehicle{
         ignition::math::Vector3d initial_velocity,
         std::vector<gazebo::physics::EntityPtr> all_objects);
 
-        virtual void OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects); //to be made virtual
+        virtual void OnUpdate(const gazebo::common::UpdateInfo &_info, double dt, std::vector<boost::shared_ptr<Vehicle>> vehicles, std::vector<gazebo::physics::EntityPtr> objects); 
 
         gazebo::physics::ActorPtr GetActor();
 

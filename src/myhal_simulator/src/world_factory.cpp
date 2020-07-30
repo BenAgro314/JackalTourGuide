@@ -61,8 +61,12 @@ void WorldHandler::AddCameras(){
     for (auto info: this->cam_info){
         std::string name = "CAM_";
         // we will encode camera information in it's name
-        name += std::to_string(info->relative) + "_"; 
-        name += std::to_string(info->period); 
+        name += std::to_string(info->mode) + "_"; 
+        name += std::to_string(info->period) + "_"; 
+        name += std::to_string(info->dist) + "_"; 
+        name += std::to_string(info->x) + "_"; 
+        name += std::to_string(info->y) + "_"; 
+        name += std::to_string(info->z);
 
         auto pose = ignition::math::Pose3d(info->x, info->y, info->z, 0,0,0,0);
         auto path = "/home/" + this->user_name + "/Myhal_Simulation/simulated_runs/" + this->start_time + "/logs-" + this->start_time + "/videos/";
@@ -102,7 +106,7 @@ void WorldHandler::LoadParams(){
         if (info.size() < 5){
             std::cout << "Camera info is malformed" << std::endl;
         }
-        auto cam = std::make_shared<CamInfo>((bool) info[0], info[1], info[2], info[3], info[4]);
+        auto cam = std::make_shared<CamInfo>(info[0], info[1], info[2], info[3], info[4], info[5]);
         this->cam_info.push_back(cam);
     }
 

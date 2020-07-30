@@ -1,25 +1,29 @@
 camera_names:
     - third_person_rear
-    - third_person_front
     - static1
+    - follower
 
 third_person_rear:
-    - 1 # (bool) is the pose relative to the robot or not
-    - 0 # x 
+    - 1 # Mode: (0 - stationary + tracking), (1 - fixed relative pose + tracking), (2 - path following + tracking)
+    - 0 # x (for modes 0 and 1) 
     - 6 # y
-    - 4 # z
-    - 0 # orbiting period
-
-third_person_front:
-    - 1 
-    - 0
-    - -15
-    - 10
-    - 70.0 # orbiting period
+    - 4 # z (for all modes)
+    - -1 # orbiting period (for mode 1) (if < 0, no rotation)
+    - -1 # following distance (for mode 2) (if < 0, NA)
 
 static1:
     - 0
     - 8
     - -7
     - 10
-    - 0 # orbiting period
+    - -1 # orbiting period
+    - -1
+
+follower:
+    - 2 
+    - 0
+    - 0 
+    - 5
+    - -1 
+    - 1
+

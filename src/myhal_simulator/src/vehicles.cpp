@@ -2,8 +2,71 @@
 #include "Perlin.h"
 #include <thread>
 
-SmartCam::SmartCam(gazebo::physics::ModelPtr self, bool relative, ignition::math::Vector3d pos, double period): self(self), relative(relative), pos(pos), period(period) {}
+SmartCam::SmartCam(gazebo::physics::ModelPtr self, ignition::math::Vector3d initial_pos): self(self), updated_pos(initial_pos){}
 
+void SmartCam::UpdateModel(){
+    this->heading.Normalize();
+    double yaw = std::atan2(this->heading.Y(), this->heading.X());
+    double pitch = -std::atan2(heading.Z(), std::hypot(heading.X(),heading.Y()));
+    self->SetWorldPose(ignition::math::Pose3d(this->updated_pos, ignition::math::Quaterniond(0,pitch,yaw)));
+}
+
+void Sentry::OnUpdate(double dt, std::vector<ignition::math::Vector3d> &robot_traj){
+    if (robot_traj.size() == 0){
+        return;
+    }
+    auto target = robot_traj.back();
+    this->heading = target - this->updated_pos;
+    this->UpdateModel();
+}
+
+Hoverer::Hoverer(gazebo::physics::ModelPtr self, ignition::math::Vector3d initial_pos, double T): SmartCam(self, initial_pos), T(T), relative_pos(initial_pos) {}
+
+void Hoverer::OnUpdate(double dt, std::vector<ignition::math::Vector3d> &robot_traj){
+
+    if (robot_traj.size() == 0){
+        return;
+    }
+    auto target = robot_traj.back();
+        
+    if (this->T > 0){
+        auto dyaw = (dt/this->T)*6.28;
+        auto rt = ignition::math::Quaterniond(0,0,dyaw);
+        this->relative_pos = rt.RotateVector(this->relative_pos);
+    }
+    this->updated_pos = target + this->relative_pos;
+    this->heading = target - this->updated_pos;
+    this->UpdateModel();
+}
+        
+Stalker::Stalker(gazebo::physics::ModelPtr self, ignition::math::Vector3d initial_pos, double dist): SmartCam(self, initial_pos), dist(dist){}
+
+void Stalker::OnUpdate(double dt, std::vector<ignition::math::Vector3d> &robot_traj){
+    // maintain this->dist distance from the robot along it's path
+    
+    if (robot_traj.size() == 0){
+        return;
+    }
+
+    auto target = robot_traj.back();
+    if (robot_traj.size() > 1){
+        curr_dist += (target - robot_traj[robot_traj.size()-2]).Length();
+    } else{
+        curr_dist += target.Length();
+    }
+        
+    while (this->curr_ind < (robot_traj.size() - 1) && this->curr_dist > dist){
+        this->curr_dist -= (robot_traj[this->curr_ind+1] - robot_traj[this->curr_ind]).Length();
+        this->curr_ind++;
+    }
+
+    this->updated_pos.X() = robot_traj[this->curr_ind].X();
+    this->updated_pos.Y() = robot_traj[this->curr_ind].Y();
+    this->heading = target - this->updated_pos;
+    this->UpdateModel();
+}
+    
+/*
 void SmartCam::OnUpdate(double dt, ignition::math::Pose3d view_target){
 
     auto self_pos = this->pos;
@@ -21,7 +84,7 @@ void SmartCam::OnUpdate(double dt, ignition::math::Pose3d view_target){
     double yaw = std::atan2(heading.Y(), heading.X());
     double pitch = -std::atan2(heading.Z(), std::hypot(heading.X(),heading.Y()));
     self->SetWorldPose(ignition::math::Pose3d(self_pos, ignition::math::Quaterniond(0,pitch,yaw)));
-}
+}*/
 
 
 //VEHICLE CLASS

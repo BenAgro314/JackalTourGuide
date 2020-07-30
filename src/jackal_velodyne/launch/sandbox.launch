@@ -1,17 +1,23 @@
 <?xml version="1.0"?>
 <launch>
 
+  <arg name="use_sim_time" default="true" />
+  <arg name="gui" default="false" /> 
+  <arg name="world_name" default="$(find jackal_velodyne)/worlds/sandbox.world" />
+  <arg name="extra_gazebo_args" default=""/>
 
-<arg name="sim_world" default="sandbox"/>
-<arg name="gui" default="true"/>
+  <group>
+    <param name="gazebo/enable_ros_network" value="true" />
+  </group>
+  <node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen"
+	args="-e ode $(arg extra_gazebo_args) $(arg world_name)"
+  required="false" />
 
-<rosparam command="load" file="$(find myhal_simulator)/params/common_vehicle_params.yaml" />
-
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find jackal_velodyne)/worlds/$(arg sim_world).world"/>
-    <arg name="gui" value="$(arg gui)"/>
-    <arg name="paused" value="false"/>
-  </include>
+  <!-- start gazebo client -->
+  <group if="$(arg gui)">
+    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" args=""
+    required="false"/>
+  </group>
 
 
 </launch>

@@ -14,6 +14,8 @@
 
 namespace utilities{
 
+    std::vector<std::string> split(std::string in, char delim);
+
     std::vector<ignition::math::Line3d> get_edges(gazebo::physics::EntityPtr entity);
 
     std::vector<ignition::math::Line3d> get_box_edges(ignition::math::Box box);

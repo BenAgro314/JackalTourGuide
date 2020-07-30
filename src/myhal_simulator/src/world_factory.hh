@@ -11,11 +11,10 @@
 class CamInfo{
     
     public:
-        bool relative;
-        double x,y,z;
-        double period;
+        int mode;
+        double x,y,z,period,dist;
 
-        CamInfo(bool rel, double x, double y, double z, double T): relative(rel), x(x), y(y), z(z), period(T) {}
+        CamInfo(int mode, double x, double y, double z, double T, double dist): mode(mode), x(x), y(y), z(z), period(T), dist(dist){}
 
 };
 

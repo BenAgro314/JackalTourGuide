@@ -296,3 +296,15 @@ ignition::math::Pose3d utilities::InterpolatePose(double target_time, double t1,
 
 	return res;
 }
+
+std::vector<std::string> utilities::split(std::string in, char delim){
+    std::vector<std::string> res;
+    int last = 0;
+    for (int i = 0; i < in.size(); ++i){
+        if (in[i] ==  delim){
+            res.push_back(in.substr(last, i-last));
+            last = i + 1;
+        }
+    }
+    return res;
+}

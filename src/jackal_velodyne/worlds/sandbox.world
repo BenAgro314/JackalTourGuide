@@ -98,10 +98,10 @@
     </gui>
 
 
-    <plugin name = "puppeteer" filename = "libpuppeteer.so">
+    <!--plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
       <robot_name>jackal</robot_name>
-    </plugin>
+    </plugin-->
 
  
     <include>
@@ -132,7 +132,7 @@
 			</link>
 		</model>
 
-		<actor name="actor_basic_wanderer_39">
+		<!--actor name="actor_basic_wanderer_39">
 			<pose>0 0 1.000000 0.000000 -0.000000 1.877947</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
@@ -157,7 +157,7 @@
 			</plugin>
 			<plugin name="vehicle_type" filename="wanderer">
 			</plugin>
-		</actor>
+		</actor-->
 
    
  

@@ -67,6 +67,9 @@ target_link_libraries(parse_tour costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES}
 add_library(puppeteer src/puppeteer.cpp)
 target_link_libraries(puppeteer parse_tour utilities quadtree vehicles costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_library(director SHARED src/director.cpp)
+target_link_libraries(director utilities vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 add_executable(world_factory src/world_factory.cpp) 
 target_link_libraries(world_factory world_entities parse_tour costmap ${catkin_LIBRARIES})
 

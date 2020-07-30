@@ -8,6 +8,8 @@ killall rviz
 sleep 2
 killall -s SIGKILL roslaunch
 killall -s SIGKILL master.sh
+killall -s SIGKILL navigation_goals_V2
+killall -s SIGKILL amcl
 
 #ps | grep roslaunch
 #if [ $? -eq 0 ]; then
