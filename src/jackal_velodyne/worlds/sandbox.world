@@ -112,21 +112,18 @@
 
 
 		<model name="box">
-			<pose>0 0 0.5 0.000000 -0.000000 0.000000</pose>
+			<pose>0 0 0 0 0 0</pose>
 			<static>true</static>
 			<link name="box_34_link">
-				<collision name="box_34_collision">
-					<geometry>
-						<box>
-							<size>1 1 1</size>
-						</box>
-					</geometry>
-				</collision>
 				<visual name="visual">
 					<geometry>
-						<box>
-							<size>1 1 1</size>
-						</box>
+						<polyline>
+							<point>0 0</point>
+							<point>1 0</point>
+							<!--point>2 2</point>
+							<point>3 3</point-->
+                            <height>1</height>
+                        </polyline>
 					</geometry>
 				</visual>
 			</link>

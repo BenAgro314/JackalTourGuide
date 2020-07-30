@@ -54,7 +54,7 @@ class Assessor(object):
                                                                   pos["y"])
             print "{:.1f} s speed average: {:.2f} m/s\n".format(0.1 * self.num_samples,
                                                                 self.avg_speed)
-        if self.num_samples > self.max_samples:
+        if self.num_samples >= self.max_samples:
             if self.avg_speed < 0.05:
                 print "Robot stuck, aborting run"
                 self.log_file.write("Tour failed: robot got stuck\n")
