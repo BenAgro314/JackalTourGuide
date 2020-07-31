@@ -82,36 +82,27 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ros::NodeHandle nh;
 
-        ros::Subscriber global_path_sub;
+        ros::Subscriber global_plan_sub;
 
-        ros::Subscriber local_path_sub;
+        ros::Subscriber local_plan_sub;
 
-        ros::Subscriber goal_sub;
+        ros::Subscriber nav_goal_sub;
 
         std::vector<std::vector<ignition::math::Vector3d>> paths;
 
         std::vector<ignition::math::Vector3d> robot_traj;
 
-        std::queue<std::string> plan_queue;
+        std::queue<nav_msgs::Path::ConstPtr> global_plans;
 
-        std::queue<nav_msgs::Path::ConstPtr> global_paths;
+        int num_global_plans = 0;
 
-        std::queue<nav_msgs::Path::ConstPtr> local_paths;
-
-        std::queue<move_base_msgs::MoveBaseActionGoal::ConstPtr> path_targets;
-
-        std::queue<std::string> local_plan_queue;
-
-        std::queue<std::string> goal_queue;
-
-        std::string g_to_remove = "";
-        std::string l_to_remove = "";
-        std::string t_to_remove = "";
-        int num_plans = 0;
+        std::queue<nav_msgs::Path::ConstPtr> local_plans;
 
         int num_local_plans = 0;
-        
-        int num_goals = 0;
+
+        std::queue<move_base_msgs::MoveBaseActionGoal::ConstPtr> nav_goals;
+
+        int num_nav_goals = 0;
 
         ros::Publisher path_pub;
         
@@ -139,11 +130,11 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         SmartCamPtr CreateCamera(gazebo::physics::ModelPtr model);
 
-        void GlobalPathCallback(const nav_msgs::Path::ConstPtr& path);
+        void GlobalPlanCallback(const nav_msgs::Path::ConstPtr& path);
 
-        void LocalPathCallback(const nav_msgs::Path::ConstPtr& path);
+        void LocalPlanCallback(const nav_msgs::Path::ConstPtr& path);
 
-        void GoalCallback(const move_base_msgs::MoveBaseActionGoal::ConstPtr& goal);
+        void NavGoalCallback(const move_base_msgs::MoveBaseActionGoal::ConstPtr& goal);
 
         void AddPathMarkers(std::string name, const nav_msgs::Path::ConstPtr& plan, ignition::math::Vector4d color);
 

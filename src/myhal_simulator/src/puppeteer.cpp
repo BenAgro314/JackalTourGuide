@@ -111,9 +111,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     std::system(this->launch_command.c_str());
 
     if (this->viz_gaz){
-        this->global_path_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1000, &Puppeteer::GlobalPathCallback, this);
-        this->local_path_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1000, &Puppeteer::LocalPathCallback, this);
-        this->goal_sub = this->nh.subscribe("/move_base/goal", 1000, &Puppeteer::GoalCallback, this);
+        this->global_plan_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1000, &Puppeteer::GlobalPlanCallback, this);
+        this->local_plan_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1000, &Puppeteer::LocalPlanCallback, this);
+        this->nav_goal_sub = this->nh.subscribe("/move_base/goal", 1000, &Puppeteer::NavGoalCallback, this);
         
         ros::AsyncSpinner spinner(4); // Use 4 threads
         spinner.start();
@@ -211,8 +211,45 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
 
         vehicle->OnUpdate(_info, dt, near_vehicles, near_objects);
     }
+
+    if (this->global_plans.size() > 0){
+        std::string name = "global_plan_" + std::to_string(this->num_global_plans);
+        if (this->world->EntityByName(name)){
+            this->world->RemoveModel(name);
+            this->num_global_plans+=1;
+        }
+        name = "global_plan_" + std::to_string(this->num_global_plans);
+        this->AddPathMarkers(name, this->global_plans.front(), ignition::math::Vector4d(0,1,0,1));
+        this->global_plans.pop();
+    }
+
+    if (this->local_plans.size() > 0){
+        std::string name = "local_plan_" + std::to_string(this->num_local_plans);
+        std::cout << "size: " << this->local_plans.size() << std::endl;
+        if (this->world->EntityByName(name)){
+            std::cout << "removing: " << name << std::endl;
+            this->world->RemoveModel(name);
+            this->num_local_plans+=1;
+        }
+        name = "local_plan_" + std::to_string(this->num_local_plans);
+        std::cout << "adding : " << name << std::endl;
+        this->AddPathMarkers(name, this->local_plans.front(), ignition::math::Vector4d(0,0,1,1));
+        this->local_plans.pop();
+    }
+
+    if (this->nav_goals.size() > 0){
+        std::string name = "nav_goal_" + std::to_string(this->num_nav_goals);
+        if (this->world->EntityByName(name)){
+            this->world->RemoveModel(name);
+            this->num_nav_goals+=1;
+        }
+        name = "nav_goal_" + std::to_string(this->num_nav_goals);
+        this->AddGoalMarker(name, this->nav_goals.front(), ignition::math::Vector4d(1,0,0,1));
+        this->nav_goals.pop();
+    }
+    //std::cout << "Model Count: " << this->world->ModelCount() << std::endl;
     
-    if (this->plan_queue.size() > 0){
+    /*if (this->plan_queue.size() > 0){
         this->AddPathMarkers(this->plan_queue.front(), this->global_paths.front(), ignition::math::Vector4d(0,1,0,1)); 
 
         auto temp = this->plan_queue.front();
@@ -244,7 +281,7 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
             this->world->RemoveModel(this->t_to_remove);
         }
         this->t_to_remove = temp;
-    }
+    }*/
 
 }
 
@@ -442,31 +479,17 @@ SmartCamPtr Puppeteer::CreateCamera(gazebo::physics::ModelPtr model){
     return new_cam;
 }
 
-void Puppeteer::GlobalPathCallback(const nav_msgs::Path::ConstPtr& path){
-    this->global_paths.push(path);
-    std::string name = "plan_" + std::to_string(this->num_plans);
-    this->plan_queue.push(name);
-    //this->AddPathMarkers(name, path, ignition::math::Vector4d(0,1,0,1)); 
-
-    this->num_plans++;
+void Puppeteer::GlobalPlanCallback(const nav_msgs::Path::ConstPtr& path){
+    this->global_plans.push(path);
 }
 
-void Puppeteer::LocalPathCallback(const nav_msgs::Path::ConstPtr& path){
-    this->local_paths.push(path);
-    std::string name = "local_plan_" + std::to_string(this->num_local_plans);
-    this->local_plan_queue.push(name);
-    //this->AddPathMarkers(name, path, ignition::math::Vector4d(0,0,1,1)); 
-
-    this->num_local_plans++;
+void Puppeteer::LocalPlanCallback(const nav_msgs::Path::ConstPtr& path){
+    std::cout << "Recieved local plan" << std::endl;
+    this->local_plans.push(path);
 }
         
-void Puppeteer::GoalCallback(const move_base_msgs::MoveBaseActionGoal::ConstPtr& goal){
-    this->path_targets.push(goal);
-    std::string name = "goal_" + std::to_string(this->num_goals);
-    this->goal_queue.push(name);
-    //this->AddGoalMarker(name, goal, ignition::math::Vector4d(1,0,0,1)); 
-
-    this->num_goals++;
+void Puppeteer::NavGoalCallback(const move_base_msgs::MoveBaseActionGoal::ConstPtr& goal){
+    this->nav_goals.push(goal);
 }
 
 void Puppeteer::AddPathMarkers(std::string name, const nav_msgs::Path::ConstPtr& plan, ignition::math::Vector4d color){
@@ -500,7 +523,6 @@ void Puppeteer::AddPathMarkers(std::string name, const nav_msgs::Path::ConstPtr&
         i++;
     }
 
-    std::cout << "added i: " << i << std::endl;
     this->world->InsertModelSDF(*sdf);
 }
 
