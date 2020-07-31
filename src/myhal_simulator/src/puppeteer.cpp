@@ -225,15 +225,12 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
 
     if (this->local_plans.size() > 0){
         std::string name = "local_plan_" + std::to_string(this->num_local_plans);
-        std::cout << "size: " << this->local_plans.size() << std::endl;
         if (this->world->EntityByName(name)){
-            std::cout << "removing: " << name << std::endl;
             this->world->RemoveModel(name);
             this->num_local_plans+=1;
         }
         name = "local_plan_" + std::to_string(this->num_local_plans);
-        std::cout << "adding : " << name << std::endl;
-        this->AddPathMarkers(name, this->local_plans.front(), ignition::math::Vector4d(0,0,1,1));
+        this->AddPathMarkers(name, this->local_plans.front(), ignition::math::Vector5d(0,0,1,1));
         this->local_plans.pop();
     }
 
@@ -484,7 +481,6 @@ void Puppeteer::GlobalPlanCallback(const nav_msgs::Path::ConstPtr& path){
 }
 
 void Puppeteer::LocalPlanCallback(const nav_msgs::Path::ConstPtr& path){
-    std::cout << "Recieved local plan" << std::endl;
     this->local_plans.push(path);
 }
         
