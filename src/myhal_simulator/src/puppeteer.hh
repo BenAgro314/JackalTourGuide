@@ -94,10 +94,19 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         std::queue<std::string> plan_queue;
 
+        std::queue<nav_msgs::Path::ConstPtr> global_paths;
+
+        std::queue<nav_msgs::Path::ConstPtr> local_paths;
+
+        std::queue<move_base_msgs::MoveBaseActionGoal::ConstPtr> path_targets;
+
         std::queue<std::string> local_plan_queue;
 
         std::queue<std::string> goal_queue;
 
+        std::string g_to_remove = "";
+        std::string l_to_remove = "";
+        std::string t_to_remove = "";
         int num_plans = 0;
 
         int num_local_plans = 0;
@@ -113,6 +122,8 @@ class Puppeteer: public gazebo::WorldPlugin{
         bool gmapping_status;
     
         std::string launch_command = "roslaunch jackal_velodyne p2.launch";
+
+        bool viz_gaz = false;
 
     public: 
         

@@ -127,7 +127,7 @@
 						</clip>
 					</camera>
 					<plugin name="camera_controller" filename="libcamera_controller.so">
-						<filepath>/home/default/Myhal_Simulation/simulated_runs/2020-07-30-19-15-43/logs-2020-07-30-19-15-43/videos/CAM_0_-1.000000_-1.000000_-8.000000_3.000000_10.000000/</filepath>
+						<filepath>/home/default/Myhal_Simulation/simulated_runs/2020-07-30-21-56-01/logs-2020-07-30-21-56-01/videos/CAM_0_-1.000000_-1.000000_-8.000000_3.000000_10.000000/</filepath>
 					</plugin>
 					<always_on>1</always_on>
 					<update_rate>24</update_rate>
@@ -151,7 +151,7 @@
 						</clip>
 					</camera>
 					<plugin name="camera_controller" filename="libcamera_controller.so">
-						<filepath>/home/default/Myhal_Simulation/simulated_runs/2020-07-30-19-15-43/logs-2020-07-30-19-15-43/videos/CAM_2_-1.000000_5.000000_0.000000_0.000000_10.000000/</filepath>
+						<filepath>/home/default/Myhal_Simulation/simulated_runs/2020-07-30-21-56-01/logs-2020-07-30-21-56-01/videos/CAM_2_-1.000000_5.000000_0.000000_0.000000_10.000000/</filepath>
 					</plugin>
 					<always_on>1</always_on>
 					<update_rate>24</update_rate>
@@ -222,12 +222,12 @@
 		</include>
 		<include>
 			<name>door_2</name>
-			<pose>-10.775058 12.475000 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-10.775058 12.475000 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_3</name>
-			<pose>-7.761390 8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-7.761390 8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -237,7 +237,7 @@
 		</include>
 		<include>
 			<name>door_5</name>
-			<pose>12.624992 14.208450 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>12.624992 14.208450 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -252,12 +252,12 @@
 		</include>
 		<include>
 			<name>door_8</name>
-			<pose>15.475004 16.925590 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>15.475004 16.925590 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_9</name>
-			<pose>-14.625002 6.214056 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>-14.625002 6.214056 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -267,12 +267,12 @@
 		</include>
 		<include>
 			<name>door_11</name>
-			<pose>-14.625007 -2.443840 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-14.625007 -2.443840 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_12</name>
-			<pose>-14.625002 -5.329808 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-14.625002 -5.329808 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -282,12 +282,12 @@
 		</include>
 		<include>
 			<name>door_14</name>
-			<pose>-14.061730 -14.474920 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-14.061730 -14.474920 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_15</name>
-			<pose>-10.281770 -14.475003 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-10.281770 -14.475003 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -297,7 +297,7 @@
 		</include>
 		<include>
 			<name>door_17</name>
-			<pose>-12.167990 -5.775000 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>-12.167990 -5.775000 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -307,12 +307,12 @@
 		</include>
 		<include>
 			<name>door_19</name>
-			<pose>-12.624997 -10.048217 1.000000 0.000000 -0.000000 -3.141185</pose>
+			<pose>-12.624997 -10.048217 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_20</name>
-			<pose>13.031310 5.774995 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>13.031310 5.774995 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -322,7 +322,7 @@
 		</include>
 		<include>
 			<name>door_22</name>
-			<pose>9.193120 -5.774995 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>9.193120 -5.774995 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -337,7 +337,7 @@
 		</include>
 		<include>
 			<name>door_25</name>
-			<pose>4.583714 -8.625000 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>4.583714 -8.625000 1.000000 0.000000 -0.000000 0.000000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
@@ -352,12 +352,12 @@
 		</include>
 		<include>
 			<name>door_28</name>
-			<pose>13.352706 -14.475002 1.000000 0.000000 -0.000000 0.000000</pose>
+			<pose>13.352706 -14.475002 1.000000 0.000000 -0.000000 1.571000</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 		<include>
 			<name>door_29</name>
-			<pose>12.624998 -7.129598 1.000000 0.000000 -0.000000 1.571000</pose>
+			<pose>12.624998 -7.129598 1.000000 0.000000 -0.000000 -3.141185</pose>
 			<uri>model://simple_door2</uri>
 		</include>
 

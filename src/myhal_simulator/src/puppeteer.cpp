@@ -110,12 +110,14 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     std::cout << "COMMAND: " << this->launch_command << std::endl;
     std::system(this->launch_command.c_str());
 
-    this->global_path_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1000, &Puppeteer::GlobalPathCallback, this);
-    this->local_path_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1000, &Puppeteer::LocalPathCallback, this);
-    this->goal_sub = this->nh.subscribe("/move_base/goal", 1000, &Puppeteer::GoalCallback, this);
-    
-    ros::AsyncSpinner spinner(4); // Use 4 threads
-    spinner.start();
+    if (this->viz_gaz){
+        this->global_path_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1000, &Puppeteer::GlobalPathCallback, this);
+        this->local_path_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1000, &Puppeteer::LocalPathCallback, this);
+        this->goal_sub = this->nh.subscribe("/move_base/goal", 1000, &Puppeteer::GoalCallback, this);
+        
+        ros::AsyncSpinner spinner(4); // Use 4 threads
+        spinner.start();
+    }
 }
 
 void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
@@ -166,29 +168,6 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         }
     }
 
-    if (this->plan_queue.size() >= 2){
-        auto to_remove = this->plan_queue.front();
-        if (this->world->EntityByName(to_remove)){
-            this->plan_queue.pop();
-            this->world->RemoveModel(to_remove);
-        }
-    }
-
-    if (this->local_plan_queue.size() >= 2){
-        auto to_remove = this->local_plan_queue.front();
-        if (this->world->EntityByName(to_remove)){
-            this->local_plan_queue.pop();
-            this->world->RemoveModel(to_remove);
-        }
-    }
-
-    if (this->goal_queue.size() >= 2){
-        auto to_remove = this->goal_queue.front();
-        if (this->world->EntityByName(to_remove)){
-            this->goal_queue.pop();
-            this->world->RemoveModel(to_remove);
-        }
-    }
 
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
 
@@ -233,6 +212,40 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         vehicle->OnUpdate(_info, dt, near_vehicles, near_objects);
     }
     
+    if (this->plan_queue.size() > 0){
+        this->AddPathMarkers(this->plan_queue.front(), this->global_paths.front(), ignition::math::Vector4d(0,1,0,1)); 
+
+        auto temp = this->plan_queue.front();
+        this->plan_queue.pop();
+        this->global_paths.pop();
+        if (this->world->EntityByName(this->g_to_remove)){
+            this->world->RemoveModel(this->g_to_remove);
+        }
+        this->g_to_remove = temp;
+    }
+
+    if (this->local_plan_queue.size() > 0){
+        this->AddPathMarkers(this->local_plan_queue.front(), this->local_paths.front(), ignition::math::Vector4d(0,0,1,1)); 
+        auto temp = this->local_plan_queue.front();
+        this->local_plan_queue.pop();
+        this->local_paths.pop();
+        if (this->world->EntityByName(this->l_to_remove)){
+            this->world->RemoveModel(this->l_to_remove);
+        }
+        this->l_to_remove = temp;
+    }
+
+    if (this->goal_queue.size() > 0){
+        this->AddGoalMarker(this->goal_queue.front(), this->path_targets.front(), ignition::math::Vector4d(1,0,0,1)); 
+        auto temp = this->goal_queue.front();
+        this->goal_queue.pop();
+        this->path_targets.pop();
+        if (this->world->EntityByName(this->t_to_remove)){
+            this->world->RemoveModel(this->t_to_remove);
+        }
+        this->t_to_remove = temp;
+    }
+
 }
 
 void Puppeteer::ReadSDF(){
@@ -380,6 +393,10 @@ void Puppeteer::ReadParams(){
         this->gmapping_status = false;
     }
 
+    if (!nh.getParam("viz_gaz", this->viz_gaz)){
+        std::cout << "ERROR READING viz_gaz\n";
+        this->viz_gaz = false;
+    }
     //roslaunch jackal_velodyne p2.launch filter:=$FILTER mapping:=$MAPPING gt_classify:=$GTCLASS 
     if (this->filter_status){
         this->launch_command += " filter:=true ";
@@ -426,25 +443,28 @@ SmartCamPtr Puppeteer::CreateCamera(gazebo::physics::ModelPtr model){
 }
 
 void Puppeteer::GlobalPathCallback(const nav_msgs::Path::ConstPtr& path){
+    this->global_paths.push(path);
     std::string name = "plan_" + std::to_string(this->num_plans);
     this->plan_queue.push(name);
-    this->AddPathMarkers(name, path, ignition::math::Vector4d(0,1,0,1)); 
+    //this->AddPathMarkers(name, path, ignition::math::Vector4d(0,1,0,1)); 
 
     this->num_plans++;
 }
 
 void Puppeteer::LocalPathCallback(const nav_msgs::Path::ConstPtr& path){
+    this->local_paths.push(path);
     std::string name = "local_plan_" + std::to_string(this->num_local_plans);
     this->local_plan_queue.push(name);
-    this->AddPathMarkers(name, path, ignition::math::Vector4d(0,0,1,1)); 
+    //this->AddPathMarkers(name, path, ignition::math::Vector4d(0,0,1,1)); 
 
     this->num_local_plans++;
 }
         
 void Puppeteer::GoalCallback(const move_base_msgs::MoveBaseActionGoal::ConstPtr& goal){
+    this->path_targets.push(goal);
     std::string name = "goal_" + std::to_string(this->num_goals);
     this->goal_queue.push(name);
-    this->AddGoalMarker(name, goal, ignition::math::Vector4d(1,0,0,1)); 
+    //this->AddGoalMarker(name, goal, ignition::math::Vector4d(1,0,0,1)); 
 
     this->num_goals++;
 }
@@ -480,7 +500,7 @@ void Puppeteer::AddPathMarkers(std::string name, const nav_msgs::Path::ConstPtr&
         i++;
     }
 
-
+    std::cout << "added i: " << i << std::endl;
     this->world->InsertModelSDF(*sdf);
 }
 

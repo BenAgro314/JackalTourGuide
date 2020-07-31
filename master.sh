@@ -14,8 +14,9 @@ LOADWORLD="" # -l (arg) flag
 FILTER=false # -f flag
 MAPPING=false # -m flag
 GTCLASS=false # -g flag 
+VIZ_GAZ=false
 
-while getopts t:vl:fmg option
+while getopts t:vl:fmg:e option
 do
 case "${option}"
 in
@@ -25,6 +26,7 @@ l) LOADWORLD=${OPTARG};; # do you want to load a prexisting world or generate a 
 f) FILTER=true;; # pointcloud filtering?
 m) MAPPING=true;; # use gmapping?
 g) GTCLASS=true;; # are we using ground truth classifications, or online_classifications
+e) VIZ_GAZ=true;; # are we going to vizualize topics in gazebo
 esac
 done
 
@@ -76,6 +78,7 @@ rosparam set start_time $t
 rosparam set filter_status $FILTER
 rosparam set gmapping_status $MAPPING
 rosparam set min_step $MINSTEP
+rosparam set viz_gaz $VIZ_GAZ
   
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
 mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
