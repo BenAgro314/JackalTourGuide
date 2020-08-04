@@ -111,9 +111,9 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     std::system(this->launch_command.c_str());
 
     if (this->viz_gaz){
-        this->global_plan_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1000, &Puppeteer::GlobalPlanCallback, this);
-        this->local_plan_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1000, &Puppeteer::LocalPlanCallback, this);
-        this->nav_goal_sub = this->nh.subscribe("/move_base/goal", 1000, &Puppeteer::NavGoalCallback, this);
+        this->global_plan_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1, &Puppeteer::GlobalPlanCallback, this);
+        this->local_plan_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1, &Puppeteer::LocalPlanCallback, this);
+        this->nav_goal_sub = this->nh.subscribe("/move_base/goal", 1, &Puppeteer::NavGoalCallback, this);
         
         //ros::AsyncSpinner spinner(4); // Use 4 threads
         //spinner.start();
