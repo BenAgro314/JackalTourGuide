@@ -110,6 +110,8 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         int new_nav_ind = 0;
 
+        bool updating = false;
+
         ros::Publisher path_pub;
         
         bool filter_status;

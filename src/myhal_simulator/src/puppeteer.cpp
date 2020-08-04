@@ -115,8 +115,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         this->local_plan_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1000, &Puppeteer::LocalPlanCallback, this);
         this->nav_goal_sub = this->nh.subscribe("/move_base/goal", 1000, &Puppeteer::NavGoalCallback, this);
         
-        ros::AsyncSpinner spinner(4); // Use 4 threads
-        spinner.start();
+        //ros::AsyncSpinner spinner(4); // Use 4 threads
+        //spinner.start();
     }
 }
 
@@ -212,15 +212,16 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         vehicle->OnUpdate(_info, dt, near_vehicles, near_objects);
     }
 
+
     if (this->old_global_ind != this->new_global_ind){
         std::string to_remove = "global_plan_" + std::to_string(this->old_global_ind);
         if (this->world->EntityByName(to_remove)){
             this->world->RemoveModel(to_remove);
-            //std::cout << "removing " << to_remove << std::endl;
+            std::cout << "removing " << to_remove << std::endl;
         }
         std::string to_add = "global_plan_" + std::to_string(this->new_global_ind);
         this->AddPathMarkers(to_add, this->global_plan, ignition::math::Vector4d(0,1,0,1));
-        //std::cout << "adding " << to_add << std::endl;
+        std::cout << "adding " << to_add << std::endl;
         this->old_global_ind = this->new_global_ind;
     }
 
@@ -228,11 +229,11 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         std::string to_remove = "local_plan_" + std::to_string(this->old_local_ind);
         if (this->world->EntityByName(to_remove)){
             this->world->RemoveModel(to_remove);
-            //std::cout << "removing " << to_remove << std::endl;
+            std::cout << "removing " << to_remove << std::endl;
         }
         std::string to_add = "local_plan_" + std::to_string(this->new_local_ind);
         this->AddPathMarkers(to_add, this->local_plan, ignition::math::Vector4d(0,0,1,1));
-        //std::cout << "adding " << to_add << std::endl;
+        std::cout << "adding " << to_add << std::endl;
         this->old_local_ind = this->new_local_ind;
     }
 
@@ -247,6 +248,10 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
             goal->SetWorldPose(ignition::math::Pose3d(pos, ignition::math::Quaterniond(0,0,0,1)));
         }
         this->old_nav_ind = this->new_nav_ind;
+    }
+
+    if (this->viz_gaz){
+        ros::spinOnce();
     }
 
     std::cout << "Model Count: " << this->world->ModelCount() << std::endl;
