@@ -223,6 +223,7 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         this->AddPathMarkers(to_add, this->global_plan, ignition::math::Vector4d(0,1,0,1));
         std::cout << "Adding global plan: " << to_add << std::endl;
         this->old_global_ind = this->new_global_ind;
+        std::cout << "Model Count: " << this->world->ModelCount() << std::endl;
     }
 
     if (this->old_local_ind != this->new_local_ind){
@@ -235,6 +236,7 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         this->AddPathMarkers(to_add, this->local_plan, ignition::math::Vector4d(0,0,1,1));
         std::cout << "Adding local plan: " << to_add << std::endl;
         this->old_local_ind = this->new_local_ind;
+        std::cout << "Model Count: " << this->world->ModelCount() << std::endl;
     }
 
     if (this->old_nav_ind != this->new_nav_ind){
@@ -254,7 +256,6 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         ros::spinOnce();
     }
 
-    //std::cout << "Model Count: " << this->world->ModelCount() << std::endl;
     
 }
 

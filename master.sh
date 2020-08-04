@@ -16,13 +16,13 @@ MAPPING=false # -m flag
 GTCLASS=false # -g flag 
 VIZ_GAZ=false
 
-while getopts t:vl:fmg:e option
+while getopts t:l:vfmge option
 do
 case "${option}"
 in
 t) TOUR=${OPTARG};; # What tour is being used 
-v) GUI=true;; # using gui?
 l) LOADWORLD=${OPTARG};; # do you want to load a prexisting world or generate a new one
+v) GUI=true;; # using gui?
 f) FILTER=true;; # pointcloud filtering?
 m) MAPPING=true;; # use gmapping?
 g) GTCLASS=true;; # are we using ground truth classifications, or online_classifications

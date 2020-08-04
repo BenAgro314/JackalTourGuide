@@ -27,7 +27,7 @@ class Assessor(object):
             print "Could not find/open log file"
             exit()
         self.avg_speed = 0
-        timeout = 30
+        timeout = 15
         self.max_samples = int(timeout/0.1)
         self.num_samples = 0
         self.last_msg = np.array((0, 0, 0, 0), dtype=[("x", np.float), ("y", np.float),
@@ -54,9 +54,9 @@ class Assessor(object):
                                                                   pos["y"])
             print "{:.1f} s speed average: {:.2f} m/s\n".format(0.1 * self.num_samples,
                                                                 self.avg_speed)
-        if self.avg_speed < 0.05 and self.avg_speed > 0.03:
+        if self.avg_speed < 0.10 and self.avg_speed > 0.4:
             print "Warning, Robot may be stuck"
-        if self.num_samples >= self.max_samples and self.avg_speed < 0.03:
+        if self.num_samples >= self.max_samples and self.avg_speed < 0.04:
             print "Robot stuck, aborting run"
             self.log_file.write("Tour failed: robot got stuck\n")
             self.log_file.close()
