@@ -62,7 +62,7 @@ class Assessor(object):
                 shutdown = Bool()
                 shutdown.data = True
                 self.shutdown_pub.publish(shutdown.data)
-            elif self.avg_speed < 0.01:
+            elif self.avg_speed < 0.02:
                 print "Warning, Robot may be stuck"
 
     def running_average(self, new_sample):

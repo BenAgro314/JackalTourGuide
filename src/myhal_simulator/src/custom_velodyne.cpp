@@ -562,6 +562,9 @@ namespace gazebo
             } 
             
             if (model->GetName() != "ground_plane" && model->GetName() != this->robot_name){
+                if (model->GetName().substr(0,11) == "global_plan" || model->GetName().substr(0,10) == "local_plan"){
+                    continue;
+                }
                
                 auto links = model->GetLinks();
                 for (gazebo::physics::LinkPtr link: links){
