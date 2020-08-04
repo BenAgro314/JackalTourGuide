@@ -92,17 +92,23 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         std::vector<ignition::math::Vector3d> robot_traj;
 
-        std::queue<nav_msgs::Path::ConstPtr> global_plans;
+        nav_msgs::Path::ConstPtr global_plan;
 
-        int num_global_plans = 0;
+        int old_global_ind = 0;
 
-        std::queue<nav_msgs::Path::ConstPtr> local_plans;
+        int new_global_ind = 0;
 
-        int num_local_plans = 0;
+        nav_msgs::Path::ConstPtr local_plan;
 
-        std::queue<move_base_msgs::MoveBaseActionGoal::ConstPtr> nav_goals;
+        int old_local_ind = 0;
 
-        int num_nav_goals = 0;
+        int new_local_ind = 0;
+
+        move_base_msgs::MoveBaseActionGoal::ConstPtr nav_goal = nullptr;
+
+        int old_nav_ind = 0;
+
+        int new_nav_ind = 0;
 
         ros::Publisher path_pub;
         
