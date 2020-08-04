@@ -71,7 +71,7 @@ add_library(director SHARED src/director.cpp)
 target_link_libraries(director utilities vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_executable(world_factory src/world_factory.cpp) 
-target_link_libraries(world_factory world_entities parse_tour costmap ${catkin_LIBRARIES})
+target_link_libraries(world_factory world_entities utilities parse_tour costmap ${catkin_LIBRARIES})
 
 add_executable(test_file src/tests.cpp) 
 target_link_libraries(test_file world_entities quadtree vehicles costmap ${catkin_LIBRARIES})

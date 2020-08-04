@@ -110,6 +110,8 @@ void WorldHandler::LoadParams(){
         this->cam_info.push_back(cam);
     }
 
+    
+
     // READ BUILDING INFO
 
     this->user_name = "default";
@@ -128,12 +130,30 @@ void WorldHandler::LoadParams(){
         return;
     }
 
+    double cam_frac;
+
+    if (!nh.getParam("cam_frac", cam_frac)){
+        std::cout << "ERROR READING CAM FRAC\n";
+        cam_frac = 0;
+    }
+
+    std::vector<int> cam_rel_pos; 
+
+    if (!nh.getParam("cam_rel_pos", cam_rel_pos)){
+        std::cout << "ERROR READING CAM REL POS\n";
+        cam_rel_pos = {0,0,0};
+    }
+
     TourParser parser = TourParser(this->tour_name);
 
 
     this->route = parser.GetRoute();
     this->route.insert(this->route.begin(), ignition::math::Pose3d(ignition::math::Vector3d(0,0,0), ignition::math::Quaterniond(0,0,0,1)));
     
+    int num_cams = std::ceil(this->route.size() * cam_frac);
+    int mod_cams = this->route.size()/num_cams;
+
+        
     this->costmap = std::make_shared<Costmap>(ignition::math::Box(ignition::math::Vector3d(-21.55,-21.4,0), ignition::math::Vector3d(21.55,21.4,0)), 0.2);
 
     happly::PLYData plyIn("/home/" + this->user_name + "/catkin_ws/src/myhal_simulator/params/myhal_walls.ply");
@@ -154,7 +174,16 @@ void WorldHandler::LoadParams(){
 
     std::vector<ignition::math::Vector3d> paths;
 
-    for (int i =0; i< route.size()-1; i++){
+    for (int i =0; i< route.size(); i++){
+        if (i % mod_cams == 0){
+            std::cout << utilities::color_text("Read Tour Camera", PURPLE) << std::endl; 
+            auto cam = std::make_shared<CamInfo>(0, route[i].Pos().X() + cam_rel_pos[0], route[i].Pos().Y() + cam_rel_pos[1], route[i].Pos().Z() + cam_rel_pos[2], -1, -1);
+            this->cam_info.push_back(cam);
+        }
+
+        if (i == (route.size()-1)){
+            continue;
+        }
         auto start = route[i];
         auto end = route[i+1];
 

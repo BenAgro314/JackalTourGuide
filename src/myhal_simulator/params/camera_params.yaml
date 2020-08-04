@@ -1,6 +1,6 @@
 camera_names:
-    - sentry1
     - stalker1
+    #- sentry1
       #- sentry2
       #- stalker2
 
@@ -36,3 +36,8 @@ stalker2:
     - -1 
     - 2
 
+cam_frac: 0.5
+cam_rel_pos:
+    - -1
+    - -1
+    - 10

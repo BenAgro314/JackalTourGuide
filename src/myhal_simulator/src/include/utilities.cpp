@@ -1,5 +1,10 @@
 #include "utilities.hh"
 
+std::string utilities::color_text(std::string text, std::vector<int> rgb){
+    auto reset = "\033[0m";
+    auto leading = "\033[38;2;" + std::to_string(rgb[0]) + ";" + std::to_string(rgb[1]) + ";" + std::to_string(rgb[2]) + "m";
+    return leading + text + reset;
+}
 
 std::vector<ignition::math::Line3d> utilities::get_box_edges(ignition::math::Box box){
 	ignition::math::Vector3d min_corner = box.Min();

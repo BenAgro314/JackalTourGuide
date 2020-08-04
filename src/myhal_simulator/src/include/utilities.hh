@@ -11,8 +11,17 @@
 #include <ignition/math/Matrix4.hh>   
 #include <vector>
 #include <string>
+#define RED {255, 0, 0}
+#define BLUE {0, 0, 255}
+#define GREEN {0, 255, 0}
+#define YELLOW {255, 255, 0}
+#define PURPLE {255, 0, 255}
+#define TEAL {0, 255, 255}
+
 
 namespace utilities{
+
+    std::string color_text(std::string text, std::vector<int> rgb);
 
     std::vector<std::string> split(std::string in, char delim);
 
@@ -63,6 +72,8 @@ namespace utilities{
             std::vector<ignition::math::Vector3d> points;
 
     };
+
+
 }
 
 #endif

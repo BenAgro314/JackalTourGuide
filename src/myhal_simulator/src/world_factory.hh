@@ -7,11 +7,12 @@
 #include <ros/ros.h>
 #include "frame.hh"
 #include "costmap.hh"
+#include "utilities.hh"
 
 class CamInfo{
     
     public:
-        int mode;
+        int mode; // (0 - sentry), (1 - hoverer), (2 - stalker) 
         double x,y,z,period,dist;
 
         CamInfo(int mode, double x, double y, double z, double T, double dist): mode(mode), x(x), y(y), z(z), period(T), dist(dist){}
