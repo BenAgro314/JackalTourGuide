@@ -234,7 +234,7 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         }
         std::string to_add = "local_plan_" + std::to_string(this->new_local_ind);
         this->AddPathMarkers(to_add, this->local_plan, ignition::math::Vector4d(0,0,1,1));
-        std::cout << utilities::color_text("Adding local plan: " + to_remove, GREEN) << std::endl;
+        std::cout << utilities::color_text("Adding local plan: " + to_add, GREEN) << std::endl;
         this->old_local_ind = this->new_local_ind;
         std::cout << utilities::color_text("Model Count: " + std::to_string(this->world->ModelCount()), BLUE) << std::endl;
     }
