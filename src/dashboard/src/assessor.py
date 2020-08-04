@@ -54,16 +54,15 @@ class Assessor(object):
                                                                   pos["y"])
             print "{:.1f} s speed average: {:.2f} m/s\n".format(0.1 * self.num_samples,
                                                                 self.avg_speed)
-        if self.num_samples >= self.max_samples:
-            if self.avg_speed < 0.05:
-                print "Robot stuck, aborting run"
-                self.log_file.write("Tour failed: robot got stuck\n")
-                self.log_file.close()
-                shutdown = Bool()
-                shutdown.data = True
-                self.shutdown_pub.publish(shutdown.data)
-            elif self.avg_speed < 0.02:
-                print "Warning, Robot may be stuck"
+        if self.avg_speed < 0.05 and self.avg_speed > 0.03:
+            print "Warning, Robot may be stuck"
+        if self.num_samples >= self.max_samples and self.avg_speed < 0.03:
+            print "Robot stuck, aborting run"
+            self.log_file.write("Tour failed: robot got stuck\n")
+            self.log_file.close()
+            shutdown = Bool()
+            shutdown.data = True
+            self.shutdown_pub.publish(shutdown.data)
 
     def running_average(self, new_sample):
         ''' compute running average speed across max_samples '''
