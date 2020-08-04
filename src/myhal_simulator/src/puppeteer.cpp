@@ -453,11 +453,13 @@ SmartCamPtr Puppeteer::CreateCamera(gazebo::physics::ModelPtr model){
 }
 
 void Puppeteer::GlobalPlanCallback(const nav_msgs::Path::ConstPtr& path){
+    std::cout << "Global Plan" << std::endl;
     this->global_plan = path;
     this->new_global_ind++;
 }
 
 void Puppeteer::LocalPlanCallback(const nav_msgs::Path::ConstPtr& path){
+    std::cout << "Local Plan" << std::endl;
     this->local_plan = path;
     this->new_local_ind++;
 }
