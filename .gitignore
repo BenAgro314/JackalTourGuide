@@ -10,3 +10,5 @@ topics.txt
 *.swp
 *.pyc
 /.ipynb_checkpoints
+**/params/local*
+

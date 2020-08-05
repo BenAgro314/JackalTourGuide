@@ -15,11 +15,13 @@ FILTER=false # -f flag
 MAPPING=false # -m flag
 GTCLASS=false # -g flag 
 VIZ_GAZ=false
+PARAMS="default_params"
 
-while getopts t:l:vfmge option
+while getopts p:t:l:vfmge option
 do
 case "${option}"
 in
+p) PARAMS=${OPTARG};; # what param file are we using?
 t) TOUR=${OPTARG};; # What tour is being used 
 l) LOADWORLD=${OPTARG};; # do you want to load a prexisting world or generate a new one
 v) GUI=true;; # using gui?
@@ -61,13 +63,13 @@ roscore -p $ROSPORT&
 
 until rostopic list; do sleep 0.5; done #wait until rosmaster has started 
 
-rosparam load src/myhal_simulator/params/common_vehicle_params.yaml
-rosparam load src/myhal_simulator/params/animation_params.yaml
-rosparam load src/myhal_simulator/params/room_params_V2.yaml
-rosparam load src/myhal_simulator/params/scenario_params_V2.yaml
-rosparam load src/myhal_simulator/params/plugin_params.yaml
-rosparam load src/myhal_simulator/params/model_params.yaml
-rosparam load src/myhal_simulator/params/camera_params.yaml
+rosparam load src/myhal_simulator/params/$PARAMS/common_vehicle_params.yaml
+rosparam load src/myhal_simulator/params/$PARAMS/animation_params.yaml
+rosparam load src/myhal_simulator/params/$PARAMS/room_params_V2.yaml
+rosparam load src/myhal_simulator/params/$PARAMS/scenario_params_V2.yaml
+rosparam load src/myhal_simulator/params/$PARAMS/plugin_params.yaml
+rosparam load src/myhal_simulator/params/$PARAMS/model_params.yaml
+rosparam load src/myhal_simulator/params/$PARAMS/camera_params.yaml
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
 rosparam set gt_class $GTCLASS
 rosparam set localization_test false
@@ -91,11 +93,11 @@ echo -e "Command used: $myInvocation" >> $LOGFILE
 echo -e "\nPointcloud filter params: \n" >> $LOGFILE
 echo -e "TOUR: $TOUR\nGUI: $GUI\nLOADWORLD: $LOADWORLD\nFILTER: $FILTER\nMAPPING: $MAPPING\nGTCLASS: $GTCLASS"  >> $LOGFILE
 echo -e "$(cat /home/$USER/catkin_ws/src/jackal_velodyne/launch/include/pointcloud_filter2.launch)" >> $PCLFILE
-echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/room_params_V2.yaml)" > $PARAMFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/$PARAMS/room_params_V2.yaml)" > $PARAMFILE
 echo -e "\n" >> $PARAMFILE
-echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/scenario_params_V2.yaml)" >> $PARAMFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/$PARAMS/scenario_params_V2.yaml)" >> $PARAMFILE
 echo -e "\n" >> $PARAMFILE
-echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/plugin_params.yaml)" >> $PARAMFILE
+echo -e "$(cat /home/$USER/catkin_ws/src/myhal_simulator/params/$PARAMS/plugin_params.yaml)" >> $PARAMFILE
 echo -e "\n" >> $PARAMFILE
 echo -e "tour_name: $TOUR" >> $PARAMFILE
 
