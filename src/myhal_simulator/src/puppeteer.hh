@@ -1,6 +1,7 @@
 #ifndef PUPPETEER_HH
 #define PUPPETEER_HH
 
+#include <cmath>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Vector4.hh>
@@ -25,6 +26,9 @@
 #include <nav_msgs/Path.h>
 #include <move_base_msgs/MoveBaseActionGoal.h>
 #include "sensor_msgs/PointCloud2.h"
+#include "tf2_msgs/TFMessage.h"
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <geometry_msgs/TransformStamped.h>
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 typedef boost::shared_ptr<SmartCam> SmartCamPtr;
@@ -88,6 +92,8 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         ros::Subscriber nav_goal_sub;
 
+        ros::Subscriber tf_sub;
+
         std::vector<std::vector<ignition::math::Vector3d>> paths;
 
         std::vector<ignition::math::Vector3d> robot_traj;
@@ -124,6 +130,14 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         bool viz_gaz = false;
 
+        geometry_msgs::Pose odom_to_base;
+
+        geometry_msgs::TransformStamped map_to_odom;
+        
+        bool added_est = false;
+
+        gazebo::physics::ModelPtr pose_est = nullptr;
+
     public: 
         
         void Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf);
@@ -138,11 +152,15 @@ class Puppeteer: public gazebo::WorldPlugin{
 
         SmartCamPtr CreateCamera(gazebo::physics::ModelPtr model);
 
+        void TFCallback(const tf2_msgs::TFMessage::ConstPtr& msg);
+
         void GlobalPlanCallback(const nav_msgs::Path::ConstPtr& path);
 
         void LocalPlanCallback(const nav_msgs::Path::ConstPtr& path);
 
         void NavGoalCallback(const move_base_msgs::MoveBaseActionGoal::ConstPtr& goal);
+
+        void ManagePoseEstimate(geometry_msgs::Pose est_pose);
 
         void AddPathMarkers(std::string name, const nav_msgs::Path::ConstPtr& plan, ignition::math::Vector4d color);
 

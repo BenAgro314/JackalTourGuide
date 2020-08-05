@@ -11,6 +11,8 @@ from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Bool
 from nav_msgs.msg import Odometry
 from tf2_msgs.msg import TFMessage
+from move_base_msgs.msg import MoveBaseActionResult
+from std_msgs.msg import Int32
 
 class Assessor(object):
     ''' A class which actively assesses the Jackals Preformance during the run and determines
@@ -40,10 +42,16 @@ class Assessor(object):
         self.shutdown_pub = rospy.Publisher("shutdown_signal", Bool, queue_size=1)
         self.odom_to_base = None
         self.map_to_odom = None
+        self.tour_length = None
+        self.curr_t = 1 
         rospy.init_node("assessor")
         rospy.Subscriber("ground_truth/state", Odometry, self.ground_truth_callback)
         rospy.Subscriber("/tf", TFMessage, self.tf_callback)
+        rospy.Subscriber("/move_base/result", MoveBaseActionResult, self.on_result)
+        rospy.Subscriber("/tour_length", Int32, self.tour_length_callback)
+        
         rospy.spin()
+
 
     def ground_truth_callback(self, msg):
         ''' called whenever a ground truth pose message is recieved '''
@@ -63,6 +71,11 @@ class Assessor(object):
             print "Average speed across {:.1f} s: {:.2f} m/s".format(0.1 * self.num_samples,
                                                                 self.avg_speed)
         drift = 0
+        if (self.tour_length is not None):
+            if self.curr_t != -1:
+                print "Seeking target {}/{}".format(self.curr_t, self.tour_length)
+            else:
+                print "Tour failed, Seeking target {}/{}".format(self.curr_t, self.tour_length) 
         if (self.odom_to_base is not None and self.map_to_odom is not None):
 
             otob = PoseStamped()
@@ -105,6 +118,15 @@ class Assessor(object):
             self.num_samples += 1
         self.avg_speed -= self.avg_speed/self.num_samples
         self.avg_speed += new_sample/self.num_samples
+
+    def on_result(self, msg):
+        if msg.status.status != 3:
+            self.curr_t = -1
+        if self.curr_t != -1:
+            self.curr_t +=1
+
+    def tour_length_callback(self, msg):
+        self.tour_length = msg.data
 
 if __name__ == "__main__":
     A = Assessor()

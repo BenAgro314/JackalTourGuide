@@ -4,6 +4,7 @@
 #include "parse_tour.hh"
 #include <geometry_msgs/PoseStamped.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Int32.h>
 
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
@@ -47,6 +48,7 @@ int main(int argc, char ** argv){
     ros::init(argc, argv, "simple_navigation_goals");
 	ros::NodeHandle nh;
 	ros::Publisher pub = nh.advertise<geometry_msgs::PoseStamped>("tour_data", 1000);
+	ros::Publisher tot_pub = nh.advertise<std_msgs::Int32>("tour_length", 1000);
     ros::Publisher shutdown_pub = nh.advertise<std_msgs::Bool>("shutdown_signal", 1000);
 
     std::string tour_name("test1");
@@ -94,6 +96,10 @@ int main(int argc, char ** argv){
 		pub.publish(msg);
     }
 
+    std_msgs::Int32 msg;
+    msg.data = (int) route.size();
+    tot_pub.publish(msg);
+
     //tell the action client that we want to spin a thread by default
     MoveBaseClient ac("move_base", true);
 
@@ -113,8 +119,6 @@ int main(int argc, char ** argv){
         ROS_WARN("Sending Command (%d/%ld):", count, (long) route.size());
         ROS_WARN("Target -> (%f, %f, %f)", pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z());
         
-            
-            
         auto goal = PoseToGoal(pose);
         
         ac.sendGoal(goal);

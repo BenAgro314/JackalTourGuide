@@ -114,7 +114,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         this->global_plan_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1, &Puppeteer::GlobalPlanCallback, this);
         this->local_plan_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1, &Puppeteer::LocalPlanCallback, this);
         this->nav_goal_sub = this->nh.subscribe("/move_base/goal", 1, &Puppeteer::NavGoalCallback, this);
-        
+        this->tf_sub = this->nh.subscribe("/tf", 1000, &Puppeteer::TFCallback, this);
         //ros::AsyncSpinner spinner(4); // Use 4 threads
         //spinner.start();
     }
@@ -251,6 +251,13 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         }
         this->old_nav_ind = this->new_nav_ind;
     }
+
+    if (this->viz_gaz){
+        geometry_msgs::Pose est_pose;
+        tf2::doTransform<geometry_msgs::Pose>(this->odom_to_base, est_pose, this->map_to_odom);
+        this->ManagePoseEstimate(est_pose);
+    }
+    //std::cout << est_pose << std::endl;
 
     if (this->viz_gaz){
         ros::spinOnce();
@@ -452,6 +459,30 @@ SmartCamPtr Puppeteer::CreateCamera(gazebo::physics::ModelPtr model){
     return new_cam;
 }
 
+void Puppeteer::TFCallback(const tf2_msgs::TFMessage::ConstPtr& msg){
+
+    for (auto transform: msg->transforms){
+        if (transform.header.frame_id == "odom" && transform.child_frame_id == "base_link"){
+            //std::cout << "GOT ODOM" << std::endl;
+            auto translation = transform.transform.translation;
+            auto rotation = transform.transform.rotation;
+            this->odom_to_base.position.x = translation.x;
+            this->odom_to_base.position.y = translation.y;
+            this->odom_to_base.position.z = translation.z;
+            this->odom_to_base.orientation.x = rotation.x;
+            this->odom_to_base.orientation.y = rotation.y;
+            this->odom_to_base.orientation.z = rotation.z;
+            this->odom_to_base.orientation.w = rotation.w;
+            //this->odom_to_base = transform; 
+        }
+        else if (transform.header.frame_id == "map" && transform.child_frame_id == "odom"){
+            //std::cout << "GOT MAP" << std::endl;
+            this->map_to_odom = transform; 
+        }
+    }
+
+}
+
 void Puppeteer::GlobalPlanCallback(const nav_msgs::Path::ConstPtr& path){
     if (path->poses.size() > 0){
         std::cout << utilities::color_text("Global plan recieved by simulator", YELLOW) << std::endl;
@@ -546,4 +577,65 @@ void Puppeteer::AddGoalMarker(std::string name, const move_base_msgs::MoveBaseAc
     mat2->GetElement("emissive")->Set(color);
 
     this->world->InsertModelSDF(*sdf);
+}
+
+void Puppeteer::ManagePoseEstimate(geometry_msgs::Pose est_pose){
+    auto pos = est_pose.position;
+    auto ori = est_pose.orientation;
+    if (std::isnan(pos.x)){
+        return;
+    }
+    auto pose = ignition::math::Pose3d(pos.x, pos.y, pos.z, ori.w, ori.x, ori.y, ori.z);
+    if (!this->added_est){
+
+        boost::shared_ptr<sdf::SDF> sdf = boost::make_shared<sdf::SDF>();
+        sdf->SetFromString(
+           "<sdf version ='1.6'>\
+              <model name ='path'>\
+              </model>\
+            </sdf>");
+
+        auto model = sdf->Root()->GetElement("model");
+        model->GetElement("static")->Set(true);
+        model->GetAttribute("name")->SetFromString("pose_estimate");
+        model->GetElement("pose")->Set(pose);
+
+        auto color = ignition::math::Vector4d(0,1,1,1);
+
+        auto link1 = model->AddElement("link");
+        link1->GetAttribute("name")->SetFromString("pose_link");
+        link1->GetElement("pose")->Set(ignition::math::Vector3d(-0.05, 0, 0));
+        auto box1 = link1->GetElement("visual")->GetElement("geometry")->GetElement("box");
+        box1->GetElement("size")->Set(ignition::math::Vector3d(0.42, 0.43, 0.001));
+        auto mat1 = link1->GetElement("visual")->GetElement("material");
+        mat1->GetElement("ambient")->Set(color);
+        mat1->GetElement("diffuse")->Set(color);
+        mat1->GetElement("specular")->Set(color);
+        mat1->GetElement("emissive")->Set(color);
+
+        color = ignition::math::Vector4d(1,0,1,1);
+
+        auto link2 = model->AddElement("link");
+        link2->GetAttribute("name")->SetFromString("front_link");
+        link2->GetElement("pose")->Set(ignition::math::Vector3d(0.21, 0, 0));
+        auto box2 = link2->GetElement("visual")->GetElement("geometry")->GetElement("box");
+        box2->GetElement("size")->Set(ignition::math::Vector3d(0.1, 0.43, 0.001));
+        auto mat2 = link2->GetElement("visual")->GetElement("material");
+        mat2->GetElement("ambient")->Set(color);
+        mat2->GetElement("diffuse")->Set(color);
+        mat2->GetElement("specular")->Set(color);
+        mat2->GetElement("emissive")->Set(color);
+
+        this->world->InsertModelSDF(*sdf);
+        std::cout << utilities::color_text("Added pose estimate", TEAL) << std::endl;
+
+        this->added_est = true;
+    } else {
+        if (!this->pose_est){
+            this->pose_est = this->world->ModelByName("pose_estimate");
+        } else{
+            this->pose_est->SetWorldPose(pose);
+        }
+    }
+
 }

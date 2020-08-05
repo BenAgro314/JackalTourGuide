@@ -50,9 +50,9 @@ void Stalker::OnUpdate(double dt, std::vector<ignition::math::Vector3d> &robot_t
 
     auto target = robot_traj.back();
     if (robot_traj.size() > 1){
-        curr_dist += (target - robot_traj[robot_traj.size()-2]).Length();
+        this->curr_dist += (target - robot_traj[robot_traj.size()-2]).Length();
     } else{
-        curr_dist += target.Length();
+        this->curr_dist += target.Length();
     }
         
     while (this->curr_ind < (robot_traj.size() - 1) && this->curr_dist > dist){
