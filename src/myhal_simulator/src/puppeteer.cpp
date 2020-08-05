@@ -585,7 +585,8 @@ void Puppeteer::ManagePoseEstimate(geometry_msgs::Pose est_pose){
     if (std::isnan(pos.x)){
         return;
     }
-    auto pose = ignition::math::Pose3d(pos.x, pos.y, pos.z, ori.w, ori.x, ori.y, ori.z);
+
+    auto pose = ignition::math::Pose3d(pos.x, pos.y, 0, ori.w, ori.x, ori.y, ori.z);
     if (!this->added_est){
 
         boost::shared_ptr<sdf::SDF> sdf = boost::make_shared<sdf::SDF>();
@@ -604,9 +605,9 @@ void Puppeteer::ManagePoseEstimate(geometry_msgs::Pose est_pose){
 
         auto link1 = model->AddElement("link");
         link1->GetAttribute("name")->SetFromString("pose_link");
-        link1->GetElement("pose")->Set(ignition::math::Vector3d(-0.05, 0, 0));
+        link1->GetElement("pose")->Set(ignition::math::Vector3d(-0.05, 0, 0.001));
         auto box1 = link1->GetElement("visual")->GetElement("geometry")->GetElement("box");
-        box1->GetElement("size")->Set(ignition::math::Vector3d(0.42, 0.43, 0.001));
+        box1->GetElement("size")->Set(ignition::math::Vector3d(0.42, 0.43, 0.002));
         auto mat1 = link1->GetElement("visual")->GetElement("material");
         mat1->GetElement("ambient")->Set(color);
         mat1->GetElement("diffuse")->Set(color);
@@ -617,9 +618,9 @@ void Puppeteer::ManagePoseEstimate(geometry_msgs::Pose est_pose){
 
         auto link2 = model->AddElement("link");
         link2->GetAttribute("name")->SetFromString("front_link");
-        link2->GetElement("pose")->Set(ignition::math::Vector3d(0.21, 0, 0));
+        link2->GetElement("pose")->Set(ignition::math::Vector3d(0.21, 0, 0.001));
         auto box2 = link2->GetElement("visual")->GetElement("geometry")->GetElement("box");
-        box2->GetElement("size")->Set(ignition::math::Vector3d(0.1, 0.43, 0.001));
+        box2->GetElement("size")->Set(ignition::math::Vector3d(0.1, 0.43, 0.002));
         auto mat2 = link2->GetElement("visual")->GetElement("material");
         mat2->GetElement("ambient")->Set(color);
         mat2->GetElement("diffuse")->Set(color);

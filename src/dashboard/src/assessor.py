@@ -92,15 +92,21 @@ class Assessor(object):
             if not self.mapping_status:
                 print "Estimated Pos: ({:.2f}, {:.2f}) m".format(est_pose.pose.position.x, est_pose.pose.position.y)
             print "Drift: {:.2f} m".format(drift)
-        if (self.avg_speed < 0.10 and self.avg_speed > 0.4) or (drift > 0.5 and drift < 2):
-            print "Warning, Robot may be stuck"
-        if (self.num_samples >= self.max_samples and self.avg_speed < 0.04) or drift > 2:
-            print "Robot stuck, aborting run"
-            self.log_file.write("Tour failed: robot got stuck\n")
-            self.log_file.close()
-            shutdown = Bool()
-            shutdown.data = True
-            self.shutdown_pub.publish(shutdown.data)
+
+        lower_lim_speed = 0.03
+        upper_lim_speed = 0.08
+        upper_lim_drift = 2
+        lower_lim_drift = 0.5
+        if (self.num_samples >= self.max_samples):
+            if (self.avg_speed < upper_lim_speed and self.avg_speed > lower_lim_speed) or (drift > lower_lim_drift and drift < upper_lim_drift):
+                print "Warning, Robot may be stuck"
+            if (self.avg_speed < lower_lim_speed) or (drift > upper_lim_drift):
+                print "Robot stuck, aborting run"
+                self.log_file.write("Tour failed: robot got stuck\n")
+                self.log_file.close()
+                shutdown = Bool()
+                shutdown.data = True
+                self.shutdown_pub.publish(shutdown.data)
 
         print "\n"
 
