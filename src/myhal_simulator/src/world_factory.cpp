@@ -150,7 +150,12 @@ void WorldHandler::LoadParams(){
     this->route = parser.GetRoute();
     this->route.insert(this->route.begin(), ignition::math::Pose3d(ignition::math::Vector3d(0,0,0), ignition::math::Quaterniond(0,0,0,1)));
     
-    int mod_cams = (cam_frac == 0) ? (route.size() + 1) : ((int) std::round(1/cam_frac));
+
+    int mod_cams;
+    if (cam_frac > 0){
+        mod_cams = (int) std::round(1/cam_frac);
+    }
+
         
     this->costmap = std::make_shared<Costmap>(ignition::math::Box(ignition::math::Vector3d(-21.55,-21.4,0), ignition::math::Vector3d(21.55,21.4,0)), 0.2);
 
@@ -173,7 +178,7 @@ void WorldHandler::LoadParams(){
     std::vector<ignition::math::Vector3d> paths;
 
     for (int i =0; i< route.size(); i++){
-        if (i % mod_cams == 0){
+        if ((cam_frac > 0) && (i % mod_cams == 0)){
             std::cout << utilities::color_text("Read Tour Camera", PURPLE) << std::endl; 
             auto cam = std::make_shared<CamInfo>(0, route[i].Pos().X() + cam_rel_pos[0], route[i].Pos().Y() + cam_rel_pos[1], route[i].Pos().Z() + cam_rel_pos[2], -1, -1);
             this->cam_info.push_back(cam);
