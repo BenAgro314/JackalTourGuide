@@ -150,9 +150,7 @@ void WorldHandler::LoadParams(){
     this->route = parser.GetRoute();
     this->route.insert(this->route.begin(), ignition::math::Pose3d(ignition::math::Vector3d(0,0,0), ignition::math::Quaterniond(0,0,0,1)));
     
-    int num_cams = std::ceil(this->route.size() * cam_frac);
-    int mod_cams = this->route.size()/num_cams;
-
+    int mod_cams = (int) std::round(1/cam_frac);
         
     this->costmap = std::make_shared<Costmap>(ignition::math::Box(ignition::math::Vector3d(-21.55,-21.4,0), ignition::math::Vector3d(21.55,21.4,0)), 0.2);
 

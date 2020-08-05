@@ -73,10 +73,8 @@ def read_tf_transform(parent_frame, child_frame, bagfile, static = False):
     for topic,msg,t in bagfile.read_messages(topics = [topic_name]):
         for transform in msg.transforms:
             if (transform.header.frame_id == parent_frame and transform.child_frame_id == child_frame):
-                #pose = (transform.transform.translation.x,transform.transform.translation.y,transform.transform.translation.z, transform.transform.rotation.x,transform.transform.rotation.y,transform.transform.rotation.z,transform.transform.rotation.w, transform.header.stamp.to_sec())
                 arr.append(transform)
 
-    #arr = numpy.array(arr, dtype = [('pos_x',numpy.double),('pos_y',numpy.double),('pos_z',numpy.double),('rot_x',numpy.double),('rot_y',numpy.double),('rot_z',numpy.double),('rot_w',numpy.double), ('time',numpy.double)])
     return arr
 
 def read_action_result(topic_name, bagfile):

@@ -4,8 +4,13 @@ it needs to be shut down'''
 import os
 import numpy as np
 import rospy
+import tf2_ros 
+import tf2_geometry_msgs
+import tf.transformations
+from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Bool
 from nav_msgs.msg import Odometry
+from tf2_msgs.msg import TFMessage
 
 class Assessor(object):
     ''' A class which actively assesses the Jackals Preformance during the run and determines
@@ -33,8 +38,11 @@ class Assessor(object):
         self.last_msg = np.array((0, 0, 0, 0), dtype=[("x", np.float), ("y", np.float),
                                                       ("z", np.float), ("t", np.float)])
         self.shutdown_pub = rospy.Publisher("shutdown_signal", Bool, queue_size=1)
+        self.odom_to_base = None
+        self.map_to_odom = None
         rospy.init_node("assessor")
         rospy.Subscriber("ground_truth/state", Odometry, self.ground_truth_callback)
+        rospy.Subscriber("/tf", TFMessage, self.tf_callback)
         rospy.spin()
 
     def ground_truth_callback(self, msg):
@@ -49,20 +57,47 @@ class Assessor(object):
         self.running_average(inst_speed)
         self.last_msg = pos
         if not self.mapping_status:
-            print "Time: {:.2f} s Pos: ({:.2f}, {:.2f}) m".format(pos["t"],
+            print "Time: {:.2f} s\nPos: ({:.2f}, {:.2f}) m".format(pos["t"],
                                                                   pos["x"],
                                                                   pos["y"])
-            print "{:.1f} s speed average: {:.2f} m/s\n".format(0.1 * self.num_samples,
+            print "Average speed across {:.1f} s: {:.2f} m/s".format(0.1 * self.num_samples,
                                                                 self.avg_speed)
-        if self.avg_speed < 0.10 and self.avg_speed > 0.4:
+        drift = 0
+        if (self.odom_to_base is not None and self.map_to_odom is not None):
+
+            otob = PoseStamped()
+            otob.pose.position.x = self.odom_to_base.transform.translation.x
+            otob.pose.position.y = self.odom_to_base.transform.translation.y
+            otob.pose.position.z = self.odom_to_base.transform.translation.z
+            otob.pose.orientation.x = self.odom_to_base.transform.rotation.x
+            otob.pose.orientation.y = self.odom_to_base.transform.rotation.y
+            otob.pose.orientation.z = self.odom_to_base.transform.rotation.z
+            otob.pose.orientation.w = self.odom_to_base.transform.rotation.w
+
+            est_pose = tf2_geometry_msgs.do_transform_pose(otob, self.map_to_odom)
+            drift = np.hypot(est_pose.pose.position.x - pos['x'], est_pose.pose.position.y - pos['y'])
+            if not self.mapping_status:
+                print "Estimated Pos: ({:.2f}, {:.2f}) m".format(est_pose.pose.position.x, est_pose.pose.position.y)
+            print "Drift: {:.2f} m".format(drift)
+        if (self.avg_speed < 0.10 and self.avg_speed > 0.4) or (drift > 0.5 and drift < 2):
             print "Warning, Robot may be stuck"
-        if self.num_samples >= self.max_samples and self.avg_speed < 0.04:
+        if (self.num_samples >= self.max_samples and self.avg_speed < 0.04) or drift > 2:
             print "Robot stuck, aborting run"
             self.log_file.write("Tour failed: robot got stuck\n")
             self.log_file.close()
             shutdown = Bool()
             shutdown.data = True
             self.shutdown_pub.publish(shutdown.data)
+
+        print "\n"
+
+    def tf_callback(self, msg):
+        for transform in msg.transforms:
+            if (transform.header.frame_id == "odom" and transform.child_frame_id == "base_link"):
+                self.odom_to_base = transform
+            if (transform.header.frame_id == "map" and transform.child_frame_id == "odom"):
+                self.map_to_odom = transform
+
 
     def running_average(self, new_sample):
         ''' compute running average speed across max_samples '''
