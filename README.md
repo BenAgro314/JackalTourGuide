@@ -31,11 +31,11 @@ To run the simulation, call the `master.sh` script. This script has many options
 
 For example, some common calls are:
 
-+ `./master.sh -t E\_tour -emfg`
-+ `./master.sh -t J\_tour -v -l 2020-08-04-17-04-21`
++ `./master.sh -t E_tour -emfg`
++ `./master.sh -t J_tour -v -l 2020-08-04-17-04-21`
 
-The first command would launch the simulation with the tour `E\_tour`, visualize topics in the simulation, use gmapping and ground truth classifications with pointcloud filtering.
-The second command would launch the simulation with the tour `J\_tour` along with a GUI, and load the world file from the previous run `2020-08-04-17-04-21`.
+The first command would launch the simulation with the tour `E_tour`, visualize topics in the simulation, use gmapping and ground truth classifications with pointcloud filtering.
+The second command would launch the simulation with the tour `J_tour` along with a GUI, and load the world file from the previous run `2020-08-04-17-04-21`.
 
 #### Parameter Specification
 
@@ -58,7 +58,7 @@ Room parameters are specified in room\_params\_V2.yaml.
 The name of any room to be included in the simulation must be included in the list `room_names`.
 Each room name has a corrisponding entry in the form (note that angled braces are meant to be filed in with a name):
 
-```
+```yaml
 <room_name>:
     geometry: <geo_name> # specifies the name of the geometry list
     position: <pos_name> # specifies the name of the position list 
@@ -87,7 +87,7 @@ Scenario parameters are specified in scenario\_params\_V2.yaml.
 The name of any scenario to be included in the simulation must be included in the list `scenario_names`.
 Each scenario name has a corrisponding entry in the form:
 
-```
+```yaml
 <scenario_name>:
   pop_density: <float as a string> # specifies the population density of the scenario in people/m^2
   table_percentage: <float between "0" and "1" as a string> # specifies what percentage of the avaible model positions will be filled in the room
@@ -96,7 +96,15 @@ Each scenario name has a corrisponding entry in the form:
   table_group_list: <table_list> # which table groups are available to be placed in the room, see the model params file
 ```
 
-More paramter descriptions are on their way.
+More paramter descriptions are on the way.
+
+## The Navigation Stack 
+
+TODO
+
+## Simulation Details
+
+TODO
 
 ## Sources 
 
