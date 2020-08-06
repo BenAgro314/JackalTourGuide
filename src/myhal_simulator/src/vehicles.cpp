@@ -45,7 +45,7 @@ void PathViz::OnUpdate(const nav_msgs::Path::ConstPtr& plan){
         return;
     }
     double frac = std::min(1.0, ((double) this->num_dots)/((double) path.size()));
-    int mod = (int) std::round(1/frac);
+    int mod = (int) std::ceil(1/frac);
     
 
     int link_count = 0;
