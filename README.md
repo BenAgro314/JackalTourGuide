@@ -167,7 +167,7 @@ All the required actors (people), tables, chairs, and cameras are added by this 
 
 ### World Control
 
-The dynamic elements of the world are controlled by a Gazebo plugin located in src/myhal\_simulator/puppeteer.cpp.
+The dynamic elements of the world are controlled by a Gazebo world plugin called Puppeteer, located in src/myhal\_simulator/puppeteer.cpp.
 This plugin is responsible for controlling the motion of the actors and cameras, as well as adding and dynamically modifying the models that allow for topics to be visualized in the Gazebo simulation.
 
 #### Actors
@@ -183,10 +183,37 @@ The various types of actors are defined in src/myhal\_simulator/src/vehicles.cpp
 - Followers, who will follow the Jackal. [Followers](http://www.red3d.com/cwr/steer/gdc99/) can either blocking (intentionally try and get in the way of the robot) or non-blocking (targeting some position behind the robot and attempting to avoid obstructing it).
 - PathFollowers, who will follow a provided gradient map, allowing them to exhibit intelligent path finding.
 
-
 #### Cameras
+
+While the cameras are added to the world on creation of the myhal\_sim.world file, they are controlled by two plugins, the Puppeteer world plugin and the CameraController sensor plugin located in src/jackal\_velodyne/src/camera\_controller.cpp. 
+
+The CameraController plugin is responsible for saving the image frames received by the camera sensor to .jpg files. These .jpg files are later converted to a .mp4 as part of the data processing in the src/dashboard/src/data\_processing.py.
+This plugin also dynamically throttles the simulation step size, and pauses the simulation while saving the .jpg file, in an attempt to reach it's target frame rate (usually 24 fps).
+
+The Puppeteer plugin is responsible for moving the camera. There are a three types of cameras defined in src/myhal\_simulator/src/vehicles.cpp, each with different movement rules:
+
+- Sentry: a stationary camera that points towards a desired target (in this case the robot) .
+- Hoverer: a moving camera that hovers at a specified relative position with respect to its target. It will point towards the target and can optionally orbit around the target.  
+- Stalker: a moving camera that follows it's targets path a specified distance behind, while always pointing at it's target.
 
 #### Topic Visualization
 
+By passing the -e flag when running [master.sh](#Master-Script), the simulation will visualize four ROS topics in Gazebo:
+
+- The global plan, shown as a green line of dots.
+- The local plan, shown as a blue line of dots.
+- The current target on the tour, shown as a red X.
+- The estimated pose from the localization node, shown as a teal rectangle representing the footprint of the robot. The rectangle has a purple strip to show where the front of the footprint is.
+
+The visualization of these topics is managed by the Puppeteer world plugin.
+
 ### Ground Truth Classifications 
 
+By passing the -g flag when running [master.sh](#Master-Script), the point-clouds produced by the simulation of the VLP-32 LiDAR sensor will have accompanying ground truth classifications. 
+This is achieved with a Gazebo sensor plugin, located in src/myhal\_simulator/src/custom\_velodyne.cpp. 
+This sensor plugin is based on [the official velodyne\_simulator package](https://bitbucket.org/DataspeedInc/velodyne_simulator/src) with a few modifications:
+
+- The simulator preforms a collision check between each point and the objects in the world to determine it's class.
+- During this computation, the Gazebo world is paused.
+
+This means that despite the extra time taken for ground truth classifications, there is 0 latency from the simulation perspective, and no LiDAR frames are dropped.
