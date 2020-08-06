@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
     <arg name="in_topic" default="/velodyne_points"/>
     <arg name="filter" default="false" />

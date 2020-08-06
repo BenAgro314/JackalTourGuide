@@ -13,7 +13,14 @@ scenario_names:
   - dense_boids
   - dense_wanderers
   - long_term_standers
-  - empty_film
+  - med_tables
+
+med_tables:
+  pop_density: "0"
+  table_percentage: "0.5"
+  actor: actor_basic_boid
+  model_list: big_tables
+  table_group_list: mixed_group
 
 dense_boids:
   pop_density: "0.5"
