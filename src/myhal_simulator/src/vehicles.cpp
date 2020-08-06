@@ -2,6 +2,71 @@
 #include "Perlin.h"
 #include <thread>
 
+PathViz::PathViz(std::string name, int num_dots, ignition::math::Vector4d color, gazebo::physics::WorldPtr world):
+name(name), num_dots(num_dots), color(color), world(world){
+
+    boost::shared_ptr<sdf::SDF> sdf = boost::make_shared<sdf::SDF>();
+    sdf->SetFromString(
+       "<sdf version ='1.6'>\
+          <model name ='path'>\
+          </model>\
+        </sdf>");
+
+    auto model = sdf->Root()->GetElement("model");
+    model->GetElement("static")->Set(true);
+    model->GetAttribute("name")->SetFromString(this->name);
+
+    for (int i = 0; i < this->num_dots; i++){
+        auto pos = ignition::math::Vector3d(50,50,0); //put them offscreen to start
+        auto link = model->AddElement("link");
+        link->GetElement("pose")->Set(pos);
+        link->GetAttribute("name")->SetFromString(name + "_" + std::to_string(i));
+        auto cylinder = link->GetElement("visual")->GetElement("geometry")->GetElement("cylinder");
+        cylinder->GetElement("radius")->Set(0.03);
+        cylinder->GetElement("length")->Set(0.001);
+        auto mat = link->GetElement("visual")->GetElement("material");
+        mat->GetElement("ambient")->Set(this->color);
+        mat->GetElement("diffuse")->Set(this->color);
+        mat->GetElement("specular")->Set(this->color);
+        mat->GetElement("emissive")->Set(this->color);
+    }
+
+    this->world->InsertModelSDF(*sdf);
+}
+
+void PathViz::OnUpdate(const nav_msgs::Path::ConstPtr& plan){
+    if (this->model == nullptr){
+        this->model = this->world->ModelByName(this->name);    
+        this->dots = this->model->GetLinks();
+    } 
+
+    auto path = plan->poses;
+    if (path.size() < 0){
+        return;
+    }
+    double frac = std::min(1.0, ((double) this->num_dots)/((double) path.size()));
+    int mod = (int) std::round(1/frac);
+    
+
+    int link_count = 0;
+    for (int i = 0; i< path.size(); i++){
+        if ((i % mod) != 0){
+            continue;
+        }
+        auto pose = path[i];
+        auto p = pose.pose.position;
+        auto world_pose = ignition::math::Pose3d(p.x, p.y, p.z, 0, 0, 0);
+        if (link_count < this->dots.size()){
+            this->dots[link_count++]->SetWorldPose(world_pose);
+        }
+    }
+    // reset unused dots 
+    for (int i = link_count; i < this->dots.size(); i++){
+        auto world_pose = ignition::math::Pose3d(50, 50, 0, 0, 0, 0);
+        this->dots[link_count++]->SetWorldPose(world_pose);
+    }
+}
+
 SmartCam::SmartCam(gazebo::physics::ModelPtr self, ignition::math::Vector3d initial_pos): self(self), updated_pos(initial_pos){}
 
 void SmartCam::UpdateModel(){
@@ -65,26 +130,6 @@ void Stalker::OnUpdate(double dt, std::vector<ignition::math::Vector3d> &robot_t
     this->heading = target - this->updated_pos;
     this->UpdateModel();
 }
-    
-/*
-void SmartCam::OnUpdate(double dt, ignition::math::Pose3d view_target){
-
-    auto self_pos = this->pos;
-    if (this->relative){
-        if (this->period > 0){
-            auto dyaw = (dt/this->period)*6.28;
-            auto rt = ignition::math::Quaterniond(0,0,dyaw);
-            this->pos = rt.RotateVector(this->pos);
-        }
-        self_pos = view_target.Pos() + this->pos;
-    }
-    
-    auto heading = view_target.Pos() - self_pos;
-    heading.Normalize();
-    double yaw = std::atan2(heading.Y(), heading.X());
-    double pitch = -std::atan2(heading.Z(), std::hypot(heading.X(),heading.Y()));
-    self->SetWorldPose(ignition::math::Pose3d(self_pos, ignition::math::Quaterniond(0,pitch,yaw)));
-}*/
 
 
 //VEHICLE CLASS

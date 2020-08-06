@@ -111,6 +111,8 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     std::system(this->launch_command.c_str());
 
     if (this->viz_gaz){
+        this->global_path_viz = boost::make_shared<PathViz>("global_path_viz", 100, ignition::math::Vector4d(0,1,0,1), this->world);   
+        this->local_path_viz = boost::make_shared<PathViz>("local_path_viz", 75, ignition::math::Vector4d(0,0,1,1), this->world);   
         this->global_plan_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1, &Puppeteer::GlobalPlanCallback, this);
         this->local_plan_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1, &Puppeteer::LocalPlanCallback, this);
         this->nav_goal_sub = this->nh.subscribe("/move_base/goal", 1, &Puppeteer::NavGoalCallback, this);
@@ -214,6 +216,9 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
 
 
     if (this->old_global_ind != this->new_global_ind){
+        //std::cout << utilities::color_text("Changing global path", GREEN) << std::endl;
+        this->global_path_viz->OnUpdate(this->global_plan);
+        /*
         std::string to_remove = "global_plan_" + std::to_string(this->old_global_ind);
         if (this->world->EntityByName(to_remove)){
             this->world->RemoveModel(to_remove);
@@ -224,9 +229,13 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         std::cout << utilities::color_text("Adding global plan: " +  to_add, GREEN) << std::endl;
         this->old_global_ind = this->new_global_ind;
         std::cout << utilities::color_text("Model Count: " + std::to_string(this->world->ModelCount()), BLUE) << std::endl;
+        */
     }
 
     if (this->old_local_ind != this->new_local_ind){
+        //std::cout << utilities::color_text("Changing local path", GREEN) << std::endl;
+        this->local_path_viz->OnUpdate(this->local_plan);
+        /*
         std::string to_remove = "local_plan_" + std::to_string(this->old_local_ind);
         if (this->world->EntityByName(to_remove)){
             this->world->RemoveModel(to_remove);
@@ -237,6 +246,7 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         std::cout << utilities::color_text("Adding local plan: " + to_add, GREEN) << std::endl;
         this->old_local_ind = this->new_local_ind;
         std::cout << utilities::color_text("Model Count: " + std::to_string(this->world->ModelCount()), BLUE) << std::endl;
+        */
     }
 
     if (this->old_nav_ind != this->new_nav_ind){

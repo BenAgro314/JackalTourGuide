@@ -37,7 +37,10 @@ class Puppeteer: public gazebo::WorldPlugin{
 
     private:
 
-    
+        boost::shared_ptr<PathViz> global_path_viz;
+
+        boost::shared_ptr<PathViz> local_path_viz;
+
         gazebo::event::ConnectionPtr update_connection;
 
         gazebo::physics::WorldPtr world;

@@ -6,6 +6,7 @@
 #include "gazebo/physics/physics.hh"
 #include "gazebo/common/common.hh"
 #include "gazebo/gazebo.hh"
+#include <nav_msgs/Path.h>
 #include <vector>
 #include <map>
 #include <utility>
@@ -17,31 +18,29 @@
 #define COH 1
 #define SEP 2
 
-/*
-class SmartCam{
+class PathViz{
 
     protected:
 
-        ignition::math::Pose3d pose;
+        std::vector<gazebo::physics::LinkPtr> dots;
 
-        gazebo::physics::ModelPtr self = nullptr;
+        gazebo::physics::ModelPtr model = nullptr;
 
-        ignition::math::Pose3d target_pose;
+        gazebo::physics::WorldPtr world;
 
-        ignition::math::Vector3d pos;
+        int num_dots;
 
-        bool relative;
+        std::string name;
 
-        double period;
+        ignition::math::Vector4d color;
 
     public:
 
-        SmartCam(gazebo::physics::ModelPtr self, bool relative, ignition::math::Vector3d pos, double period);
+        PathViz(std::string name, int num_dots, ignition::math::Vector4d color, gazebo::physics::WorldPtr world);
 
-        virtual void OnUpdate(double dt, ignition::math::Pose3d view_target); 
+        void OnUpdate(const nav_msgs::Path::ConstPtr& plan);
 
-};*/
-
+};
 
 class SmartCam{
 
