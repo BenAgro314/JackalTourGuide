@@ -133,7 +133,7 @@ class Vehicle{
 
         double obstacle_margin = 0.5;
 
-        double actor_margin = 0.6;
+        double actor_margin = 0.5;
 
         double slowing_distance = 1;
 

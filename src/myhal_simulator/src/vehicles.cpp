@@ -266,11 +266,16 @@ void Vehicle::AvoidObstacles(std::vector<gazebo::physics::EntityPtr> objects){
     for (gazebo::physics::EntityPtr object: objects){
         ignition::math::Box box = object->BoundingBox();
         // inflate the box slightly
+
+        double inflate = 0.1;
+        if (object->GetName() == "jackal"){
+            inflate = 0.2;
+        }
         
-        box.Min().X() -= 0.2;
-        box.Max().X() += 0.2;
-        box.Min().Y() -= 0.2;
-        box.Max().Y() += 0.2;
+        box.Min().X() -= inflate;
+        box.Max().X() += inflate;
+        box.Min().Y() -= inflate;
+        box.Max().Y() += inflate;
 
         double min_z = std::min(box.Min().Z(), box.Max().Z());
         if (min_z > 1.5){
