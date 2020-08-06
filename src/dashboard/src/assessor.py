@@ -105,7 +105,7 @@ class Assessor(object):
                 self.log_file.write("Tour failed: robot got stuck\n")
                 self.log_file.close()
                 shutdown = Bool()
-                shutdown.data = True
+                shutdown.data = False
                 self.shutdown_pub.publish(shutdown.data)
 
         print "\n"
