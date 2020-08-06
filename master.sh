@@ -122,7 +122,8 @@ echo -e "\033[1;4;34mRUNNING SIM\033[0m"
 roslaunch jackal_velodyne p1.launch gui:=$GUI world_name:=$WORLDFILE #extra_gazebo_args:="-s libdirector.so"
 sleep 0.5
 echo "Running data_processing.py"
-rosrun dashboard data_processing.py $t
+rosrun dashboard data_processing.py $t $FILTER
+ 
 exit 1
 
 

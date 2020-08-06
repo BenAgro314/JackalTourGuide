@@ -468,7 +468,7 @@ void Puppeteer::TFCallback(const tf2_msgs::TFMessage::ConstPtr& msg){
 
 void Puppeteer::GlobalPlanCallback(const nav_msgs::Path::ConstPtr& path){
     if (path->poses.size() > 0){
-        std::cout << utilities::color_text("Global plan recieved by simulator", YELLOW) << std::endl;
+        std::cout << utilities::color_text("Global plan recieved by simulator", BLUE) << std::endl;
         this->global_plan = path;
         this->new_global_ind++;
     }

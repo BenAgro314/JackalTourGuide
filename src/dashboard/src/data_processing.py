@@ -21,10 +21,11 @@ if __name__ == "__main__":
     start_time = RealTime.time()
     
     username = os.environ['USER']
-    if ((len(sys.argv)-1) == 0):
-        print "ERROR: must input filename"
+    if (len(sys.argv)-1 < 2):
+        print "ERROR: must input filename and filter status"
         exit()
     filename = sys.argv[1]
+    filter_status = True if (sys.argv[2] == "true") else False
     print "Processing data for file", filename
 
     path = "/home/" + username + "/Myhal_Simulation/simulated_runs/" + filename + "/"
@@ -62,13 +63,13 @@ if __name__ == "__main__":
     # read in lidar frames
     frames = bt.read_pointcloud_frames("/velodyne_points", bag)
 
-
+    dir_name = "classified_frames" if (filter_status) else "unclassified_frames"
 
     if(len(frames)):
         pickle_dict['lidar_frames'] = frames
-        if (not os.path.isdir(path + "classified_frames")):
+        if (not os.path.isdir(path + dir_name)):
             try:
-                os.mkdir(path + "classified_frames")
+                os.mkdir(path + dir_name)
             except OSError:
                 print ("Creation of the classifed_frames directory failed")
                 exit()
@@ -85,7 +86,7 @@ if __name__ == "__main__":
         time = time.to_sec()
         time = "{:.6f}".format(time)
         
-        ply.PlyData([el]).write(path + "classified_frames/" + time + ".ply");
+        ply.PlyData([el]).write(path +  dir_name + "/" + time + ".ply");
 
     print "Reading trajectories"
 
