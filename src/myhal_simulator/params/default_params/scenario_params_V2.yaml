@@ -73,14 +73,14 @@ mixed_tables_no_people:
 
 big_tables_no_people:
   pop_density: "0"
-  table_percentage: "1"
+  table_percentage: "0.8"
   actor: actor_basic_boid
   model_list: big_tables
   table_group_list: big_table_group
 
 small_tables_no_people:
   pop_density: "0"
-  table_percentage: "1"
+  table_percentage: "0.8"
   actor: actor_basic_boid
   model_list: big_tables
   table_group_list: small_table_group
@@ -94,7 +94,7 @@ small_tables_random_walker_study:
 
 mixed_tables_follower_tour:
   pop_density: "0.09"
-  table_percentage: "0.3"
+  table_percentage: "0.5"
   actor: actor_basic_follower
   model_list: big_tables
   table_group_list: mixed_group

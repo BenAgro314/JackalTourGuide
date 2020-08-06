@@ -157,12 +157,36 @@ The parameter files for the planners can be found in src/jackal\_velodyne/params
 
 ## Simulation Details
 
-TODO
+### World Generation
 
-## Sources 
+If the simulation is launched without specifying a world file to use (with the -l tag), then a new world is created.
+To create a world based on the supplied parameters, the file src/myhal\_simulator/worlds/myhal\_sim.world is written by the program world\_factory.cpp located in the myhal\_simulator package.
+This file is based off of a template file called myhal\_template.txt located in the same directory, which includes some of the basic [SDF](http://sdformat.org/) for a Gazebo world, as well as various unchanging aspects of the simulation such as the model of the 5th floor of Myhal.
+This program reads the ROS parameter server for the various room, scenario, camera, plugin, and animation parameters and uses this information to write the SDF for the corresponding models into myhal\_sim.world.
+All the required actors (people), tables, chairs, and cameras are added by this program.
 
-[Jackal Simulation](https://www.clearpathrobotics.com/assets/guides/kinetic/jackal/simulation.html)
+### World Control
 
-[Craig W. Reynolds, Steering Behaviors For Autonomous Characters](http://www.red3d.com/cwr/steer/gdc99/)
+The dynamic elements of the world are controlled by a Gazebo plugin located in src/myhal\_simulator/puppeteer.cpp.
+This plugin is responsible for controlling the motion of the actors and cameras, as well as adding and dynamically modifying the models that allow for topics to be visualized in the Gazebo simulation.
 
-[Daniel Shiffman, THE NATURE OF CODE](https://natureofcode.com/book/chapter-6-autonomous-agents/)
+#### Actors
+
+Actors are the people in the simulation. They can have a variety of behaviors, most of which are based off of [Craig W. Reynolds, Steering Behaviors For Autonomous Characters](http://www.red3d.com/cwr/steer/gdc99/) 
+The various types of actors are defined in src/myhal\_simulator/src/vehicles.cpp. All actors follow some common rules and parameters such as collision avoidance with objects, one another, and the robot, as well as a maximum speed and acceleration. Currently available actor types include:
+
+- Wanderers, following the [Wander](http://www.red3d.com/cwr/steer/gdc99/) random steering behaviour.
+- Random Walkers, which walk to a random target found by ray-casting  
+- Boids, following a [flocking behaviour](http://www.red3d.com/cwr/steer/gdc99/).
+- Standers, who follow (randomized) periodic cycle of standing and then wandering.
+- Sitters, who sit in chairs (currently they do not start walking).
+- Followers, who will follow the Jackal. [Followers](http://www.red3d.com/cwr/steer/gdc99/) can either blocking (intentionally try and get in the way of the robot) or non-blocking (targeting some position behind the robot and attempting to avoid obstructing it).
+- PathFollowers, who will follow a provided gradient map, allowing them to exhibit intelligent path finding.
+
+
+#### Cameras
+
+#### Topic Visualization
+
+### Ground Truth Classifications 
+

@@ -265,12 +265,18 @@ void Vehicle::AvoidObstacles(std::vector<gazebo::physics::EntityPtr> objects){
     ignition::math::Vector3d boundary_force = ignition::math::Vector3d(0,0,0);
     for (gazebo::physics::EntityPtr object: objects){
         ignition::math::Box box = object->BoundingBox();
+        // inflate the box slightly
+        
+        box.Min().X() -= 0.2;
+        box.Max().X() += 0.2;
+        box.Min().Y() -= 0.2;
+        box.Max().Y() += 0.2;
 
         double min_z = std::min(box.Min().Z(), box.Max().Z());
         if (min_z > 1.5){
             continue;
         }
-        ignition::math::Vector3d min_normal = utilities::min_repulsive_vector(this->pose.Pos(), object);
+        ignition::math::Vector3d min_normal = utilities::min_box_repulsive_vector(this->pose.Pos(), box);
         //if the person has somehow arrived inside an object, dont count collisions with that object so it can eventually leave
         if (utilities::inside_box(box, this->pose.Pos())){
             //std::cout << "debug" << std::endl;
@@ -301,8 +307,9 @@ void Vehicle::AvoidActors(std::vector<boost::shared_ptr<Vehicle>> vehicles){
 		other_pos.Z() = 0;
 		ignition::math::Vector3d rad = this_pos-other_pos;
 		double dist = rad.Length();
+        dist = std::max(0.0, dist-0.2); //acounting for the radius of the person
 		
-		if (dist<this->obstacle_margin && dist > 0){
+		if (dist<this->actor_margin && dist > 0){
 			rad.Normalize();	
 			rad/=dist;
 			steer += rad;

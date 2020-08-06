@@ -122,9 +122,54 @@ void utilities::print_vector(ignition::math::Vector3d vec, bool newline){
 
 //returns the shortest normal vector between pos and one of the edges on the bounding box of entity
 // will return the shortest corner distance if the normal does not exist 
+ignition::math::Vector3d utilities::min_box_repulsive_vector(ignition::math::Vector3d pos, ignition::math::Box box){
+    auto edges = utilities::get_box_edges(box);
+	ignition::math::Vector3d min_normal;
+	double min_mag = 10e9;
+	bool found = false;
+
+	for (ignition::math::Line3d edge: edges){
+
+					
+		ignition::math::Vector3d edge_vector = edge.Direction(); // vector in direction of edge 
+					
+		ignition::math::Vector3d pos_vector = ignition::math::Vector3d(pos.X()-edge[0].X(), pos.Y()-edge[0].Y(), 0);// vector from edge corner to actor pos
+					
+		ignition::math::Vector3d proj = ((pos_vector.Dot(edge_vector))/(edge_vector.Dot(edge_vector)))*edge_vector; // project pos_vector onto edge_vector
+			
+		//check if the projected point is within the edge
+		if (edge.Within(proj+edge[0])){
+			//compute normal
+			ignition::math::Vector3d normal = pos_vector-proj;
+						
+			if (normal.Length() < min_mag){
+				min_normal = normal;
+				min_mag = normal.Length();
+				found = true;
+			}
+
+		}
+				
+	}
+
+	if (!found){ // iterate over all corners and find the closest one 
+		min_mag = 10e9;
+		auto corners = utilities::get_box_corners(box);
+		for (auto corner: corners){
+			if (pos.Distance(corner) < min_mag){
+				min_mag = pos.Distance(corner);
+				min_normal = pos-corner;
+			}
+		}
+	}
+
+	return min_normal;
+}
 
 
 ignition::math::Vector3d utilities::min_repulsive_vector(ignition::math::Vector3d pos, gazebo::physics::EntityPtr entity){
+    return utilities::min_box_repulsive_vector(pos, entity->BoundingBox());
+    /*
 	std::vector<ignition::math::Line3d> edges = utilities::get_edges(entity);
 
 	ignition::math::Vector3d min_normal;
@@ -167,6 +212,7 @@ ignition::math::Vector3d utilities::min_repulsive_vector(ignition::math::Vector3
 	}
 
 	return min_normal;
+    */
 }
 
 
