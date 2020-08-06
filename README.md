@@ -20,7 +20,7 @@ To run the simulation, call the `master.sh` script. This script has many options
 
 -g, if set, the simulation will use ground truth LiDAR classifications.
 
--m, if set, the simulation will use [gmapping](http://wiki.ros.org/gmapping) for SLAM, otherwise it will use [amcl](http://wiki.ros.org/amcl) for localization only.
+-m, if set, the simulation will use [Gmapping](http://wiki.ros.org/gmapping) for SLAM, otherwise it will use [AMCL](http://wiki.ros.org/amcl) for localization only.
 
 -e, if set, various topics (pose estimate, global plan, local plan, and current target) will be visualized in the simulation.
 
@@ -35,7 +35,7 @@ For example, some common calls are:
 + `./master.sh -t E_tour -emfg`
 + `./master.sh -t J_tour -v -l 2020-08-04-17-04-21`
 
-The first command would launch the simulation with the tour `E_tour`, visualize topics in the simulation, use gmapping and ground truth classifications with point-cloud filtering.
+The first command would launch the simulation with the tour `E_tour`, visualize topics in the simulation, use Gmapping and ground truth classifications with point-cloud filtering.
 The second command would launch the simulation with the tour `J_tour` along with a GUI, and load the world file from the previous run `2020-08-04-17-04-21`.
 
 #### Parameter Specification
@@ -101,7 +101,59 @@ More parameter descriptions are on the way.
 
 ## The Navigation Stack 
 
-TODO
+The two diagrams below depict two configurations of the navigation stack, the first using AMCL and the second using Gmapping.
+If ground truth classifications are used, then the points go the ground truth classification node instead of the online classifier, following the dotted lines.
+Various nodes of the navigation stack are discussed below.
+
+![AMCLstack](notebooks/AMCL.png)
+
+![Gmappingstack](notebooks/GMAPPING.png)
+
+### Point-cloud conversion and filtering 
+
+Currently, the main localization nodes used (see [below](#Localization)) subscribe to 2D laser-scan messages, not 3D point-clouds.
+This means that the 3D point-cloud data must be converted to a 2D laser-scan. This is done via pcl\_filter\_nodlet.cpp located in the jackal\_velodyne package.
+Moreover, it is in this conversion step that the classified point-cloud is segregated into different laser-scan messages depending on which parts of the navigation stack we want the various classes to go.
+For example, the global planning node will be given a laser-scan message made from the points classified as non-moving, whereas the local planning node message will include all classes of points. 
+See the figures above for more detail as to where the classes are sent depending on the localization node used.
+
+### Localization
+
+There are currently two available nodes for robot localization: [AMCL](http://wiki.ros.org/amcl) and [Gmapping](http://wiki.ros.org/gmapping). Both nodes subscribe to a 2D laser-scan and publish a transformation from the odom frame to the map frame. 
+
+#### AMCL
+
+The AMCL node is used purely for localization. It does not create a live map of the environment itself, and thus must be supplied a pre-made occupancy grid map via the map server of the Myhal simulation walls.
+When estimating robot pose, AMCL will compare the laser-scans against the map. Thus, to increase localization accuracy when using AMCL, the node will only receive laser-scans constructed from the LiDAR points in the wall class.
+
+#### Gmapping
+
+The Gmapping node provides a SLAM algorithm, not only localizing the robot but providing a building an occupancy grid map at run-time. This means that no pre-made map is needed when using Gmapping.
+The map that Gmapping produces is fed directly to the global planner (see below), and thus it is given laser-scans constructed from all static points (walls, tables, chairs etc), so they can be avoided.
+
+### Cost-maps
+
+Both global and local cost-maps are produced using the ROS package [costmap\_2d](http://wiki.ros.org/costmap_2d).
+If Gmapping is used, it produces a global occupancy grid which is given to costmap\_2d to create the global cost-map.
+If AMCL is used, the costmap\_2d directly subscribes to a laser-scan of consisting of static points.
+Regardless of the localization node, the local cost-map is built off of a laser-scan consisting of all points (for local collision avoidance). 
+
+The parameter files for the cost-maps can be found in src/jackal\_velodyne/params/ 
+
+### Planning
+
+#### Global Planner:
+
+The global planner is sent tour goals via the node navigation\_goals\_V2.cpp. Using the global cost-map, it plans a route for the Jackal to follow.
+The ROS package used to generate the plan is [navfn](http://wiki.ros.org/navfn) which uses Dijkstra's algorithm.
+
+#### Local Planner:
+
+The local planner's goal is the position furthest along the global path that is also within the bounds of the local cost-map.
+The local planner has the responsibility of controlling the mobile base, providing the connection between the global plan and the robot.
+This local planner uses the ROS package [base\_local\_planner](http://wiki.ros.org/base_local_planner) which in turn uses [Dynamic Window Approach](https://ieeexplore.ieee.org/document/580977?arnumber=580977) algorithm to create a kinematic local trajectory for the Jackal.
+
+The parameter files for the planners can be found in src/jackal\_velodyne/params/ 
 
 ## Simulation Details
 
