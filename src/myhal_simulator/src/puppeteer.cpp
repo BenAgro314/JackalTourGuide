@@ -114,7 +114,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
         this->global_plan_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1, &Puppeteer::GlobalPlanCallback, this);
         this->local_plan_sub = this->nh.subscribe("/move_base/TrajectoryPlannerROS/local_plan", 1, &Puppeteer::LocalPlanCallback, this);
         this->nav_goal_sub = this->nh.subscribe("/move_base/goal", 1, &Puppeteer::NavGoalCallback, this);
-        this->tf_sub = this->nh.subscribe("/tf", 1000, &Puppeteer::TFCallback, this);
+        this->tf_sub = this->nh.subscribe("/tf", 1, &Puppeteer::TFCallback, this);
         //ros::AsyncSpinner spinner(4); // Use 4 threads
         //spinner.start();
     }
@@ -256,10 +256,7 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         geometry_msgs::Pose est_pose;
         tf2::doTransform<geometry_msgs::Pose>(this->odom_to_base, est_pose, this->map_to_odom);
         this->ManagePoseEstimate(est_pose);
-    }
-    //std::cout << est_pose << std::endl;
 
-    if (this->viz_gaz){
         ros::spinOnce();
     }
 
@@ -632,6 +629,7 @@ void Puppeteer::ManagePoseEstimate(geometry_msgs::Pose est_pose){
 
         this->added_est = true;
     } else {
+
         if (!this->pose_est){
             this->pose_est = this->world->ModelByName("pose_estimate");
         } else{
