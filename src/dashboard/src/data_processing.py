@@ -63,7 +63,7 @@ if __name__ == "__main__":
     # read in lidar frames
     frames = bt.read_pointcloud_frames("/velodyne_points", bag)
 
-    dir_name = "classified_frames" if (filter_status) else "unclassified_frames"
+    dir_name = "sim_frames"
 
     if(len(frames)):
         pickle_dict['lidar_frames'] = frames
@@ -80,6 +80,7 @@ if __name__ == "__main__":
     for frame in frames:
         time, points = frame
         dtype = [("x", np.float32), ("y",np.float32), ("z",np.float32), ("cat", np.int32)]
+        cat = points['intensity'] if (filter_status) else ([-1]*len(points['intensity']))
         arr = np.array([points['x'], points['y'], points['z'], points['intensity']])
         arr = np.core.records.fromarrays(arr, dtype = dtype)
         el = ply.PlyElement.describe(arr, "vertex")

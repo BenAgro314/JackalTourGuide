@@ -1,10 +1,11 @@
-# Myhal Tourguide Project 
+# Myhal Tour Guide Project 
 
 ## Usage
 
 ### Dependencies
 
 ROS-melodic and Gazebo9 are used in this simulation, along with various other ROS packages and external dependencies.
+A GPU is required to run the Velodyne VLP-32 LiDAR simulation.
 See [this Dockerfile](https://github.com/BenAgro314/ROS-Dockerfiles/blob/master/docker_ros_melodic/Dockerfile) for a list of the required programs to run this simulation.
 
 ### Running the Simulation
@@ -15,9 +16,9 @@ To run the simulation, call the `master.sh` script. This script has many options
 
 -t [arg], the name of the tour being used (default = A\_tour). The tour files can be found in src/myhal\_simulator/tours/.
 
--f, if set, the simulation will use pointcloud filtering. If there is no online classification, the -g flag must be passed aswell.
+-f, if set, the simulation will use point-cloud filtering. If there is no online classification, the -g flag must be passed as well.
 
--g, if set, the simulation will use ground truth lidar classifications.
+-g, if set, the simulation will use ground truth LiDAR classifications.
 
 -m, if set, the simulation will use [gmapping](http://wiki.ros.org/gmapping) for SLAM, otherwise it will use [amcl](http://wiki.ros.org/amcl) for localization only.
 
@@ -27,20 +28,20 @@ To run the simulation, call the `master.sh` script. This script has many options
 
 -l [arg], if this option is given, the simulation will load the provided world file located in /home/$USER/Myhal\_Simulation/simulated\_runs/[arg], otherwise it will generate a new world based on the specified parameters (default = None).
 
--p [arg], what parameter file is being used (default = defautl\_params).
+-p [arg], what parameter file is being used (default = default\_params).
 
 For example, some common calls are:
 
 + `./master.sh -t E_tour -emfg`
 + `./master.sh -t J_tour -v -l 2020-08-04-17-04-21`
 
-The first command would launch the simulation with the tour `E_tour`, visualize topics in the simulation, use gmapping and ground truth classifications with pointcloud filtering.
+The first command would launch the simulation with the tour `E_tour`, visualize topics in the simulation, use gmapping and ground truth classifications with point-cloud filtering.
 The second command would launch the simulation with the tour `J_tour` along with a GUI, and load the world file from the previous run `2020-08-04-17-04-21`.
 
 #### Parameter Specification
 
 Parameter directories are located in src/myhal\_simulator/params/. The default parameters are in a directory called default\_params. 
-The files in this foler can be modified directly, or a copy of this folder can be made.
+The files in this folder can be modified directly, or a copy of this folder can be made.
 To use a non-default parameter directory, it's name must be specified using the -p flag when calling `master.sh` (see [above section](#Master-Script)).
 The files that have parameters to be modified are (in order of usefulness):
 
@@ -52,11 +53,11 @@ The files that have parameters to be modified are (in order of usefulness):
 - model\_params.yaml 
 - animation\_params.yaml 
 
-##### Room Params
+##### Room Parameters
 
 Room parameters are specified in room\_params\_V2.yaml.
 The name of any room to be included in the simulation must be included in the list `room_names`.
-Each room name has a corrisponding entry in the form (note that angled braces are meant to be filed in with a name):
+Each room name has a corresponding entry in the form (note that angled braces are meant to be filed in with a name):
 
 ```yaml
 <room_name>:
@@ -78,14 +79,14 @@ Each room name has a corrisponding entry in the form (note that angled braces ar
     - <float y2>
 ```
 
-Note: the reason for the convoluted yaml specification is because ROS only allows lists and dictionarys of primitve data types to be loaded to the parameter sever.
+Note: the reason for the convoluted yaml specification is because ROS only allows lists and dictionaries of primitive data types to be loaded to the parameter sever.
 This is a problem I am actively working on fixing by bypassing the parameter server all together and reading a yaml file directly.
 
-##### Scenario Params:
+##### Scenario Parameters:
 
 Scenario parameters are specified in scenario\_params\_V2.yaml.
 The name of any scenario to be included in the simulation must be included in the list `scenario_names`.
-Each scenario name has a corrisponding entry in the form:
+Each scenario name has a corresponding entry in the form:
 
 ```yaml
 <scenario_name>:
@@ -96,7 +97,7 @@ Each scenario name has a corrisponding entry in the form:
   table_group_list: <table_list> # which table groups are available to be placed in the room, see the model params file
 ```
 
-More paramter descriptions are on the way.
+More parameter descriptions are on the way.
 
 ## The Navigation Stack 
 
