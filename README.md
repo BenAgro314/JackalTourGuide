@@ -1,12 +1,46 @@
 # Myhal Tour Guide Project 
 
+## Table of Contents
+
+  * [Usage](#usage)
+     * [Dependencies](#dependencies)
+     * [Installation](#installation)
+     * [Running the Simulation](#running-the-simulation)
+     * [The Data](#the-data)
+  * [The Navigation Stack](#the-navigation-stack)
+     * [Point-cloud conversion and filtering](#point-cloud-conversion-and-filtering)
+     * [Localization](#localization)
+     * [Cost-maps](#cost-maps)
+     * [Planning](#planning)
+  * [Simulation Details](#simulation-details)
+     * [World Generation](#world-generation)
+     * [World Control](#world-control)
+     * [Ground Truth Classifications](#ground-truth-classifications)
+  * [Dashboard](#dashboard)
+
 ## Usage
 
 ### Dependencies
 
 ROS-melodic and Gazebo9 are used in this simulation, along with various other ROS packages and external dependencies.
 A GPU is required to run the Velodyne VLP-32 LiDAR simulation.
-See [this Dockerfile](https://github.com/BenAgro314/ROS-Dockerfiles/blob/master/docker_ros_melodic/Dockerfile) for a list of the required programs to run this simulation.
+See [this Dockerfile](https://github.com/BenAgro314/ROS-Dockerfiles/blob/master/docker_ros_melodic/Dockerfile) for a list of the required programs and environment variables to run the simulation.
+
+### Installation
+
+This repository should be located in /home/$USER/catkin\_ws, meaning the root JackalTourGuide folder should be renamed to catkin\_ws:
+
+``` bash
+cd ~
+git clone https://github.com/BenAgro314/JackalTourGuide.git catkin_ws 
+```
+
+For data storage, there must be a directory ~/Myhal\_Simulation/simulated\_runs/:
+
+``` bash
+cd ~
+mkdir -p Myhal_Simulation/simulated_runs/
+```
 
 ### Running the Simulation
 
@@ -82,7 +116,7 @@ Each room name has a corresponding entry in the form (note that angled braces ar
 Note: the reason for the convoluted yaml specification is because ROS only allows lists and dictionaries of primitive data types to be loaded to the parameter sever.
 This is a problem I am actively working on fixing by bypassing the parameter server all together and reading a yaml file directly.
 
-##### Scenario Parameters:
+##### Scenario Parameters
 
 Scenario parameters are specified in scenario\_params\_V2.yaml.
 The name of any scenario to be included in the simulation must be included in the list `scenario_names`.
@@ -98,6 +132,27 @@ Each scenario name has a corresponding entry in the form:
 ```
 
 More parameter descriptions are on the way.
+
+### The Data
+
+Whenever you run the simulation, a date stamped folder will be created in this directory eg. ~/Myhal\_Simulation/simulated\_runs/2020-08-06-22-45-03.
+This folder will contains log files and post-processed data:
+
+- raw\_data.bag, a bag file of data from select topics during the run (see line ~119 in ./master.sh).
+- gt\_pose.ply, a binary representation of the ground truth pose of the robot during it's tour.
+- sim\_frames/, a directory containing binary time-stamped point-cloud frames
+
+Also contained in this directory is a directory called is a logs-<date> (e.g. logs-2020-08-06-22-45-03) which holds:
+
+- processed\_data.pickle, serialized data used by the [Dashboard](#Dashboard) for assessing navigation performance and creating plots.
+- pcl.txt and params.yaml are log files storing all the parameters used during the trials. 
+- log.txt stores the command used to launch the simulation and whether or not the robot made it to each waypoint on it's tour. 
+- meta.json stores meta data (see src/dashboard/src/meta\_data.py) about the run which is used by the [Dashboard](#Dashboard) for data management and creating plot series.
+- myhal\_sim.world, a copy of the world file used during this run. 
+- videos/, a directory that holds the videos produced during the run.
+
+Note that if the run is cut short with SIGTERM, or by running either of the files scripts/shutdown.sh or scripts/clear.sh, all data files will be deleted.
+To stop a run while saving the data files, run `./scripts/save_shutdown.sh`.
 
 ## The Navigation Stack 
 
@@ -217,3 +272,8 @@ This sensor plugin is based on [the official velodyne\_simulator package](https:
 - During this computation, the Gazebo world is paused.
 
 This means that despite the extra time taken for ground truth classifications, there is 0 latency from the simulation perspective, and no LiDAR frames are dropped.
+
+## Dashboard 
+
+The Dashboard is a python module that allows for manipulation and visualization of the data produced by the simulation.
+See the Jupyter Lab src/notebooks/ProgressReport2020-07-22.ipynb for a detailed explanation of the Dashboard and it's functionality. 

@@ -1,6 +1,6 @@
 #!/bin/bash
 export GAZEBO_PLUGIN_PATH=${GAZEBO_PLUGIN_PATH}:~/catkin_ws/devel/lib
-myInvocatio=n"$(printf %q "$BASH_SOURCE")$((($#)) && printf ' %q' "$@")"
+myInvocation="$(printf %q "$BASH_SOURCE")$((($#)) && printf ' %q' "$@")"
 t=$(date +'%Y-%m-%d-%H-%M-%S')
 
 echo "Folder Name: $t"
