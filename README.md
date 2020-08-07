@@ -276,4 +276,4 @@ This means that despite the extra time taken for ground truth classifications, t
 ## Dashboard 
 
 The Dashboard is a python module that allows for manipulation and visualization of the data produced by the simulation.
-See the Jupyter Lab src/notebooks/ProgressReport2020-07-22.ipynb for a detailed explanation of the Dashboard and it's functionality. 
+See the Jupyter Lab `src/notebooks/ProgressReport2020-07-22.ipynb` for a detailed explanation of the Dashboard and it's functionality. 
