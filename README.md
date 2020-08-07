@@ -28,14 +28,14 @@ See [this Dockerfile](https://github.com/BenAgro314/ROS-Dockerfiles/blob/master/
 
 ### Installation
 
-This repository should be located in /home/$USER/catkin\_ws, meaning the root JackalTourGuide folder should be renamed to catkin\_ws:
+This repository should be located in `/home/$USER/catkin_ws`, meaning the root JackalTourGuide folder should be renamed to `catkin_ws`:
 
 ``` bash
 cd ~
 git clone https://github.com/BenAgro314/JackalTourGuide.git catkin_ws 
 ```
 
-For data storage, there must be a directory ~/Myhal\_Simulation/simulated\_runs/:
+For data storage, there must be a directory `~/Myhal_Simulation/simulated_runs/`:
 
 ``` bash
 cd ~
@@ -48,7 +48,7 @@ mkdir -p Myhal_Simulation/simulated_runs/
 
 To run the simulation, call the `master.sh` script. This script has many options (listed by frequency of use):
 
--t [arg], the name of the tour being used (default = A\_tour). The tour files can be found in src/myhal\_simulator/tours/.
+-t [arg], the name of the tour being used (default = `A_tour`). The tour files can be found in `src/myhal_simulator/tours/`.
 
 -f, if set, the simulation will use point-cloud filtering. If there is no online classification, the -g flag must be passed as well.
 
@@ -60,9 +60,9 @@ To run the simulation, call the `master.sh` script. This script has many options
 
 -v, if set, the GUI for Gazebo and Rviz will be launched.
 
--l [arg], if this option is given, the simulation will load the provided world file located in /home/$USER/Myhal\_Simulation/simulated\_runs/[arg], otherwise it will generate a new world based on the specified parameters (default = None).
+-l [arg], if this option is given, the simulation will load the provided world file located in `/home/$USER/Myhal_Simulation/simulated_runs/[arg]`, otherwise it will generate a new world based on the specified parameters (default = None).
 
--p [arg], what parameter file is being used (default = default\_params).
+-p [arg], what parameter file is being used (default = `default_params`).
 
 For example, some common calls are:
 
@@ -74,22 +74,22 @@ The second command would launch the simulation with the tour `J_tour` along with
 
 #### Parameter Specification
 
-Parameter directories are located in src/myhal\_simulator/params/. The default parameters are in a directory called default\_params. 
+Parameter directories are located in `src/myhal_simulator/params/`. The default parameters are in a directory called `default_params`. 
 The files in this folder can be modified directly, or a copy of this folder can be made.
 To use a non-default parameter directory, it's name must be specified using the -p flag when calling `master.sh` (see [above section](#Master-Script)).
 The files that have parameters to be modified are (in order of usefulness):
 
-- room\_params\_V2.yaml
-- scenario\_params\_V2.yaml
-- camera\_params.yaml
-- common\_vehicle\_params.yaml 
-- plugin\_params.yaml 
-- model\_params.yaml 
-- animation\_params.yaml 
+- `room_params_V2.yaml`
+- `scenario_params_V2.yaml`
+- `camera_params.yaml`
+- `common_vehicle_params.yaml` 
+- `plugin_params.yaml` 
+- `model_params.yaml` 
+- `animation_params.yaml` 
 
 ##### Room Parameters
 
-Room parameters are specified in room\_params\_V2.yaml.
+Room parameters are specified in `room_params_V2.yaml`.
 The name of any room to be included in the simulation must be included in the list `room_names`.
 Each room name has a corresponding entry in the form (note that angled braces are meant to be filed in with a name):
 
@@ -118,7 +118,7 @@ This is a problem I am actively working on fixing by bypassing the parameter ser
 
 ##### Scenario Parameters
 
-Scenario parameters are specified in scenario\_params\_V2.yaml.
+Scenario parameters are specified in `scenario_params_V2.yaml`.
 The name of any scenario to be included in the simulation must be included in the list `scenario_names`.
 Each scenario name has a corresponding entry in the form:
 
@@ -135,23 +135,23 @@ More parameter descriptions are on the way.
 
 ### The Data
 
-Whenever you run the simulation, a date stamped folder will be created in this directory eg. ~/Myhal\_Simulation/simulated\_runs/2020-08-06-22-45-03.
+Whenever you run the simulation, a date stamped folder will be created in this directory eg. `~/Myhal_Simulation/simulated_runs/2020-08-06-22-45-03`.
 This folder will contains log files and post-processed data:
 
-- raw\_data.bag, a bag file of data from select topics during the run (see line ~119 in ./master.sh).
-- gt\_pose.ply, a binary representation of the ground truth pose of the robot during it's tour.
-- sim\_frames/, a directory containing binary time-stamped point-cloud frames
+- `raw_data.bag`, a bag file of data from select topics during the run (see line ~119 in ./master.sh).
+- `gt_pose.ply`, a binary representation of the ground truth pose of the robot during it's tour.
+- `sim_frames/`, a directory containing binary time-stamped point-cloud frames
 
 Also contained in this directory is a directory called is a logs-<date> (e.g. logs-2020-08-06-22-45-03) which holds:
 
-- processed\_data.pickle, serialized data used by the [Dashboard](#Dashboard) for assessing navigation performance and creating plots.
+- `processed_data.pickle`, serialized data used by the [Dashboard](#Dashboard) for assessing navigation performance and creating plots.
 - pcl.txt and params.yaml are log files storing all the parameters used during the trials. 
 - log.txt stores the command used to launch the simulation and whether or not the robot made it to each waypoint on it's tour. 
-- meta.json stores meta data (see src/dashboard/src/meta\_data.py) about the run which is used by the [Dashboard](#Dashboard) for data management and creating plot series.
-- myhal\_sim.world, a copy of the world file used during this run. 
+- meta.json stores meta data (see `src/dashboard/src/meta_data.py`) about the run which is used by the [Dashboard](#Dashboard) for data management and creating plot series.
+- `myhal_sim.world`, a copy of the world file used during this run. 
 - videos/, a directory that holds the videos produced during the run.
 
-Note that if the run is cut short with SIGTERM, or by running either of the files scripts/shutdown.sh or scripts/clear.sh, all data files will be deleted.
+Note that if the run is cut short with SIGTERM, or by running either of the files `scripts/shutdown.sh` or `scripts/clear.sh`, all data files will be deleted.
 To stop a run while saving the data files, run `./scripts/save_shutdown.sh`.
 
 ## The Navigation Stack 
@@ -167,7 +167,7 @@ Various nodes of the navigation stack are discussed below.
 ### Point-cloud conversion and filtering 
 
 Currently, the main localization nodes used (see [below](#Localization)) subscribe to 2D laser-scan messages, not 3D point-clouds.
-This means that the 3D point-cloud data must be converted to a 2D laser-scan. This is done via pcl\_filter\_nodlet.cpp located in the jackal\_velodyne package.
+This means that the 3D point-cloud data must be converted to a 2D laser-scan. This is done via `pcl_filter_nodlet.cpp` located in the `jackal_velodyne` package.
 Moreover, it is in this conversion step that the classified point-cloud is segregated into different laser-scan messages depending on which parts of the navigation stack we want the various classes to go.
 For example, the global planning node will be given a laser-scan message made from the points classified as non-moving, whereas the local planning node message will include all classes of points. 
 See the figures above for more detail as to where the classes are sent depending on the localization node used.
@@ -193,13 +193,13 @@ If Gmapping is used, it produces a global occupancy grid which is given to costm
 If AMCL is used, the costmap\_2d directly subscribes to a laser-scan of consisting of static points.
 Regardless of the localization node, the local cost-map is built off of a laser-scan consisting of all points (for local collision avoidance). 
 
-The parameter files for the cost-maps can be found in src/jackal\_velodyne/params/ 
+The parameter files for the cost-maps can be found in `src/jackal_velodyne/params/` 
 
 ### Planning
 
 #### Global Planner:
 
-The global planner is sent tour goals via the node navigation\_goals\_V2.cpp. Using the global cost-map, it plans a route for the Jackal to follow.
+The global planner is sent tour goals via the node `navigation_goals_V2.cpp`. Using the global cost-map, it plans a route for the Jackal to follow.
 The ROS package used to generate the plan is [navfn](http://wiki.ros.org/navfn) which uses Dijkstra's algorithm.
 
 #### Local Planner:
@@ -208,27 +208,27 @@ The local planner's goal is the position furthest along the global path that is 
 The local planner has the responsibility of controlling the mobile base, providing the connection between the global plan and the robot.
 This local planner uses the ROS package [base\_local\_planner](http://wiki.ros.org/base_local_planner) which in turn uses [Dynamic Window Approach](https://ieeexplore.ieee.org/document/580977?arnumber=580977) algorithm to create a kinematic local trajectory for the Jackal.
 
-The parameter files for the planners can be found in src/jackal\_velodyne/params/ 
+The parameter files for the planners can be found in `src/jackal_velodyne/params/`.
 
 ## Simulation Details
 
 ### World Generation
 
 If the simulation is launched without specifying a world file to use (with the -l tag), then a new world is created.
-To create a world based on the supplied parameters, the file src/myhal\_simulator/worlds/myhal\_sim.world is written by the program world\_factory.cpp located in the myhal\_simulator package.
-This file is based off of a template file called myhal\_template.txt located in the same directory, which includes some of the basic [SDF](http://sdformat.org/) for a Gazebo world, as well as various unchanging aspects of the simulation such as the model of the 5th floor of Myhal.
-This program reads the ROS parameter server for the various room, scenario, camera, plugin, and animation parameters and uses this information to write the SDF for the corresponding models into myhal\_sim.world.
+To create a world based on the supplied parameters, the file `src/myhal_simulator/worlds/myhal_sim.world` is written by the program `world_factory.cpp` located in the `myhal_simulator` package.
+This file is based off of a template file called `myhal_template.txt` located in the same directory, which includes some of the basic [SDF](http://sdformat.org/) for a Gazebo world, as well as various unchanging aspects of the simulation such as the model of the 5th floor of Myhal.
+This program reads the ROS parameter server for the various room, scenario, camera, plugin, and animation parameters and uses this information to write the SDF for the corresponding models into `myhal_sim.world`.
 All the required actors (people), tables, chairs, and cameras are added by this program.
 
 ### World Control
 
-The dynamic elements of the world are controlled by a Gazebo world plugin called Puppeteer, located in src/myhal\_simulator/puppeteer.cpp.
+The dynamic elements of the world are controlled by a Gazebo world plugin called Puppeteer, located in `src/myhal_simulator/puppeteer.cpp`.
 This plugin is responsible for controlling the motion of the actors and cameras, as well as adding and dynamically modifying the models that allow for topics to be visualized in the Gazebo simulation.
 
 #### Actors
 
 Actors are the people in the simulation. They can have a variety of behaviors, most of which are based off of [Craig W. Reynolds, Steering Behaviors For Autonomous Characters](http://www.red3d.com/cwr/steer/gdc99/) 
-The various types of actors are defined in src/myhal\_simulator/src/vehicles.cpp. All actors follow some common rules and parameters such as collision avoidance with objects, one another, and the robot, as well as a maximum speed and acceleration. Currently available actor types include:
+The various types of actors are defined in `src/myhal_simulator/src/vehicles.cpp`. All actors follow some common rules and parameters such as collision avoidance with objects, one another, and the robot, as well as a maximum speed and acceleration. Currently available actor types include:
 
 - Wanderers, following the [Wander](http://www.red3d.com/cwr/steer/gdc99/) random steering behaviour.
 - Random Walkers, which walk to a random target found by ray-casting  
@@ -240,12 +240,12 @@ The various types of actors are defined in src/myhal\_simulator/src/vehicles.cpp
 
 #### Cameras
 
-While the cameras are added to the world on creation of the myhal\_sim.world file, they are controlled by two plugins, the Puppeteer world plugin and the CameraController sensor plugin located in src/jackal\_velodyne/src/camera\_controller.cpp. 
+While the cameras are added to the world on creation of the `myhal_sim.world` file, they are controlled by two plugins, the Puppeteer world plugin and the CameraController sensor plugin located in `src/jackal_velodyne/src/camera_controller.cpp`. 
 
-The CameraController plugin is responsible for saving the image frames received by the camera sensor to .jpg files. These .jpg files are later converted to a .mp4 as part of the data processing in the src/dashboard/src/data\_processing.py.
+The CameraController plugin is responsible for saving the image frames received by the camera sensor to .jpg files. These .jpg files are later converted to a .mp4 as part of the data processing in the `src/dashboard/src/data_processing.py`.
 This plugin also dynamically throttles the simulation step size, and pauses the simulation while saving the .jpg file, in an attempt to reach it's target frame rate (usually 24 fps).
 
-The Puppeteer plugin is responsible for moving the camera. There are a three types of cameras defined in src/myhal\_simulator/src/vehicles.cpp, each with different movement rules:
+The Puppeteer plugin is responsible for moving the camera. There are a three types of cameras defined in `src/myhal_simulator/src/vehicles.cpp`, each with different movement rules:
 
 - Sentry: a stationary camera that points towards a desired target (in this case the robot) .
 - Hoverer: a moving camera that hovers at a specified relative position with respect to its target. It will point towards the target and can optionally orbit around the target.  
@@ -265,7 +265,7 @@ The visualization of these topics is managed by the Puppeteer world plugin.
 ### Ground Truth Classifications 
 
 By passing the -g flag when running [master.sh](#Master-Script), the point-clouds produced by the simulation of the VLP-32 LiDAR sensor will have accompanying ground truth classifications. 
-This is achieved with a Gazebo sensor plugin, located in src/myhal\_simulator/src/custom\_velodyne.cpp. 
+This is achieved with a Gazebo sensor plugin, located in `src/myhal_simulator/src/custom_velodyne.cpp`. 
 This sensor plugin is based on [the official velodyne\_simulator package](https://bitbucket.org/DataspeedInc/velodyne_simulator/src) with a few modifications:
 
 - The simulator preforms a collision check between each point and the objects in the world to determine it's class.

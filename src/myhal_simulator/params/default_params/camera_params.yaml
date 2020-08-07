@@ -10,7 +10,7 @@ sentry1:
 
 sentry2:
     - 0  # Mode: (0 - sentry), (1 - hoverer), (2 - stalker)
-    - -8 # x (for modes 0 and 1) 
+    - 5 # x (for modes 0 and 1) 
     - -15 # y (for modes 0 and 1) 
     - 10 # z (for all modes)
     - -1 # orbiting period (for mode 1) (if < 0, no rotation)
