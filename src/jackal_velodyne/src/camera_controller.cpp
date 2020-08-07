@@ -11,11 +11,11 @@ void CameraController::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf) {
     //std::cout << "Loading Custom Camera: " << this->parentSensor->Name() << std::endl;
     print_color("Loading Custom Camera: " + this->parentSensor->Name(), EMPHBLUE);
 
-    if (_sdf->HasElement("filepath")){
+    /*if (_sdf->HasElement("filepath")){
         this->filepath = _sdf->GetElement("filepath")->Get<std::string>();
     } else {
         this->filepath = "/tmp/";
-    }
+    }*/
 
     int argc = 0;
 
@@ -37,6 +37,19 @@ void CameraController::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf) {
     if (!this->nh.getParam("min_step", this->min_step)) {
         this->min_step = 0.0001;
     }
+
+    std::string user_name = "default";
+    if (const char * user = std::getenv("USER")){
+        user_name = user;
+    } 
+
+    std::string start_time;
+    if (!this->nh.getParam("start_time", start_time)){
+        this->filepath = "/tmp/";
+    } else{
+        this->filepath = "/home/" + user_name + "/Myhal_Simulation/simulated_runs/" + start_time + "/logs-" + start_time +"/videos/" + this->parentSensor->Name() + "/";
+    }
+
     print_color("Min step size: " + std::to_string(this->min_step), EMPHGREEN);
 
     std::string command = "mkdir " + this->filepath;
