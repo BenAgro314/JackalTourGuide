@@ -112,7 +112,7 @@ class YEBoxPlot(Plot):
 
     def label(self):
         self.ax.set_title("Yaw Error")
-        self.ax.set(xlabel='Series', ylabel = 'Yaw Error (m)')
+        self.ax.set(xlabel='Series', ylabel = 'Yaw Error (rad)')
 
     def init_axis(self):
         self.collect_data()
@@ -413,7 +413,7 @@ class SuccessRate(Plot):
                if (meta['success_status'] == 'true'):
                    rate += 1
                    
-           rate/=len(series.runs)
+           rate = float(rate)/len(series.runs)
            self.data['y_data'].append(rate*100)
 
     def info(self):
@@ -676,7 +676,7 @@ class Display:
         self.fig.set_size_inches((30,15), forward = False)
         if (path is not None):
             try:
-                plt.savefig(path, dpi = 200, bbox_inches='tight')
+                plt.savefig(path)
             except:
                 logging.error('Could not save plot')
         plt.show()

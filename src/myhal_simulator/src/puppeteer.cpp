@@ -106,7 +106,7 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
     }
 
     if (this->viz_gaz){
-        this->global_path_viz = boost::make_shared<PathViz>("global_path_viz", 200, ignition::math::Vector4d(0,1,0,1), this->world);   
+        this->global_path_viz = boost::make_shared<PathViz>("global_path_viz", 300, ignition::math::Vector4d(0,1,0,1), this->world);   
         this->local_path_viz = boost::make_shared<PathViz>("local_path_viz", 75, ignition::math::Vector4d(0,0,1,1), this->world);   
     }
 
