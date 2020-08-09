@@ -112,8 +112,10 @@ void Puppeteer::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf){
 
     std::cout << "LOADED ALL VEHICLES\n";
 
-    std::cout << "COMMAND: " << this->launch_command << std::endl;
-    std::system(this->launch_command.c_str());
+    if (this->tour_name != ""){
+        std::cout << "COMMAND: " << this->launch_command << std::endl;
+        std::system(this->launch_command.c_str());
+    }
 
     if (this->viz_gaz){
         this->global_plan_sub = this->nh.subscribe("/move_base/NavfnROS/plan", 1, &Puppeteer::GlobalPlanCallback, this);
@@ -133,7 +135,9 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
     }
     this->last_update = _info.simTime;
 
-    if ((this->robot_name != "") && this->robot == nullptr){
+    //std::cout << "A" << std::endl;
+
+    if ((this->tour_name != "") && (this->robot_name != "") && this->robot == nullptr){
         for (unsigned int i = 0; i < world->ModelCount(); ++i) {
             auto model = world->ModelByIndex(i);
             if (model->GetName() == this->robot_name){
@@ -146,23 +150,23 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
             }
         }
         
-        if (this->tour_name != ""){
-            double i = 0;
-            for (auto path: this->paths){
-                for (auto pose: path){
-                    geometry_msgs::PoseStamped msg;
-                    msg.pose.position.x = pose.X();
-                    msg.pose.position.y = pose.Y();
-                    msg.pose.position.z = pose.Z();
-                    msg.header.stamp = ros::Time(i);
-                    path_pub.publish(msg);
-                }
-                i++;
+        double i = 0;
+        for (auto path: this->paths){
+            for (auto pose: path){
+                geometry_msgs::PoseStamped msg;
+                msg.pose.position.x = pose.X();
+                msg.pose.position.y = pose.Y();
+                msg.pose.position.z = pose.Z();
+                msg.header.stamp = ros::Time(i);
+                path_pub.publish(msg);
             }
+            i++;
         }
 
         return;
     }
+
+    //std::cout << "B" << std::endl;
 
     if (this->robot != nullptr){
         this->robot_traj.push_back(this->robot->WorldPose().Pos());
@@ -172,6 +176,7 @@ void Puppeteer::OnUpdate(const gazebo::common::UpdateInfo &_info){
         }
     }
 
+    //std::cout << "C" << std::endl;
 
     this->vehicle_quadtree = boost::make_shared<QuadTree>(this->building_box);
 

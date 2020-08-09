@@ -3,6 +3,7 @@
 
   <arg name="use_sim_time" default="true" />
   <arg name="gui" default="false" /> 
+  <arg name="headless" default="true" />
   <arg name="world_name" default="$(find jackal_velodyne)/worlds/sandbox.world" />
   <arg name="extra_gazebo_args" default=""/>
 
@@ -10,14 +11,12 @@
     <param name="gazebo/enable_ros_network" value="true" />
   </group>
   <node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen"
-	args="-e ode $(arg extra_gazebo_args) $(arg world_name)"
+	args="--verbose -e ode $(arg extra_gazebo_args) $(arg world_name)"
   required="false" />
 
   <!-- start gazebo client -->
-  <group if="$(arg gui)">
-    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" args=""
-    required="false"/>
-  </group>
+  <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" args=""
+  required="false"/>
 
 
 </launch>

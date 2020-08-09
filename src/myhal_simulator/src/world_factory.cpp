@@ -127,7 +127,6 @@ void WorldHandler::LoadParams(){
     if (!nh.getParam("tour_name", this->tour_name)){
         std::cout << "ERROR READING TOUR NAME\n";
         this->tour_name = "A_tour";
-        return;
     }
 
     double cam_frac;
@@ -143,6 +142,8 @@ void WorldHandler::LoadParams(){
         std::cout << "ERROR READING CAM REL POS\n";
         cam_rel_pos = {0,0,0};
     }
+
+
 
     TourParser parser = TourParser(this->tour_name);
 
@@ -194,10 +195,6 @@ void WorldHandler::LoadParams(){
         this->costmap->AStar(start.Pos(), end.Pos(), path, false);
         paths.insert(paths.end(),path.begin(),path.end());
     }
-
-    // for (auto pt: paths){
-    //      this->doors.push_back(std::make_shared<myhal::IncludeModel>("point", ignition::math::Pose3d(pt,ignition::math::Quaterniond(0,0,0,0)), "model://small_point", 0.2,0.2));
-    // }
 
     for (auto obj: static_objects){
         if (obj.MinZ()  >= (2 - 10e-3)){

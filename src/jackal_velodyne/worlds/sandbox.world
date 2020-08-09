@@ -98,48 +98,21 @@
     </gui>
 
 
-    <!--plugin name = "puppeteer" filename = "libpuppeteer.so">
+    <plugin name = "puppeteer" filename = "libpuppeteer.so">
       <building_name>building</building_name>
       <robot_name>jackal</robot_name>
-    </plugin-->
+    </plugin>
 
- 
+
     <include>
       <name>building</name>
       <pose>0 0 0 0 0 0</pose>
       <uri>model://10x10Box</uri>
-  </include>
+    </include>
 
 
-		<model name="box">
-			<pose>0 0 0 0 0 0</pose>
-			<static>true</static>
-			<link name="box_34_link">
-				<visual name="visual">
-					<geometry>
-						<!--polyline>
-							<point>0 0</point>
-							<point>1 0</point>
-							<point>1 1</point>
-                            <height>1</height>
-                        </polyline-->
-                        <cylinder>
-                            <length>0.001</length>
-                            <radius>0.02</radius>
-                        </cylinder>
-					</geometry>
-                    <material>
-                        <diffuse>0 1 0 1</diffuse>
-                        <emissive>0 1 0 1</emissive>
-                        <ambient>0 1 0 1</ambient>
-                        <specular>0 1 0 1</specular>
-                    </material>
-				</visual>
-			</link>
-		</model>
-
-		<!--actor name="actor_basic_wanderer_39">
-			<pose>0 0 1.000000 0.000000 -0.000000 1.877947</pose>
+		<actor name="actor_basic_random_walker_42">
+			<pose>4.553999 -4.031851 1.000000 0.000000 -0.000000 -2.973192</pose>
 			<skin>
 				<filename>model://actor/meshes/SKIN_man_blue_shirt.dae</filename>
 			</skin>
@@ -161,9 +134,10 @@
 			</animation>
 			<plugin name="max_speed" filename="1">
 			</plugin>
-			<plugin name="vehicle_type" filename="wanderer">
+			<plugin name="vehicle_type" filename="random_walker">
 			</plugin>
-		</actor-->
+		</actor>
+
 
    
  

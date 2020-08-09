@@ -34,10 +34,12 @@ void TourParser::ReadTourParams(){
 
     if (!nh.getParam("resolution", this->resolution)){
         std::cout << "ERROR READING RESOLUTION";
+        this->resolution = 0.1;
     }
 
     std::vector<double> b;
     if (!nh.getParam("bounds", b)){
+        b = {-21.55, -21.4, 21.55, 21.4};
         std::cout << "ERROR READING TOP LEFT CORNER";
     }
 

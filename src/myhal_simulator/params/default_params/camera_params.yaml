@@ -1,4 +1,4 @@
-camera_names: [sentry1, hoverer2, hoverer1]
+camera_names: []
 
 sentry1:
     - 0  # Mode: (0 - sentry), (1 - hoverer), (2 - stalker)
