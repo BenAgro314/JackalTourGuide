@@ -20,125 +20,103 @@ dem_people:
   pop_density: "0.1"
   table_percentage: "0"
   actor: actor_basic_stander
-  model_list: big_tables
   table_group_list: mixed_group
 
 med_tables:
   pop_density: "0"
   table_percentage: "0.5"
   actor: actor_basic_boid
-  model_list: big_tables
   table_group_list: mixed_group
 
 dense_boids:
   pop_density: "0.5"
   table_percentage: "0"
   actor: actor_basic_boid
-  model_list: big_tables
   table_group_list: big_table_group
 
 dense_wanderers:
   pop_density: "0.5"
   table_percentage: "0"
   actor: actor_basic_wanderer
-  model_list: big_tables
   table_group_list: big_table_group
 
 no_tables_wanderer_crowd:
   pop_density: "0.15"
   table_percentage: "0"
   actor: actor_basic_wanderer
-  model_list: big_tables
   table_group_list: big_table_group
 
 no_tables_boid_crowd:
   pop_density: "0.15"
   table_percentage: "0"
   actor: actor_basic_boid
-  model_list: big_tables
   table_group_list: big_table_group
 
 big_tables_random_walker_study:
   pop_density: "0.08"
   table_percentage: "0.5"
   actor: actor_basic_random_walker
-  model_list: big_tables
   table_group_list: big_table_group
 
 small_tables_stander_meeting:
   pop_density: "0.1"
   table_percentage: "0.5"
   actor: actor_basic_stander
-  model_list: big_tables
   table_group_list: small_table_group
 
 mixed_tables_no_people:
   pop_density: "0"
   table_percentage: "1"
   actor: actor_basic_boid
-  model_list: big_tables
   table_group_list: mixed_group
 
 big_tables_no_people:
   pop_density: "0"
   table_percentage: "0.8"
   actor: actor_basic_boid
-  model_list: big_tables
   table_group_list: big_table_group
 
 small_tables_no_people:
   pop_density: "0"
   table_percentage: "0.8"
   actor: actor_basic_boid
-  model_list: big_tables
   table_group_list: small_table_group
 
 small_tables_random_walker_study:
   pop_density: "0.1"
   table_percentage: "0.7"
   actor: actor_basic_random_walker
-  model_list: big_tables
   table_group_list: small_table_group
 
 mixed_tables_follower_tour:
   pop_density: "0.09"
   table_percentage: "0.5"
   actor: actor_basic_follower
-  model_list: big_tables
   table_group_list: mixed_group
 
 mixed_tables_wanderer_study:
   pop_density: "0.08"
   table_percentage: "0.8"
   actor: actor_basic_wanderer
-  model_list: big_tables
   table_group_list: mixed_group
 
 empty:
   pop_density: "0"
   table_percentage: "0"
   actor: actor_basic_wanderer
-  model_list: big_tables
   table_group_list: mixed_group
 
 empty_film:
   pop_density: "0"
   table_percentage: "0"
   actor: actor_basic_wanderer
-  model_list: big_tables
   table_group_list: mixed_group
 
 long_term_standers:
   pop_density: "0.1"
   table_percentage: "0"
   actor: actor_long_term_stander
-  model_list: big_tables
   table_group_list: mixed_group
-
-big_tables:
-  - table1
-  - table2
-  - table3
 
 big_table_group:
   - table_group_1

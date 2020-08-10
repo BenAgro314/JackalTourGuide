@@ -127,8 +127,11 @@ Each scenario name has a corresponding entry in the form:
   pop_density: <float as a string> # specifies the population density of the scenario in people/m^2
   table_percentage: <float between "0" and "1" as a string> # specifies what percentage of the avaible model positions will be filled in the room
   actor: <actor_type> # see the model params file
-  model_list: <model_list> # which models are available to be placed in the room, see the model params file
-  table_group_list: <table_list> # which table groups are available to be placed in the room, see the model params file
+  table_group_list: <table_list> # which table groups are available to be placed in the room, see the the end of the scenario_params_V2.yaml file
+
+<table_list>: # specifies which tabel groups (table model and chair model) can be used in the simulation. See model_params.yaml for table groups
+    - <table_group_1>
+    - <table_group_2>
 ```
 
 More parameter descriptions are on the way.

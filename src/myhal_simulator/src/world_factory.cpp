@@ -428,7 +428,7 @@ void WorldHandler::LoadParams(){
 
         std::shared_ptr<Scenario> scenario = std::make_shared<Scenario>(std::stod(info["pop_density"]), std::stod(info["table_percentage"]), info["actor"]);
 
-        std::vector<std::string> model_list; 
+        /*std::vector<std::string> model_list; 
 
         if (!nh.getParam(info["model_list"], model_list)){
             std::cout << "ERROR READING MODEL LIST\n";
@@ -438,7 +438,7 @@ void WorldHandler::LoadParams(){
 
         for (auto model_name: model_list){
             scenario->AddModel(this->model_info[model_name]);
-        }
+        }*/
 
 
         std::vector<std::string> table_group_list; 
