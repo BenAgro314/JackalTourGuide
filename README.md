@@ -134,6 +134,76 @@ Each scenario name has a corresponding entry in the form:
     - <table_group_2>
 ```
 
+##### Camera Parameters
+
+Camera parameters are specified in `camera_params.yaml`.
+There are two ways of placing cameras in the simulation (which can be used together).
+
+The first method requires that every camera placed in the world is given a name and listed in `camera_names`. 
+Every named camera has a corresponding entry in the form:
+
+``` yaml
+<camera_name>:
+    - 0  # Mode: (0 - sentry), (1 - hoverer), (2 - stalker)
+    - -8 # x 
+    - 3 # y 
+    - 10 # z 
+    - -1 # orbiting period  (if < 0, no rotation)
+    - -1 # following distance  (if < 0, NA)
+```
+
+The first number in the list sets the cameras mode, See [Cameras](#Cameras) below.
+The next three numbers set the x,y and z position of the camera.
+If the camera is a Sentry (mode 0), then this is a pose relative to the world.
+If the camera is a Hoverer (mode 1), then this is a fixed pose relative to the robot.
+If the camera is a Stalker (mode 2), then then z param is used to set the height of the camera.
+The next parameter is the orbiting period and is used for the Hoverer. If this param is greater than 0, then the camera will complete one orbit around the robot every T seconds, where T is the period.
+The last parameter is the following distance and is used for the Stalker. It specifies the distance behind the Jackal (on the Jackal's path), that the camera will follow.
+
+##### Model Parameters
+
+Model parameters (including actors) are specified in `model_params.yaml`.
+Any model to be included must have a name specified in `model_names`.
+Each named model has a corresponding entry in the form:
+
+``` yaml
+<table_name>:
+  filename: model://<file_name>
+  width: <float as string> # the width of the model (default x direction) in m 
+  length: <float as string> # the length of the model (default y direction) in m
+  height: <float as string> # optional parameter that can be used to set the height of a chair model in m
+```
+
+Similarly, any actor to be included must have a name specified in `actor_names`.
+Each named actor has a corresponding entry in the form:
+
+``` yaml
+<actor_name>: 
+  filename: model://<file_name>
+  plugin: <plugin_name> # see plugin_params.yaml
+  obstacle_margin: <float as string> # the buffer distance given to each actor when being placed in the world (in m), to avoid being placed in another object.
+```
+
+Note that the files listed in `filename` must be included in a file listed in the environment variables `$GAZEBO_MODEL_PATH` and `$GAZEBO_MODEL_PATH`.
+
+Finally, table and chair models can be grouped in `table_groups`. Include the name of the table group in `table_group_names`.
+Each named group has a corresponding entry in the form:
+
+``` yaml
+<table_group_name>:
+  table: <table_model_name>
+  chair: <chair_model_name>
+```
+
+These are referenced in `scenario_params_V2.yaml` discussed above.
+
+The other parameter files are rarely modified. They can be customized in a similar format to the parameters discussed above:
+
+- `plugin_params.yaml`: used for specifying the plugins that are added to the actors. Each plugin includes a `vehicle_type` (see [Actors](#Actors) below) and any corresponding fields for that actor behaviour. For example if `vehicle_type: stander`, then the plugin should include the characteristics for a stander: `standing_duration: '5'`. See the function `CreateVehicle()` in `src/myhal_simulator/src/puppeteer.cpp` for more information. 
+- `animation_params.yaml`: contains the names of the animations given to every actor and the file of that animation.
+- `common_vehicle_params.yaml`: contain various parameters that are common to each vehicle such as their mass and maximum speed. 
+- `myhal_walls.ply`: this specifies the bounding boxes for the walls of the Myhal model. This should not be modified unless the model used changes.
+
 More parameter descriptions are on the way.
 
 ### The Data
