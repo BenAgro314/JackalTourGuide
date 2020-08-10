@@ -6,6 +6,9 @@
      * [Dependencies](#dependencies)
      * [Installation](#installation)
      * [Running the Simulation](#running-the-simulation)
+     * [World Parameter Specification](#world-parameter-specification)
+     * [Robot Parameter Specification](#robot-parameter-specification)
+     * [Creating New Tours](#creating-new-tours)
      * [The Data](#the-data)
   * [The Navigation Stack](#the-navigation-stack)
      * [Point-cloud conversion and filtering](#point-cloud-conversion-and-filtering)
@@ -72,7 +75,7 @@ For example, some common calls are:
 The first command would launch the simulation with the tour `E_tour`, visualize topics in the simulation, use Gmapping and ground truth classifications with point-cloud filtering.
 The second command would launch the simulation with the tour `J_tour` along with a GUI, and load the world file from the previous run `2020-08-04-17-04-21`.
 
-#### Parameter Specification
+### World Parameter Specification
 
 Parameter directories are located in `src/myhal_simulator/params/`. The default parameters are in a directory called `default_params`. 
 The files in this folder can be modified directly, or a copy of this folder can be made.
@@ -87,7 +90,7 @@ The files that have parameters to be modified are (in order of usefulness):
 - `model_params.yaml` 
 - `animation_params.yaml` 
 
-##### Room Parameters
+#### Room Parameters
 
 Room parameters are specified in `room_params_V2.yaml`.
 The name of any room to be included in the simulation must be included in the list `room_names`.
@@ -116,7 +119,7 @@ Each room name has a corresponding entry in the form (note that angled braces ar
 Note: the reason for the convoluted yaml specification is because ROS only allows lists and dictionaries of primitive data types to be loaded to the parameter sever.
 This is a problem I am actively working on fixing by bypassing the parameter server all together and reading a yaml file directly.
 
-##### Scenario Parameters
+#### Scenario Parameters
 
 Scenario parameters are specified in `scenario_params_V2.yaml`.
 The name of any scenario to be included in the simulation must be included in the list `scenario_names`.
@@ -134,7 +137,7 @@ Each scenario name has a corresponding entry in the form:
     - <table_group_2>
 ```
 
-##### Camera Parameters
+#### Camera Parameters
 
 Camera parameters are specified in `camera_params.yaml`.
 There are two ways of placing cameras in the simulation (which can be used together).
@@ -160,7 +163,7 @@ If the camera is a Stalker (mode 2), then then z param is used to set the height
 The next parameter is the orbiting period and is used for the Hoverer. If this param is greater than 0, then the camera will complete one orbit around the robot every T seconds, where T is the period.
 The last parameter is the following distance and is used for the Stalker. It specifies the distance behind the Jackal (on the Jackal's path), that the camera will follow.
 
-##### Model Parameters
+#### Model Parameters
 
 Model parameters (including actors) are specified in `model_params.yaml`.
 Any model to be included must have a name specified in `model_names`.
@@ -206,6 +209,33 @@ The other parameter files are rarely modified. They can be customized in a simil
 
 More parameter descriptions are on the way.
 
+#### Creating New Tours
+
+The files used to specify tours are stored in `src/myhal_simulator/tours/`.
+To create a new tour, make a copy of the directory `template`:
+
+``` bash
+cd ~/catkin_ws/src/myhal_simulator/tours/
+cp -r template/ <tour_name>
+```
+
+There are two files in the directory for each tour:
+
+- map.txt, which is a text representation of the blueprint of the 5th floor of Myhal
+- config.yaml, which specifies the map resolution (how many meters does each character in the map represent), and the rectangular bounds of the map in the form `[min_x, min_y, max_x, max_y]` 
+
+To specify the targets along the tour, open map.txt in a text editor that can zoom out (I recommend [Geany](https://www.geany.org/)), or at least retains the formatting of the file.
+The map will look something like this:
+
+![maptxt](notebooks/map.png)
+
+To add a target on the tour, delete the space character where you want to add the target, and replace it with an alphabetical character (from A to Z and a to z).
+The order of the targets on the tour is determined by the ASCII value of that character, so it is alphabetical with all uppercase letters preceding all lowercase letters.
+
+### Robot Parameter Specification
+
+Coming Soon!
+
 ### The Data
 
 Whenever you run the simulation, a date stamped folder will be created in this directory eg. `~/Myhal_Simulation/simulated_runs/2020-08-06-22-45-03`.
@@ -224,7 +254,7 @@ Also contained in this directory is a directory called is a logs-<date> (e.g. lo
 - `myhal_sim.world`, a copy of the world file used during this run. 
 - videos/, a directory that holds the videos produced during the run.
 
-Note that if the run is cut short with SIGTERM, or by running either of the files `scripts/shutdown.sh` or `scripts/clear.sh`, all data files will be deleted.
+Note that if the run is cut short with SIGTERM (including stopping a docker container), or by running either of the files `scripts/shutdown.sh` or `scripts/clear.sh`, all data files will be deleted.
 To stop a run while saving the data files, run `./scripts/save_shutdown.sh`.
 
 ## The Navigation Stack 
