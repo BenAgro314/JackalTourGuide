@@ -227,7 +227,7 @@ There are two files in the directory for each tour:
 To specify the targets along the tour, open map.txt in a text editor that can zoom out (I recommend [Geany](https://www.geany.org/)), or at least retains the formatting of the file.
 Upon zooming out as far as possible, the map will look something like this:
 
-![maptxt](notebooks/map.png)
+![maptxt](imgs/map.png)
 
 Each black dot is a '#' character. To add a target on the tour, delete the space character where you want to add the target, and replace it with an alphabetical character (from A to Z and a to z).
 The order of the targets on the tour is determined by the ASCII value of that character, so it is alphabetical with all uppercase letters preceding all lowercase letters.
@@ -263,9 +263,9 @@ The two diagrams below depict two configurations of the navigation stack, the fi
 If ground truth classifications are used, then the points go the ground truth classification node instead of the online classifier, following the dotted lines.
 Various nodes of the navigation stack are discussed below.
 
-![AMCLstack](notebooks/AMCL.png)
+![AMCLstack](imgs/AMCL.png)
 
-![Gmappingstack](notebooks/GMAPPING.png)
+![Gmappingstack](imgs/GMAPPING.png)
 
 ### Point-cloud conversion and filtering 
 
@@ -379,4 +379,5 @@ This means that despite the extra time taken for ground truth classifications, t
 ## Dashboard 
 
 The Dashboard is a python module that allows for manipulation and visualization of the data produced by the simulation.
-See the Jupyter Lab `src/notebooks/ProgressReport2020-07-22.ipynb` for a detailed explanation of the Dashboard and it's functionality. 
+
+Description Coming Soon
