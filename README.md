@@ -95,6 +95,30 @@ For example, some common calls are:
 The first command would launch the simulation with the tour `E_tour`, visualize topics in the simulation, use Gmapping and ground truth classifications with point-cloud filtering.
 The second command would launch the simulation with the tour `J_tour` along with a GUI, and load the world file from the previous run `2020-08-04-17-04-21`.
 
+#### Using Online Classifications
+
+Online classifications can only be used through docker. To obtain the docker necessary docker images:
+
+``` bash
+cd ~
+git clone https://github.com/BenAgro314/ROS-Dockerfiles.git
+cd ~/ROS-Dockerfiles/docker_ros_melodic/ && ./docker_build.sh
+cd ~/ROS-Dockerfiles/docker_ros_noetic/ && ./docker_build.sh
+```
+
+By calling the script `~/ROS-Dockerfiles/run_files/classification_test.sh`, two containers will be launched, one running the Myhal simulation in ROS Melodic, the other running the online classifications in ROS Noetic.
+
+Note: the script `classification_test.sh` will have to be modified to suit your needs.
+Currently it mounts directories based on the usernames `bag` and `hth`.
+
+To run a specific test in the docker:
+
+``` bash
+./classification_test.sh -c "./master.sh <insert_flags>"
+```
+
+The containers will are by default detached upon creation.
+
 ### World Parameter Specification
 
 Parameter directories are located in `src/myhal_simulator/params/`. The default parameters are in a directory called `default_params`. 
