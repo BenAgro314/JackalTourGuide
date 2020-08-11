@@ -234,7 +234,34 @@ The order of the targets on the tour is determined by the ASCII value of that ch
 
 ### Robot Parameter Specification
 
-Coming Soon!
+Various parameters of the mobile base Jackal robot can be modified through files in `src/jackal_velodyne/params/` and `src/jackal_velodyne/launch/`.
+
+`src/jackal_velodyne/params/` contains:
+
+- `base_local_planner_params.yaml`, parameters for the local planning, details [here](http://wiki.ros.org/base_local_planner).
+- `move_base_params.yaml`, parameters for the ROS package `move_base`, details [here](http://wiki.ros.org/move_base#Parameters).
+- All other files (including those in `map_nav_params/`) pertain to the local and global cost-map parameters, details [here](http://wiki.ros.org/costmap_2d). 
+
+`src/jackal_velodyne/launch/` contains various launch files. The [Master Script](#Master-Script) only calls `p1.launch`, while `p2.launch` is later called by the world plugin `src/myhal_simulator/src/puppeteer.cpp` once the simulation is loaded.
+`p1.launch` is responsible for launching the Gazebo simulation, while `p2.launch` spawns the Jackal in the simulation with the correct configurations.
+
+Parameters for the conversion and filtering of the 3D LiDAR data to 2D laser-scans sorted by classes can be found in `src/jackal_velodyne/launch/include/pointcloud_filter2.launch`.
+Here you will find many if statements which choose the correct configuration depending on the localization method used (Gmapping or AMCL), the classification method used (ground truth or online classifications), and whether or not filtering is being used. 
+For each configuration, multiple laser-scans need to be created. In general this includes one for local planning, one for global planning and one for navigation, but this is not true in all cases.
+See details on [The Navigation Stack](#The-Navigation-Stack) below for more details.
+For each laser-scan that is created, a `pcl_filter` nodelet is launched with specific parameters. The parameter that dictate which classes are to be included in a specific nodelet's laser-scan is:
+
+``` yaml
+catagories:
+  - <int class>
+  - <int class>
+  - <int class>
+```
+
+Two other launch files contain useful parameters to modify:
+
+- `src/jackal_velodyne/launch/include/amcl.launch`, which contain various parameters for AMCL, details [here](http://wiki.ros.org/amcl) 
+- `src/jackal_velodyne/launch/include/gmapping.launch`, which contain various parameters for Gmapping, details [here](http://wiki.ros.org/gmapping) 
 
 ### The Data
 
