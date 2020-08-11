@@ -412,14 +412,14 @@ First, ensure the module can be imported by adding it to the `PYTHONPATH` enviro
 export PYTHONPATH=${PYTHONPATH}:~/catkin_ws/src/
 ```
 
-Or for a more solution that will persist between sessions:
+Or for solution that will persist between sessions:
 
 ``` bash
 echo 'export PYTHONPATH=${PYTHONPATH}:~/catkin_ws/src/' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-To use the dashboard start up a python interpretor. The dashboard has many functions for organizing run data:
+To use the dashboard, start up a python interpretor. The dashboard has many functions for organizing run data:
 
 ``` python
 >>> from dashboard import *
@@ -431,14 +431,10 @@ To use the dashboard start up a python interpretor. The dashboard has many funct
 >>> d.run_info(1) # prints information on the run with the index 1
 >>> d.list_dirs() # lists all of the folders in the directory ~/Myhal_Simulation/simulated_runs/, even if they are not valid runs
 >>> d.remove_dir('directory_name') # removed a directory with name 'directory_name' from ~/Myhal_Simulation/simulated_runs/
-Type DEL if you want to delete directory_name 
-DEL
 >>> d.remove_dir(clear_old = True) # will remove all directories from the folder that are not valid runs
-Type DEL if you want to delete all old runs
-DEL
 ```
 
-In order to visualize data, first you must specify what data you want to see. This is done by adding `Series()` objects to the `Dashboard()` object.
+In order to visualize data, first you must specify what data you want to see. This is done by adding `Series()` objects to the Dashboard.
 Series represent a set of runs adhering to various characteristics. Currently available characteristics include:
 
 - Time ranges: `earliest_date`, `latest_date`, `date`, type: int.
@@ -491,12 +487,6 @@ Some other useful functions include:
 >>> d.remove_plot(TEBoxPlot) # remove plots and series by type or name respectivly
 >>> d.clear_series() # clear all series and plots
 >>> d.watch('2020-07-17-12-47-30') # watch the gazebo videos for a specific run (by name or index)
-Available videos for 2020-07-17-12-47-30:
-(0) stalker_1_22.mp4 
-(1) hoverer_2_22.mp4 
-Input the index of the video you would like to view:
-1
-Playing: hoverer_2_22.mp4  
 >>> d.rviz_run(0) # play the bag file for a run and view it in rviz (by name or index)
 >>> d.remove_series_dirs('series_name') # this will delete the directories of all runs in the series 
 ```
