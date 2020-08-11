@@ -19,7 +19,7 @@
      * [World Generation](#world-generation)
      * [World Control](#world-control)
      * [Ground Truth Classifications](#ground-truth-classifications)
-  * [Dashboard](#dashboard)
+  * [The Dashboard](#the-dashboard)
 
 ## Usage
 
@@ -403,7 +403,7 @@ This sensor plugin is based on [the official velodyne\_simulator package](https:
 
 This means that despite the extra time taken for ground truth classifications, there is 0 latency from the simulation perspective, and no LiDAR frames are dropped.
 
-## Dashboard 
+## The Dashboard 
 
 The Dashboard is a python module that allows for organization and analysis of data gathered from the simulation.
 First, ensure the module can be imported by adding it to the `PYTHONPATH` environment variable:
