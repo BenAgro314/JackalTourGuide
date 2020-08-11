@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
 
   <!-- Short-term hack to support the original front_laser:=true argument for spawning

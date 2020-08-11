@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <node pkg="jackal_velodyne" type="pcl_filter_node" name="f0">
     <remap from="cloud_in" to="/velodyne_points"/>

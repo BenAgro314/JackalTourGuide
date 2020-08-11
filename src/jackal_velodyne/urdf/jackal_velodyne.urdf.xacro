@@ -253,20 +253,6 @@
 
   <!-- Bring in simulation data for Gazebo. -->
   <xacro:include filename="$(find jackal_description)/urdf/jackal.gazebo" />
-
-  <!-- Optional standard accessories, including their simulation data. The rendering
-       of these into the final description is controlled by optenv variables, which
-       default each one to off.-->
-  <xacro:include filename="$(find jackal_velodyne)/urdf/accessories.urdf.xacro" />
-
-  <!-- Optional custom includes. -->
-  <xacro:if value="$(optenv JACKAL_URDF_EXTRAS 0)">
-    <xacro:include filename="$(env JACKAL_URDF_EXTRAS)" />
-  </xacro:if>
-
-<!-- tests below -->
-
-	
   
   <!-- added support -->
 
@@ -379,30 +365,3 @@
   
 </robot>
 
-   <!--xacro:include  filename="$(find jackal_velodyne)/urdf/viewbot.urdf.xacro" />
-    <xacro:viewbot_link filepath="${filepath}" name="first_person" parent="support_link3">
-        <origin xyz="0 0 0"
-                rpy="0 0 0" />
-    </xacro:viewbot_link>
-
-    <xacro:viewbot_link filepath="${filepath}" name="third_person_rear" parent="base_link">
-        <origin xyz="-6 0 2"
-                rpy="0 0.3 0" />
-    </xacro:viewbot_link>
-
-    <xacro:viewbot_link  filepath="${filepath}" name="third_person" parent="base_link">
-        <origin xyz="6 0 2"
-                rpy="0 0.2 3.14" />
-    </xacro:viewbot_link-->
-  
-  <!--xacro:include filename="$(find jackal_velodyne)/urdf/VLP-16.urdf.xacro"/>
-  <VLP-16 parent="support_link3" name="no_gpu_velodyne" topic="/no_gpu_points" hz="10" samples="1024" gpu="false" lasers="33" max_range="30">
-    <origin xyz="0 0 0" rpy="0 0 0" />
-  </VLP-16-->
-
-<!-- default samples = 1024 -->
-  <!-- VHDL-32E -->
-<!--   <xacro:include filename="$(find velodyne_description)/urdf/HDL-32E.urdf.xacro"/>
-  <HDL-32E parent="base_link" name="velodyne_2" topic="/velodyne_points_2" hz="10" samples="1024" gpu="false">
-    <origin xyz="0 0 0.6" rpy="0 0 0" />
-  </HDL-32E> -->

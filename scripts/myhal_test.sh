@@ -21,12 +21,6 @@ rosparam load src/myhal_simulator/params/$PARAMS/plugin_params.yaml
 rosparam load src/myhal_simulator/params/$PARAMS/model_params.yaml
 rosparam load src/myhal_simulator/params/$PARAMS/camera_params.yaml
 rosparam load src/myhal_simulator/tours/$TOUR/config.yaml
-#rosparam set tour_name $TOUR
-
-#t=$(date +'%Y-%m-%d-%H-%M-%S')
-#rosparam set start_time $t
-#mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t"
-#mkdir "/home/$USER/Myhal_Simulation/simulated_runs/$t/logs-$t"
 
 sleep 0.1
 

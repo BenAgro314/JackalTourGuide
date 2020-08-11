@@ -225,11 +225,11 @@ There are two files in the directory for each tour:
 - config.yaml, which specifies the map resolution (how many meters does each character in the map represent), and the rectangular bounds of the map in the form `[min_x, min_y, max_x, max_y]` 
 
 To specify the targets along the tour, open map.txt in a text editor that can zoom out (I recommend [Geany](https://www.geany.org/)), or at least retains the formatting of the file.
-The map will look something like this:
+Upon zooming out as far as possible, the map will look something like this:
 
 ![maptxt](notebooks/map.png)
 
-To add a target on the tour, delete the space character where you want to add the target, and replace it with an alphabetical character (from A to Z and a to z).
+Each black dot is a '#' character. To add a target on the tour, delete the space character where you want to add the target, and replace it with an alphabetical character (from A to Z and a to z).
 The order of the targets on the tour is determined by the ASCII value of that character, so it is alphabetical with all uppercase letters preceding all lowercase letters.
 
 ### Robot Parameter Specification

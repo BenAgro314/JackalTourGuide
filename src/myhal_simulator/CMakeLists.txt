@@ -67,29 +67,14 @@ target_link_libraries(parse_tour costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES}
 add_library(puppeteer src/puppeteer.cpp)
 target_link_libraries(puppeteer parse_tour utilities quadtree vehicles costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
-add_library(director SHARED src/director.cpp)
-target_link_libraries(director utilities vehicles ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
 add_executable(world_factory src/world_factory.cpp) 
 target_link_libraries(world_factory world_entities utilities parse_tour costmap ${catkin_LIBRARIES})
 
 add_executable(test_file src/tests.cpp) 
 target_link_libraries(test_file world_entities quadtree vehicles costmap ${catkin_LIBRARIES})
 
-add_executable(process_bag src/process_bag.cpp) 
-target_link_libraries(process_bag utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
-add_executable(bag_diagnostics src/bag_diagnostics.cpp) 
-target_link_libraries(bag_diagnostics utilities costmap ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
-add_executable(hugues_diagnostics src/hugues_diagnostics.cpp) 
-target_link_libraries(hugues_diagnostics utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
 add_executable(navigation_goals_V2 src/navigation_goals_V2.cpp) 
 target_link_libraries(navigation_goals_V2 parse_tour ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
-add_executable(bag_creator src/bag_creator.cpp) 
-target_link_libraries(bag_creator utilities ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 
 add_library(custom_velodyne src/custom_velodyne.cpp)
