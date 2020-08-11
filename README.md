@@ -97,7 +97,7 @@ The second command would launch the simulation with the tour `J_tour` along with
 
 #### Using Online Classifications
 
-Online classifications can only be used through docker. To obtain the docker necessary docker images:
+Online classifications can only be used through docker. To obtain the necessary docker images:
 
 ``` bash
 cd ~
