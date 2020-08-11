@@ -117,7 +117,7 @@ To run a specific test in the docker:
 ./classification_test.sh -c "./master.sh <insert_flags>"
 ```
 
-The containers will are by default detached upon creation.
+The containers are by default detached upon creation.
 
 ### World Parameter Specification
 
