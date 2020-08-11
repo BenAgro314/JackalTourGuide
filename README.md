@@ -405,6 +405,98 @@ This means that despite the extra time taken for ground truth classifications, t
 
 ## Dashboard 
 
-The Dashboard is a python module that allows for manipulation and visualization of the data produced by the simulation.
+The Dashboard is a python module that allows for organization and analysis of data gathered from the simulation.
+First, ensure the module can be imported by adding it to the `PYTHONPATH` environment variable:
 
-Description Coming Soon
+``` bash
+export PYTHONPATH=${PYTHONPATH}:~/catkin_ws/src/
+```
+
+Or for a more solution that will persist between sessions:
+
+``` bash
+echo 'export PYTHONPATH=${PYTHONPATH}:~/catkin_ws/src/' >> ~/.bashrc
+source ~/.bashrc
+```
+
+To use the dashboard start up a python interpretor. The dashboard has many functions for organizing run data:
+
+``` python
+>>> from dashboard import *
+>>> d = Dashboard() 
+>>> d.list_runs() #prints a table with information on the most recent 10 runs 
+>>> n = 20
+>>> d.list_runs(n) # prints a table with information on the most recent n runs
+>>> d.run_info('2020-07-17-12-47-30') # prints information on the run with the name '2020-07-17-12-47-30'
+>>> d.run_info(1) # prints information on the run with the index 1
+>>> d.list_dirs() # lists all of the folders in the directory ~/Myhal_Simulation/simulated_runs/, even if they are not valid runs
+>>> d.remove_dir('directory_name') # removed a directory with name 'directory_name' from ~/Myhal_Simulation/simulated_runs/
+Type DEL if you want to delete directory_name 
+DEL
+>>> d.remove_dir(clear_old = True) # will remove all directories from the folder that are not valid runs
+Type DEL if you want to delete all old runs
+DEL
+```
+
+In order to visualize data, first you must specify what data you want to see. This is done by adding `Series()` objects to the `Dashboard()` object.
+Series represent a set of runs adhering to various characteristics. Currently available characteristics include:
+
+- Time ranges: `earliest_date`, `latest_date`, `date`, type: int.
+- Index ranges:`min_ind`, `max_ind`, `ind`, type: int.
+- Filtering status: `filtering_status`, type: bool.
+- Classification method: `class_method`, type: string.
+- Tour name: `tour_names`, type: string.
+- Success status: `success_status`, type: bool.
+- Localization method: `localization_technique`, type: string.
+- Scenarios present during the test: `scenarios`, type: list of strings. 
+- Whether or not the run was a localization test or not: `localization_test`, type: bool.
+
+The series must be given a name. Series colors will be chosen randomly if not specified:
+
+``` python
+# creates a series named 'Online Classifications' of all runs with tour 'E_tour' which used 'online_predictions'
+>>> D.add_series('Online Classification', tour_names = 'E_tour', class_method = 'online_predictions') 
+# this series we give a list of matplotlib colors. The order of the list is the priority of color use (some plot types use two colors for one series).
+>>> D.add_series('No Classification', colors = ['r','b'], tour_names = 'E_tour', class_method = 'none') 
+```
+
+Then you can add various plot types to the Dashboard. Currently available plot types include:
+
+- `TEBoxPlot`: translation error box plot
+- `YEBoxPlot`: yaw error box plot
+- `TranslationError`: translation error vs distance travelled (line graph)
+- `YawError`: yaw error vs distance travelled (line graph)
+- `SuccessRate`: bar graph of the success rate of each series. 
+- `PathDifference`: Box plot of the difference in length between the optimal path and the path the robot took (for each series).
+- `TrajectoryPlot`: a birds eye view of the robot's trajectory (usually useful if only plotting one or two runs)
+
+``` python
+>>> d.add_plot(TEBoxPlot()) 
+>>> d.add_plot(YEBoxPlot()) 
+>>> d.show() # this will show the plots 
+>>> d.show(font_size = 30) # change the font size 
+```
+
+To create presentable plots, often the best was is to save them to a PDF and then edit the formatting manually later:
+
+``` python
+>>> d.show(path = 'plot.pdf') # this will show the plot and save it to plot.pdf in your present working directory 
+```
+
+Some other useful functions include:
+
+``` python
+>>> d.plot_info(TEBoxPlot) #  text information on a specific plot:
+>>> d.plot_run(3, TEBoxPlot()) # plot a specific run by it's index or name 
+>>> d.remove_plot(TEBoxPlot) # remove plots and series by type or name respectivly
+>>> d.clear_series() # clear all series and plots
+>>> d.watch('2020-07-17-12-47-30') # watch the gazebo videos for a specific run (by name or index)
+Available videos for 2020-07-17-12-47-30:
+(0) stalker_1_22.mp4 
+(1) hoverer_2_22.mp4 
+Input the index of the video you would like to view:
+1
+Playing: hoverer_2_22.mp4  
+>>> d.rviz_run(0) # play the bag file for a run and view it in rviz (by name or index)
+>>> d.remove_series_dirs('series_name') # this will delete the directories of all runs in the series 
+```

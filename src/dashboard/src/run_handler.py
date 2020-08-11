@@ -107,6 +107,21 @@ class TEBoxPlot(Plot):
                 
             self.data['y_data'].append(s_dist)
 
+    def info(self):
+        res = ""
+        self.data.clear()
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        self.collect_data()
+
+        for i in range(len(self.data['x_data'])):
+            series = self.data['x_data'][i]
+            y = self.data['y_data'][i]
+            avg_error = sum(y)/len(y)
+
+            res+= "Series: " + bc.color(series,bc.HEADER) + " has an average translation error of {:.3f} m\n".format(avg_error)
+
+        return res
+
 class YEBoxPlot(Plot):
     ''' A box plot for yaw error: x axis = series, y axis = yaw error '''
 
@@ -135,6 +150,21 @@ class YEBoxPlot(Plot):
                 s_dist += list(error)
                 
             self.data['y_data'].append(s_dist)
+
+    def info(self):
+        res = ""
+        self.data.clear()
+        self.data = {'x_data':[],'y_data':[], 'series_name': [], 'color' : [], 'line': []}
+        self.collect_data()
+
+        for i in range(len(self.data['x_data'])):
+            series = self.data['x_data'][i]
+            y = self.data['y_data'][i]
+            avg_error = sum(y)/len(y)
+
+            res+= "Series: " + bc.color(series,bc.HEADER) + " has an average yaw error of {:.3f} m\n".format(avg_error)
+
+        return res
 
 class TranslationError(Plot):
     ''' A plot of the difference between the predicted position and actual position of the robot at a given point in time, w.r.t the distance travelled '''
@@ -927,6 +957,7 @@ class Dashboard:
         ''' return textual information about the desired plot type '''
         found = False
         for plot in self.display.plots:
+            plot.series_list = self.display.series_map.values()
             if (isinstance(plot, plot_class)):
                 print bc.color(plot.__class__.__name__ + ": ",bc.BOLD)
                 found = True
@@ -936,7 +967,6 @@ class Dashboard:
             logging.info('Plot type not found in display')
 
     def watch(self, name_or_ind, save_path = ""):
-        ''' automatically cuts an mp4 together of the desired run '''
         name = self.nori_to_date(name_or_ind)
         if (name is None or not os.path.isdir(self.handler.filepath + '/simulated_runs/' + name)):
             logging.info('Invalid name or index')
