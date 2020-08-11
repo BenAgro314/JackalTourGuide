@@ -48,6 +48,7 @@ mkdir -p Myhal_Simulation/simulated_runs/
 To compile, run:
 
 ``` bash
+cd ~/catkin_ws
 catkin build
 ```
 
