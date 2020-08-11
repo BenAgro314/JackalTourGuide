@@ -4,7 +4,7 @@
 
   * [Usage](#usage)
      * [Dependencies](#dependencies)
-     * [Installation](#installation)
+     * [Installation and Compilation](#installation-and-compilation)
      * [Running the Simulation](#running-the-simulation)
      * [World Parameter Specification](#world-parameter-specification)
      * [Robot Parameter Specification](#robot-parameter-specification)
@@ -29,7 +29,7 @@ ROS-melodic and Gazebo9 are used in this simulation, along with various other RO
 A GPU is required to run the Velodyne VLP-32 LiDAR simulation.
 See [this Dockerfile](https://github.com/BenAgro314/ROS-Dockerfiles/blob/master/docker_ros_melodic/Dockerfile) for a list of the required programs and environment variables to run the simulation.
 
-### Installation
+### Installation and Compilation
 
 This repository should be located in `/home/$USER/catkin_ws`, meaning the root JackalTourGuide folder should be renamed to `catkin_ws`:
 
@@ -44,6 +44,25 @@ For data storage, there must be a directory `~/Myhal_Simulation/simulated_runs/`
 cd ~
 mkdir -p Myhal_Simulation/simulated_runs/
 ```
+
+To compile, run:
+
+``` bash
+catkin build
+```
+
+As aforementioned, various environment variables must be set prior to running the simulation.
+Add these lines to your `~/.bashrc`:
+
+``` bash
+source /opt/ros/melodic/setup.bash
+source ~/catkin_ws/devel/setup.bash
+export GAZEBO_PLUGIN_PATH=${GAZEBO_PLUGIN_PATH}:~/catkin_ws/devel/lib
+export GAZEBO_MODEL_PATH=~/catkin_ws/src/myhal_simulator/models:${GAZEBO_MODEL_PATH}
+export GAZEBO_RESOURCE_PATH=~/catkin_ws/src/myhal_simulator/models:${GAZEBO_RESOURCE_PATH}
+```
+
+Finally, `source ~/.bashrc` to make these changes in your current shell.
 
 ### Running the Simulation
 
